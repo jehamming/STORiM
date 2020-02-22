@@ -2,6 +2,6 @@
 Story based instant messaging
 
 
-#Ideas
+# Ideas
 Lambdamoo based server 
 android client
