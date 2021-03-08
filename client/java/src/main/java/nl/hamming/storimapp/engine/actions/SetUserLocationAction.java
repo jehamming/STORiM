@@ -24,5 +24,12 @@ public class SetUserLocationAction implements Action {
         p.setY(y);
     }
 
-
+    @Override
+    public String toString() {
+        return "SetUserLocationAction{" +
+                "userId=" + userId +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

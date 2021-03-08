@@ -22,7 +22,7 @@ import java.util.Enumeration;
  *
  * @author jehamming
  */
-public class UserInfoPanel extends javax.swing.JPanel implements UserListener, RoomListener {
+public class UserInfoPanel extends javax.swing.JPanel implements UserListener {
 
     private DefaultListModel onlineUsersListmodel;
     private DefaultListModel verbsListmodel;
@@ -64,7 +64,6 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, R
     public UserInfoPanel(Controllers controllers) {
         this.controllers = controllers;
         controllers.getUserController().addUserListener(this);
-        controllers.getRoomController().addRoomListener(this);
         protocolHandler = new ProtocolHandler();
         setBorder(new TitledBorder("Users"));
         initComponents();
@@ -111,10 +110,7 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, R
         UserListItem item = listOnlineUsers.getSelectedValue();
         LocationDto location = controllers.getUserController().getUserLocation(item.getUser().getId());
         RoomDto roomDto = controllers.getRoomController().findRoomByID(location.getRoomId());
-        String message = controllers.getMoveController().teleport(controllers.getUserController().getCurrentUser(), roomDto);
-        if (message != null ) {
-            JOptionPane.showMessageDialog(this, message);
-        }
+        controllers.getRoomController().teleportRequest(controllers.getUserController().getCurrentUser(), roomDto);
     }
 
     private void verbSelected(VerbDto verb) {
@@ -219,46 +215,23 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, R
     }
 
     @Override
-    public void currentUserLocation(LocationDto loc) {
-
-    }
-
-    @Override
-    public void userLocationUpdate(Long userId, LocationDto loc) {
-
-    }
-
-
-
-    @Override
-    public void userInRoom(UserDto user, RoomDto room, LocationDto location) {
-        if (listOnlineUsers.getSelectedValue() != null && listOnlineUsers.getSelectedValue().getUser().getId().equals(user.getId())) {
-            lblUserID.setText("");
-            lblUserName.setText("");
-            lblLocation.setText("");
-            listOnlineUsers.clearSelection();
+    public void userTeleported(Long userId, LocationDto location) {
+        UserListItem item = listOnlineUsers.getSelectedValue();
+        if ( item != null ) {
+            if ( item.getUser().getId().equals(userId)) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        lblUserID.setText(item.getUser().getId().toString());
+                        lblUserName.setText(item.getUser().getName());
+                        RoomDto roomDto = controllers.getRoomController().findRoomByID(location.getRoomId());
+                        lblLocation.setText(roomDto.getName());
+                    }
+                });
+            }
         }
     }
 
-    @Override
-    public void userTeleportedInRoom(UserDto user, RoomDto room) {
-
-    }
-
-    @Override
-    public void userLeftRoom(UserDto user, RoomDto room) {
-
-    }
-
-    @Override
-    public void roomAdded(RoomDto room) {
-
-    }
-
-    @Override
-    public void roomDeleted(RoomDto room) {
-
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.

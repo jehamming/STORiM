@@ -9,6 +9,7 @@ import com.hamming.storim.model.User;
 import com.hamming.storim.model.dto.RoomDto;
 import com.hamming.storim.model.dto.protocol.AddRoomDto;
 import com.hamming.storim.model.dto.protocol.GetRoomResultDTO;
+import com.hamming.storim.model.dto.protocol.RoomUpdatedDTO;
 import com.hamming.storim.model.dto.protocol.UpdateRoomDto;
 
 public class UpdateRoomAction extends Action<UpdateRoomDto> {
@@ -26,8 +27,8 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
         Room room = RoomFactory.getInstance().updateRoom(dto.getRoomId(), dto.getName(), dto.getSize());
         if ( room != null ) {
             RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room);
-            GetRoomResultDTO getRoomResultDTO = DTOFactory.getInstance().getRoomResultDTO(true, null, roomDTO);
-            client.send(getRoomResultDTO);
+            RoomUpdatedDTO roomUpdatedDTO = DTOFactory.getInstance().getRoomUpdatedDTO(roomDTO);
+            client.send(roomUpdatedDTO);
         }
     }
 

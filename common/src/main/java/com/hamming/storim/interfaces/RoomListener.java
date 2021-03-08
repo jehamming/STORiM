@@ -6,11 +6,13 @@ import com.hamming.storim.model.dto.UserDto;
 
 public interface RoomListener {
 
-     void userInRoom(UserDto user, RoomDto room, LocationDto location);
-     void userTeleportedInRoom(UserDto user, RoomDto room);
-     void userLeftRoom(UserDto user, RoomDto room);
+     void userInRoom(UserDto user, LocationDto location);
+     void userEnteredRoom(UserDto user, LocationDto location);
+     void userLeftRoom(UserDto user);
+     void userLocationUpdate(UserDto user, LocationDto location);
+     void currentUserLocationUpdate(Long sequenceNumber, LocationDto location);
+     void setRoom(RoomDto room, LocationDto location);
 
-     void roomAdded(RoomDto room);
-     void roomDeleted(RoomDto room);
+
 
 }

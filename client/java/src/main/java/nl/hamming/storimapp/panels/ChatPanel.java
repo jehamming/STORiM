@@ -38,6 +38,7 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
     }
 
 
+
     private class VerbListItem {
         private String name;
         private VerbDto command;
@@ -179,36 +180,6 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
     }
 
 
-    @Override
-    public void userInRoom(UserDto user, RoomDto room, LocationDto location) {
-        if ( controllers.getUserController().getCurrentUserLocation().getRoomId().equals( room.getId())  ) {
-            addText(user.getName() + " is in this room");
-        }
-    }
-
-    @Override
-    public void userTeleportedInRoom(UserDto user, RoomDto room) {
-        if (room.getId().equals(controllers.getUserController().getCurrentUserLocation().getRoomId())) {
-            addText(user.getName() + " teleported to this room!");
-        }
-    }
-
-    @Override
-    public void userLeftRoom(UserDto user, RoomDto room) {
-        if (room.getId().equals(controllers.getUserController().getCurrentUserLocation().getRoomId())) {
-            addText(user.getName() + " left the room..");
-        }
-    }
-
-    @Override
-    public void roomAdded(RoomDto room) {
-
-    }
-
-    @Override
-    public void roomDeleted(RoomDto room) {
-
-    }
 
     @Override
     public void userConnected(UserDto user) {
@@ -235,16 +206,40 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
     }
 
     @Override
-    public void currentUserLocation(LocationDto loc) {
-        RoomDto room = controllers.getRoomController().findRoomByID(loc.getRoomId());
-        addText("You are in " + room.getName());
+    public void userTeleported(Long userId, LocationDto location) {
+
+    }
+
+
+    @Override
+    public void userInRoom(UserDto user, LocationDto location) {
+        addText(user.getName() + " is in this room");
     }
 
     @Override
-    public void userLocationUpdate(Long userId, LocationDto loc) {
+    public void userEnteredRoom(UserDto user, LocationDto location) {
+        addText(user.getName() + " entered this room!");
+    }
+
+    @Override
+    public void userLeftRoom(UserDto user) {
+        addText(user.getName() + " left the room..");
+    }
+
+    @Override
+    public void userLocationUpdate(UserDto user, LocationDto location) {
 
     }
 
+    @Override
+    public void currentUserLocationUpdate(Long sequenceNumber, LocationDto location) {
+
+    }
+
+    @Override
+    public void setRoom(RoomDto room, LocationDto location) {
+        addText("You are in " + room.getName());
+    }
 
 
 

@@ -201,12 +201,8 @@ public class LoginPanel extends JPanel implements UserListener {
     }
 
     @Override
-    public void currentUserLocation(LocationDto loc) {
+    public void userTeleported(Long userId, LocationDto location) {
 
     }
 
-    @Override
-    public void userLocationUpdate(Long userId, LocationDto loc) {
-
-    }
 }

@@ -123,6 +123,7 @@ public class GameView extends JPanel implements Runnable {
     private void handleActions() {
         synchronized (actions) {
             for (Action action : actions) {
+                System.out.println("GAMEVIEW ACTION : " + action);
                 action.execute();
             }
             actions.removeAll(actions);
@@ -302,7 +303,23 @@ public class GameView extends JPanel implements Runnable {
                     g.drawImage(defaultTileImage, x, y, widthPerTile, heightPerTile, this);
                 }
             }
+
+            drawTitle(g);
         }
+    }
+
+    private void drawTitle(Graphics g) {
+        // Room name
+        Font font = new Font("Arial", Font.BOLD, 14);
+        g.setFont(font);
+        FontMetrics metrics = g.getFontMetrics(font);
+        // Determine the X coordinate for the text
+        int textX = (getWidth() / 2 ) -  (metrics.stringWidth(room.getName()) / 2);
+
+        g.setColor( Color.white );
+        g.fillRect(textX - 5, 2 , metrics.stringWidth(room.getName()) + 5, metrics.getAscent() + 2);
+        g.setColor(Color.black);
+        g.drawString(room.getName(), textX, metrics.getAscent()+2);
     }
 
     private void drawThings(Graphics g) {
@@ -315,7 +332,14 @@ public class GameView extends JPanel implements Runnable {
             int x = player.getX();
             int y = player.getY();
             g.drawImage(defaultUerImage, x, y, widthPerTile, widthPerTile, this);
-            g.drawString(player.getDisplayName(), x, y + widthPerTile + 10);
+            Font font = new Font("Arial", Font.BOLD, 10);
+            g.setFont(font);
+            y = y + widthPerTile + 10;
+            for (String line : player.getDisplayName().split(" ")) {
+                g.drawString(line, x, y);
+                y += g.getFontMetrics().getHeight();
+            }
+
         }
     }
 }

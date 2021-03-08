@@ -95,4 +95,8 @@ public class DTOFactory {
     public DTO getRoomDeletedDTO(Room room) {
         return new RoomDeletedDTO(room.getId());
     }
+
+    public RoomUpdatedDTO getRoomUpdatedDTO(RoomDto roomDTO) {
+        return new RoomUpdatedDTO(roomDTO);
+    }
 }

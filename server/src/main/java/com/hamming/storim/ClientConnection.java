@@ -193,6 +193,9 @@ public class ClientConnection implements Runnable, GameStateListener {
         if (user.equals(currentUser)) {
             sendUsersInRoom(user.getLocation().getRoom());
         } else {
+            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(user.getLocation().getRoom());
+            GetRoomResultDTO getRoomResultDTO = DTOFactory.getInstance().getRoomResultDTO(true, null, roomDto);
+            send(getRoomResultDTO);
             LocationDto location = DTOFactory.getInstance().getLocationDTO(user.getLocation());
             UserTeleportedDTO userTeleportedDTO = DTOFactory.getInstance().getUserTeleportedDTO(user, oldRoomId, location);
             send(userTeleportedDTO);

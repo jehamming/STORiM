@@ -4,6 +4,7 @@ package nl.hamming.storimapp.panels;
 import com.hamming.storim.Controllers;
 import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.interfaces.RoomListener;
+import com.hamming.storim.interfaces.RoomUpdateListener;
 import com.hamming.storim.interfaces.UserListener;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.RoomDto;
@@ -14,17 +15,17 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
 
 /**
  *
  * @author jehamming
  */
-public class RoomEditorPanel extends javax.swing.JPanel  implements RoomListener, UserListener, ConnectionListener {
+public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener, ConnectionListener, RoomUpdateListener {
 
     private DefaultListModel<RoomListItem> roomsModel = new DefaultListModel<RoomListItem>();
     private Controllers controllers;
     boolean newRoom = false;
-
 
 
     private class RoomListItem {
@@ -50,7 +51,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements RoomListener
         this.controllers = controllers;
         initComponents();
         setup();
-        controllers.getRoomController().addRoomListener(this);
+        controllers.getRoomController().addRoomUpdateListener(this);
         controllers.getUserController().addUserListener(this);
         controllers.getConnectionController().addConnectionListener(this);
     }
@@ -103,7 +104,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements RoomListener
     private void teleport() {
         RoomListItem item = listRooms.getSelectedValue();
         if (item != null  && item.getRoom() != null ) {
-            controllers.getMoveController().teleport(controllers.getUserController().getCurrentUser(), item.getRoom());
+            controllers.getRoomController().teleportRequest(controllers.getUserController().getCurrentUser(), item.getRoom());
         }
     }
 
@@ -304,33 +305,6 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements RoomListener
     private javax.swing.JSpinner spinSize;
     private javax.swing.JTextField txtRoomName;
 
-    @Override
-    public void userInRoom(UserDto user, RoomDto room, LocationDto location) {
-
-    }
-
-    @Override
-    public void userTeleportedInRoom(UserDto user, RoomDto room) {
-
-    }
-
-    @Override
-    public void userLeftRoom(UserDto user, RoomDto room) {
-
-    }
-
-    @Override
-    public void roomAdded(RoomDto room) {
-        if (controllers.getUserController().getCurrentUser()!= null && room.getOwnerID().equals(controllers.getUserController().getCurrentUser().getId())) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    removeRoom(room.getId());
-                    roomsModel.addElement(new RoomListItem(room.getName(), room));
-                }
-            });
-        }
-    }
 
     private void removeRoom(Long id) {
         RoomListItem found = null;
@@ -347,8 +321,36 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements RoomListener
     }
 
     @Override
+    public void roomAdded(RoomDto room) {
+        if (controllers.getUserController().getCurrentUser()!= null && room.getOwnerID().equals(controllers.getUserController().getCurrentUser().getId())) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    removeRoom(room.getId());
+                    roomsModel.addElement(new RoomListItem(room.getName(), room));
+                }
+            });
+        }
+    }
+
+    @Override
     public void roomDeleted(RoomDto room) {
         removeRoom(room.getId());
+    }
+
+
+
+    @Override
+    public void roomUpdated(RoomDto room) {
+        if (controllers.getUserController().getCurrentUser()!= null && room.getOwnerID().equals(controllers.getUserController().getCurrentUser().getId())) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    removeRoom(room.getId());
+                    roomsModel.addElement(new RoomListItem(room.getName(), room))   ;
+                }
+            });
+        }
     }
 
     public void empty(boolean thorough) {
@@ -397,14 +399,9 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements RoomListener
     }
 
     @Override
-    public void currentUserLocation(LocationDto loc) {
-
+    public void userTeleported(Long userId, LocationDto location) {
     }
 
-    @Override
-    public void userLocationUpdate(Long userId, LocationDto loc) {
-
-    }
 
     @Override
     public void connected() {
@@ -419,4 +416,8 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements RoomListener
 
 
     // End of variables declaration
+
+
+
+
 }

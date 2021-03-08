@@ -8,7 +8,5 @@ public interface UserListener {
      void userDisconnected(UserDto user);
      void userOnline(UserDto user);
      void loginResult(boolean success, String message);
-
-     void currentUserLocation(LocationDto loc);
-     void userLocationUpdate(Long userId, LocationDto loc);
+     void userTeleported(Long userId, LocationDto location);
 }

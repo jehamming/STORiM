@@ -21,4 +21,9 @@ public class ResetViewAction implements Action {
         viewer.setPlayers(new ArrayList<Player>());
     }
 
+    @Override
+    public String toString() {
+        return "ResetViewAction{" +
+                '}';
+    }
 }

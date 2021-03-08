@@ -4,7 +4,6 @@ import com.hamming.storim.Controllers;
 import com.hamming.storim.controllers.*;
 import com.hamming.storim.game.ProtocolHandler;
 import nl.hamming.storimapp.view.ViewController;
-import nl.hamming.storimapp.view.GameView;
 
 public class STORIMClientApplication  {
     private Controllers controllers;
@@ -31,9 +30,7 @@ public class STORIMClientApplication  {
         controllers.setConnectionController(new ConnectionController());
         // Users
         controllers.setUserController( new UserController(controllers.getConnectionController()));
-        // Movement
-        controllers.setMoveController(new MoveController(controllers));
-        // Commands
+        // Verbs
         controllers.setVerbController(new VerbController(controllers));
         // Rooms
         controllers.setRoomController(new RoomController(controllers));

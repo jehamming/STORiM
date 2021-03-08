@@ -23,4 +23,10 @@ public class SetRoomAction implements Action {
         viewer.setRoomNoAction(room);
     }
 
+    @Override
+    public String toString() {
+        return "SetRoomAction{" +
+                "room=" + room +
+                '}';
+    }
 }

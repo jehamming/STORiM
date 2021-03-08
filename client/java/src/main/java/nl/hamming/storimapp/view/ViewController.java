@@ -3,16 +3,18 @@ package nl.hamming.storimapp.view;
 import com.hamming.storim.CalcTools;
 import com.hamming.storim.Controllers;
 import com.hamming.storim.game.ProtocolHandler;
-import com.hamming.storim.interfaces.*;
-import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.protocol.MovementRequestDTO;
-import com.hamming.storim.model.dto.UserDto;
+import com.hamming.storim.interfaces.ConnectionListener;
+import com.hamming.storim.interfaces.RoomListener;
+import com.hamming.storim.interfaces.UserListener;
 import com.hamming.storim.model.dto.LocationDto;
+import com.hamming.storim.model.dto.RoomDto;
+import com.hamming.storim.model.dto.UserDto;
+import com.hamming.storim.model.dto.protocol.MovementRequestDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewController implements  MovementListener, ConnectionListener, UserListener, RoomListener {
+public class ViewController implements  ConnectionListener, UserListener, RoomListener {
 
     private ProtocolHandler protocolHandler;
     private Controllers controllers;
@@ -26,55 +28,12 @@ public class ViewController implements  MovementListener, ConnectionListener, Us
         this.controllers = controllers;
         this.gameView = gameView;
         protocolHandler = new ProtocolHandler();
-        controllers.getMoveController().addMovementListener(this);
         controllers.getConnectionController().addConnectionListener(this);
         controllers.getUserController().addUserListener(this);
         controllers.getRoomController().addRoomListener(this);
         sequenceNumber = 0;
         movementRequests = new ArrayList<MovementRequestDTO>();
     }
-
-
-    @Override
-    public void userMoved(UserDto user, LocationDto l) {
-        if ( controllers.getUserController().getCurrentUserLocation().getRoomId().equals( l.getRoomId())) {
-            if (gameView.getPlayer(user.getId()) == null) {
-                gameView.addPlayer(user.getId(), user.getName());
-            }
-            gameView.setLocation(user.getId(), l.getX(), l.getY());
-        }
-    }
-
-    @Override
-    public void currentUserMoved(Long sequence, UserDto user, LocationDto l) {
-        lastrecievedLocation = l;
-        moveCurrentUser(sequenceNumber,l);
-    }
-
-    @Override
-    public void teleported(UserDto user, LocationDto location, Long fromRoom) {
-        UserDto currentUser = controllers.getUserController().getCurrentUser();
-        LocationDto currentUserLocation = controllers.getUserController().getUserLocation(currentUser.getId());
-        RoomDto room = controllers.getRoomController().findRoomByID(currentUserLocation.getRoomId());
-        if ( user.getId().equals(currentUser.getId())) {
-            gameView.resetView();
-            gameView.setRoom(room);
-            gameView.addPlayer(user.getId(), user.getName());
-            gameView.setLocation(user.getId(), location.getX(), location.getY());
-            resetRequests();
-            lastrecievedLocation = location;
-        } else {
-            if ( location.getRoomId().equals(currentUserLocation.getRoomId())) {
-                gameView.addPlayer(user.getId(), user.getName());
-                gameView.setLocation(user.getId(), location.getX(), location.getY());
-            } else {
-                // A user teleported to another room
-                // RemovePlayer (if present)
-                gameView.removePlayer(user.getId());
-            }
-        }
-    }
-
 
     // The method uses client side prediction to counter lag.
     private void moveCurrentUser(Long sequenceNumber, LocationDto l) {
@@ -181,68 +140,62 @@ public class ViewController implements  MovementListener, ConnectionListener, Us
 
     @Override
     public void userOnline(UserDto user) {
-
     }
 
     @Override
     public void loginResult(boolean success, String message) {
         if (success) {
             UserDto user = controllers.getUserController().getCurrentUser();
-            LocationDto userLocation = controllers.getUserController().getUserLocation(user.getId());
-            RoomDto room = controllers.getRoomController().findRoomByID(userLocation.getRoomId());
+            LocationDto location = controllers.getUserController().getUserLocation(user.getId());
+            lastrecievedLocation = location;
+            RoomDto room = controllers.getRoomController().findRoomByID(location.getRoomId());
             gameView.setRoom(room);
             gameView.addPlayer(user.getId(), user.getName());
+            gameView.setLocation(user.getId(), location.getX(), location.getY());
             currentUserid = user.getId();
-            currentUserMoved(0L, user, userLocation);
         }
     }
 
     @Override
-    public void currentUserLocation(LocationDto loc) {
-        RoomDto room = controllers.getRoomController().findRoomByID(loc.getRoomId());
+    public void userTeleported(Long userId, LocationDto location) {
+
+    }
+
+
+    @Override
+    public void userInRoom(UserDto user, LocationDto location) {
+        gameView.addPlayer(user.getId(), user.getName());
+        gameView.setLocation(user.getId(), location.getX(), location.getY());
+    }
+
+    @Override
+    public void userEnteredRoom(UserDto user, LocationDto location) {
+        gameView.addPlayer(user.getId(), user.getName());
+        gameView.setLocation(user.getId(), location.getX(), location.getY());
+    }
+
+    @Override
+    public void userLeftRoom(UserDto user) {
+        gameView.removePlayer(user.getId());
+    }
+
+    @Override
+    public void userLocationUpdate(UserDto user, LocationDto location) {
+        gameView.setLocation(user.getId(), location.getX(), location.getY());
+    }
+
+    @Override
+    public void currentUserLocationUpdate(Long sequenceNumber, LocationDto location) {
+        moveCurrentUser(sequenceNumber, location);
+    }
+
+    @Override
+    public void setRoom(RoomDto room, LocationDto location) {
+        gameView.resetView();
         gameView.setRoom(room);
-    }
-
-    @Override
-    public void userLocationUpdate(Long userId, LocationDto loc) {
-
-    }
-
-
-    @Override
-    public void userInRoom(UserDto user, RoomDto room, LocationDto location) {
-        if (! user.getId().equals( controllers.getUserController().getCurrentUser().getId())) {
-            if (controllers.getUserController().getCurrentUserLocation().getRoomId().equals(room.getId())) {
-                gameView.addPlayer(user.getId(), user.getName());
-                if (location != null) {
-                    gameView.setLocation(user.getId(), location.getX(), location.getY());
-                }
-            }
-        }
-
-    }
-
-    @Override
-    public void userTeleportedInRoom(UserDto user, RoomDto room) {
-        if ( controllers.getUserController().getCurrentUserLocation().getRoomId().equals( room.getId())) {
-            gameView.addPlayer(user.getId(), user.getName());
-        }
-    }
-
-    @Override
-    public void userLeftRoom(UserDto user, RoomDto room) {
-        if ( controllers.getUserController().getCurrentUserLocation().getRoomId().equals( room.getId())) {
-            gameView.removePlayer(user.getId());
-        }
-    }
-
-    @Override
-    public void roomAdded(RoomDto room) {
-
-    }
-
-    @Override
-    public void roomDeleted(RoomDto room) {
-
+        gameView.addPlayer(controllers.getUserController().getCurrentUser().getId(), controllers.getUserController().getCurrentUser().getName());
+        gameView.setLocation(controllers.getUserController().getCurrentUser().getId(), location.getX(), location.getY());
+        resetRequests();
+        lastrecievedLocation = location;
     }
 }

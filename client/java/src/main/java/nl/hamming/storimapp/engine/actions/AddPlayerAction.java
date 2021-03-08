@@ -23,4 +23,11 @@ public class AddPlayerAction implements Action {
         viewer.addPlayer(player);
     }
 
+    @Override
+    public String toString() {
+        return "AddPlayerAction{" +
+                "userId=" + userId +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

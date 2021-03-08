@@ -51,12 +51,24 @@ public class UserController implements ConnectionListener {
             }
         });
         connectionController.registerReceiver(UserOnlineDTO.class,new NetCommandReceiver<UserOnlineDTO>() {
-
             @Override
             public void receiveDTO(UserOnlineDTO dto) {
                 handleUserOnlineDTO(dto);
             }
         });
+        connectionController.registerReceiver(UserTeleportedDTO.class,new NetCommandReceiver<UserTeleportedDTO>() {
+            @Override
+            public void receiveDTO(UserTeleportedDTO dto) {
+                handleUserTeleportedDTO(dto);
+            }
+        });
+    }
+
+    private void handleUserTeleportedDTO(UserTeleportedDTO dto) {
+        userLocations.put(dto.getUserId(), dto.getLocation());
+        for (UserListener l: userListeners) {
+            l.userTeleported(dto.getUserId(), dto.getLocation());
+        }
     }
 
     private void handleUserOnlineDTO(UserOnlineDTO dto) {
@@ -137,16 +149,10 @@ public class UserController implements ConnectionListener {
 
     public void setUserLocation(Long userId, LocationDto loc) {
         userLocations.put(userId, loc);
-        if (currentUser != null && userId.equals(currentUser.getId())) {
-            for (UserListener l: userListeners) {
-                l.currentUserLocation(loc);
-            }
-        } else {
-            for (UserListener l: userListeners) {
-                l.userLocationUpdate(userId, loc);
-            }
-        }
+    }
 
+    public void setCurrentUserLocation(LocationDto loc) {
+        userLocations.put(currentUser.getId(), loc);
     }
 
     public LocationDto getUserLocation(Long userId) {

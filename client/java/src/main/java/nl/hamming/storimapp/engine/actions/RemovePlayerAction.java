@@ -19,4 +19,10 @@ public class RemovePlayerAction implements Action {
         viewer.removePlayer(player);
     }
 
+    @Override
+    public String toString() {
+        return "RemovePlayerAction{" +
+                "userId=" + userId +
+                '}';
+    }
 }

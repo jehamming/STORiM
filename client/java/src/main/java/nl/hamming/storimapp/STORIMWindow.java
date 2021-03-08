@@ -1,8 +1,6 @@
 package nl.hamming.storimapp;
 
 import com.hamming.storim.Controllers;
-import com.hamming.storim.controllers.MoveController;
-import com.hamming.storim.controllers.UserController;
 import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.interfaces.UserListener;
 import com.hamming.storim.model.dto.LocationDto;
@@ -12,25 +10,24 @@ import nl.hamming.storimapp.view.GameView;
 import nl.hamming.storimapp.view.ViewController;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class STORIMWindow extends JFrame implements ConnectionListener, UserListener {
 
     private UserInfoPanel userInfoPanel;
     private LoginPanel loginPanel;
     private ChatPanel chatPanel;
-    private MovementPanel movementPanel;
     private VerbEditorPanel verbEditorPanel;
     private RoomEditorPanel roomEditorPanel;
     private Controllers controllers;
     private GameView gameView;
     private JTabbedPane tabbedPane;
+    private static String BASIC_TITLE = "STORIM Java Client";
 
     public STORIMWindow(Controllers controllers) {
         this.controllers = controllers;
         controllers.getConnectionController().addConnectionListener(this);
         controllers.getUserController().addUserListener(this);
-        setTitle("STORIM Java Client");
+        setTitle(BASIC_TITLE);
         gameView = new GameView();
         gameView.setViewController(new ViewController(getGameView(), controllers));
         initComponents();
@@ -119,6 +116,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     @Override
     public void disconnected() {
         emptyPanels();
+        setTitle(BASIC_TITLE);
     }
 
     @Override
@@ -139,17 +137,14 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     @Override
     public void loginResult(boolean success, String message) {
         if (success) {
+            setTitle(BASIC_TITLE + " - " +  controllers.getUserController().getCurrentUser().getName());
             tabbedPane.setSelectedIndex(1);
         }
     }
 
     @Override
-    public void currentUserLocation(LocationDto loc) {
+    public void userTeleported(Long userId, LocationDto location) {
 
     }
 
-    @Override
-    public void userLocationUpdate(Long userId, LocationDto loc) {
-
-    }
 }
