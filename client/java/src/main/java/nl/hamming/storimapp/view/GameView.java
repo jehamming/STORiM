@@ -353,10 +353,17 @@ public class GameView extends JPanel implements Runnable {
             int x = player.getX();
             int y = player.getY();
             g.drawImage(defaultUerImage, x, y, widthPerTile, widthPerTile, this);
-            Font font = new Font("Arial", Font.BOLD, 10);
+
+            Font font = new Font("Arial", Font.BOLD, 12);
             g.setFont(font);
+            FontMetrics metrics = g.getFontMetrics(font);
+            int middle = x + (widthPerTile / 2 );
             y = y + widthPerTile + 10;
             for (String line : player.getDisplayName().split(" ")) {
+                x =  middle- (metrics.stringWidth(line) / 2);
+                g.setColor( Color.white );
+                g.fillRect(x - 5, y - 10 , metrics.stringWidth(line) + 5, metrics.getAscent() + 2);
+                g.setColor(Color.black);
                 g.drawString(line, x, y);
                 y += g.getFontMetrics().getHeight();
             }
