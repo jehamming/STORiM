@@ -1,11 +1,16 @@
 package com.hamming.storim.game;
 
+import com.hamming.storim.factories.RoomFactory;
+import com.hamming.storim.factories.TileFactory;
 import com.hamming.storim.factories.VerbResultFactory;
 import com.hamming.storim.game.action.Action;
 import com.hamming.storim.model.*;
+import com.hamming.storim.util.ImageUtils;
 import com.hamming.storim.util.StringUtils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class GameController implements Runnable {
     private Deque<Action> actionQueue;
@@ -113,4 +118,49 @@ public class GameController implements Runnable {
     public void roomDeleted(Room room) {
         fireGameStateEvent(GameStateEvent.Type.ROOMDELETED, room, null);
     }
+
+    public void updateRoom(Long roomId, String name, Integer size, byte[] imageData) {
+        Room room = RoomFactory.getInstance().updateRoom(roomId, name, size);
+        Image image = ImageUtils.decode(imageData);
+        Tile tile = TileFactory.getInstance().createTile(room.getOwner(), image);
+        room.setTile(tile);
+        fireGameStateEvent(GameStateEvent.Type.ROOMUPDATED, room, null);
+    }
+
+    public void updateRoom(Long roomId, String name, Integer size, Long tileId) {
+        Room room = RoomFactory.getInstance().updateRoom(roomId, name, size);
+        Tile tile = TileFactory.getInstance().findTileById(tileId);
+        room.setTile(tile);
+        fireGameStateEvent(GameStateEvent.Type.ROOMUPDATED, room, null);
+    }
+
+    public void addRoom(User creator, String name, Integer size, byte[] imageData) {
+        Image image = ImageUtils.decode(imageData);
+        Tile tile = TileFactory.getInstance().createTile(creator, image);
+        tile.setCreator(creator);
+        tile.setOwner(creator);
+        addRoom(creator, name, size, tile);
+    }
+
+    public void addRoom(User creator, String name, Integer size, Long tileID) {
+        // Create Tile
+        Tile tile = TileFactory.getInstance().findTileById(tileID);
+        addRoom(creator, name, size, tile);
+    }
+
+    private void addRoom(User creator, String name, Integer size, Tile tile) {
+        Room room = RoomFactory.getInstance().createRoom(creator, name, size);
+        room.setOwner(creator);
+        room.setTile(tile);
+        creator.addRoom(room);
+        fireGameStateEvent(GameStateEvent.Type.ROOMADDED, room, null);
+    }
+
+    public void addRoom(User creator, String name, Integer size) {
+        Room room = RoomFactory.getInstance().createRoom(creator, name, size);
+        room.setOwner(creator);
+        creator.addRoom(room);
+        fireGameStateEvent(GameStateEvent.Type.ROOMADDED, room, null);
+    }
+
 }

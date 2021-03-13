@@ -1,11 +1,9 @@
 package com.hamming.storim.factories;
 
-import com.hamming.storim.model.Location;
-import com.hamming.storim.model.Room;
-import com.hamming.storim.model.User;
-import com.hamming.storim.model.Verb;
+import com.hamming.storim.model.*;
 import com.hamming.storim.model.dto.*;
 import com.hamming.storim.model.dto.protocol.*;
+import com.hamming.storim.util.ImageUtils;
 
 public class DTOFactory {
 
@@ -34,7 +32,12 @@ public class DTOFactory {
     }
 
     public RoomDto getRoomDto(Room b) {
-        RoomDto dto = new RoomDto(b.getId(), b.getName(), b.getCreator().getId(), b.getOwner().getId(), b.getSize());
+        RoomDto dto;
+        if ( b.getTile() != null) {
+            dto = new RoomDto(b.getId(), b.getName(), b.getCreator().getId(), b.getOwner().getId(), b.getSize(), b.getTile().getId());
+        }  else {
+            dto = new RoomDto(b.getId(), b.getName(), b.getCreator().getId(), b.getOwner().getId(), b.getSize(), null);
+        }
         return dto;
     }
 
@@ -92,11 +95,23 @@ public class DTOFactory {
         return new VerbDeletedDTO(verb.getId());
     }
 
-    public DTO getRoomDeletedDTO(Room room) {
+    public RoomDeletedDTO getRoomDeletedDTO(Room room) {
         return new RoomDeletedDTO(room.getId());
     }
 
     public RoomUpdatedDTO getRoomUpdatedDTO(RoomDto roomDTO) {
         return new RoomUpdatedDTO(roomDTO);
+    }
+
+    public GetTileResultDTO getGetTileResultDTO(boolean success, String message, TileDto tile) {
+        return new GetTileResultDTO(success, message, tile);
+    }
+
+    public TileDto getTileDTO(Tile tile) {
+        return new TileDto(tile.getId(), ImageUtils.encode(tile.getImage()));
+    }
+
+    public RoomAddedDTO getRoomAddedDTO(RoomDto roomDTO) {
+        return new RoomAddedDTO(roomDTO);
     }
 }

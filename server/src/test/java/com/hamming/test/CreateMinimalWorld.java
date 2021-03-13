@@ -52,10 +52,12 @@ public class CreateMinimalWorld {
         User u2 = UserFactory.getInstance().addUser("Jan-Egbert Hamming", "jehamming", "jehamming", "janneman@hotmail.com");
         u2.addVerb(cmdSay);
         u2.addVerb(cmdShout);
-        Location l2 = new Location(roomLuuk, roomLuuk.getSpawnPointX(), roomLuuk.getSpawnPointY());
+        Room roomJan = RoomFactory.getInstance().createRoom(u2, "Jan's Room", 20);
+        u2.addRoom(roomJan);
+        Location l2 = new Location(roomJan, roomJan.getSpawnPointX(), roomJan.getSpawnPointY());
         u2.setLocation(l2);
         Thing thingJan = ThingFactory.getInstance().createThing("Jan's first thing!", u2);
-        u2.addToInventory(thingLuuk);
+        u2.addToInventory(thingJan);
 
 
         Database.getInstance().store();

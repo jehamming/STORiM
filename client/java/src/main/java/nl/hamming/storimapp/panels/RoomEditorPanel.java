@@ -3,19 +3,23 @@ package nl.hamming.storimapp.panels;
 
 import com.hamming.storim.Controllers;
 import com.hamming.storim.interfaces.ConnectionListener;
-import com.hamming.storim.interfaces.RoomListener;
 import com.hamming.storim.interfaces.RoomUpdateListener;
 import com.hamming.storim.interfaces.UserListener;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.RoomDto;
+import com.hamming.storim.model.dto.TileDto;
 import com.hamming.storim.model.dto.UserDto;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
@@ -23,9 +27,13 @@ import java.util.Collections;
  */
 public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener, ConnectionListener, RoomUpdateListener {
 
-    private DefaultListModel<RoomListItem> roomsModel = new DefaultListModel<RoomListItem>();
+    private DefaultListModel<RoomListItem> roomsModel = new DefaultListModel<>();
+    private DefaultListModel<TileDto> tilesModel = new DefaultListModel<>();
     private Controllers controllers;
     boolean newRoom = false;
+    private JFileChooser fileChooser;
+    private BufferedImage tileImage;
+    private TileDto chosenTile;
 
 
     private class RoomListItem {
@@ -49,6 +57,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
      */
     public RoomEditorPanel(Controllers controllers) {
         this.controllers = controllers;
+        fileChooser = new JFileChooser();
         initComponents();
         setup();
         controllers.getRoomController().addRoomUpdateListener(this);
@@ -57,48 +66,64 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
     }
 
     private void setup() {
+        listTiles.setModel(tilesModel);
         listRooms.setModel(roomsModel);
-        listRooms.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if ( !e.getValueIsAdjusting() ) { //Else this is called twice!
-                    RoomListItem item = listRooms.getSelectedValue();
-                    if (item != null && item.getRoom()!= null) {
-                        roomSelected(item.getRoom());
-                    }
+        listRooms.addListSelectionListener(e -> {
+            if ( !e.getValueIsAdjusting() ) { //Else this is called twice!
+                RoomListItem item = listRooms.getSelectedValue();
+                if (item != null && item.getRoom()!= null) {
+                    roomSelected(item.getRoom());
                 }
             }
         });
-        btnDelete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteRoom();
-            }
-        });
-        btnSave.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveRoom();
-            }
-        });
+        btnDelete.addActionListener(e -> deleteRoom());
+        btnSave.addActionListener(e -> saveRoom());
         setEditable(false);
-        btnCreate.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createRoom();
-            }
-        });
-        btnTeleport.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                teleport();
-            }
-        });
+        btnCreate.addActionListener(e -> createRoom());
+        btnTeleport.addActionListener(e -> teleport());
         btnSave.setEnabled(false);
         btnDelete.setEnabled(false);
         btnCreate.setEnabled(false);
-        SpinnerModel value = new SpinnerNumberModel(10, 10, 50, 1);
+        SpinnerModel value = new SpinnerNumberModel(10, 1, 20, 1);
         spinSize.setModel(value);
+        btnChooseFile.addActionListener(e -> chooseFile());
+        listTiles.setCellRenderer( new TileRenderer() );
+        listTiles.addListSelectionListener(e -> {
+            tileSelected();
+        });
+
+    }
+
+    private void tileSelected() {
+        chosenTile = (TileDto) listTiles.getSelectedValue();
+        tileImage = null;
+        SwingUtilities.invokeLater(() -> {
+            if ( chosenTile != null ) {
+                Image iconImage = chosenTile.getImage().getScaledInstance(lblImagePreview.getWidth(), lblImagePreview.getHeight(), Image.SCALE_SMOOTH);
+                lblImagePreview.setIcon(new ImageIcon(iconImage));
+            } else {
+                lblImagePreview.setIcon(null);
+            }
+        });
+    }
+
+    private void chooseFile() {
+        int returnVal = fileChooser.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            try {
+                File file = fileChooser.getSelectedFile();
+                tileImage = ImageIO.read(file);
+                chosenTile = null;
+                SwingUtilities.invokeLater(() -> {
+                    Image iconImage = tileImage.getScaledInstance(lblImagePreview.getWidth(), lblImagePreview.getHeight(), Image.SCALE_SMOOTH);
+                    lblImagePreview.setIcon(new ImageIcon(iconImage));
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void teleport() {
@@ -116,29 +141,37 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
 
     private void createRoom() {
         setEnabled(true);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                lblRoomID.setText("");
-                txtRoomName.setText("New ROOM Name");
-                btnSave.setEnabled(true);
-                listRooms.clearSelection();
-                btnDelete.setEnabled(false);
-                setEditable(true);
-            }
-        });
         newRoom = true;
+        chosenTile = null;
+        SwingUtilities.invokeLater(() -> {
+            lblRoomID.setText("");
+            txtRoomName.setText("New ROOM Name");
+            btnSave.setEnabled(true);
+            listRooms.clearSelection();
+            btnDelete.setEnabled(false);
+            tilesModel.removeAllElements();
+            lblImagePreview.setIcon(null);
+            tileImage = null;
+            for (TileDto tile : controllers.getRoomController().getTiles() ) {
+                tilesModel.addElement(tile);
+            }
+            setEditable(true);
+        });
     }
 
     private void saveRoom() {
         String roomName = txtRoomName.getText().trim();
         int roomSize = Integer.valueOf((Integer) spinSize.getModel().getValue());
+        Long tileID = null;
+        if (chosenTile != null) {
+            tileID = chosenTile.getId();
+        }
         if (newRoom) {
-            controllers.getRoomController().addRoom(roomName, roomSize);
+            controllers.getRoomController().addRoom(roomName, roomSize, tileID, tileImage);
         } else {
             // Update room!
             Long roomId = Long.valueOf(lblRoomID.getText());
-            controllers.getRoomController().updateRoom(roomId, roomName, roomSize);
+            controllers.getRoomController().updateRoom(roomId, roomName, roomSize, tileID, tileImage);
         }
 
 
@@ -150,18 +183,44 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
     }
 
     private void roomSelected(RoomDto room) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                lblRoomID.setText(room.getId().toString());
-                txtRoomName.setText(room.getName());
-                spinSize.setValue(room.getSize());
-                btnSave.setEnabled(true);
-                btnDelete.setEnabled(true);
-                btnTeleport.setEnabled(true);
-                setEditable(true);
+        SwingUtilities.invokeLater(() -> {
+            lblRoomID.setText(room.getId().toString());
+            txtRoomName.setText(room.getName());
+            spinSize.setValue(room.getSize());
+            btnSave.setEnabled(true);
+            btnDelete.setEnabled(true);
+            btnTeleport.setEnabled(true);
+            listTiles.setEnabled(true);
+            setEditable(true);
+            tilesModel.removeAllElements();
+            lblImagePreview.setIcon(null);
+
+            for (TileDto tile : controllers.getRoomController().getTiles() ) {
+                tilesModel.addElement(tile);
             }
+
+            if ( room.getTileID() == null ) {
+                listTiles.clearSelection();
+            } else {
+                TileDto tile = controllers.getRoomController().getTile(room.getTileID());
+                int index =  findIndex(tile);
+                listTiles.setSelectedIndex(index);
+            }
+
+
         });
+
+    }
+
+    private int findIndex(TileDto tile) {
+        int index = -1;
+        for (int i = 0; i < tilesModel.getSize(); i++) {
+            if (tilesModel.get(i).getId().equals( tile.getId() )) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
     private void setEditable(boolean editable) {
@@ -170,18 +229,12 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
             public void run() {
                 txtRoomName.setEnabled(editable);
                 spinSize.setEnabled(editable);
+                btnChooseFile.setEnabled(editable);
             }
         });
     }
 
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         jLabel3 = new javax.swing.JLabel();
@@ -198,6 +251,12 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         spinSize = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         btnSave = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        btnChooseFile = new javax.swing.JButton();
+        lblImagePreview = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listTiles = new javax.swing.JList<>();
+        jLabel4 = new javax.swing.JLabel();
 
         jLabel3.setText("Rooms");
 
@@ -223,6 +282,16 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
 
         btnSave.setText("Save");
 
+        jLabel2.setText("Room Tile");
+
+        btnChooseFile.setText("Create new");
+
+        lblImagePreview.setText("No Label Chosen");
+
+        jScrollPane2.setViewportView(listTiles);
+
+        jLabel4.setText("Choose below or :");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -243,19 +312,35 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
                                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
-                                                                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                        .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
+                                                                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                .addComponent(jLabel2))
                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                .addComponent(lblRoomID, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addComponent(txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addGroup(layout.createSequentialGroup()
-                                                                        .addComponent(spinSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                                .addContainerGap(26, Short.MAX_VALUE))
+                                                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(lblImagePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGroup(layout.createSequentialGroup()
+                                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                                .addComponent(lblRoomID, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addGroup(layout.createSequentialGroup()
+                                                                                        .addGap(56, 56, 56)
+                                                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                                .addGroup(layout.createSequentialGroup()
+                                                                                                        .addComponent(spinSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                                                .addComponent(txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                                .addGroup(layout.createSequentialGroup()
+                                                                                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                                        .addGap(11, 11, 11)
+                                                                                        .addComponent(btnChooseFile, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                        .addGap(0, 0, Short.MAX_VALUE))))))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -264,12 +349,10 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel7)
                                                         .addComponent(lblRoomID))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel8)
                                                         .addComponent(txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -277,31 +360,47 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel9)
                                                         .addComponent(spinSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jLabel1))))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(jLabel1))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabel2)
+                                                        .addComponent(btnChooseFile)
+                                                        .addComponent(jLabel4))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                                        .addComponent(lblImagePreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(btnTeleport)
                                         .addComponent(btnCreate)
                                         .addComponent(btnDelete)
                                         .addComponent(btnSave))
-                                .addContainerGap(24, Short.MAX_VALUE))
+                                .addGap(32, 32, 32))
         );
-    }// </editor-fold>
+    }
 
 
     // Variables declaration - do not modify
+    private javax.swing.JButton btnChooseFile;
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnTeleport;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblImagePreview;
     private javax.swing.JLabel lblRoomID;
     private javax.swing.JList<RoomListItem> listRooms;
+    private javax.swing.JList<TileDto> listTiles;
     private javax.swing.JSpinner spinSize;
     private javax.swing.JTextField txtRoomName;
 
@@ -359,12 +458,17 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
             public void run() {
                 lblRoomID.setText("");
                 txtRoomName.setText("");
+                lblImagePreview.setText("");
+                lblImagePreview.setIcon(null);
+                tileImage = null;
                 spinSize.setValue(20);
                 btnSave.setEnabled(false);
                 btnDelete.setEnabled(false);
+                btnChooseFile.setEnabled(false);
                 if (thorough) {
                     roomsModel.removeAllElements();
                     btnTeleport.setEnabled(false);
+                    tilesModel.removeAllElements();
                 }
             }
         });

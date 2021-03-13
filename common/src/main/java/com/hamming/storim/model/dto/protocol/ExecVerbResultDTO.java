@@ -2,7 +2,7 @@ package com.hamming.storim.model.dto.protocol;
 
 import com.hamming.storim.model.dto.DTO;
 
-public class ExecVerbResultDTO implements DTO {
+public class ExecVerbResultDTO implements ProtocolDTO {
 
     private Long verbID;
     private boolean success;

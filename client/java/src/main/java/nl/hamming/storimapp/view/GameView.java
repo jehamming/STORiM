@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Timer;
 
 import com.hamming.storim.model.dto.RoomDto;
+import com.hamming.storim.model.dto.TileDto;
 import nl.hamming.storimapp.engine.actions.*;
 import nl.hamming.storimapp.engine.actions.Action;
 
@@ -30,6 +31,7 @@ public class GameView extends JPanel implements Runnable {
     private List<Action> actions;
     private List<Player> players;
     public RoomDto room;
+    public TileDto tile;
     private ViewController viewController;
 
     private Image defaultTileImage;
@@ -176,11 +178,26 @@ public class GameView extends JPanel implements Runnable {
         }
     }
 
+    public RoomDto getRoom() {
+        return room;
+    }
+
     public void setRoom(RoomDto room) {
         Action action = new SetRoomAction(this, room);
         synchronized (actions) {
             actions.add(action);
         }
+    }
+
+    public void setTile(TileDto tile) {
+        Action action = new SetTileAction(this, tile);
+        synchronized (actions) {
+            actions.add(action);
+        }
+    }
+
+    public void setTileNoAction(TileDto tile) {
+        this.tile = tile;
     }
 
     public void setRoomNoAction(RoomDto room) {
@@ -292,15 +309,19 @@ public class GameView extends JPanel implements Runnable {
     }
 
     void drawRoom(Graphics g) {
+        Image tileImage = defaultTileImage;
         if (room != null) {
+            if ( tile != null ) {
+                tileImage = tile.getImage();
+            }
             int roomSize = room.getSize();
             int widthPerTile = getWidth() / roomSize;
-            int heightPerTile = widthPerTile;
+            int heightPerTile = getHeight() / roomSize;
             for (int i = 0; i < roomSize; i++) {
                 for (int j = 0; j < roomSize; j++) {
                     int x = i * widthPerTile;
                     int y = j * heightPerTile;
-                    g.drawImage(defaultTileImage, x, y, widthPerTile, heightPerTile, this);
+                    g.drawImage(tileImage, x, y, widthPerTile, heightPerTile, this);
                 }
             }
 

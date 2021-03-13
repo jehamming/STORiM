@@ -53,7 +53,7 @@ public class GameProtocolHandler implements Protocol {
     }
 
 
-    public Action getAction(DTO dto) {
+    public Action getAction(ProtocolDTO dto) {
         return actions.get(dto.getClass());
     }
 

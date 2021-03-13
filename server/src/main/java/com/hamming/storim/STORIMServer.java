@@ -24,6 +24,8 @@ public class STORIMServer extends Server {
     public void initialize() {
         // Load Config
         ServerConfig config = ServerConfig.getInstance();
+        //Force Tile loading
+        TileFactory.getInstance();
         port = config.getServerPort();
         // Load Data
         Database.getInstance();

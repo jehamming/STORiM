@@ -4,7 +4,7 @@ import com.hamming.storim.model.dto.DTO;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.UserDto;
 
-public class UserOnlineDTO implements DTO {
+public class UserOnlineDTO implements ProtocolDTO {
 
     private UserDto user;
     private LocationDto location;

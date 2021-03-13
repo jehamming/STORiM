@@ -2,12 +2,10 @@ package com.hamming.storim;
 
 
 import com.hamming.storim.factories.DTOFactory;
+import com.hamming.storim.factories.TileFactory;
 import com.hamming.storim.game.*;
 import com.hamming.storim.game.action.*;
-import com.hamming.storim.model.Verb;
-import com.hamming.storim.model.VerbOutput;
-import com.hamming.storim.model.Room;
-import com.hamming.storim.model.User;
+import com.hamming.storim.model.*;
 import com.hamming.storim.model.dto.*;
 import com.hamming.storim.model.dto.protocol.*;
 
@@ -39,12 +37,12 @@ public class ClientConnection implements Runnable, GameStateListener {
         while (running) {
             try {
                 Object read = in.readObject();
-                DTO dto = (DTO) read;
+                ProtocolDTO dto = (ProtocolDTO) read;
                 System.out.println("RECEIVED:" + dto);
                 handleInput(dto);
             } catch (IOException e) {
                 //System.out.println(this.getClass().getName() + ":" + "IO Error:" + e.getMessage());
-               // e.printStackTrace();
+                // e.printStackTrace();
                 running = false;
             } catch (ClassNotFoundException e) {
                 System.out.println(this.getClass().getName() + ":" + "Error:" + e.getMessage());
@@ -54,7 +52,7 @@ public class ClientConnection implements Runnable, GameStateListener {
         gameController.removeListener(this);
         clientSender.stopSending();
         if (currentUser != null) {
-           //gameController.userDisconnected(currentUser);
+            //gameController.userDisconnected(currentUser);
             UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
             gameController.addAction(action);
         }
@@ -65,19 +63,19 @@ public class ClientConnection implements Runnable, GameStateListener {
         System.out.println(this.getClass().getName() + ":" + "Client Socket closed");
     }
 
-    private void handleInput(DTO dto) {
+    private void handleInput(ProtocolDTO dto) {
         Action action = gameProtocolHandler.getAction(dto);
-        if (action != null ) {
+        if (action != null) {
             action.setDTO(dto);
             if (action != null) {
                 gameController.addAction(action);
             }
         } else {
-            System.out.println("NOT HANDLED:" + dto.getClass().getSimpleName() );
+            System.out.println("NOT HANDLED:" + dto.getClass().getSimpleName());
         }
     }
 
-    public void send(DTO dto) {
+    public void send(ProtocolDTO dto) {
         clientSender.enQueue(dto);
     }
 
@@ -96,6 +94,8 @@ public class ClientConnection implements Runnable, GameStateListener {
         if (isLoggedIn()) {
             // Send Commnds
             sendUserCommands();
+            // Send Tiles
+            sendTiles();
             // Rooms
             sendRooms();
             // TODO Send Inventory
@@ -106,20 +106,26 @@ public class ClientConnection implements Runnable, GameStateListener {
                     handleUserOnline(u);
                 }
             }
-           // sendUsersInRoom(currentUser.getLocation().getRoom());
+            // sendUsersInRoom(currentUser.getLocation().getRoom());
+        }
+    }
+
+    private void sendTiles() {
+        for (Tile tile :TileFactory.getInstance().geTiles(currentUser)) {
+            TileDto tileDto = DTOFactory.getInstance().getTileDTO(tile);
+            GetTileResultDTO getTileResultDTO = DTOFactory.getInstance().getGetTileResultDTO(true, null, tileDto);
+            send(getTileResultDTO);
         }
     }
 
     private void sendRooms() {
-        for (Room room : currentUser.getRooms() ) {
-            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
-            GetRoomResultDTO getRoomResultDTO = DTOFactory.getInstance().getRoomResultDTO(true, null, roomDto);
-            send(getRoomResultDTO);
+        for (Room room : currentUser.getRooms()) {
+            sendRoom(room);
         }
     }
 
     private void sendUserCommands() {
-        for (Verb verb : currentUser.getVerbs() ) {
+        for (Verb verb : currentUser.getVerbs()) {
             VerbDto verbDto = DTOFactory.getInstance().getVerbDto(verb);
             GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
             send(getCommandResultDTO);
@@ -155,11 +161,42 @@ public class ClientConnection implements Runnable, GameStateListener {
             case VERBDELETED:
                 handleVerbDeleted((Verb) event.getObject());
                 break;
+            case ROOMADDED:
+                handleRoomAdded((Room) event.getObject());
+                break;
             case ROOMDELETED:
                 handleRoomDeleted((Room) event.getObject());
                 break;
+            case ROOMUPDATED:
+                sendRoomUpdate((Room) event.getObject());
+                break;
 
         }
+    }
+
+    private void handleRoomAdded(Room room) {
+        RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room);
+        if (room.getTile() != null) {
+            sendTile(room.getTile());
+        }
+        RoomAddedDTO roomAddedDTO = DTOFactory.getInstance().getRoomAddedDTO(roomDTO);
+        send(roomAddedDTO);
+    }
+
+
+    private void sendRoomUpdate(Room room) {
+        RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room);
+        if (room.getTile() != null) {
+            sendTile(room.getTile());
+        }
+        RoomUpdatedDTO roomUpdatedDTO = DTOFactory.getInstance().getRoomUpdatedDTO(roomDTO);
+        send(roomUpdatedDTO);
+    }
+
+    private void sendTile(Tile tile) {
+        TileDto tileDto = DTOFactory.getInstance().getTileDTO(tile);
+        GetTileResultDTO getTileResultDTO = DTOFactory.getInstance().getGetTileResultDTO(true, null, tileDto);
+        send(getTileResultDTO);
     }
 
     private void handleRoomDeleted(Room room) {
@@ -171,8 +208,9 @@ public class ClientConnection implements Runnable, GameStateListener {
         currentUser.removeVerb(verb);
         send(DTOFactory.getInstance().getVerbDeletedDTO(verb));
     }
+
     private void handleVerbExecuted(VerbOutput cmdResult) {
-        if ( isInCurrentRoom(cmdResult.getCaller())) {
+        if (isInCurrentRoom(cmdResult.getCaller())) {
             String output = "";
             if (cmdResult.getCaller().getId().equals(currentUser.getId())) {
                 output = cmdResult.getToCaller();

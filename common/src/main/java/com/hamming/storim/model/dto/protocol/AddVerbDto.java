@@ -2,7 +2,7 @@ package com.hamming.storim.model.dto.protocol;
 
 import com.hamming.storim.model.dto.DTO;
 
-public class AddVerbDto implements DTO {
+public class AddVerbDto implements ProtocolDTO {
 
     private String name;
     private String shortName;

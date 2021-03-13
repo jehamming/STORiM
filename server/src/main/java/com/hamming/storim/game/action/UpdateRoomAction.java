@@ -24,11 +24,10 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
     @Override
     public void execute() {
         UpdateRoomDto dto = getDto();
-        Room room = RoomFactory.getInstance().updateRoom(dto.getRoomId(), dto.getName(), dto.getSize());
-        if ( room != null ) {
-            RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room);
-            RoomUpdatedDTO roomUpdatedDTO = DTOFactory.getInstance().getRoomUpdatedDTO(roomDTO);
-            client.send(roomUpdatedDTO);
+        if ( dto.getImageData() != null ) {
+            controller.updateRoom(dto.getRoomId(), dto.getName(), dto.getSize(), dto.getImageData());
+        } else {
+            controller.updateRoom(dto.getRoomId(), dto.getName(), dto.getSize(), dto.getTileId());
         }
     }
 

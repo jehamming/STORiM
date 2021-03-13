@@ -17,6 +17,7 @@ public class ResetViewAction implements Action {
 
     @Override
     public void execute() {
+        viewer.setTileNoAction(null);
         viewer.setRoomNoAction(null);
         viewer.setPlayers(new ArrayList<Player>());
     }

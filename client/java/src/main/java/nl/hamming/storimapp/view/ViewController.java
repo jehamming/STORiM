@@ -5,16 +5,18 @@ import com.hamming.storim.Controllers;
 import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.interfaces.RoomListener;
+import com.hamming.storim.interfaces.RoomUpdateListener;
 import com.hamming.storim.interfaces.UserListener;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.RoomDto;
+import com.hamming.storim.model.dto.TileDto;
 import com.hamming.storim.model.dto.UserDto;
 import com.hamming.storim.model.dto.protocol.MovementRequestDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewController implements  ConnectionListener, UserListener, RoomListener {
+public class ViewController implements  ConnectionListener, UserListener, RoomListener, RoomUpdateListener {
 
     private ProtocolHandler protocolHandler;
     private Controllers controllers;
@@ -31,6 +33,7 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
         controllers.getConnectionController().addConnectionListener(this);
         controllers.getUserController().addUserListener(this);
         controllers.getRoomController().addRoomListener(this);
+        controllers.getRoomController().addRoomUpdateListener(this);
         sequenceNumber = 0;
         movementRequests = new ArrayList<MovementRequestDTO>();
     }
@@ -149,10 +152,9 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
             LocationDto location = controllers.getUserController().getUserLocation(user.getId());
             lastrecievedLocation = location;
             RoomDto room = controllers.getRoomController().findRoomByID(location.getRoomId());
-            gameView.setRoom(room);
             gameView.addPlayer(user.getId(), user.getName());
-            gameView.setLocation(user.getId(), location.getX(), location.getY());
             currentUserid = user.getId();
+            setRoom(room, location);
         }
     }
 
@@ -192,10 +194,37 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
     @Override
     public void setRoom(RoomDto room, LocationDto location) {
         gameView.resetView();
+        if ( room.getTileID() != null ) {
+            TileDto tile = controllers.getRoomController().getTile(room.getTileID());
+            if (tile != null) {
+                gameView.setTile(tile);
+            }
+        }
         gameView.setRoom(room);
         gameView.addPlayer(controllers.getUserController().getCurrentUser().getId(), controllers.getUserController().getCurrentUser().getName());
         gameView.setLocation(controllers.getUserController().getCurrentUser().getId(), location.getX(), location.getY());
         resetRequests();
         lastrecievedLocation = location;
+    }
+
+    @Override
+    public void roomAdded(RoomDto room) {
+
+    }
+
+    @Override
+    public void roomDeleted(RoomDto room) {
+
+    }
+
+    @Override
+    public void roomUpdated(RoomDto room) {
+        if (gameView.getRoom().getId().equals(room.getId())) {
+            TileDto tile = controllers.getRoomController().getTile(room.getTileID());
+            if ( tile != null ) {
+                gameView.setTile(tile);
+            }
+            gameView.setRoom(room);
+        }
     }
 }

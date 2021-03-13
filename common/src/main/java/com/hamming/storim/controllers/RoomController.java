@@ -5,34 +5,44 @@ import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.interfaces.RoomListener;
 import com.hamming.storim.interfaces.RoomUpdateListener;
 import com.hamming.storim.model.dto.RoomDto;
+import com.hamming.storim.model.dto.TileDto;
 import com.hamming.storim.model.dto.UserDto;
 import com.hamming.storim.model.dto.protocol.*;
 import com.hamming.storim.net.NetCommandReceiver;
+import com.hamming.storim.util.ImageUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class RoomController  {
+public class RoomController {
 
     private ProtocolHandler protocolHandler;
     private List<RoomListener> roomListeners;
     private List<RoomUpdateListener> roomUpdateListeners;
     private Controllers controllers;
     private Map<Long, RoomDto> rooms;
+    private Map<Long, TileDto> tiles;
 
 
     public RoomController(Controllers controllers) {
         this.controllers = controllers;
-        protocolHandler = new ProtocolHandler();
-        rooms = new HashMap<Long, RoomDto>();
-        roomListeners = new ArrayList<RoomListener>();
-        roomUpdateListeners = new ArrayList<RoomUpdateListener>();
+        initVariables();
+        registerReceivers();
+    }
+
+    private void registerReceivers() {
         controllers.getConnectionController().registerReceiver(GetRoomResultDTO.class, new NetCommandReceiver<GetRoomResultDTO>() {
             @Override
             public void receiveDTO(GetRoomResultDTO dto) {
                 handleGetRoomResult(dto);
+            }
+        });
+        controllers.getConnectionController().registerReceiver(RoomAddedDTO.class, new NetCommandReceiver<RoomAddedDTO>() {
+            @Override
+            public void receiveDTO(RoomAddedDTO dto) {
+                handleRoomAddedDTO(dto);
             }
         });
         controllers.getConnectionController().registerReceiver(RoomUpdatedDTO.class, new NetCommandReceiver<RoomUpdatedDTO>() {
@@ -90,6 +100,34 @@ public class RoomController  {
                 handleUserLocationUpdateDTO(dto);
             }
         });
+        controllers.getConnectionController().registerReceiver(GetTileResultDTO.class, new NetCommandReceiver<GetTileResultDTO>() {
+            @Override
+            public void receiveDTO(GetTileResultDTO dto) {
+                handleGetTileResultDTO(dto);
+            }
+        });
+    }
+
+    private void handleRoomAddedDTO(RoomAddedDTO dto) {
+        rooms.put(dto.getRoom().getId(), dto.getRoom());
+        for (RoomUpdateListener l : roomUpdateListeners) {
+            l.roomAdded(dto.getRoom());
+        }
+    }
+
+    private void initVariables() {
+        protocolHandler = new ProtocolHandler();
+        rooms = new HashMap<Long, RoomDto>();
+        tiles = new HashMap<Long, TileDto>();
+        roomListeners = new ArrayList<RoomListener>();
+        roomUpdateListeners = new ArrayList<RoomUpdateListener>();
+    }
+
+
+    private void handleGetTileResultDTO(GetTileResultDTO dto) {
+        if (dto.isSuccess()) {
+            tiles.put(dto.getTile().getId(), dto.getTile());
+        }
     }
 
 
@@ -109,7 +147,7 @@ public class RoomController  {
     private void handleMovementResult(MovementResultDTO dto) {
         Long currentUserID = controllers.getUserController().getCurrentUser().getId();
         controllers.getUserController().setUserLocation(currentUserID, dto.getLocation());
-        if (currentUserLocation( dto.getLocation().getRoomId())) {
+        if (currentUserLocation(dto.getLocation().getRoomId())) {
             for (RoomListener l : roomListeners) {
                 l.currentUserLocationUpdate(dto.getSequence(), dto.getLocation());
             }
@@ -170,7 +208,7 @@ public class RoomController  {
             for (RoomListener l : roomListeners) {
                 l.userEnteredRoom(user, dto.getLocation());
             }
-        } else if ( currentUserLocation(dto.getFromRoomId())) {
+        } else if (currentUserLocation(dto.getFromRoomId())) {
             for (RoomListener l : roomListeners) {
                 l.userLeftRoom(user);
             }
@@ -195,7 +233,7 @@ public class RoomController  {
         }
     }
 
-    public void addRoomUpdateListener( RoomUpdateListener l) {
+    public void addRoomUpdateListener(RoomUpdateListener l) {
         roomUpdateListeners.add(l);
     }
 
@@ -217,13 +255,13 @@ public class RoomController  {
         return roomList;
     }
 
-    public void addRoom(String roomName, int roomSize) {
-        AddRoomDto addRoomDto = protocolHandler.getAddRoomDTO(roomName, roomSize);
+    public void addRoom(String roomName, int roomSize, Long tileID, Image image) {
+        AddRoomDto addRoomDto = protocolHandler.getAddRoomDTO(roomName, roomSize, tileID, image);
         controllers.getConnectionController().send(addRoomDto);
     }
 
-    public void updateRoom(Long roomId, String roomName, int roomSize) {
-        UpdateRoomDto updateRoomDto = protocolHandler.getUpdateRoomDto(roomId, roomName, roomSize);
+    public void updateRoom(Long roomId, String roomName, int roomSize, Long tileID, Image tileImage) {
+        UpdateRoomDto updateRoomDto = protocolHandler.getUpdateRoomDto(roomId, roomName, roomSize, tileID, tileImage);
         controllers.getConnectionController().send(updateRoomDto);
     }
 
@@ -235,5 +273,13 @@ public class RoomController  {
     public void teleportRequest(UserDto currentUser, RoomDto room) {
         TeleportRequestDTO dto = protocolHandler.getTeleportRequestDTO(currentUser.getId(), room.getId());
         controllers.getConnectionController().send(dto);
+    }
+
+    public TileDto getTile(Long tileID) {
+        return tiles.get(tileID);
+    }
+
+    public Collection<TileDto> getTiles() {
+        return tiles.values();
     }
 }

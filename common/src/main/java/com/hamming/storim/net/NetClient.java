@@ -3,6 +3,7 @@ package com.hamming.storim.net;
 import com.hamming.storim.game.Protocol;
 import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.model.dto.DTO;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 import com.hamming.storim.model.dto.protocol.VersionCheckDTO;
 import com.hamming.storim.util.StringUtils;
 
@@ -69,7 +70,7 @@ public class NetClient implements Runnable {
         while (open) {
             try {
                 Object read = in.readObject();
-                DTO dto = (DTO) read;
+                ProtocolDTO dto = (ProtocolDTO) read;
                 System.out.println(this.getClass().getName() + "RECEIVED:" + dto.toString());
                 received(dto);
             } catch (IOException e) {
@@ -91,17 +92,17 @@ public class NetClient implements Runnable {
         System.out.println(this.getClass().getName() + ":" + "NetClient finished");
     }
 
-    public void send(DTO dto) {
+    public void send(ProtocolDTO pDTO) {
         try {
-            System.out.println(this.getClass().getName() + ":" + "Send:" + dto );
-            out.writeObject(dto);
+            System.out.println(this.getClass().getName() + ":" + "Send:" + pDTO );
+            out.writeObject(pDTO);
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void received(DTO dto) {
+    public void received(ProtocolDTO dto) {
         receiver.receiveDTO(dto);
     }
 

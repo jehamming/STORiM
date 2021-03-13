@@ -7,11 +7,13 @@ public class Room extends BasicObject   {
     private String name;
     private int spawnPointX;
     private int spawnPointY;
+    private Tile tile;
 
     public Room(Long id) {
         super(id);
         spawnPointX = 0;
         spawnPointY = 0;
+        tile = null;
         name = "A basic room";
         size = 10;
     }
@@ -50,13 +52,22 @@ public class Room extends BasicObject   {
         this.size = size;
     }
 
+    public Tile getTile() {
+        return tile;
+    }
+
+    public void setTile(Tile tile) {
+        this.tile = tile;
+    }
+
     @Override
     public String toString() {
         return "Room{" +
-                "name=" + name +
-                ", size=" + size +
+                "size=" + size +
+                ", name='" + name + '\'' +
                 ", spawnPointX=" + spawnPointX +
                 ", spawnPointY=" + spawnPointY +
+                ", tile=" + tile +
                 '}';
     }
 }

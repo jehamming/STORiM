@@ -1,8 +1,8 @@
 package com.hamming.storim.game.action;
 
-import com.hamming.storim.model.dto.DTO;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 
-public abstract class Action<T extends DTO> {
+public abstract class Action<T extends ProtocolDTO> {
     private T dto;
 
     public abstract void execute();

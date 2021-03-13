@@ -9,9 +9,7 @@ public class ServerConfig {
 
     private final static String DATADIR     = "datadir";
     private final static String SERVERPORT  = "serverport";
-    private final static String USERSFILE   = "usersfile";
-    private final static String ROOMSFILE  = "roomsfile";
-    private final static String THINGSFILE  = "thingsfile";
+
 
     // Properties file location
     private final static String propertiesFile = "server.properties";
@@ -20,9 +18,7 @@ public class ServerConfig {
     // Defaults
     private String dataDirectory = "data";
     private int serverPort = 3131;
-    private String usersDataFile = "Users.dat";
-    private String roomsDataFile = "Rooms.dat";
-    private String thingsDataFile = "Things.dat";
+
 
 
     private static ServerConfig instance;
@@ -47,9 +43,6 @@ public class ServerConfig {
             properties.load(fis);
             setDataDirectory(loadProperty(DATADIR));
             setServerPort(Integer.valueOf(loadProperty(SERVERPORT)));
-            setUsersDataFile(loadProperty(USERSFILE));
-            setRoomsDataFile(loadProperty(ROOMSFILE));
-            setThingsDataFile(loadProperty(THINGSFILE));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,13 +57,6 @@ public class ServerConfig {
     }
 
 
-    public String getUsersDataFile() {
-        return usersDataFile;
-    }
-
-    public void setUsersDataFile(String usersDataFile) {
-        this.usersDataFile = usersDataFile;
-    }
 
     public String getDataDirectory() {
         return dataDirectory;
@@ -88,19 +74,5 @@ public class ServerConfig {
         this.serverPort = serverPort;
     }
 
-    public String getRoomsDataFile() {
-        return roomsDataFile;
-    }
 
-    public void setRoomsDataFile(String roomsDataFile) {
-        this.roomsDataFile = roomsDataFile;
-    }
-
-    public String getThingsDataFile() {
-        return thingsDataFile;
-    }
-
-    public void setThingsDataFile(String thingsDataFile) {
-        this.thingsDataFile = thingsDataFile;
-    }
 }

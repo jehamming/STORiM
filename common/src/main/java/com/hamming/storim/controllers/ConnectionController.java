@@ -5,6 +5,7 @@ import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.model.dto.DTO;
 import com.hamming.storim.model.dto.UserDto;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 import com.hamming.storim.net.NetCommandReceiver;
 import com.hamming.storim.net.NetClient;
 
@@ -47,7 +48,7 @@ public class ConnectionController implements NetCommandReceiver {
         fireConnectedEvent();
     }
 
-    public void send(DTO dto) {
+    public void send(ProtocolDTO dto) {
         if (client != null ) {
             client.send(dto);
         }
@@ -81,7 +82,7 @@ public class ConnectionController implements NetCommandReceiver {
 
 
     @Override
-    public void receiveDTO(DTO dto) {
+    public void receiveDTO(ProtocolDTO dto) {
         List<NetCommandReceiver> listReceivers = commandReceivers.get(dto.getClass());
         boolean handled = false;
         if (listReceivers != null) {

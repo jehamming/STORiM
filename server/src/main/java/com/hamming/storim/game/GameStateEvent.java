@@ -11,6 +11,8 @@ public class GameStateEvent {
         USERLOCATION,
         VERBEXECUTED,
         VERBDELETED,
+        ROOMADDED,
+        ROOMUPDATED,
         ROOMDELETED
     }
 

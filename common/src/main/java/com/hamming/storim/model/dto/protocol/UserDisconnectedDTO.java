@@ -2,7 +2,7 @@ package com.hamming.storim.model.dto.protocol;
 
 import com.hamming.storim.model.dto.DTO;
 
-public class UserDisconnectedDTO implements DTO {
+public class UserDisconnectedDTO implements ProtocolDTO {
 
     private Long userID;
 

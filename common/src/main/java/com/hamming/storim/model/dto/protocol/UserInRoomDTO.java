@@ -3,7 +3,7 @@ package com.hamming.storim.model.dto.protocol;
 import com.hamming.storim.model.dto.DTO;
 import com.hamming.storim.model.dto.LocationDto;
 
-public class UserInRoomDTO implements DTO {
+public class UserInRoomDTO implements ProtocolDTO {
 
     private Long userId;
     private Long roomId;

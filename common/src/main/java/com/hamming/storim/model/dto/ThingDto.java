@@ -1,22 +1,20 @@
 package com.hamming.storim.model.dto;
 
-import com.hamming.storim.util.StringUtils;
-
 public class ThingDto implements DTO {
 
-    private String id;
+    private Long id;
     private String name;
     private String creatorID;
     private String ownerID;
 
-    public ThingDto(String id, String name, String creatorID, String ownerID){
+    public ThingDto(Long id, String name, String creatorID, String ownerID){
         this.id = id;
         this.name = name;
         this.creatorID = creatorID;
         this.ownerID = ownerID;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -35,7 +33,7 @@ public class ThingDto implements DTO {
     @Override
     public String toString() {
         return "ThingDto{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", creatorID='" + creatorID + '\'' +
                 ", ownerID='" + ownerID + '\'' +

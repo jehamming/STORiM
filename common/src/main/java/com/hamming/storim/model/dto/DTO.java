@@ -4,4 +4,6 @@ import java.io.Serializable;
 
 public interface DTO extends Serializable {
 
+    Long getId();
+
 }

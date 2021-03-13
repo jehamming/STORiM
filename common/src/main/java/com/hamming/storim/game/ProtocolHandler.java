@@ -1,7 +1,10 @@
 package com.hamming.storim.game;
 
 import com.hamming.storim.model.dto.protocol.*;
+import com.hamming.storim.util.ImageUtils;
 import com.hamming.storim.util.StringUtils;
+
+import java.awt.*;
 
 public class ProtocolHandler implements Protocol {
 
@@ -45,12 +48,20 @@ public class ProtocolHandler implements Protocol {
         return new UpdateVerbDto(id, name, shortName, toCaller, toLocation);
     }
 
-    public AddRoomDto getAddRoomDTO(String roomName, int roomSize) {
-        return new AddRoomDto(roomName, roomSize);
+    public AddRoomDto getAddRoomDTO(String roomName, int roomSize, Long tileID, Image image) {
+        byte[] imageData = null;
+        if ( image != null ) {
+            imageData = ImageUtils.encode(image);
+        }
+        return new AddRoomDto(roomName, roomSize, tileID, imageData);
     }
 
-    public UpdateRoomDto getUpdateRoomDto(Long roomId, String roomName, int roomSize) {
-        return new UpdateRoomDto(roomId, roomName, roomSize);
+    public UpdateRoomDto getUpdateRoomDto(Long roomId, String roomName, int roomSize, Long tileID, Image image) {
+        byte[] imageData = null;
+        if (image != null ) {
+            imageData = ImageUtils.encode(image);
+        }
+        return new UpdateRoomDto(roomId, roomName, roomSize, tileID, imageData);
     }
 
     public DeleteRoomDTO getDeleteRoomDto(Long roomId) {

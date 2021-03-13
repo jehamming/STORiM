@@ -3,8 +3,8 @@ package com.hamming.storim.model.dto.protocol;
 import com.hamming.storim.model.dto.DTO;
 import com.hamming.storim.model.dto.LocationDto;
 
-public class TeleportResultDTO implements DTO {
-    
+public class TeleportResultDTO implements ProtocolDTO {
+
 
     private boolean teleportSuccesful;
     private String errorMessage;

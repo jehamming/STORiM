@@ -66,6 +66,9 @@ public class Database {
 
     public <T> List<T> getAll(Class<T> c) {
         List<T> listOfObjects = ( List<T> ) data.get(c);
+        if (listOfObjects == null ) {
+            listOfObjects = new ArrayList<T>();
+        }
         return listOfObjects;
     }
 
@@ -102,7 +105,7 @@ public class Database {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(data);
             oos.close();
-            System.out.println("Stored Database in file "+ databaseFilename);
+            System.out.println(getClass().getName() + ": Stored Database in file "+ databaseFilename);
             printDatabase();
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,7 +120,7 @@ public class Database {
             data = (Map<Class, List<BasicObject>>) ois.readObject();
             setLastAddedID(getHighestID());
             ois.close();
-            System.out.println("Loaded Database from file "+ databaseFilename);
+            System.out.println(getClass().getName()+": Loaded Database from file "+ databaseFilename);
             printDatabase();
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(this.getClass().getName() + ":" + "ERROR:" + e.getMessage());
@@ -126,7 +129,7 @@ public class Database {
     }
 
     private void printDatabase() {
-        System.out.print("Database:");
+        System.out.print(getClass().getName()+": Database:");
         Set<Class> classes = data.keySet();
         for (Class c : classes) {
             long count = data.get(c).size();

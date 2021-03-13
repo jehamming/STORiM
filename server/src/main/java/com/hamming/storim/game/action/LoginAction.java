@@ -39,11 +39,9 @@ public class LoginAction extends Action<LoginRequestDTO> {
                 UserDto userDTO = DTOFactory.getInstance().getUserDTO(u);
                 LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(u.getLocation());
                 LoginResultDTO loginResultDTO = new LoginResultDTO(true, null, userDTO, locationDto);
-                RoomDto roomDto = DTOFactory.getInstance().getRoomDto(u.getLocation().getRoom());
-                GetRoomResultDTO getRoomResultDTO = DTOFactory.getInstance().getRoomResultDTO(true, null, roomDto);
-                client.send(getRoomResultDTO);
-                client.send(loginResultDTO);
+                client.sendRoom(u.getLocation().getRoom());
                 client.sendFullGameState();
+                client.send(loginResultDTO);
             }
         } else {
             // Invalid user/password

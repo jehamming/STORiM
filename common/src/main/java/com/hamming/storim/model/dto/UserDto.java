@@ -1,7 +1,5 @@
 package com.hamming.storim.model.dto;
 
-import com.hamming.storim.util.StringUtils;
-
 import java.util.Objects;
 
 public class UserDto implements DTO {

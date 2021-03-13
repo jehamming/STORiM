@@ -3,7 +3,7 @@ package com.hamming.storim.model.dto.protocol;
 import com.hamming.storim.model.dto.DTO;
 import com.hamming.storim.model.dto.RoomDto;
 
-public class GetRoomResultDTO implements DTO {
+public class GetRoomResultDTO implements ProtocolDTO {
 
     private boolean success = false;
     private String errorMessage;

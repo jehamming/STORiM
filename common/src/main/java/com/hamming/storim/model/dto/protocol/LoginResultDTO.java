@@ -4,7 +4,7 @@ import com.hamming.storim.model.dto.DTO;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.UserDto;
 
-public class LoginResultDTO implements DTO {
+public class LoginResultDTO implements ProtocolDTO {
 
     private boolean loginSucceeded = false;
     private String errorMessage;

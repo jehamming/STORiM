@@ -2,7 +2,7 @@ package com.hamming.storim.model.dto.protocol;
 
 import com.hamming.storim.model.dto.DTO;
 
-public class MovementRequestDTO implements DTO {
+public class MovementRequestDTO implements ProtocolDTO {
     private long sequence;
     private boolean forward, back, left, right;
 

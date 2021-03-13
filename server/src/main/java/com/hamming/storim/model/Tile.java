@@ -1,28 +1,28 @@
 package com.hamming.storim.model;
 
+import java.awt.*;
+
 public class Tile extends BasicObject   {
 
-    private String name;
+    // Transient, dus wordt niet opgeslagen
+    private transient Image image;
 
     public Tile(Long id) {
         super(id);
-        name = "A basic tile";
     }
 
     @Override
-    public String getName() {
-        return name;
+    public Long getId() {
+        return super.getId();
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    public Image getImage() {
+        return image;
     }
 
-    @Override
-    public String toString() {
-        return "Room{" +
-                "name=" + name +
-                '}';
+    public void setImage(Image image) {
+        this.image = image;
     }
+
+
 }

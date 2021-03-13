@@ -1,14 +1,13 @@
 package com.hamming.storim.model.dto.protocol;
 
-import com.hamming.storim.model.dto.DTO;
 import com.hamming.storim.model.dto.RoomDto;
 
-public class RoomUpdatedDTO implements ProtocolDTO {
+public class RoomAddedDTO implements ProtocolDTO {
 
 
     private RoomDto room;
 
-    public RoomUpdatedDTO(RoomDto room) {
+    public RoomAddedDTO(RoomDto room) {
 
         this.room = room;
     }
@@ -19,7 +18,7 @@ public class RoomUpdatedDTO implements ProtocolDTO {
 
     @Override
     public String toString() {
-        return "RoomUpdatedDTO{" +
+        return "RoomAddedDTO{" +
                 "room=" + room +
                 '}';
     }

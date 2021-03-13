@@ -2,7 +2,7 @@ package com.hamming.storim.model.dto.protocol;
 
 import com.hamming.storim.model.dto.DTO;
 
-public class VersionCheckDTO implements DTO {
+public class VersionCheckDTO implements ProtocolDTO {
 
 
     private String clientVersion;

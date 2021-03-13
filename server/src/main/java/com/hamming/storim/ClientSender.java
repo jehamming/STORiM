@@ -1,6 +1,7 @@
 package com.hamming.storim;
 
 import com.hamming.storim.model.dto.DTO;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -13,7 +14,7 @@ public class ClientSender implements Runnable {
 
     private ObjectOutputStream out;
     boolean running = false;
-    private Queue<DTO> itemsToSend;
+    private Queue<ProtocolDTO> itemsToSend;
     private static int INTERVAL = 50; // Milliseconds, 20Hz
 
     public ClientSender(ObjectOutputStream out) {
@@ -24,12 +25,12 @@ public class ClientSender implements Runnable {
 
     @Override
     public void run() {
-        itemsToSend = new ArrayDeque<DTO>();
+        itemsToSend = new ArrayDeque<ProtocolDTO>();
         running = true;
         while (running) {
             long start = System.currentTimeMillis();
             while (!itemsToSend.isEmpty()) {
-                DTO dto = itemsToSend.remove();
+                ProtocolDTO dto = itemsToSend.remove();
                 try {
                     System.out.println("SEND:" + dto);
                     out.writeObject(dto);
@@ -54,7 +55,7 @@ public class ClientSender implements Runnable {
         running = false;
     }
 
-    public void enQueue(DTO dto) {
+    public void enQueue(ProtocolDTO dto) {
         synchronized (itemsToSend) {
             itemsToSend.add(dto);
         }
