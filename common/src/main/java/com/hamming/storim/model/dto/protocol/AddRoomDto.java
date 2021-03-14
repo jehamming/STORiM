@@ -41,7 +41,6 @@ public class AddRoomDto implements ProtocolDTO {
                 "name='" + name + '\'' +
                 ", size=" + size +
                 ", tileId=" + tileId +
-                ", imageData=" + Arrays.toString(imageData) +
                 '}';
     }
 }

@@ -1,6 +1,7 @@
 package com.hamming.storim.factories;
 
 import com.hamming.storim.Database;
+import com.hamming.storim.ImageStore;
 import com.hamming.storim.ServerConfig;
 import com.hamming.storim.model.Tile;
 import com.hamming.storim.model.User;
@@ -25,58 +26,42 @@ public class TileFactory {
     }
 
     private void sanityCheck() {
-        for (Tile tile: getAllTiles()) {
-            if (tile.getImage() == null) {
-                System.out.println(getClass().getName() + ": sanityCheck(), Tile  "+ tile.getId() +"' has no Image, deleting Tile");
+        List<Long> tileIDs = getAllTileIds();
+        for (Long id : tileIDs) {
+            Tile tile = findTileById(id);
+            if (tile == null) {
+                System.out.println(getClass().getName() + ": sanityCheck(), Tile  "+ id +"' has no Image, deleting Tile");
                 deleteTile(tile);
             }
         }
     }
 
+    private List<Long> getAllTileIds() {
+        List<Long> tileIDs = new ArrayList<>();
+        for (Tile tile : getAllTiles() ) {
+            tileIDs.add(tile.getId());
+        }
+        return tileIDs;
+    }
+
     private void deleteTile(Tile tile) {
+        ImageStore.deleteImageFile(Tile.class, tile.getId());
         Database.getInstance().removeBasicObject(Tile.class, tile);
     }
 
     private void readAllTiles() {
-        String dataDir = ServerConfig.getInstance().getDataDirectory();
-        String tileDirectoryPath = dataDir.concat(File.separator).concat(TILE_DIR);
-        File tileDir = new File(tileDirectoryPath);
-        if ( tileDir.isDirectory() ) {
-            for (File tileFile : tileDir.listFiles()) {
-                readTileFile(tileFile);
-            }
-        }
-    }
-
-    private void readTileFile(File tileFile) {
-        try {
-            Image image = ImageIO.read(tileFile);
-            Long id = Long.valueOf(tileFile.getName());
+        Map<Long, Image> images = ImageStore.readAllImages(Tile.class);
+        for (Long id : images.keySet()) {
             Tile tile = findTileById(id);
             if (tile != null ) {
-                tile.setImage(image);
+                tile.setImage(images.get(id));
             } else {
-                System.out.println(getClass().getName() + ": Sanity check, tileFile  "+ tileFile.getName() +"' is not in the database, deleting file");
-                tileFile.delete();
+                System.out.println(getClass().getName() + ": sanityCheck, have Image for tile " + id +" , but Tile not in Database.");
+                ImageStore.deleteImageFile(Tile.class, id);
             }
-            System.out.println(getClass().getName() + " - read "+ tileFile.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    private void writeTileFile(Tile tile) {
-        try {
-            String dataDir = ServerConfig.getInstance().getDataDirectory();
-            String tileDirectoryPath = dataDir.concat(File.separator).concat(TILE_DIR);
-            File newFile = new File(tileDirectoryPath.concat(File.separator).concat(tile.getId().toString()));
-            BufferedImage bufferedImage = ImageUtils.getBufferedImage(tile.getImage());
-            ImageIO.write(bufferedImage, "jpg", newFile );
-            System.out.println(getClass().getName() + " - wrote "+ newFile.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     public static TileFactory getInstance() {
@@ -101,7 +86,7 @@ public class TileFactory {
         tile.setImage(image);
         tile.setCreator(creator);
         tile.setOwner(creator);
-        writeTileFile(tile);
+        ImageStore.storeImageObject(tile);
         Database.getInstance().addBasicObject(tile);
         return tile;
     }
