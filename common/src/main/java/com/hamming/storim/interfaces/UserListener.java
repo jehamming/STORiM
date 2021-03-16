@@ -13,4 +13,5 @@ public interface UserListener {
      void userTeleported(Long userId, LocationDto location);
      void avatarAdded(AvatarDto avatar);
      void avatarDeleted(AvatarDto avatar);
+     void avatarUpdated(AvatarDto avatar);
 }

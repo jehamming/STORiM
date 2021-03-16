@@ -516,6 +516,11 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
 
     }
 
+    @Override
+    public void avatarUpdated(AvatarDto avatar) {
+
+    }
+
 
     @Override
     public void connected() {

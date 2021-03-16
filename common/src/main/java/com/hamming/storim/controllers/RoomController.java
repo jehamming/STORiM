@@ -9,7 +9,7 @@ import com.hamming.storim.model.dto.TileDto;
 import com.hamming.storim.model.dto.UserDto;
 import com.hamming.storim.model.dto.protocol.*;
 import com.hamming.storim.model.dto.protocol.room.*;
-import com.hamming.storim.model.dto.protocol.tile.GetTileResultDTO;
+import com.hamming.storim.model.dto.protocol.room.GetTileResultDTO;
 import com.hamming.storim.net.NetCommandReceiver;
 
 import java.awt.*;

@@ -187,6 +187,15 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
         }
     }
 
+    @Override
+    public void avatarUpdated(AvatarDto avatar) {
+        UserDto user = controllers.getUserController().findUserById(avatar.getOwnerID());
+        if (user.getCurrentAvatarID()!= null && user.getCurrentAvatarID().equals(avatar.getId())) {
+            avatar = controllers.getUserController().getAvatar(user.getCurrentAvatarID());
+            gameView.updateUser(user, avatar);
+        }
+    }
+
 
     @Override
     public void userInRoom(UserDto user, LocationDto location) {

@@ -5,6 +5,7 @@ import com.hamming.storim.game.action.*;
 import com.hamming.storim.model.dto.protocol.*;
 import com.hamming.storim.model.dto.protocol.avatar.AddAvatarDto;
 import com.hamming.storim.model.dto.protocol.avatar.DeleteAvatarDTO;
+import com.hamming.storim.model.dto.protocol.avatar.UpdateAvatarDto;
 import com.hamming.storim.model.dto.protocol.room.AddRoomDto;
 import com.hamming.storim.model.dto.protocol.room.DeleteRoomDTO;
 import com.hamming.storim.model.dto.protocol.room.GetRoomDTO;
@@ -50,6 +51,7 @@ public class GameProtocolHandler implements Protocol {
         actions.put(AddAvatarDto.class, new AddAvatarAction(controller, client));
         actions.put(UpdateUserDto.class, new UpdateUserAction(controller, client));
         actions.put(DeleteAvatarDTO.class, new DeleteAvatarAction(controller, client));
+        actions.put(UpdateAvatarDto.class, new UpdateAvatarAction(controller, client));
     }
 
     private void emptyCommands() {

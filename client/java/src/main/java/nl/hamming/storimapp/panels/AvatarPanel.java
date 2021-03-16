@@ -22,11 +22,9 @@ public class AvatarPanel extends javax.swing.JPanel implements UserListener {
     private AvatarDto selectedAvatar;
 
     private class AvatarListItem {
-        private String name;
         private AvatarDto avatar;
 
-        public AvatarListItem(String name, AvatarDto avatar) {
-            this.name = name;
+        public AvatarListItem(AvatarDto avatar) {
             this.avatar = avatar;
         }
 
@@ -34,9 +32,13 @@ public class AvatarPanel extends javax.swing.JPanel implements UserListener {
             return avatar;
         }
 
+        public void setAvatar(AvatarDto avatar) {
+            this.avatar = avatar;
+        }
+
         @Override
         public String toString() {
-            return name;
+            return avatar.getName();
         }
     }
 
@@ -85,6 +87,7 @@ public class AvatarPanel extends javax.swing.JPanel implements UserListener {
             btnDelete.setEnabled(true);
             btnSetCurrent.setEnabled(true);
             setEditable(true);
+            avatarImage = avatar.getImage();
             Image iconImage = avatar.getImage().getScaledInstance(lblImagePreview.getWidth(), lblImagePreview.getHeight(), Image.SCALE_SMOOTH);
             lblImagePreview.setIcon(new ImageIcon(iconImage));
         });
@@ -225,7 +228,7 @@ public class AvatarPanel extends javax.swing.JPanel implements UserListener {
     @Override
     public void avatarAdded(AvatarDto avatar) {
         SwingUtilities.invokeLater(() -> {
-            avatarModel.addElement(new AvatarListItem(avatar.getName(), avatar));
+            avatarModel.addElement(new AvatarListItem( avatar));
         });
     }
 
@@ -243,6 +246,22 @@ public class AvatarPanel extends javax.swing.JPanel implements UserListener {
             if (found != null) {
                 avatarModel.removeElement(found);
             }
+        });
+    }
+
+    @Override
+    public void avatarUpdated(AvatarDto avatar) {
+        SwingUtilities.invokeLater(() -> {
+            AvatarListItem found = null;
+            for (int i = 0; i < avatarModel.getSize(); i++) {
+                AvatarListItem item = avatarModel.get(i);
+                if (item.getAvatar().getId().equals(avatar.getId())) {
+                    item.setAvatar(avatar);
+                    break;
+                }
+            }
+            listAvatars.invalidate();
+            listAvatars.repaint();
         });
     }
 

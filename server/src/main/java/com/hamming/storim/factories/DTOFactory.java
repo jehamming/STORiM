@@ -9,7 +9,7 @@ import com.hamming.storim.model.dto.protocol.room.GetRoomResultDTO;
 import com.hamming.storim.model.dto.protocol.room.RoomAddedDTO;
 import com.hamming.storim.model.dto.protocol.room.RoomDeletedDTO;
 import com.hamming.storim.model.dto.protocol.room.RoomUpdatedDTO;
-import com.hamming.storim.model.dto.protocol.tile.GetTileResultDTO;
+import com.hamming.storim.model.dto.protocol.room.GetTileResultDTO;
 import com.hamming.storim.model.dto.protocol.user.GetUserResultDTO;
 import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
 import com.hamming.storim.model.dto.protocol.verb.GetVerbResultDTO;

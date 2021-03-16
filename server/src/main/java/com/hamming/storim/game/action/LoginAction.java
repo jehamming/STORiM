@@ -36,6 +36,7 @@ public class LoginAction extends Action<LoginRequestDTO> {
                 UserDto userDTO = DTOFactory.getInstance().getUserDTO(u);
                 LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(u.getLocation());
                 LoginResultDTO loginResultDTO = new LoginResultDTO(true, null, userDTO, locationDto);
+
                 client.sendRoom(u.getLocation().getRoom());
                 client.sendFullGameState();
                 client.send(loginResultDTO);

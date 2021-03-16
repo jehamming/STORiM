@@ -13,8 +13,8 @@ public class GameStateEvent {
         VERBEXECUTED,
         VERBDELETED,
         AVATARADDED,
+        AVATARUPDATED,
         AVATARDELETED,
-        AVATARSET,
         ROOMADDED,
         ROOMUPDATED,
         ROOMDELETED

@@ -222,6 +222,11 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
 
     }
 
+    @Override
+    public void avatarUpdated(AvatarDto avatar) {
+
+    }
+
 
     @Override
     public void userInRoom(UserDto user, LocationDto location) {

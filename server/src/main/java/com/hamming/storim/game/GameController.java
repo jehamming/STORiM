@@ -164,6 +164,13 @@ public class GameController implements Runnable {
         fireGameStateEvent(GameStateEvent.Type.AVATARADDED, avatar, null);
     }
 
+    public void updateAvatar(Long avatarId, String name, Image image) {
+        Avatar avatar = AvatarFactory.getInstance().findAvatarById(avatarId);
+        avatar.setName(name);
+        avatar.setImage(image);
+        fireGameStateEvent(GameStateEvent.Type.AVATARUPDATED, avatar, null);
+    }
+
     public void deleteAvatar(Avatar avatar) {
         AvatarFactory.getInstance().deleteAvatar(avatar);
         for (User u : gameState.getOnlineUsers() ) {
@@ -187,4 +194,6 @@ public class GameController implements Runnable {
             fireGameStateEvent(GameStateEvent.Type.USERUPDATED, user, null);
         }
     }
+
+
 }

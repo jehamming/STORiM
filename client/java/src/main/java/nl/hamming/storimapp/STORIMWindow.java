@@ -173,5 +173,10 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
 
     }
 
+    @Override
+    public void avatarUpdated(AvatarDto avatar) {
+
+    }
+
 
 }

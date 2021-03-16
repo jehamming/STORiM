@@ -221,5 +221,10 @@ public class LoginPanel extends JPanel implements UserListener {
 
     }
 
+    @Override
+    public void avatarUpdated(AvatarDto avatar) {
+
+    }
+
 
 }

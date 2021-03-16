@@ -244,6 +244,10 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener {
 
     }
 
+    @Override
+    public void avatarUpdated(AvatarDto avatar) {
+
+    }
 
 
     /**

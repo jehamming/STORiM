@@ -12,6 +12,7 @@ import com.hamming.storim.model.dto.protocol.user.GetUserResultDTO;
 import com.hamming.storim.model.dto.protocol.user.UpdateUserDto;
 import com.hamming.storim.model.dto.protocol.user.UserUpdatedDTO;
 import com.hamming.storim.net.NetCommandReceiver;
+import com.hamming.storim.util.ImageUtils;
 
 import java.awt.*;
 import java.util.*;
@@ -45,7 +46,17 @@ public class UserController implements ConnectionListener {
         connectionController.registerReceiver(GetAvatarResultDTO.class, (NetCommandReceiver<GetAvatarResultDTO>) dto -> handleGetAvatarResultDTO(dto));
         connectionController.registerReceiver(UserUpdatedDTO.class, (NetCommandReceiver<UserUpdatedDTO>) dto -> userUpdated(dto));
         connectionController.registerReceiver(AvatarDeletedDTO.class, (NetCommandReceiver<AvatarDeletedDTO>) dto -> handleAvatarDeletedDTO(dto));
+        connectionController.registerReceiver(AvatarUpdatedDTO.class, (NetCommandReceiver<AvatarUpdatedDTO>) dto -> handleAvatarUpdatedDTO(dto));
+    }
 
+    private void handleAvatarUpdatedDTO(AvatarUpdatedDTO dto) {
+        AvatarDto avatar = dto.getAvatar();
+        if ( avatar != null ) {
+            addToAvatarStore(avatar);
+            for (UserListener l : userListeners) {
+                l.avatarUpdated(avatar);
+            }
+        }
     }
 
     private void handleGetAvatarResultDTO(GetAvatarResultDTO dto) {
@@ -230,7 +241,8 @@ public class UserController implements ConnectionListener {
     }
 
     public void updateAvatarRequest(Long avatarID, String avatarName, Image avatarImage) {
-        //TODO Update avatar
+        UpdateAvatarDto updateAvatarDto = new UpdateAvatarDto(avatarID, avatarName, ImageUtils.encode(avatarImage));
+        connectionController.send(updateAvatarDto);
     }
 
     public void setAvatarRequest(AvatarDto avatar) {
