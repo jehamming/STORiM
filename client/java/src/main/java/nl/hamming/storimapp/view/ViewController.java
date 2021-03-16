@@ -7,16 +7,14 @@ import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.interfaces.RoomListener;
 import com.hamming.storim.interfaces.RoomUpdateListener;
 import com.hamming.storim.interfaces.UserListener;
-import com.hamming.storim.model.dto.LocationDto;
-import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.TileDto;
-import com.hamming.storim.model.dto.UserDto;
+import com.hamming.storim.model.dto.*;
 import com.hamming.storim.model.dto.protocol.MovementRequestDTO;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewController implements  ConnectionListener, UserListener, RoomListener, RoomUpdateListener {
+public class ViewController implements ConnectionListener, UserListener, RoomListener, RoomUpdateListener {
 
     private ProtocolHandler protocolHandler;
     private Controllers controllers;
@@ -52,21 +50,21 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
     }
 
     private String generateTitle(LocationDto l) {
-        String title = "Room:"+l.getRoomId() + "-X:"+Math.round(l.getX())+",Y:"+Math.round(l.getY());
-        return  title;
+        String title = "Room:" + l.getRoomId() + "-X:" + Math.round(l.getX()) + ",Y:" + Math.round(l.getY());
+        return title;
     }
 
     private void resetRequests() {
         synchronized (movementRequests) {
-            movementRequests =  movementRequests = new ArrayList<MovementRequestDTO>();
+            movementRequests = movementRequests = new ArrayList<MovementRequestDTO>();
         }
     }
 
     private void deleteRequestsUpTO(long sequence) {
         synchronized (movementRequests) {
             List<MovementRequestDTO> removeCollection = new ArrayList<MovementRequestDTO>();
-            for (MovementRequestDTO request: movementRequests ) {
-                if ( request.getSequence() <= sequence ) {
+            for (MovementRequestDTO request : movementRequests) {
+                if (request.getSequence() <= sequence) {
                     removeCollection.add(request);
                 }
 
@@ -87,7 +85,7 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
     public LocationDto applyMoveRequest(MovementRequestDTO dto, LocationDto loc) {
         LocationDto newLocation = CalcTools.calculateNewPosition(dto, loc);
         gameView.setLocation(controllers.getUserController().getCurrentUser().getId(), newLocation.getX(), newLocation.getY());
-        System.out.println(this.getClass().getName() + "-Scheduled-"+dto.getSequence()+"-"+newLocation.getX()+","+newLocation.getY()+",");
+        System.out.println(this.getClass().getName() + "-Scheduled-" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
         return newLocation;
     }
 
@@ -101,7 +99,7 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
             }
             applyMoveRequest(dto, lastrecievedLocation);
         }
-        return  dto;
+        return dto;
     }
 
     public void sendMoveRequest(boolean forward, boolean backward, boolean left, boolean right) {
@@ -137,6 +135,15 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
     }
 
     @Override
+    public void userUpdated(UserDto user) {
+        AvatarDto avatar = null;
+        if (user.getCurrentAvatarID() != null) {
+            avatar = controllers.getUserController().getAvatar(user.getCurrentAvatarID());
+        }
+        gameView.updateUser(user, avatar);
+    }
+
+    @Override
     public void userDisconnected(UserDto user) {
         gameView.removePlayer(user.getId());
     }
@@ -148,12 +155,16 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
     @Override
     public void loginResult(boolean success, String message) {
         if (success) {
-            UserDto user = controllers.getUserController().getCurrentUser();
-            LocationDto location = controllers.getUserController().getUserLocation(user.getId());
+            UserDto currentUser = controllers.getUserController().getCurrentUser();
+            LocationDto location = controllers.getUserController().getUserLocation(currentUser.getId());
             lastrecievedLocation = location;
             RoomDto room = controllers.getRoomController().findRoomByID(location.getRoomId());
-            gameView.addPlayer(user.getId(), user.getName());
-            currentUserid = user.getId();
+            Image image = null;
+            if (currentUser.getCurrentAvatarID() != null) {
+                image = controllers.getUserController().getAvatar(currentUser.getCurrentAvatarID()).getImage();
+            }
+            gameView.addPlayer(currentUser.getId(), currentUser.getName(), image);
+            currentUserid = currentUser.getId();
             setRoom(room, location);
         }
     }
@@ -163,16 +174,37 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
 
     }
 
+    @Override
+    public void avatarAdded(AvatarDto avatar) {
+
+    }
+
+    @Override
+    public void avatarDeleted(AvatarDto avatar) {
+        UserDto user = controllers.getUserController().getCurrentUser();
+        if (user.getCurrentAvatarID() != null && user.getCurrentAvatarID().equals(avatar.getId())) {
+            gameView.deleteAvatar(user.getId());
+        }
+    }
+
 
     @Override
     public void userInRoom(UserDto user, LocationDto location) {
-        gameView.addPlayer(user.getId(), user.getName());
+        Image image = null;
+        if (user.getCurrentAvatarID() != null) {
+            image = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImage();
+        }
+        gameView.addPlayer(user.getId(), user.getName(), image);
         gameView.setLocation(user.getId(), location.getX(), location.getY());
     }
 
     @Override
     public void userEnteredRoom(UserDto user, LocationDto location) {
-        gameView.addPlayer(user.getId(), user.getName());
+        Image image = null;
+        if (user.getCurrentAvatarID() != null) {
+            image = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImage();
+        }
+        gameView.addPlayer(user.getId(), user.getName(), image);
         gameView.setLocation(user.getId(), location.getX(), location.getY());
     }
 
@@ -194,14 +226,20 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
     @Override
     public void setRoom(RoomDto room, LocationDto location) {
         gameView.resetView();
-        if ( room.getTileID() != null ) {
+        if (room.getTileID() != null) {
             TileDto tile = controllers.getRoomController().getTile(room.getTileID());
             if (tile != null) {
                 gameView.setTile(tile);
             }
         }
         gameView.setRoom(room);
-        gameView.addPlayer(controllers.getUserController().getCurrentUser().getId(), controllers.getUserController().getCurrentUser().getName());
+        UserDto currentUser = controllers.getUserController().getCurrentUser();
+        Image image = null;
+        AvatarDto avatar = controllers.getUserController().getAvatar(currentUser.getCurrentAvatarID());
+        if (avatar != null) {
+            image = avatar.getImage();
+        }
+        gameView.addPlayer(currentUser.getId(), currentUser.getName(), image);
         gameView.setLocation(controllers.getUserController().getCurrentUser().getId(), location.getX(), location.getY());
         resetRequests();
         lastrecievedLocation = location;
@@ -221,7 +259,7 @@ public class ViewController implements  ConnectionListener, UserListener, RoomLi
     public void roomUpdated(RoomDto room) {
         if (gameView.getRoom().getId().equals(room.getId())) {
             TileDto tile = controllers.getRoomController().getTile(room.getTileID());
-            if ( tile != null ) {
+            if (tile != null) {
                 gameView.setTile(tile);
             }
             gameView.setRoom(room);

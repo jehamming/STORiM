@@ -3,6 +3,7 @@ package nl.hamming.storimapp;
 import com.hamming.storim.Controllers;
 import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.interfaces.UserListener;
+import com.hamming.storim.model.dto.AvatarDto;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.UserDto;
 import nl.hamming.storimapp.panels.*;
@@ -18,6 +19,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     private ChatPanel chatPanel;
     private VerbEditorPanel verbEditorPanel;
     private RoomEditorPanel roomEditorPanel;
+    private AvatarPanel avatarPanel;
     private Controllers controllers;
     private GameView gameView;
     private JTabbedPane tabbedPane;
@@ -53,9 +55,13 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         //mainPanel.add(verbEditorPanel);
         tabbedPane.addTab("Verbs", verbEditorPanel);
 
-
         roomEditorPanel = new RoomEditorPanel(controllers);
         tabbedPane.addTab("Rooms", roomEditorPanel);
+
+        avatarPanel = new AvatarPanel(controllers);
+        tabbedPane.add("Avatar", avatarPanel);
+
+
     }
 
 
@@ -106,6 +112,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         chatPanel.empty();
         verbEditorPanel.empty();
         roomEditorPanel.empty(true);
+        avatarPanel.empty(true);
     }
 
 
@@ -125,6 +132,11 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
 
     @Override
     public void userConnected(UserDto user) {
+
+    }
+
+    @Override
+    public void userUpdated(UserDto user) {
 
     }
 
@@ -150,5 +162,16 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     public void userTeleported(Long userId, LocationDto location) {
 
     }
+
+    @Override
+    public void avatarAdded(AvatarDto avatar) {
+
+    }
+
+    @Override
+    public void avatarDeleted(AvatarDto avatar) {
+
+    }
+
 
 }

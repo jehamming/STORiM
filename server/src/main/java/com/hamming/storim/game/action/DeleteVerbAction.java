@@ -4,7 +4,7 @@ import com.hamming.storim.ClientConnection;
 import com.hamming.storim.factories.VerbFactory;
 import com.hamming.storim.game.GameController;
 import com.hamming.storim.model.Verb;
-import com.hamming.storim.model.dto.protocol.DeleteVerbDTO;
+import com.hamming.storim.model.dto.protocol.verb.DeleteVerbDTO;
 
 public class DeleteVerbAction extends Action<DeleteVerbDTO> {
     private GameController controller;

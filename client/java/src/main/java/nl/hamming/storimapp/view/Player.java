@@ -1,17 +1,26 @@
 package nl.hamming.storimapp.view;
 
+import java.awt.*;
 import java.util.Objects;
 
 public class Player {
 
     private Long userId;
     private String displayName;
+    private Image avatar;
     private int x, y;
 
     public Player(Long userId) {
         this.userId = userId;
     }
 
+    public Image getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Image avatar) {
+        this.avatar = avatar;
+    }
 
     public Long getUserId() {
         return userId;

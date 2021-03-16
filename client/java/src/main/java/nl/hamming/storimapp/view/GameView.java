@@ -9,8 +9,10 @@ import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
+import com.hamming.storim.model.dto.AvatarDto;
 import com.hamming.storim.model.dto.RoomDto;
 import com.hamming.storim.model.dto.TileDto;
+import com.hamming.storim.model.dto.UserDto;
 import nl.hamming.storimapp.engine.actions.*;
 import nl.hamming.storimapp.engine.actions.Action;
 
@@ -35,7 +37,7 @@ public class GameView extends JPanel implements Runnable {
     private ViewController viewController;
 
     private Image defaultTileImage;
-    private Image defaultUerImage;
+    private Image defaultUserImage;
     private Image arrowForward;
     private Image arrowBack;
     private Image arrowLeft;
@@ -44,6 +46,7 @@ public class GameView extends JPanel implements Runnable {
     TimerTask task;
 
     private boolean forward, back, left, right;
+
 
     private class MyTimerTask extends TimerTask {
         public void run() {
@@ -57,7 +60,7 @@ public class GameView extends JPanel implements Runnable {
         actions = Collections.synchronizedList(new LinkedList<Action>());
         players = new ArrayList<Player>();
         defaultTileImage = Toolkit.getDefaultToolkit().getImage("resources/Tile.png");
-        defaultUerImage = Toolkit.getDefaultToolkit().getImage("resources/User.png");
+        defaultUserImage = Toolkit.getDefaultToolkit().getImage("resources/User.png");
         arrowForward = Toolkit.getDefaultToolkit().getImage("resources/arrowForward.png");
         arrowBack = Toolkit.getDefaultToolkit().getImage("resources/arrowBack.png");
         arrowLeft = Toolkit.getDefaultToolkit().getImage("resources/arrowLeft.png");
@@ -139,9 +142,24 @@ public class GameView extends JPanel implements Runnable {
         }
     }
 
+    public void deleteAvatar(Long userId) {
+        Action action = new DeleteAvatarAction(this, userId);
+        synchronized (actions) {
+            actions.add(action);
+        }
+    }
 
-    public void addPlayer(Long userId, String name) {
-        Action action = new AddPlayerAction(this, userId, name);
+    public void updateUser(UserDto user, AvatarDto avatar) {
+        Action action = new UpdatePlayerAction(this, user, avatar);
+        synchronized (actions) {
+            actions.add(action);
+        }
+    }
+
+
+
+    public void addPlayer(Long userId, String name, Image image) {
+        Action action = new AddPlayerAction(this, userId, name, image);
         synchronized (actions) {
             actions.add(action);
         }
@@ -153,10 +171,10 @@ public class GameView extends JPanel implements Runnable {
         }
     }
 
-    public Player getPlayer(Long playerId) {
+    public Player getPlayer(Long userId) {
         Player player = null;
         for (Player p : players) {
-            if (p.getUserId().equals(playerId)) {
+            if (p.getUserId().equals(userId)) {
                 player = p;
                 break;
             }
@@ -352,7 +370,11 @@ public class GameView extends JPanel implements Runnable {
         for (Player player : players) {
             int x = player.getX();
             int y = player.getY();
-            g.drawImage(defaultUerImage, x, y, widthPerTile, widthPerTile, this);
+            Image playerAvatar = player.getAvatar();
+            if (playerAvatar == null ) {
+                playerAvatar = defaultUserImage;
+            }
+            g.drawImage(playerAvatar, x, y, widthPerTile, widthPerTile, this);
 
             Font font = new Font("Arial", Font.BOLD, 12);
             g.setFont(font);

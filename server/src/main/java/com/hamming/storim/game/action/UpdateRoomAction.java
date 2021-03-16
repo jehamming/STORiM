@@ -1,16 +1,8 @@
 package com.hamming.storim.game.action;
 
 import com.hamming.storim.ClientConnection;
-import com.hamming.storim.factories.DTOFactory;
-import com.hamming.storim.factories.RoomFactory;
 import com.hamming.storim.game.GameController;
-import com.hamming.storim.model.Room;
-import com.hamming.storim.model.User;
-import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.protocol.AddRoomDto;
-import com.hamming.storim.model.dto.protocol.GetRoomResultDTO;
-import com.hamming.storim.model.dto.protocol.RoomUpdatedDTO;
-import com.hamming.storim.model.dto.protocol.UpdateRoomDto;
+import com.hamming.storim.model.dto.protocol.room.UpdateRoomDto;
 
 public class UpdateRoomAction extends Action<UpdateRoomDto> {
     private GameController controller;

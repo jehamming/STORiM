@@ -2,6 +2,7 @@ package nl.hamming.storimapp.panels;
 
 import com.hamming.storim.Controllers;
 import com.hamming.storim.interfaces.UserListener;
+import com.hamming.storim.model.dto.AvatarDto;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.UserDto;
 
@@ -183,6 +184,11 @@ public class LoginPanel extends JPanel implements UserListener {
     }
 
     @Override
+    public void userUpdated(UserDto user) {
+
+    }
+
+    @Override
     public void userDisconnected(UserDto user) {
 
     }
@@ -204,5 +210,16 @@ public class LoginPanel extends JPanel implements UserListener {
     public void userTeleported(Long userId, LocationDto location) {
 
     }
+
+    @Override
+    public void avatarAdded(AvatarDto avatar) {
+
+    }
+
+    @Override
+    public void avatarDeleted(AvatarDto avatar) {
+
+    }
+
 
 }

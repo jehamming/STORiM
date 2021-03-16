@@ -2,36 +2,33 @@ package com.hamming.storim.model.dto;
 
 import java.util.Objects;
 
-public class UserDto implements DTO {
+public class UserDto extends DTO {
 
-    private Long id;
-    private String name;
+    private Long currentAvatarID;
     private String email;
 
-    public UserDto(Long id, String name, String email){
-        this.id = id;
-        this.name = name;
+    public UserDto(Long id, String name, String email, Long currentAvatarID){
+        setId(id);
+        setName(name);
         this.email = email;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+        this.currentAvatarID = currentAvatarID;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public Long getCurrentAvatarID() {
+        return currentAvatarID;
+    }
+
 
     @Override
     public String toString() {
         return "UserDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "id=" + getId() +
+                ", currentAvatarID=" + currentAvatarID +
+                ", name='" + getName() + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }
@@ -41,12 +38,12 @@ public class UserDto implements DTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserDto userDto = (UserDto) o;
-        return Objects.equals(id, userDto.id);
+        return Objects.equals(getId(), userDto.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getId());
     }
 
 }

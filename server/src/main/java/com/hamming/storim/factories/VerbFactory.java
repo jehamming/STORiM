@@ -39,13 +39,12 @@ public class VerbFactory {
     }
 
 
-    public Verb createVerb(User creator, String name, String shortName, String toCaller, String toLocation) {
+    public Verb createVerb(User creator, String name, String toCaller, String toLocation) {
         Long id = Database.getInstance().getNextID();
         Verb verb = new Verb(id);
         verb.setName(name);
         verb.setCreator(creator);
         verb.setOwner(creator);
-        verb.setShortName(shortName);
         verb.setName(name);
         verb.setToCaller(toCaller);
         verb.setToLocation(toLocation);
@@ -53,11 +52,10 @@ public class VerbFactory {
         return verb;
     }
 
-    public Verb updateVerb(Long verbId, String name, String shortName, String toCaller, String toLocation) {
+    public Verb updateVerb(Long verbId, String name, String toCaller, String toLocation) {
         Verb verb = findVerbByID(verbId);
         if ( verb != null ) {
             verb.setName(name);
-            verb.setShortName(shortName);
             verb.setName(name);
             verb.setToCaller(toCaller);
             verb.setToLocation(toLocation);

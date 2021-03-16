@@ -5,9 +5,9 @@ import com.hamming.storim.factories.RoomFactory;
 import com.hamming.storim.factories.DTOFactory;
 import com.hamming.storim.game.GameController;
 import com.hamming.storim.model.Room;
-import com.hamming.storim.model.dto.protocol.GetRoomDTO;
+import com.hamming.storim.model.dto.protocol.room.GetRoomDTO;
 import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.protocol.GetRoomResultDTO;
+import com.hamming.storim.model.dto.protocol.room.GetRoomResultDTO;
 
 public class GetRoomAction extends Action<GetRoomDTO> {
     private GameController controller;

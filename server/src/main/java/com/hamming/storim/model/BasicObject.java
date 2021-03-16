@@ -25,10 +25,10 @@ public class BasicObject implements Serializable {
 
     @Override
     public String toString() {
-        return  ", id=" + id +
+        return  getClass().getSimpleName() + "{ id=" + id +
                 ", creator=" + creator +
                 ", owner=" + owner +
-                ", name='" + name;
+                ", name='" + name + "}";
     }
 
     public Long getId() {

@@ -18,7 +18,6 @@ import java.util.List;
 
 public class TileFactory {
     private static TileFactory instance;
-    private static String TILE_DIR = "tiles";
 
     private TileFactory() {
         readAllTiles();

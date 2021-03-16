@@ -4,20 +4,15 @@ import com.hamming.storim.util.ImageUtils;
 
 import java.awt.*;
 
-public class TileDto implements DTO {
+public class TileDto extends DTO {
 
-    private Long id;
     private byte[] imageData;
     private transient Image image;
 
 
     public TileDto(Long id, byte[] imageData){
-        this.id = id;
+        setId(id);
         this.imageData = imageData;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Image getImage() {
@@ -27,10 +22,4 @@ public class TileDto implements DTO {
         return image;
     }
 
-    @Override
-    public String toString() {
-        return "RoomTileDto{" +
-                "id=" + id +
-                '}';
-    }
 }

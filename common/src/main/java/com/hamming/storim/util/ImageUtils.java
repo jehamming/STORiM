@@ -24,7 +24,7 @@ public class ImageUtils {
     public static byte[] encode(Image image) {
         byte[] imageData = new byte[0];
         try {
-            BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+            BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = bufferedImage.createGraphics();
             g2.drawImage(image, null, null);
             ByteArrayOutputStream baos= new ByteArrayOutputStream(1000);
@@ -37,7 +37,7 @@ public class ImageUtils {
     }
 
     public static BufferedImage getBufferedImage(Image image) {
-        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = bufferedImage.createGraphics();
         g2.drawImage(image, null, null);
         return bufferedImage;

@@ -3,6 +3,17 @@ package com.hamming.storim.factories;
 import com.hamming.storim.model.*;
 import com.hamming.storim.model.dto.*;
 import com.hamming.storim.model.dto.protocol.*;
+import com.hamming.storim.model.dto.protocol.avatar.AvatarAddedDTO;
+import com.hamming.storim.model.dto.protocol.avatar.GetAvatarResultDTO;
+import com.hamming.storim.model.dto.protocol.room.GetRoomResultDTO;
+import com.hamming.storim.model.dto.protocol.room.RoomAddedDTO;
+import com.hamming.storim.model.dto.protocol.room.RoomDeletedDTO;
+import com.hamming.storim.model.dto.protocol.room.RoomUpdatedDTO;
+import com.hamming.storim.model.dto.protocol.tile.GetTileResultDTO;
+import com.hamming.storim.model.dto.protocol.user.GetUserResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.GetVerbResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.VerbDeletedDTO;
 import com.hamming.storim.util.ImageUtils;
 
 public class DTOFactory {
@@ -20,9 +31,21 @@ public class DTOFactory {
         return instance;
     }
 
+    private DTO fillBasicObjectInfo(DTO dto, BasicObject basicObject) {
+        dto.setCreatorID(basicObject.getCreator().getId());
+        dto.setName(basicObject.getName());
+        dto.setOwnerID(basicObject.getOwner().getId());
+        return dto;
+    }
 
     public UserDto getUserDTO(User u) {
-        UserDto dto = new UserDto(u.getId(), u.getName(), u.getEmail());
+        UserDto dto = null;
+        if ( u.getCurrentAvatar() != null ) {
+            dto = new UserDto(u.getId(), u.getName(), u.getEmail(), u.getCurrentAvatar().getId());
+        } else {
+            dto = new UserDto(u.getId(), u.getName(), u.getEmail(), null);
+        }
+        fillBasicObjectInfo(dto, u);
         return dto;
     }
 
@@ -34,15 +57,29 @@ public class DTOFactory {
     public RoomDto getRoomDto(Room b) {
         RoomDto dto;
         if ( b.getTile() != null) {
-            dto = new RoomDto(b.getId(), b.getName(), b.getCreator().getId(), b.getOwner().getId(), b.getSize(), b.getTile().getId());
+            dto = new RoomDto(b.getId(), b.getName(), b.getSize(), b.getTile().getId());
         }  else {
-            dto = new RoomDto(b.getId(), b.getName(), b.getCreator().getId(), b.getOwner().getId(), b.getSize(), null);
+            dto = new RoomDto(b.getId(), b.getName(), b.getSize(), null);
         }
+        fillBasicObjectInfo(dto, b);
         return dto;
     }
 
     public VerbDto getVerbDto(Verb c) {
-        VerbDto dto = new VerbDto(c.getId(), c.getCreator().getId().toString(), c.getOwner().getId().toString(), c.getName(), c.getShortName(), c.getToCaller(), c.getToLocation());
+        VerbDto dto = new VerbDto(c.getId(), c.getName(), c.getToCaller(), c.getToLocation());
+        fillBasicObjectInfo(dto, c);
+        return dto;
+    }
+
+    public AvatarDto getAvatarDTO(Avatar avatar) {
+        AvatarDto dto = new AvatarDto(avatar.getId(), avatar.getName(), ImageUtils.encode(avatar.getImage()));
+        fillBasicObjectInfo(dto, avatar);
+        return dto;
+    }
+
+    public TileDto getTileDTO(Tile tile) {
+        TileDto dto = new TileDto(tile.getId(), ImageUtils.encode(tile.getImage()));
+        fillBasicObjectInfo(dto, tile);
         return dto;
     }
 
@@ -107,11 +144,15 @@ public class DTOFactory {
         return new GetTileResultDTO(success, message, tile);
     }
 
-    public TileDto getTileDTO(Tile tile) {
-        return new TileDto(tile.getId(), ImageUtils.encode(tile.getImage()));
-    }
-
     public RoomAddedDTO getRoomAddedDTO(RoomDto roomDTO) {
         return new RoomAddedDTO(roomDTO);
+    }
+
+    public AvatarAddedDTO getAvatarAddedDTO(AvatarDto avatarDto) {
+        return new AvatarAddedDTO(avatarDto);
+    }
+
+    public GetAvatarResultDTO getGetAvatarResultDTO(boolean success, String message, Long userId, AvatarDto avatarDto) {
+        return new GetAvatarResultDTO(success, message, userId, avatarDto);
     }
 }

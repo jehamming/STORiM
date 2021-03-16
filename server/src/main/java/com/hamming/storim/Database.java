@@ -72,6 +72,15 @@ public class Database {
         return listOfObjects;
     }
 
+    public <T extends BasicObject> List<T> getAll(Class<T> c, Long ownerId) {
+        List<T> listOfOwnedObjects = new ArrayList<T>();
+        for ( T basicObject : ( List<T> ) data.get(c) ) {
+            if (basicObject.getOwner().getId().equals(ownerId)) {
+                listOfOwnedObjects.add(basicObject);
+            }
+        }
+        return listOfOwnedObjects;
+    }
 
     public Long getNextID() {
         lastId = lastId + 1;

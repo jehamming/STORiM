@@ -1,19 +1,19 @@
-package com.hamming.storim.model.dto.protocol;
+package com.hamming.storim.model.dto.protocol.room;
 
 import com.hamming.storim.model.dto.DTO;
 import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.TileDto;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 
-public class GetTileResultDTO implements ProtocolDTO {
+public class GetRoomResultDTO implements ProtocolDTO {
 
     private boolean success = false;
     private String errorMessage;
-    private TileDto tile;
+    private RoomDto room;
 
-    public GetTileResultDTO(boolean success, String errorMessage, TileDto tile) {
+    public GetRoomResultDTO( boolean success, String errorMessage, RoomDto room) {
         this.success = success;
         this.errorMessage = errorMessage;
-        this.tile = tile;
+        this.room = room;
     }
 
     public boolean isSuccess() {
@@ -24,16 +24,16 @@ public class GetTileResultDTO implements ProtocolDTO {
         return errorMessage;
     }
 
-    public TileDto getTile() {
-        return tile;
+    public RoomDto getRoom() {
+        return room;
     }
 
     @Override
     public String toString() {
-        return "GetTileResultDTO{" +
+        return "GetRoomResultDTO{" +
                 "success=" + success +
                 ", errorMessage='" + errorMessage + '\'' +
-                ", tile=" + tile +
+                ", room=" + room +
                 '}';
     }
 }

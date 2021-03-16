@@ -24,9 +24,11 @@ public class UserFactory {
     }
 
     //This add user has an email within the constructor.
-    public User addUser(String fullName, String username, String password, String email) {
+    public User addUser(User creator, String fullName, String username, String password, String email) {
         User u = addUser(fullName, username, password);
         u.setEmail(email);
+        u.setCreator(creator);
+        u.setOwner(u);
         return u;
     }
 

@@ -1,22 +1,19 @@
-package com.hamming.storim.model.dto.protocol;
+package com.hamming.storim.model.dto.protocol.verb;
 
 import com.hamming.storim.model.dto.DTO;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 
-public class UpdateVerbDto implements ProtocolDTO {
+public class AddVerbDto implements ProtocolDTO {
 
     private String name;
-    private String shortName;
     private String toCaller;
     private String toLocation;
-    private Long verbId;
 
 
-    public UpdateVerbDto(Long verbId, String name, String shortName, String toCaller, String toLocation){
+    public AddVerbDto(String name,  String toCaller, String toLocation){
         this.name = name;
-        this.shortName = shortName;
         this.toCaller = toCaller;
         this.toLocation = toLocation;
-        this.verbId = verbId;
     }
 
 
@@ -25,13 +22,6 @@ public class UpdateVerbDto implements ProtocolDTO {
 
     }
 
-    public Long getVerbId() {
-        return verbId;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
 
     public String getToCaller() {
         return toCaller;
@@ -42,14 +32,13 @@ public class UpdateVerbDto implements ProtocolDTO {
     }
 
 
+
     @Override
     public String toString() {
-        return "UpdateVerbDto{" +
+        return "AddVerbDto{" +
                 "name='" + name + '\'' +
-                ", shortName='" + shortName + '\'' +
                 ", toCaller='" + toCaller + '\'' +
                 ", toLocation='" + toLocation + '\'' +
-                ", verbId=" + verbId +
                 '}';
     }
 }

@@ -6,4 +6,6 @@ public class Avatar extends ImageObject   {
         super(id);
     }
 
+
+
 }

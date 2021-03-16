@@ -4,7 +4,7 @@ import com.hamming.storim.ClientConnection;
 import com.hamming.storim.factories.VerbFactory;
 import com.hamming.storim.game.GameController;
 import com.hamming.storim.model.*;
-import com.hamming.storim.model.dto.protocol.ExecVerbDTO;
+import com.hamming.storim.model.dto.protocol.verb.ExecVerbDTO;
 
 public class ExecVerbAction extends Action<ExecVerbDTO> {
     private GameController controller;

@@ -63,7 +63,8 @@ public class Room extends BasicObject   {
     @Override
     public String toString() {
         return "Room{" +
-                "size=" + size +
+                " id=" + getId() +
+                ", size=" + size +
                 ", name='" + name + '\'' +
                 ", spawnPointX=" + spawnPointX +
                 ", spawnPointY=" + spawnPointY +

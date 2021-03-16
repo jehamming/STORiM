@@ -1,6 +1,7 @@
-package com.hamming.storim.model.dto.protocol;
+package com.hamming.storim.model.dto.protocol.room;
 
 import com.hamming.storim.model.dto.DTO;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 
 public class GetRoomDTO implements ProtocolDTO {
 

@@ -5,10 +5,7 @@ import com.hamming.storim.controllers.UserController;
 import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.interfaces.RoomListener;
 import com.hamming.storim.interfaces.UserListener;
-import com.hamming.storim.model.dto.LocationDto;
-import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.UserDto;
-import com.hamming.storim.model.dto.VerbDto;
+import com.hamming.storim.model.dto.*;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -200,6 +197,11 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener {
     }
 
     @Override
+    public void userUpdated(UserDto user) {
+
+    }
+
+    @Override
     public void userDisconnected(UserDto user) {
         removeUser(user);
     }
@@ -231,6 +233,17 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener {
             }
         }
     }
+
+    @Override
+    public void avatarAdded(AvatarDto avatar) {
+
+    }
+
+    @Override
+    public void avatarDeleted(AvatarDto avatar) {
+
+    }
+
 
 
     /**

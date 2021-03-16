@@ -2,8 +2,16 @@ package com.hamming.storim.game;
 
 import com.hamming.storim.ClientConnection;
 import com.hamming.storim.game.action.*;
-import com.hamming.storim.model.dto.*;
 import com.hamming.storim.model.dto.protocol.*;
+import com.hamming.storim.model.dto.protocol.avatar.AddAvatarDto;
+import com.hamming.storim.model.dto.protocol.avatar.DeleteAvatarDTO;
+import com.hamming.storim.model.dto.protocol.room.AddRoomDto;
+import com.hamming.storim.model.dto.protocol.room.DeleteRoomDTO;
+import com.hamming.storim.model.dto.protocol.room.GetRoomDTO;
+import com.hamming.storim.model.dto.protocol.room.UpdateRoomDto;
+import com.hamming.storim.model.dto.protocol.user.GetUserDTO;
+import com.hamming.storim.model.dto.protocol.user.UpdateUserDto;
+import com.hamming.storim.model.dto.protocol.verb.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +47,9 @@ public class GameProtocolHandler implements Protocol {
         actions.put(AddRoomDto.class, new AddRoomAction(controller, client));
         actions.put(UpdateRoomDto.class, new UpdateRoomAction(controller, client));
         actions.put(DeleteRoomDTO.class, new DeleteRoomAction(controller, client));
+        actions.put(AddAvatarDto.class, new AddAvatarAction(controller, client));
+        actions.put(UpdateUserDto.class, new UpdateUserAction(controller, client));
+        actions.put(DeleteAvatarDTO.class, new DeleteAvatarAction(controller, client));
     }
 
     private void emptyCommands() {

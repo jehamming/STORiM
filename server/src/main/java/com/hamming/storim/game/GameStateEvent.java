@@ -7,10 +7,14 @@ public class GameStateEvent {
     public enum Type {
         USERCONNECTED,
         USERDISCONNECTED,
+        USERUPDATED,
         USERTELEPORTED,
         USERLOCATION,
         VERBEXECUTED,
         VERBDELETED,
+        AVATARADDED,
+        AVATARDELETED,
+        AVATARSET,
         ROOMADDED,
         ROOMUPDATED,
         ROOMDELETED

@@ -1,6 +1,7 @@
-package com.hamming.storim.model.dto.protocol;
+package com.hamming.storim.model.dto.protocol.verb;
 
 import com.hamming.storim.model.dto.DTO;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 
 public class ExecVerbDTO implements ProtocolDTO {
 

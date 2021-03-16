@@ -1,5 +1,7 @@
 package com.hamming.storim.model;
 
+import com.hamming.storim.factories.AvatarFactory;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,54 +13,20 @@ public class User extends BasicObject implements Serializable {
     private String password;
     private String email = "";
     private Location location;
-    private List<Room> rooms;
-    private List<Thing> inventory;
-    private List<Verb> verbs;
+    private Avatar currentAvatar;
 
 
     public User( Long id) {
         super(id);
-        rooms = new ArrayList<Room>();
-        inventory = new ArrayList<Thing>();
-        verbs = new ArrayList<Verb>();
+        currentAvatar = null;
     }
 
-    public void removeRoom(Room room) {
-        if (rooms.contains(room) ) {
-            rooms.remove(room);
-        }
+    public Avatar getCurrentAvatar() {
+        return currentAvatar;
     }
 
-    public void addRoom(Room room) {
-        if (!rooms.contains(room) ) {
-            rooms.add(room);
-        }
-    }
-
-    public void addVerb(Verb verb) {
-        if (!verbs.contains(verb) ) {
-            verbs.add(verb);
-        }
-    }
-
-    public void removeVerb(Verb verb) {
-        if (verbs.contains(verb) ) {
-            verbs.remove(verb);
-        }
-    }
-
-
-    public void addToInventory(Thing thing) {
-        if (!inventory.contains(thing) ) {
-            inventory.add(thing);
-        }
-    }
-
-
-    public void removeFromInventory(Thing thing) {
-        if (inventory.contains(thing) ) {
-            inventory.remove(thing);
-        }
+    public void setCurrentAvatar(Avatar currentAvatar) {
+        this.currentAvatar = currentAvatar;
     }
 
     public Location getLocation() {
@@ -89,18 +57,6 @@ public class User extends BasicObject implements Serializable {
 
     public void setEmail(String email) {this.email = email;}
 
-    public List<Verb> getVerbs() {
-        return verbs;
-    }
-
-    public List<Room> getRooms() {
-        return rooms;
-    }
-
-    public List<Thing> getInventory() {
-        return inventory;
-    }
-
     public static User valueOf(Long id, String name, String username, String password, String email ) {
         final User u = new User(id);
         u.setPassword(password);
@@ -126,6 +82,7 @@ public class User extends BasicObject implements Serializable {
     @Override
     public String toString() {
         return "User{" +
+                " id=" + getId() +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", " + super.toString() +

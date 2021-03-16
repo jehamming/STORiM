@@ -1,19 +1,9 @@
 package com.hamming.storim.game.action;
 
 import com.hamming.storim.ClientConnection;
-import com.hamming.storim.factories.DTOFactory;
-import com.hamming.storim.factories.RoomFactory;
-import com.hamming.storim.factories.TileFactory;
 import com.hamming.storim.game.GameController;
-import com.hamming.storim.model.Room;
-import com.hamming.storim.model.Tile;
 import com.hamming.storim.model.User;
-import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.TileDto;
-import com.hamming.storim.model.dto.protocol.*;
-import com.hamming.storim.util.ImageUtils;
-
-import java.awt.*;
+import com.hamming.storim.model.dto.protocol.room.AddRoomDto;
 
 public class AddRoomAction extends Action<AddRoomDto> {
     private GameController gameController;

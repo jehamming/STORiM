@@ -1,7 +1,7 @@
 package com.hamming.storim.interfaces;
 
 import com.hamming.storim.model.dto.VerbDto;
-import com.hamming.storim.model.dto.protocol.ExecVerbResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
 
 public interface VerbListener {
 

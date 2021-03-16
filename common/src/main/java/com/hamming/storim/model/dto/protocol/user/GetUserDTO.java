@@ -1,6 +1,7 @@
-package com.hamming.storim.model.dto.protocol;
+package com.hamming.storim.model.dto.protocol.user;
 
 import com.hamming.storim.model.dto.DTO;
+import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 
 public class GetUserDTO implements ProtocolDTO {
 

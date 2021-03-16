@@ -6,8 +6,8 @@ import com.hamming.storim.factories.DTOFactory;
 import com.hamming.storim.game.GameController;
 import com.hamming.storim.model.Verb;
 import com.hamming.storim.model.dto.VerbDto;
-import com.hamming.storim.model.dto.protocol.GetVerbDTO;
-import com.hamming.storim.model.dto.protocol.GetVerbResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.GetVerbDTO;
+import com.hamming.storim.model.dto.protocol.verb.GetVerbResultDTO;
 
 public class GetVerbAction extends Action<GetVerbDTO> {
     private GameController controller;

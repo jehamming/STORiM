@@ -5,10 +5,9 @@ import com.hamming.storim.factories.DTOFactory;
 import com.hamming.storim.factories.UserFactory;
 import com.hamming.storim.game.GameController;
 import com.hamming.storim.model.User;
-import com.hamming.storim.model.dto.DTO;
-import com.hamming.storim.model.dto.protocol.GetUserDTO;
+import com.hamming.storim.model.dto.protocol.user.GetUserDTO;
 import com.hamming.storim.model.dto.UserDto;
-import com.hamming.storim.model.dto.protocol.GetUserResultDTO;
+import com.hamming.storim.model.dto.protocol.user.GetUserResultDTO;
 
 public class GetUserAction extends Action<GetUserDTO> {
     private GameController controller;

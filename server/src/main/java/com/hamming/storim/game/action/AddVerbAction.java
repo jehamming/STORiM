@@ -7,8 +7,8 @@ import com.hamming.storim.game.GameController;
 import com.hamming.storim.model.User;
 import com.hamming.storim.model.Verb;
 import com.hamming.storim.model.dto.VerbDto;
-import com.hamming.storim.model.dto.protocol.AddVerbDto;
-import com.hamming.storim.model.dto.protocol.GetVerbResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.AddVerbDto;
+import com.hamming.storim.model.dto.protocol.verb.GetVerbResultDTO;
 
 public class AddVerbAction extends Action<AddVerbDto> {
     private GameController controller;
@@ -23,9 +23,8 @@ public class AddVerbAction extends Action<AddVerbDto> {
     public void execute() {
         AddVerbDto dto = getDto();
         User creator = client.getCurrentUser();
-        Verb verb = VerbFactory.getInstance().createVerb(creator, dto.getName(), dto.getShortName(), dto.getToCaller(), dto.getToLocation());
+        Verb verb = VerbFactory.getInstance().createVerb(creator, dto.getName(), dto.getToCaller(), dto.getToLocation());
         if ( verb != null ) {
-            client.getCurrentUser().addVerb(verb);
             VerbDto verbDto = DTOFactory.getInstance().getVerbDto(verb);
             GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
             client.send(getCommandResultDTO);

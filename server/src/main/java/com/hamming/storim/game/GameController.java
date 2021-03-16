@@ -1,8 +1,6 @@
 package com.hamming.storim.game;
 
-import com.hamming.storim.factories.RoomFactory;
-import com.hamming.storim.factories.TileFactory;
-import com.hamming.storim.factories.VerbResultFactory;
+import com.hamming.storim.factories.*;
 import com.hamming.storim.game.action.Action;
 import com.hamming.storim.model.*;
 import com.hamming.storim.util.ImageUtils;
@@ -152,15 +150,41 @@ public class GameController implements Runnable {
         Room room = RoomFactory.getInstance().createRoom(creator, name, size);
         room.setOwner(creator);
         room.setTile(tile);
-        creator.addRoom(room);
         fireGameStateEvent(GameStateEvent.Type.ROOMADDED, room, null);
     }
 
     public void addRoom(User creator, String name, Integer size) {
         Room room = RoomFactory.getInstance().createRoom(creator, name, size);
         room.setOwner(creator);
-        creator.addRoom(room);
         fireGameStateEvent(GameStateEvent.Type.ROOMADDED, room, null);
     }
 
+    public void addAvatar(User creator, String name, Image image) {
+        Avatar avatar = AvatarFactory.getInstance().createAvatar(creator, name, image);
+        fireGameStateEvent(GameStateEvent.Type.AVATARADDED, avatar, null);
+    }
+
+    public void deleteAvatar(Avatar avatar) {
+        AvatarFactory.getInstance().deleteAvatar(avatar);
+        for (User u : gameState.getOnlineUsers() ) {
+            if ( u.getCurrentAvatar() != null && u.getCurrentAvatar().getId().equals(avatar.getId())) {
+                u.setCurrentAvatar(null);
+                fireGameStateEvent(GameStateEvent.Type.USERUPDATED, u, null);
+            }
+        }
+        fireGameStateEvent(GameStateEvent.Type.AVATARDELETED, avatar, null);
+    }
+
+    public void updateUser(Long id, String name, String email, Long avatarID) {
+        User user = UserFactory.getInstance().findUserById(id);
+        if ( user != null ) {
+            if (name != null) user.setName(name);
+            if (email != null) user.setEmail(email);
+            if (avatarID != null) {
+                Avatar avatar = AvatarFactory.getInstance().findAvatarById(avatarID);
+                user.setCurrentAvatar(avatar);
+            }
+            fireGameStateEvent(GameStateEvent.Type.USERUPDATED, user, null);
+        }
+    }
 }

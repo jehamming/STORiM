@@ -3,7 +3,6 @@ package com.hamming.storim.model;
 public class Verb extends BasicObject   {
 
     private String name;
-    private String shortName;
     private String toCaller;
     private String toLocation;
 
@@ -20,14 +19,6 @@ public class Verb extends BasicObject   {
     @Override
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
     }
 
     public String getToCaller() {
@@ -49,8 +40,8 @@ public class Verb extends BasicObject   {
     @Override
     public String toString() {
         return "Verb{" +
-                "name='" + name + '\'' +
-                ", shortName='" + shortName + '\'' +
+                " id=" + getId() +
+                ", name='" + name + '\'' +
                 ", toCaller='" + toCaller + '\'' +
                 ", toLocation='" + toLocation + '\'' +
                 '}';

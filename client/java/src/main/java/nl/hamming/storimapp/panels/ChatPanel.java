@@ -6,11 +6,8 @@ import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.interfaces.RoomListener;
 import com.hamming.storim.interfaces.UserListener;
 import com.hamming.storim.interfaces.VerbListener;
-import com.hamming.storim.model.dto.LocationDto;
-import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.UserDto;
-import com.hamming.storim.model.dto.VerbDto;
-import com.hamming.storim.model.dto.protocol.ExecVerbResultDTO;
+import com.hamming.storim.model.dto.*;
+import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -187,6 +184,11 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
     }
 
     @Override
+    public void userUpdated(UserDto user) {
+
+    }
+
+    @Override
     public void userDisconnected(UserDto user) {
         addText(user.getName() + " disconnected !");
     }
@@ -207,6 +209,16 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
 
     @Override
     public void userTeleported(Long userId, LocationDto location) {
+
+    }
+
+    @Override
+    public void avatarAdded(AvatarDto avatar) {
+
+    }
+
+    @Override
+    public void avatarDeleted(AvatarDto avatar) {
 
     }
 

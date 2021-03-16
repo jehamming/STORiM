@@ -43,7 +43,7 @@ public class ImageStore {
         String imageFilename = objectDirectoryPath.concat(File.separator).concat(io.getId().toString());
         File imageFile = new File(imageFilename);
         BufferedImage bufferedImage = ImageUtils.getBufferedImage(io.getImage());
-        ImageIO.write(bufferedImage, "jpg", imageFile );
+        ImageIO.write(bufferedImage, "png", imageFile );
         System.out.println(ImageStore.class.getName() + " - wrote "+ imageFile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();

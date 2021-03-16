@@ -4,10 +4,10 @@ import com.hamming.storim.Controllers;
 import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.interfaces.VerbListener;
 import com.hamming.storim.model.dto.VerbDto;
-import com.hamming.storim.model.dto.protocol.ExecVerbDTO;
-import com.hamming.storim.model.dto.protocol.ExecVerbResultDTO;
-import com.hamming.storim.model.dto.protocol.GetVerbResultDTO;
-import com.hamming.storim.model.dto.protocol.VerbDeletedDTO;
+import com.hamming.storim.model.dto.protocol.verb.ExecVerbDTO;
+import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.GetVerbResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.VerbDeletedDTO;
 import com.hamming.storim.net.NetCommandReceiver;
 
 import java.util.ArrayList;
@@ -85,11 +85,11 @@ public class VerbController {
         connectionController.send(protocolHandler.getDeleteVerbDTO(verb.getId()));
     }
 
-    public void addVerb( String name, String shortName, String toCaller, String toLocation) {
-        connectionController.send(protocolHandler.getAddVerbDTO(name, shortName, toCaller, toLocation));
+    public void addVerb( String name, String toCaller, String toLocation) {
+        connectionController.send(protocolHandler.getAddVerbDTO(name,toCaller, toLocation));
     }
 
-    public void updateVerb(Long id, String name, String shortName, String toCaller, String toLocation) {
-        connectionController.send(protocolHandler.getUpdateVerbDTO(id, name, shortName, toCaller, toLocation));
+    public void updateVerb(Long id, String name, String toCaller, String toLocation) {
+        connectionController.send(protocolHandler.getUpdateVerbDTO(id, name, toCaller, toLocation));
     }
 }

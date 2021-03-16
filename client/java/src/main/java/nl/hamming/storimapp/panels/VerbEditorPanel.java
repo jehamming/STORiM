@@ -4,7 +4,7 @@ import com.hamming.storim.Controllers;
 import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.interfaces.VerbListener;
 import com.hamming.storim.model.dto.VerbDto;
-import com.hamming.storim.model.dto.protocol.ExecVerbResultDTO;
+import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -231,16 +231,15 @@ public class VerbEditorPanel extends JPanel implements VerbListener, ConnectionL
             JOptionPane.showMessageDialog(this, "Not all fields filled in commpletely!");
         } else {
             String name = txtName.getText().trim();
-            String shortName = name;
             String toCaller = txtToCaller.getText().trim();
             String toLocation = txtToLocation.getText().trim();
             if ( newVerb) {
-                controllers.getVerbController().addVerb(name, shortName, toCaller, toLocation);
+                controllers.getVerbController().addVerb(name, toCaller, toLocation);
             } else {
                 //Update verb
                 VerbListItem item = (VerbListItem) cmbVerbs.getSelectedItem();
                 VerbDto verb = item.getVerb();
-                controllers.getVerbController().updateVerb(verb.getId(), name, shortName, toCaller, toLocation);
+                controllers.getVerbController().updateVerb(verb.getId(), name, toCaller, toLocation);
             }
         }
     }

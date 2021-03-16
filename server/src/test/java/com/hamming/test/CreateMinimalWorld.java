@@ -11,53 +11,29 @@ public class CreateMinimalWorld {
         Database.getInstance().clearDatabase();
 
         // Root User
-        User rootUser = UserFactory.getInstance().addUser("Root", "root", "root", "root@hamming.com");
-
-        // Commands
-        Verb cmdSay = VerbFactory.getInstance().createVerb("Say", rootUser);
-        cmdSay.setShortName("say");
-        cmdSay.setToCaller("You say '${message}'");
-        cmdSay.setToLocation("${caller} says '${message}'");
-
-        Verb cmdShout = VerbFactory.getInstance().createVerb("Shout", rootUser);
-        cmdShout.setShortName("shout");
-        cmdShout.setToCaller("You shout '${message}'!!");
-        cmdShout.setToLocation("${caller} shouts '${message}'!!");
-
-        Verb cmdWhisper = VerbFactory.getInstance().createVerb("Whisper", rootUser);
-        cmdWhisper.setShortName("whispers");
-        cmdWhisper.setToCaller("You whisper '...${message}...'");
-        cmdWhisper.setToLocation("${caller} whispers '...${message}...'");
-
-        Verb cmdScream = VerbFactory.getInstance().createVerb("Scream", rootUser);
-        cmdScream.setShortName("scream");
-        cmdScream.setToCaller("You scream on the top of your lungs '...${message}...'");
-        cmdScream.setToLocation("${caller} screams from the top of their lungs:  '${message}'!!!!");
+        User rootUser = UserFactory.getInstance().addUser(null, "Root", "root", "root", "root@hamming.com");
 
 
         // Luuk
-        User u1 = UserFactory.getInstance().addUser("Luuk Hamming", "lhhamming", "lhhamming", "luuk.hamming@gmail.com");
-        u1.addVerb(cmdSay);
-        u1.addVerb(cmdWhisper);
-        u1.addVerb(cmdScream);
-        Room roomLuuk = RoomFactory.getInstance().createRoom(u1, "Luuks Room", 20);
-        u1.addRoom(roomLuuk);
+        User userLuuk = UserFactory.getInstance().addUser( rootUser, "Luuk Hamming", "lhhamming", "lhhamming", "luuk.hamming@gmail.com");
+        Verb cmdSayLuuk = VerbFactory.getInstance().createVerb("Say", userLuuk);
+        cmdSayLuuk.setToCaller("You say '${message}'");
+        cmdSayLuuk.setToLocation("${caller} says '${message}'");
+        Room roomLuuk = RoomFactory.getInstance().createRoom(userLuuk, "Luuks Room", 20);
         Location l1 = new Location(roomLuuk, roomLuuk.getSpawnPointX(), roomLuuk.getSpawnPointY());
-        u1.setLocation(l1);
-        Thing thingLuuk = ThingFactory.getInstance().createThing("Luuk's first thing!", u1);
-        u1.addToInventory(thingLuuk);
+        userLuuk.setLocation(l1);
+        Thing thingLuuk = ThingFactory.getInstance().createThing("Luuk's first thing!", userLuuk);
 
 
         // Jan-Egbert
-        User u2 = UserFactory.getInstance().addUser("Jan-Egbert Hamming", "jehamming", "jehamming", "janneman@hotmail.com");
-        u2.addVerb(cmdSay);
-        u2.addVerb(cmdShout);
-        Room roomJan = RoomFactory.getInstance().createRoom(u2, "Jan's Room", 20);
-        u2.addRoom(roomJan);
+        User userJan = UserFactory.getInstance().addUser(rootUser,"Jan-Egbert Hamming", "jehamming", "jehamming", "janneman@hotmail.com");
+        Verb cmdSayJan = VerbFactory.getInstance().createVerb("Say", userLuuk);
+        cmdSayJan.setToCaller("You say '${message}'");
+        cmdSayJan.setToLocation("${caller} says '${message}'");
+        Room roomJan = RoomFactory.getInstance().createRoom(userJan, "Jan's Room", 20);
         Location l2 = new Location(roomJan, roomJan.getSpawnPointX(), roomJan.getSpawnPointY());
-        u2.setLocation(l2);
-        Thing thingJan = ThingFactory.getInstance().createThing("Jan's first thing!", u2);
-        u2.addToInventory(thingJan);
+        userJan.setLocation(l2);
+        Thing thingJan = ThingFactory.getInstance().createThing("Jan's first thing!", userJan);
 
 
         Database.getInstance().store();
