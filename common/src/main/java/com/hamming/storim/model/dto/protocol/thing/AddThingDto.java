@@ -7,10 +7,10 @@ public class AddThingDto implements ProtocolDTO {
     private String name;
     private String description;
     private float scale;
-    private float rotation;
+    private int rotation;
     private byte[] imageData;
 
-    public AddThingDto(String name, String description, float scale, float rotation,  byte[] imageData){
+    public AddThingDto(String name, String description, float scale, int rotation,  byte[] imageData){
         this.name = name;
         this.imageData = imageData;
         this.description = description;
@@ -31,7 +31,7 @@ public class AddThingDto implements ProtocolDTO {
         return scale;
     }
 
-    public float getRotation() {
+    public int getRotation() {
         return rotation;
     }
 

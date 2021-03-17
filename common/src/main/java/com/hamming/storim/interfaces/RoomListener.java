@@ -2,6 +2,7 @@ package com.hamming.storim.interfaces;
 
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.RoomDto;
+import com.hamming.storim.model.dto.ThingDto;
 import com.hamming.storim.model.dto.UserDto;
 
 public interface RoomListener {
@@ -12,6 +13,7 @@ public interface RoomListener {
      void userLocationUpdate(UserDto user, LocationDto location);
      void currentUserLocationUpdate(Long sequenceNumber, LocationDto location);
      void setRoom(RoomDto room, LocationDto location);
+     void thingPlacedInRoom(ThingDto thing, UserDto byUser);
 
 
 

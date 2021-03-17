@@ -20,7 +20,7 @@ public class SetRoomAction implements Action {
 
     @Override
     public void execute() {
-        viewer.setRoomNoAction(room);
+        viewer.setRoom(room);
     }
 
     @Override

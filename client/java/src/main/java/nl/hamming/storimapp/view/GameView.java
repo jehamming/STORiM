@@ -4,15 +4,13 @@ package nl.hamming.storimapp.view;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
-import com.hamming.storim.model.dto.AvatarDto;
-import com.hamming.storim.model.dto.RoomDto;
-import com.hamming.storim.model.dto.TileDto;
-import com.hamming.storim.model.dto.UserDto;
+import com.hamming.storim.model.dto.*;
 import nl.hamming.storimapp.engine.actions.*;
 import nl.hamming.storimapp.engine.actions.Action;
 
@@ -32,6 +30,7 @@ public class GameView extends JPanel implements Runnable {
 
     private List<Action> actions;
     private List<Player> players;
+    private List<Thing> things;
     public RoomDto room;
     public TileDto tile;
     private ViewController viewController;
@@ -48,6 +47,7 @@ public class GameView extends JPanel implements Runnable {
     private boolean forward, back, left, right;
 
 
+
     private class MyTimerTask extends TimerTask {
         public void run() {
             viewController.sendMoveRequest(forward, back, left, right);
@@ -58,7 +58,8 @@ public class GameView extends JPanel implements Runnable {
     //Class constructor
     public GameView() {
         actions = Collections.synchronizedList(new LinkedList<Action>());
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
+        things = new ArrayList<>();
         defaultTileImage = Toolkit.getDefaultToolkit().getImage("resources/Tile.png");
         defaultUserImage = Toolkit.getDefaultToolkit().getImage("resources/User.png");
         arrowForward = Toolkit.getDefaultToolkit().getImage("resources/arrowForward.png");
@@ -135,21 +136,46 @@ public class GameView extends JPanel implements Runnable {
         }
     }
 
-    public void resetView() {
+
+
+    public void scheduleAddThing(ThingDto thing) {
+        Action action = new AddThingAction(this, thing.getId(), thing.getImage(), thing.getScale(), thing.getRotation());
+        synchronized (actions) {
+            actions.add(action);
+        }
+    }
+
+
+    public void scheduleUpdateThing(ThingDto thing) {
+        Action action = new UpdateThingAction(this, thing.getId(), thing.getImage(), thing.getScale(), thing.getRotation());
+        synchronized (actions) {
+            actions.add(action);
+        }
+    }
+
+    public void scheduleDeleteThing(ThingDto thing) {
+        Action action = new DeleteThingAction(this, thing.getId());
+        synchronized (actions) {
+            actions.add(action);
+        }
+    }
+
+
+    public void scheduleResetView() {
         Action action = new ResetViewAction(this);
         synchronized (actions) {
             actions.add(action);
         }
     }
 
-    public void deleteAvatar(Long userId) {
+    public void scheduleDeleteAvatar(Long userId) {
         Action action = new DeleteAvatarAction(this, userId);
         synchronized (actions) {
             actions.add(action);
         }
     }
 
-    public void updateUser(UserDto user, AvatarDto avatar) {
+    public void scheduleUpdateUser(UserDto user, AvatarDto avatar) {
         Action action = new UpdatePlayerAction(this, user, avatar);
         synchronized (actions) {
             actions.add(action);
@@ -158,11 +184,33 @@ public class GameView extends JPanel implements Runnable {
 
 
 
-    public void addPlayer(Long userId, String name, Image image) {
+    public void scheduleAddPlayer(Long userId, String name, Image image) {
         Action action = new AddPlayerAction(this, userId, name, image);
         synchronized (actions) {
             actions.add(action);
         }
+    }
+
+    public void addThing(Thing thing) {
+        if (! things.contains(thing)) {
+            things.add(thing);
+        }
+    }
+    public void deleteThing(Thing thing) {
+        if (things.contains(thing)) {
+            things.remove(thing);
+        }
+    }
+
+    public Thing getThing(Long thingId) {
+        Thing thing = null;
+        for (Thing t : things) {
+            if (t.getThingId().equals(thingId)) {
+                thing = t;
+                break;
+            }
+        }
+        return thing;
     }
 
     public void addPlayer(Player player) {
@@ -182,14 +230,14 @@ public class GameView extends JPanel implements Runnable {
         return player;
     }
 
-    public void removePlayer(Long userId) {
+    public void scheduleRemovePlayer(Long userId) {
         Action action = new RemovePlayerAction(this, userId);
         synchronized (actions) {
             actions.add(action);
         }
     }
 
-    public void setLocation(Long userId, int x, int y) {
+    public void scheduleSetUserLocation(Long userId, int x, int y) {
         Action action = new SetUserLocationAction(this, userId, x, y);
         synchronized (actions) {
             actions.add(action);
@@ -200,25 +248,25 @@ public class GameView extends JPanel implements Runnable {
         return room;
     }
 
-    public void setRoom(RoomDto room) {
+    public void scheduleSetRoom(RoomDto room) {
         Action action = new SetRoomAction(this, room);
         synchronized (actions) {
             actions.add(action);
         }
     }
 
-    public void setTile(TileDto tile) {
+    public void scheduleSetTile(TileDto tile) {
         Action action = new SetTileAction(this, tile);
         synchronized (actions) {
             actions.add(action);
         }
     }
 
-    public void setTileNoAction(TileDto tile) {
+    public void setTile(TileDto tile) {
         this.tile = tile;
     }
 
-    public void setRoomNoAction(RoomDto room) {
+    public void setRoom(RoomDto room) {
         this.room = room;
     }
 
@@ -226,6 +274,10 @@ public class GameView extends JPanel implements Runnable {
         this.players = players;
     }
 
+
+    public void setThing(ArrayList<Thing> things) {
+        this.things = things;
+    }
 
     public void removePlayer(Player player) {
         players.remove(player);
@@ -362,6 +414,34 @@ public class GameView extends JPanel implements Runnable {
     }
 
     private void drawThings(Graphics g) {
+        for (Thing thing : things) {
+            int x = thing.getX();
+            int y = thing.getY();
+            int width  = new Float( thing.getImage().getWidth(null) * thing.getScale() ).intValue();
+            int height = new Float( thing.getImage().getHeight(null) * thing.getScale() ).intValue();
+
+
+            Graphics2D g2d = (Graphics2D) g;
+            double rotationAngle = Math.toRadians (thing.getRotation());
+            int rx = x + (width/2);
+            int ry = y + (height/2);
+            //Make a backup so that we can reset our graphics object after using it.
+            AffineTransform backup = g2d.getTransform();
+            //rx is the x coordinate for rotation, ry is the y coordinate for rotation, and angle
+            //is the angle to rotate the image. If you want to rotate around the center of an image,
+            //use the image's center x and y coordinates for rx and ry.
+            AffineTransform a = AffineTransform.getRotateInstance(rotationAngle, rx, ry);
+            //Set our Graphics2D object to the transform
+            g2d.setTransform(a);
+            //Draw our image like normal
+            g2d.drawImage(thing.getImage(), x, y, width, height, this);
+            //Reset our graphics object so we can draw with it again.
+            g2d.setTransform(backup);
+
+
+
+            //g.drawImage(thing.getImage(), x, y, width, height, this);
+        }
     }
 
     private void drawUsers(Graphics g) {

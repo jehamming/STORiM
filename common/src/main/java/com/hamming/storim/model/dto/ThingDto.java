@@ -11,14 +11,16 @@ public class ThingDto extends DTO {
     private String description;
     private float scale;
     private float rotation;
+    private LocationDto location;
 
-    public ThingDto(Long id, String name, String description, float scale, float rotation, byte[] imageData ){
+    public ThingDto(Long id, String name, String description, float scale, float rotation, byte[] imageData, LocationDto location ){
         setId(id);
         setName(name);
         this.imageData = imageData;
         this.description = description;
         this.scale = scale;
         this.rotation = rotation;
+        this.location = location;
     }
 
     public Image getImage() {
@@ -44,12 +46,17 @@ public class ThingDto extends DTO {
         return rotation;
     }
 
+    public LocationDto getLocation() {
+        return location;
+    }
+
     @Override
     public String toString() {
         return "ThingDto{" +
                 "description='" + description + '\'' +
                 ", scale=" + scale +
                 ", rotation=" + rotation +
+                ", location=" + location +
                 '}';
     }
 }

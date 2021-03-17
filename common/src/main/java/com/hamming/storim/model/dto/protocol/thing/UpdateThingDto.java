@@ -8,11 +8,11 @@ public class UpdateThingDto implements ProtocolDTO {
     private String name;
     private String description;
     private float scale;
-    private float rotation;
+    private int rotation;
     private byte[] imageData;
 
 
-    public UpdateThingDto(Long id, String name, String description, float scale, float rotation,  byte[] imageData){
+    public UpdateThingDto(Long id, String name, String description, float scale, int rotation,  byte[] imageData){
         this.id = id;
         this.name = name;
         this.imageData = imageData;
@@ -38,7 +38,7 @@ public class UpdateThingDto implements ProtocolDTO {
         return scale;
     }
 
-    public float getRotation() {
+    public int getRotation() {
         return rotation;
     }
 

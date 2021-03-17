@@ -18,10 +18,7 @@ import com.hamming.storim.model.dto.protocol.room.GetRoomResultDTO;
 import com.hamming.storim.model.dto.protocol.room.RoomAddedDTO;
 import com.hamming.storim.model.dto.protocol.room.RoomUpdatedDTO;
 import com.hamming.storim.model.dto.protocol.room.GetTileResultDTO;
-import com.hamming.storim.model.dto.protocol.thing.GetThingResultDTO;
-import com.hamming.storim.model.dto.protocol.thing.ThingAddedDTO;
-import com.hamming.storim.model.dto.protocol.thing.ThingDeletedDTO;
-import com.hamming.storim.model.dto.protocol.thing.ThingUpdatedDTO;
+import com.hamming.storim.model.dto.protocol.thing.*;
 import com.hamming.storim.model.dto.protocol.user.GetUserResultDTO;
 import com.hamming.storim.model.dto.protocol.user.UserUpdatedDTO;
 import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
@@ -144,7 +141,16 @@ public class ClientConnection implements Runnable, GameStateListener {
             case THINGUPDATED:
                 thingUpdated((Thing) event.getObject());
                 break;
+            case THINGPLACED:
+                thingPlaced((User) event.getExtraData(), (Thing) event.getObject());
+                break;
         }
+    }
+
+    private void thingPlaced(User user, Thing thing) {
+        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
+        ThingPlacedDTO dto = new ThingPlacedDTO(user.getId(),thingDto);
+        send(dto);
     }
 
 

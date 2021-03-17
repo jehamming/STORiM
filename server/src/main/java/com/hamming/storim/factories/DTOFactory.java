@@ -84,7 +84,11 @@ public class DTOFactory {
     }
 
     public ThingDto getThingDTO(Thing thing) {
-        ThingDto dto = new ThingDto(thing.getId(), thing.getName(), thing.getDescription(), thing.getScale(), thing.getRotation(), ImageUtils.encode(thing.getImage()));
+        LocationDto location = null;
+        if ( thing.getLocation() != null ) {
+            location = DTOFactory.instance.getLocationDTO(thing.getLocation());
+        }
+        ThingDto dto = new ThingDto(thing.getId(), thing.getName(), thing.getDescription(), thing.getScale(), thing.getRotation(), ImageUtils.encode(thing.getImage()), location);
         fillBasicObjectInfo(dto, thing);
         return dto;
     }

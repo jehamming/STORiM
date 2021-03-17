@@ -196,7 +196,7 @@ public class GameController implements Runnable {
     }
 
 
-    public void addThing(User creator, String name, String description, float scale, float rotation, Image image) {
+    public void addThing(User creator, String name, String description, float scale, int rotation, Image image) {
         Thing thing = ThingFactory.getInstance().createThing(creator, name, description, scale, rotation, image);
         fireGameStateEvent(GameStateEvent.Type.THINGADDED, thing, null);
     }
@@ -206,7 +206,7 @@ public class GameController implements Runnable {
         fireGameStateEvent(GameStateEvent.Type.THINGDELETED, thing, null);
     }
 
-    public void updateThing(Long id, String name, String description, float scale, float rotation, Image image) {
+    public void updateThing(Long id, String name, String description, float scale, int rotation, Image image) {
         Thing thing = ThingFactory.getInstance().findThingById(id);
         if ( thing != null ) {
             thing.setName(name);
@@ -217,5 +217,11 @@ public class GameController implements Runnable {
             fireGameStateEvent(GameStateEvent.Type.THINGUPDATED, thing, null);
         }
 
+    }
+
+    public void placeThingInRoom(User user, Thing thing, Room room) {
+        Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());
+        thing.setLocation(location);
+        fireGameStateEvent(GameStateEvent.Type.THINGPLACED, thing, user);
     }
 }

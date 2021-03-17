@@ -4,7 +4,8 @@ public class Thing extends ImageObject   {
 
     private String description;
     private float scale;
-    private float rotation;
+    private int rotation;
+    private Location location;
 
     public Thing(Long id) {
         super(id);
@@ -26,11 +27,19 @@ public class Thing extends ImageObject   {
         this.scale = scale;
     }
 
-    public float getRotation() {
+    public int getRotation() {
         return rotation;
     }
 
-    public void setRotation(float rotation) {
+    public void setRotation(int rotation) {
         this.rotation = rotation;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

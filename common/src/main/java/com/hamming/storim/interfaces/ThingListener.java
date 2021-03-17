@@ -7,5 +7,4 @@ public interface ThingListener {
     void thingAdded(ThingDto thing);
     void thingDeleted(ThingDto thing);
     void thingUpdated(ThingDto thing);
-
 }

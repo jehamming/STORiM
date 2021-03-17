@@ -22,9 +22,8 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
     private DefaultListModel<ThingListItem> thingsModel = new DefaultListModel<>();
     private boolean newThing = false;
     private Image thingImage;
-    private ThingDto selectedThing;
-
-
+    private SpinnerNumberModel scaleValue;
+    private SpinnerNumberModel rotationValue;
 
     private class ThingListItem {
         private ThingDto thing;
@@ -59,9 +58,9 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
     }
 
     private void setup() {
-        SpinnerModel scaleValue = new SpinnerNumberModel(1, 0.1, 2, 0.1);
+        scaleValue = new SpinnerNumberModel(1.0, 0.1, 2.0, 0.1);
         spScale.setModel(scaleValue);
-        SpinnerModel rotationValue = new SpinnerNumberModel(0, 0, 360, 1);
+        rotationValue = new SpinnerNumberModel(0, 0, 360, 1);
         spRotation.setModel(rotationValue);
         listThings.setModel(thingsModel);
         btnDelete.addActionListener(e -> deleteThing());
@@ -71,7 +70,7 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
         btnChooseFile.addActionListener(e -> chooseFile());
         listThings.addListSelectionListener(e -> {
             ThingListItem item = listThings.getSelectedValue();
-            if (item != null && item.getThing()!= null) {
+            if (item != null && item.getThing() != null) {
                 thingSelected(item.getThing());
             }
         });
@@ -84,14 +83,18 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
 
     private void placeThingInRoom() {
         //TODO PLace THing
+        Long thingID = Long.valueOf(lblID.getText().trim());
+        Long roomId = controllers.getUserController().getCurrentUserLocation().getRoomId();
+        controllers.getThingController().placeThingInRoomRequest(thingID, roomId);
     }
 
     private void thingSelected(ThingDto thing) {
-        selectedThing = thing;
         SwingUtilities.invokeLater(() -> {
             lblID.setText(thing.getId().toString());
             txtName.setText(thing.getName());
             taDescription.setText(thing.getDescription());
+            spScale.setValue(thing.getScale());
+            spRotation.setValue(thing.getRotation());
             btnSave.setEnabled(true);
             btnDelete.setEnabled(true);
             btnPlace.setEnabled(true);
@@ -128,9 +131,10 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
             lblID.setText("");
             txtName.setText("New THING name");
             taDescription.setText("New THING Description");
+            spScale.setValue(new Double(1.0));
+            spRotation.setValue(new Integer(0));
             btnSave.setEnabled(true);
             listThings.clearSelection();
-            selectedThing = null;
             btnDelete.setEnabled(false);
             btnPlace.setEnabled(false);
             lblImagePreview.setIcon(null);
@@ -141,26 +145,25 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
     private void saveThing() {
         String thingName = txtName.getText().trim();
         String thingDescription = taDescription.getText();
-        Float thingScale = ((Double) spScale.getValue()).floatValue();
-        Float thingRotation = ((Integer) spRotation.getValue()).floatValue();
-        if (thingImage == null ) {
+        Float thingScale = scaleValue.getNumber().floatValue();
+        Integer thingRotation = rotationValue.getNumber().intValue();
+        if (thingImage == null) {
             JOptionPane.showMessageDialog(this, "Please choose image! ");
             return;
         }
         if (newThing) {
-            controllers.getThingController().addThingRequest(thingName,thingDescription, thingScale, thingRotation, thingImage );
+            controllers.getThingController().addThingRequest(thingName, thingDescription, thingScale, thingRotation, thingImage);
+            setEditable(false);
+            empty(false);
+            listThings.clearSelection();
+            btnDelete.setEnabled(false);
+            btnPlace.setEnabled(false);
         } else {
             // Update !
             Long thingId = Long.valueOf(lblID.getText());
-            controllers.getThingController().updateThingRequest(thingId, thingName,thingDescription, thingScale, thingRotation, thingImage);
+            controllers.getThingController().updateThingRequest(thingId, thingName, thingDescription, thingScale, thingRotation, thingImage);
         }
 
-        setEditable(false);
-        empty(false);
-        listThings.clearSelection();
-        selectedThing = null;
-        btnDelete.setEnabled(false);
-        btnPlace.setEnabled(false);
     }
 
     private void deleteThing() {
@@ -194,7 +197,8 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
             btnPlace.setEnabled(false);
             btnChooseFile.setEnabled(false);
             if (fully) {
-                listThings.clearSelection();;
+                listThings.clearSelection();
+                ;
                 thingsModel.removeAllElements();
                 listThings.removeAll();
             }
@@ -241,26 +245,6 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
             listThings.repaint();
         });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private void initComponents() {
@@ -434,8 +418,6 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
     // End of variables declaration
 
 
-
-
     @Override
     public void userConnected(UserDto user) {
 
@@ -462,7 +444,7 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
             empty(true);
             btnCreate.setEnabled(true);
             List<ThingDto> things = controllers.getThingController().getThings(controllers.getUserController().getCurrentUser().getId());
-            for (ThingDto thing: things ) {
+            for (ThingDto thing : things) {
                 thingAdded(thing);
             }
         }

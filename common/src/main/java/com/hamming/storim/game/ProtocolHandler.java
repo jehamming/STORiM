@@ -82,7 +82,7 @@ public class ProtocolHandler implements Protocol {
         return new AddAvatarDto(avatarName, ImageUtils.encode(avatarImage));
     }
 
-    public AddThingDto getAddThingDTO(String name, String description, Float scale, Float rotation, byte[] imageData) {
+    public AddThingDto getAddThingDTO(String name, String description, Float scale, int rotation, byte[] imageData) {
         return new AddThingDto(name, description, scale, rotation,imageData );
     }
 }

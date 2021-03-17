@@ -17,6 +17,7 @@ public class GameStateEvent {
         AVATARDELETED,
         THINGADDED,
         THINGDELETED,
+        THINGPLACED,
         THINGUPDATED,
         ROOMADDED,
         ROOMUPDATED,

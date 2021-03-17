@@ -70,7 +70,7 @@ public class ThingFactory {
     }
 
 
-    public Thing createThing(User creator, String name, String description, Float scale, Float rotation, Image image) {
+    public Thing createThing(User creator, String name, String description, Float scale, int rotation, Image image) {
         Long id = Database.getInstance().getNextID();
         Thing thing = new Thing(id);
         thing.setImage(image);

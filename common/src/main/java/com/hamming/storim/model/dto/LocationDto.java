@@ -37,7 +37,7 @@ public class LocationDto extends DTO {
     @Override
     public String toString() {
         return "LocationDto{" +
-                ", roomId=" + roomId +
+                "roomId=" + roomId +
                 ", x=" + x +
                 ", y=" + y +
                 '}';

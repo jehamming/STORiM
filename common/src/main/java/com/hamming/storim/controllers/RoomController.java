@@ -10,6 +10,8 @@ import com.hamming.storim.model.dto.UserDto;
 import com.hamming.storim.model.dto.protocol.*;
 import com.hamming.storim.model.dto.protocol.room.*;
 import com.hamming.storim.model.dto.protocol.room.GetTileResultDTO;
+import com.hamming.storim.model.dto.protocol.thing.ThingPlacedDTO;
+import com.hamming.storim.model.dto.protocol.thing.ThingUpdatedDTO;
 import com.hamming.storim.net.NetCommandReceiver;
 
 import java.awt.*;
@@ -33,80 +35,30 @@ public class RoomController {
     }
 
     private void registerReceivers() {
-        controllers.getConnectionController().registerReceiver(GetRoomResultDTO.class, new NetCommandReceiver<GetRoomResultDTO>() {
-            @Override
-            public void receiveDTO(GetRoomResultDTO dto) {
-                handleGetRoomResult(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(RoomAddedDTO.class, new NetCommandReceiver<RoomAddedDTO>() {
-            @Override
-            public void receiveDTO(RoomAddedDTO dto) {
-                handleRoomAddedDTO(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(RoomUpdatedDTO.class, new NetCommandReceiver<RoomUpdatedDTO>() {
-            @Override
-            public void receiveDTO(RoomUpdatedDTO dto) {
-                handleRoomUpdatedDTO(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(RoomDeletedDTO.class, new NetCommandReceiver<RoomDeletedDTO>() {
-            @Override
-            public void receiveDTO(RoomDeletedDTO dto) {
-                handleRoomDeletedDTO(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(UserInRoomDTO.class, new NetCommandReceiver<UserInRoomDTO>() {
-            @Override
-            public void receiveDTO(UserInRoomDTO dto) {
-                handleUserInRoomDTO(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(UserTeleportedDTO.class, new NetCommandReceiver<UserTeleportedDTO>() {
-            @Override
-            public void receiveDTO(UserTeleportedDTO dto) {
-                handleUserTeleportedDTO(dto);
-            }
-        });
-
-        controllers.getConnectionController().registerReceiver(UserConnectedDTO.class, new NetCommandReceiver<UserConnectedDTO>() {
-            @Override
-            public void receiveDTO(UserConnectedDTO dto) {
-                handleUserConnectedDTO(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(UserOnlineDTO.class, new NetCommandReceiver<UserOnlineDTO>() {
-            @Override
-            public void receiveDTO(UserOnlineDTO dto) {
-                handleUserOnlineDTO(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(TeleportResultDTO.class, new NetCommandReceiver<TeleportResultDTO>() {
-            @Override
-            public void receiveDTO(TeleportResultDTO dto) {
-                handleTeleportResultDTO(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(MovementResultDTO.class, new NetCommandReceiver<MovementResultDTO>() {
-            @Override
-            public void receiveDTO(MovementResultDTO dto) {
-                handleMovementResult(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(UserLocationUpdateDTO.class, new NetCommandReceiver<UserLocationUpdateDTO>() {
-            @Override
-            public void receiveDTO(UserLocationUpdateDTO dto) {
-                handleUserLocationUpdateDTO(dto);
-            }
-        });
-        controllers.getConnectionController().registerReceiver(GetTileResultDTO.class, new NetCommandReceiver<GetTileResultDTO>() {
-            @Override
-            public void receiveDTO(GetTileResultDTO dto) {
-                handleGetTileResultDTO(dto);
-            }
-        });
+        controllers.getConnectionController().registerReceiver(GetRoomResultDTO.class, (NetCommandReceiver<GetRoomResultDTO>) dto -> handleGetRoomResult(dto));
+        controllers.getConnectionController().registerReceiver(RoomAddedDTO.class, (NetCommandReceiver<RoomAddedDTO>) dto -> handleRoomAddedDTO(dto));
+        controllers.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (NetCommandReceiver<RoomUpdatedDTO>) dto -> handleRoomUpdatedDTO(dto));
+        controllers.getConnectionController().registerReceiver(RoomDeletedDTO.class, (NetCommandReceiver<RoomDeletedDTO>) dto -> handleRoomDeletedDTO(dto));
+        controllers.getConnectionController().registerReceiver(UserInRoomDTO.class, (NetCommandReceiver<UserInRoomDTO>) dto -> handleUserInRoomDTO(dto));
+        controllers.getConnectionController().registerReceiver(UserTeleportedDTO.class, (NetCommandReceiver<UserTeleportedDTO>) dto -> handleUserTeleportedDTO(dto));
+        controllers.getConnectionController().registerReceiver(UserConnectedDTO.class, (NetCommandReceiver<UserConnectedDTO>) dto -> handleUserConnectedDTO(dto));
+        controllers.getConnectionController().registerReceiver(UserOnlineDTO.class, (NetCommandReceiver<UserOnlineDTO>) dto -> handleUserOnlineDTO(dto));
+        controllers.getConnectionController().registerReceiver(TeleportResultDTO.class, (NetCommandReceiver<TeleportResultDTO>) dto -> handleTeleportResultDTO(dto));
+        controllers.getConnectionController().registerReceiver(MovementResultDTO.class, (NetCommandReceiver<MovementResultDTO>) dto -> handleMovementResult(dto));
+        controllers.getConnectionController().registerReceiver(UserLocationUpdateDTO.class, (NetCommandReceiver<UserLocationUpdateDTO>) dto -> handleUserLocationUpdateDTO(dto));
+        controllers.getConnectionController().registerReceiver(GetTileResultDTO.class, (NetCommandReceiver<GetTileResultDTO>) dto -> handleGetTileResultDTO(dto));
+        controllers.getConnectionController().registerReceiver(ThingPlacedDTO.class, (NetCommandReceiver<ThingPlacedDTO>) dto -> handleThingPlacedDTO(dto));
     }
+
+    private void handleThingPlacedDTO(ThingPlacedDTO dto) {
+        UserDto user = controllers.getUserController().findUserById(dto.getUserId());
+        if ( currentUserLocation(dto.getThing().getLocation().getRoomId())) {
+            for (RoomListener l : roomListeners) {
+                l.thingPlacedInRoom(dto.getThing(), user);
+            }
+        }
+    }
+
 
     private void handleRoomAddedDTO(RoomAddedDTO dto) {
         rooms.put(dto.getRoom().getId(), dto.getRoom());
@@ -117,10 +69,10 @@ public class RoomController {
 
     private void initVariables() {
         protocolHandler = new ProtocolHandler();
-        rooms = new HashMap<Long, RoomDto>();
-        tiles = new HashMap<Long, TileDto>();
-        roomListeners = new ArrayList<RoomListener>();
-        roomUpdateListeners = new ArrayList<RoomUpdateListener>();
+        rooms = new HashMap<>();
+        tiles = new HashMap<>();
+        roomListeners = new ArrayList<>();
+        roomUpdateListeners = new ArrayList<>();
     }
 
 

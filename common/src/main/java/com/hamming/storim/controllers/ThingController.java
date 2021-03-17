@@ -2,6 +2,7 @@ package com.hamming.storim.controllers;
 
 import com.hamming.storim.Controllers;
 import com.hamming.storim.game.ProtocolHandler;
+import com.hamming.storim.interfaces.RoomUpdateListener;
 import com.hamming.storim.interfaces.ThingListener;
 import com.hamming.storim.interfaces.UserListener;
 import com.hamming.storim.model.dto.AvatarDto;
@@ -29,13 +30,14 @@ public class ThingController {
     public ThingController(Controllers controllers) {
         this.controllers = controllers;
         protocolHandler = new ProtocolHandler();
-        thingListeners = new ArrayList<ThingListener>();
+        thingListeners = new ArrayList<>();
         thingStore = new HashMap<>();
         controllers.getConnectionController().registerReceiver(ThingAddedDTO.class, (NetCommandReceiver<ThingAddedDTO>) dto -> {handleThingAdded(dto);});
         controllers.getConnectionController().registerReceiver(GetThingResultDTO.class, (NetCommandReceiver<GetThingResultDTO>) dto -> {handleGetThingResult(dto);});
         controllers.getConnectionController().registerReceiver(ThingDeletedDTO.class, (NetCommandReceiver<ThingDeletedDTO>) dto -> {handleThingDeleted(dto);});
         controllers.getConnectionController().registerReceiver(ThingUpdatedDTO.class, (NetCommandReceiver<ThingUpdatedDTO>) dto -> {handleThingUpdated(dto);});
     }
+
 
     private void handleThingUpdated(ThingUpdatedDTO dto) {
         ThingDto thing = dto.getThing();
@@ -72,7 +74,7 @@ public class ThingController {
     }
 
 
-    public void addThingRequest(String name, String description, Float scale, Float rotation, Image image) {
+    public void addThingRequest(String name, String description, Float scale, int rotation, Image image) {
         AddThingDto addThingDto = protocolHandler.getAddThingDTO(name, description, scale, rotation, ImageUtils.encode(image));
         controllers.getConnectionController().send(addThingDto);
     }
@@ -106,8 +108,13 @@ public class ThingController {
         controllers.getConnectionController().send(dto);
     }
 
-    public void updateThingRequest(Long id, String name, String description, Float scale, Float rotation, Image image) {
+    public void updateThingRequest(Long id, String name, String description, Float scale, int rotation, Image image) {
         UpdateThingDto dto = new UpdateThingDto(id, name, description, scale, rotation, ImageUtils.encode(image));
+        controllers.getConnectionController().send(dto);
+    }
+
+    public void placeThingInRoomRequest(Long thingID, Long roomId) {
+        PlaceThingInRoomRequestDTO dto = new PlaceThingInRoomRequestDTO(thingID, roomId);
         controllers.getConnectionController().send(dto);
     }
 }
