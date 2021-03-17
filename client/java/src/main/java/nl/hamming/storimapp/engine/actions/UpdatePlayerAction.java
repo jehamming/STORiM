@@ -1,7 +1,6 @@
 package nl.hamming.storimapp.engine.actions;
 
 import com.hamming.storim.model.dto.AvatarDto;
-import com.hamming.storim.model.dto.TileDto;
 import com.hamming.storim.model.dto.UserDto;
 import nl.hamming.storimapp.view.GameView;
 import nl.hamming.storimapp.view.Player;

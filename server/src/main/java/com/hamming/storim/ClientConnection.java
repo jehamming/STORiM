@@ -3,6 +3,7 @@ package com.hamming.storim;
 
 import com.hamming.storim.factories.AvatarFactory;
 import com.hamming.storim.factories.DTOFactory;
+import com.hamming.storim.factories.ThingFactory;
 import com.hamming.storim.factories.TileFactory;
 import com.hamming.storim.game.*;
 import com.hamming.storim.game.action.*;
@@ -17,6 +18,10 @@ import com.hamming.storim.model.dto.protocol.room.GetRoomResultDTO;
 import com.hamming.storim.model.dto.protocol.room.RoomAddedDTO;
 import com.hamming.storim.model.dto.protocol.room.RoomUpdatedDTO;
 import com.hamming.storim.model.dto.protocol.room.GetTileResultDTO;
+import com.hamming.storim.model.dto.protocol.thing.GetThingResultDTO;
+import com.hamming.storim.model.dto.protocol.thing.ThingAddedDTO;
+import com.hamming.storim.model.dto.protocol.thing.ThingDeletedDTO;
+import com.hamming.storim.model.dto.protocol.thing.ThingUpdatedDTO;
 import com.hamming.storim.model.dto.protocol.user.GetUserResultDTO;
 import com.hamming.storim.model.dto.protocol.user.UserUpdatedDTO;
 import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
@@ -130,8 +135,31 @@ public class ClientConnection implements Runnable, GameStateListener {
             case AVATARUPDATED:
                 avatarUpdated((Avatar) event.getObject());
                 break;
+            case THINGADDED:
+                thingAdded((Thing) event.getObject());
+                break;
+            case THINGDELETED:
+                thingDeleted((Thing) event.getObject());
+                break;
+            case THINGUPDATED:
+                thingUpdated((Thing) event.getObject());
+                break;
         }
     }
+
+
+    private void thingDeleted(Thing thing) {
+        ThingDeletedDTO dto = new ThingDeletedDTO(thing.getId());
+        send(dto);
+    }
+
+
+    private void thingUpdated(Thing thing) {
+        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
+        ThingUpdatedDTO dto = new ThingUpdatedDTO(thingDto);
+        send(dto);
+    }
+
 
     private void avatarUpdated(Avatar avatar) {
         AvatarDto avatarDto = DTOFactory.getInstance().getAvatarDTO(avatar);
@@ -178,6 +206,8 @@ public class ClientConnection implements Runnable, GameStateListener {
             sendAvatars();
             // Rooms
             sendRooms();
+            // Send Things
+            sendThings();
             // Logged in Users;
             for (User u : gameController.getGameState().getOnlineUsers()) {
                 if (!u.getId().equals(currentUser.getId())) {
@@ -186,6 +216,18 @@ public class ClientConnection implements Runnable, GameStateListener {
                 }
             }
         }
+    }
+
+    private void sendThings() {
+        for (Thing thing : ThingFactory.getInstance().getThings(currentUser)) {
+            sendThing(thing);
+        }
+    }
+
+    public void sendThing(Thing thing) {
+        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
+        GetThingResultDTO getThingResultDTO = new GetThingResultDTO(true, null, thingDto);
+        send(getThingResultDTO);
     }
 
     private void sendAvatars() {
@@ -242,6 +284,15 @@ public class ClientConnection implements Runnable, GameStateListener {
             send(avatarAddedDTO);
         }
     }
+
+    private void thingAdded(Thing thing) {
+        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
+        if (thing.getOwner().getId().equals(currentUser.getId())) {
+            ThingAddedDTO thingAddedDTO = new ThingAddedDTO(thingDto);
+            send(thingAddedDTO);
+        }
+    }
+
 
     private void handleRoomAdded(Room room) {
         RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room);

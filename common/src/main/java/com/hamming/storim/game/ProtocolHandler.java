@@ -5,6 +5,7 @@ import com.hamming.storim.model.dto.protocol.avatar.AddAvatarDto;
 import com.hamming.storim.model.dto.protocol.room.AddRoomDto;
 import com.hamming.storim.model.dto.protocol.room.DeleteRoomDTO;
 import com.hamming.storim.model.dto.protocol.room.UpdateRoomDto;
+import com.hamming.storim.model.dto.protocol.thing.AddThingDto;
 import com.hamming.storim.model.dto.protocol.user.GetUserDTO;
 import com.hamming.storim.model.dto.protocol.verb.AddVerbDto;
 import com.hamming.storim.model.dto.protocol.verb.DeleteVerbDTO;
@@ -79,5 +80,9 @@ public class ProtocolHandler implements Protocol {
 
     public AddAvatarDto getAddAvatarDTO(String avatarName, Image avatarImage) {
         return new AddAvatarDto(avatarName, ImageUtils.encode(avatarImage));
+    }
+
+    public AddThingDto getAddThingDTO(String name, String description, Float scale, Float rotation, byte[] imageData) {
+        return new AddThingDto(name, description, scale, rotation,imageData );
     }
 }

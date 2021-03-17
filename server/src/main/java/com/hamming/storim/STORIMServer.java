@@ -28,6 +28,8 @@ public class STORIMServer extends Server {
         TileFactory.getInstance();
         //Force Avatar Loading
         AvatarFactory.getInstance();
+        //Force Thing Loading
+        ThingFactory.getInstance();
         port = config.getServerPort();
         // Load Data
         Database.getInstance();

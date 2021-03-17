@@ -22,8 +22,6 @@ public class CreateMinimalWorld {
         Room roomLuuk = RoomFactory.getInstance().createRoom(userLuuk, "Luuks Room", 20);
         Location l1 = new Location(roomLuuk, roomLuuk.getSpawnPointX(), roomLuuk.getSpawnPointY());
         userLuuk.setLocation(l1);
-        Thing thingLuuk = ThingFactory.getInstance().createThing("Luuk's first thing!", userLuuk);
-
 
         // Jan-Egbert
         User userJan = UserFactory.getInstance().addUser(rootUser,"Jan-Egbert Hamming", "jehamming", "jehamming", "janneman@hotmail.com");
@@ -33,8 +31,6 @@ public class CreateMinimalWorld {
         Room roomJan = RoomFactory.getInstance().createRoom(userJan, "Jan's Room", 20);
         Location l2 = new Location(roomJan, roomJan.getSpawnPointX(), roomJan.getSpawnPointY());
         userJan.setLocation(l2);
-        Thing thingJan = ThingFactory.getInstance().createThing("Jan's first thing!", userJan);
-
 
         Database.getInstance().store();
 

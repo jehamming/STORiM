@@ -196,4 +196,26 @@ public class GameController implements Runnable {
     }
 
 
+    public void addThing(User creator, String name, String description, float scale, float rotation, Image image) {
+        Thing thing = ThingFactory.getInstance().createThing(creator, name, description, scale, rotation, image);
+        fireGameStateEvent(GameStateEvent.Type.THINGADDED, thing, null);
+    }
+
+    public void deleteThing(Thing thing) {
+        ThingFactory.getInstance().deleteThing(thing);
+        fireGameStateEvent(GameStateEvent.Type.THINGDELETED, thing, null);
+    }
+
+    public void updateThing(Long id, String name, String description, float scale, float rotation, Image image) {
+        Thing thing = ThingFactory.getInstance().findThingById(id);
+        if ( thing != null ) {
+            thing.setName(name);
+            thing.setDescription(description);
+            thing.setScale(scale);
+            thing.setRotation(rotation);
+            thing.setImage(image);
+            fireGameStateEvent(GameStateEvent.Type.THINGUPDATED, thing, null);
+        }
+
+    }
 }

@@ -20,6 +20,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     private VerbEditorPanel verbEditorPanel;
     private RoomEditorPanel roomEditorPanel;
     private AvatarPanel avatarPanel;
+    private ThingPanel thingPanel;
     private Controllers controllers;
     private GameView gameView;
     private JTabbedPane tabbedPane;
@@ -61,6 +62,8 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         avatarPanel = new AvatarPanel(controllers);
         tabbedPane.add("Avatar", avatarPanel);
 
+        thingPanel = new ThingPanel(controllers);
+        tabbedPane.add("Thing", thingPanel);
 
     }
 

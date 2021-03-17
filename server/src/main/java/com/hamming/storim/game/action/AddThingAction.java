@@ -4,27 +4,27 @@ import com.hamming.storim.ClientConnection;
 import com.hamming.storim.game.GameController;
 import com.hamming.storim.model.User;
 import com.hamming.storim.model.dto.protocol.avatar.AddAvatarDto;
-import com.hamming.storim.model.dto.protocol.avatar.UpdateAvatarDto;
+import com.hamming.storim.model.dto.protocol.thing.AddThingDto;
 import com.hamming.storim.util.ImageUtils;
 
 import java.awt.*;
 
-public class UpdateAvatarAction extends Action<UpdateAvatarDto> {
+public class AddThingAction extends Action<AddThingDto> {
     private GameController gameController;
     private ClientConnection client;
 
-    public UpdateAvatarAction(GameController controller, ClientConnection client) {
+    public AddThingAction(GameController controller, ClientConnection client) {
         this.gameController = controller;
         this.client = client;
     }
 
     @Override
     public void execute() {
-        UpdateAvatarDto dto = getDto();
-        if (dto.getImageData() != null ) {
-            Image image = ImageUtils.decode(dto.getImageData());
-            gameController.updateAvatar(dto.getAvatarId(), dto.getName(), image);
-        }
+        AddThingDto dto = getDto();
+        User creator = client.getCurrentUser();
+
+        Image image = ImageUtils.decode(dto.getImageData());
+        gameController.addThing(creator, dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), image);
     }
 
 }

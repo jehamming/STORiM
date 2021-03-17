@@ -83,6 +83,12 @@ public class DTOFactory {
         return dto;
     }
 
+    public ThingDto getThingDTO(Thing thing) {
+        ThingDto dto = new ThingDto(thing.getId(), thing.getName(), thing.getDescription(), thing.getScale(), thing.getRotation(), ImageUtils.encode(thing.getImage()));
+        fillBasicObjectInfo(dto, thing);
+        return dto;
+    }
+
     public UserDisconnectedDTO getUserDisconnectedDTO(Long userId) {
         return new UserDisconnectedDTO(userId);
     }
@@ -155,4 +161,6 @@ public class DTOFactory {
     public GetAvatarResultDTO getGetAvatarResultDTO(boolean success, String message, Long userId, AvatarDto avatarDto) {
         return new GetAvatarResultDTO(success, message, userId, avatarDto);
     }
+
+
 }

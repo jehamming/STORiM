@@ -212,6 +212,7 @@ public class AvatarPanel extends javax.swing.JPanel implements UserListener {
     @Override
     public void loginResult(boolean success, String message) {
         if (success) {
+            empty(true);
             btnCreate.setEnabled(true);
             List<AvatarDto> avatars = controllers.getUserController().getCurrentUserAvatars();
             for (AvatarDto avatar:avatars ) {

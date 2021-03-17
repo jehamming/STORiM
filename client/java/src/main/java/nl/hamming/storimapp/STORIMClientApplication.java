@@ -34,6 +34,8 @@ public class STORIMClientApplication  {
         controllers.setVerbController(new VerbController(controllers));
         // Rooms
         controllers.setRoomController(new RoomController(controllers));
+        // Things
+        controllers.setThingController(new ThingController(controllers));
     }
 
 

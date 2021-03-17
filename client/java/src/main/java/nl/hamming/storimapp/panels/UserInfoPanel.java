@@ -1,9 +1,7 @@
 package nl.hamming.storimapp.panels;
 
 import com.hamming.storim.Controllers;
-import com.hamming.storim.controllers.UserController;
 import com.hamming.storim.game.ProtocolHandler;
-import com.hamming.storim.interfaces.RoomListener;
 import com.hamming.storim.interfaces.UserListener;
 import com.hamming.storim.model.dto.*;
 
