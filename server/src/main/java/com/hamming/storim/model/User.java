@@ -57,15 +57,6 @@ public class User extends BasicObject implements Serializable {
 
     public void setEmail(String email) {this.email = email;}
 
-    public static User valueOf(Long id, String name, String username, String password, String email ) {
-        final User u = new User(id);
-        u.setPassword(password);
-        u.setName(name);
-        u.setUsername(username);
-        u.setEmail(email);
-        return u;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

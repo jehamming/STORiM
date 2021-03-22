@@ -14,7 +14,7 @@ public class Database {
     private Map<Class, List<BasicObject>> data;
 
     private Database() {
-        data = new HashMap<Class, List<BasicObject>>();
+        data = new HashMap<>();
         load();
     }
 
@@ -74,9 +74,12 @@ public class Database {
 
     public <T extends BasicObject> List<T> getAll(Class<T> c, Long ownerId) {
         List<T> listOfOwnedObjects = new ArrayList<T>();
-        for ( T basicObject : ( List<T> ) data.get(c) ) {
-            if (basicObject.getOwner().getId().equals(ownerId)) {
-                listOfOwnedObjects.add(basicObject);
+        List<T> allClassObjects = ( List<T> ) data.get(c);
+        if (allClassObjects != null ) {
+            for (T basicObject : allClassObjects) {
+                if (basicObject.getOwner().getId().equals(ownerId)) {
+                    listOfOwnedObjects.add(basicObject);
+                }
             }
         }
         return listOfOwnedObjects;

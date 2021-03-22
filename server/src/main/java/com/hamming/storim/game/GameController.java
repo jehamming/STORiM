@@ -224,4 +224,12 @@ public class GameController implements Runnable {
         thing.setLocation(location);
         fireGameStateEvent(GameStateEvent.Type.THINGPLACED, thing, user);
     }
+
+    public void updateThingLocation(Thing thing, int x, int y) {
+        if ( thing != null ) {
+            thing.getLocation().setX(x);
+            thing.getLocation().setY(y);
+            fireGameStateEvent(GameStateEvent.Type.THINGUPDATED, thing, null);
+        }
+    }
 }

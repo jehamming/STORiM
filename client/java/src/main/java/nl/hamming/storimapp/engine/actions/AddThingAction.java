@@ -11,24 +11,21 @@ import java.awt.*;
 public class AddThingAction implements Action {
 
     private GameView viewer;
-    private Long thingId;
-    private Image image;
-    private float scale, rotation;
+    private ThingDto thingDto;
 
-    public AddThingAction(GameView viewer, Long thingID, Image image, float scale, float rotation) {
+    public AddThingAction(GameView viewer, ThingDto thingDto) {
         this.viewer = viewer;
-        this.thingId = thingID;
-        this.image = image;
-        this.scale = scale;
-        this.rotation = rotation;
+        this.thingDto = thingDto;
     }
 
     @Override
     public void execute() {
-        Thing thing = new Thing(thingId);
-        thing.setImage(image);
-        thing.setScale(scale);
-        thing.setRotation(rotation);
+        Thing thing = new Thing(thingDto.getId());
+        thing.setImage(thingDto.getImage());
+        thing.setScale(thingDto.getScale());
+        thing.setRotation(thingDto.getRotation());
+        thing.setX(thingDto.getLocation().getX());
+        thing.setY(thingDto.getLocation().getY());
         viewer.addThing(thing);
 
     }
@@ -36,9 +33,7 @@ public class AddThingAction implements Action {
     @Override
     public String toString() {
         return "AddThingAction{" +
-                "thingId=" + thingId +
-                ", scale=" + scale +
-                ", rotation=" + rotation +
+                "thingDto=" + thingDto +
                 '}';
     }
 }

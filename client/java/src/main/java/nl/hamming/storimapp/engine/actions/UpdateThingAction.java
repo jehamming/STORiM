@@ -11,9 +11,10 @@ public class UpdateThingAction implements Action {
     private GameView viewer;
     private Long thingId;
     private Image image;
-    private float scale, rotation;
+    private float scale;
+    private int rotation;
 
-    public UpdateThingAction(GameView viewer, Long thingID, Image image, float scale, float rotation) {
+    public UpdateThingAction(GameView viewer, Long thingID, Image image, float scale, int rotation) {
         this.viewer = viewer;
         this.thingId = thingID;
         this.image = image;

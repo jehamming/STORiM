@@ -25,9 +25,9 @@ public class UpdatePlayerAction implements Action {
         if (player != null ) {
             player.setDisplayName(user.getName());
             if ( avatar != null ) {
-                player.setAvatar(avatar.getImage());
+                player.setImage(avatar.getImage());
             } else {
-                player.setAvatar(null);
+                player.setImage(null);
             }
         }
     }

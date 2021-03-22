@@ -6,6 +6,7 @@ import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.interfaces.*;
 import com.hamming.storim.model.dto.*;
 import com.hamming.storim.model.dto.protocol.MovementRequestDTO;
+import com.hamming.storim.model.dto.protocol.thing.UpdateThingLocationDto;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -248,6 +249,11 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
         }
         gameView.scheduleAddPlayer(currentUser.getId(), currentUser.getName(), image);
         gameView.scheduleSetUserLocation(controllers.getUserController().getCurrentUser().getId(), location.getX(), location.getY());
+        // Things
+        for (ThingDto thing : controllers.getThingController().getThingsInRoom(room.getId())) {
+            gameView.scheduleAddThing(thing);
+        }
+
         resetRequests();
         lastrecievedLocation = location;
     }
@@ -255,6 +261,11 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
     @Override
     public void thingPlacedInRoom(ThingDto thing, UserDto byUser) {
         gameView.scheduleAddThing(thing);
+    }
+
+    @Override
+    public void thingRemovedFromRoom(ThingDto thing) {
+        gameView.scheduleDeleteThing(thing);
     }
 
     @Override
@@ -303,5 +314,10 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
                 gameView.scheduleUpdateThing(thing);
             }
         }
+    }
+
+    public void updateThingLocationRequest(Long thingId, int x, int y) {
+        UpdateThingLocationDto updateThingLocationDto = new UpdateThingLocationDto(thingId, x, y);
+        controllers.getConnectionController().send(updateThingLocationDto);
     }
 }

@@ -1,33 +1,11 @@
 package nl.hamming.storimapp.view;
 
-import java.awt.*;
-import java.util.Objects;
+public class Player extends BasicDrawableObject {
 
-public class Player {
-
-    private Long userId;
     private String displayName;
-    private Image avatar;
-    private int x, y;
 
     public Player(Long userId) {
-        this.userId = userId;
-    }
-
-    public Image getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(Image avatar) {
-        this.avatar = avatar;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
+        setId(userId);
     }
 
     public String getDisplayName() {
@@ -38,32 +16,4 @@ public class Player {
         this.displayName = displayName;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Player player = (Player) o;
-        return userId.equals(player.userId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId);
-    }
 }

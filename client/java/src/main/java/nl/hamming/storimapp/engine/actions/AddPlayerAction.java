@@ -25,7 +25,7 @@ public class AddPlayerAction implements Action {
         Player player = new Player(userId);
         player.setDisplayName(name);
         if (image != null ) {
-            player.setAvatar(image);
+            player.setImage(image);
         }
         viewer.addPlayer(player);
     }

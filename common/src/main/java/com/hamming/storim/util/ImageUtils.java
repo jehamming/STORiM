@@ -42,4 +42,19 @@ public class ImageUtils {
         g2.drawImage(image, null, null);
         return bufferedImage;
     }
+
+    public static Image resize(Image image, int scaledWidth, int scaledHeight) {
+
+        BufferedImage inputImage = (BufferedImage) image;
+
+        // creates output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth, scaledHeight, inputImage.getType());
+
+        // scales the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+
+       return outputImage;
+    }
 }

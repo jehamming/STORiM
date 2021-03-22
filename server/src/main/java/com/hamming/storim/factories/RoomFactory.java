@@ -19,10 +19,6 @@ public class RoomFactory {
         return instance;
     }
 
-    public List<Room> getRooms() {
-        return Database.getInstance().getAll(Room.class);
-    }
-
     public Room findRoomByID( Long id ) {
         return Database.getInstance().findById(Room.class, id);
     }

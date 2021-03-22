@@ -5,6 +5,7 @@ import com.hamming.storim.ImageStore;
 import com.hamming.storim.model.Thing;
 import com.hamming.storim.model.User;
 
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +56,6 @@ public class ThingFactory {
         }
     }
 
-
-
     public static ThingFactory getInstance() {
         if ( instance == null ) {
             instance = new ThingFactory();
@@ -89,14 +88,18 @@ public class ThingFactory {
         return Database.getInstance().getAll(Thing.class);
     }
 
-
-    public List<Thing> getThings(User user) {
-        List<Thing> list = new ArrayList<>();
-        for (Thing t : getAllThings()) {
-            if (t.getOwner().getId().equals( user.getId())) {
-                list.add(t);
+    public List<Thing> getAllThingsInRoom(Long roomId) {
+      List<Thing> things = new ArrayList<>();
+        for (Thing thing : getAllThings()) {
+            if (thing.getLocation() != null && thing.getLocation().getRoom().getId().equals(roomId)) {
+                things.add(thing);
             }
         }
-        return list;
+        return things;
+    }
+
+
+    public List<Thing> getThings(User user) {
+        return Database.getInstance().getAll(Thing.class, user.getId());
     }
 }

@@ -155,7 +155,8 @@ public class ClientConnection implements Runnable, GameStateListener {
 
 
     private void thingDeleted(Thing thing) {
-        ThingDeletedDTO dto = new ThingDeletedDTO(thing.getId());
+        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
+        ThingDeletedDTO dto = new ThingDeletedDTO(thingDto);
         send(dto);
     }
 
@@ -214,6 +215,8 @@ public class ClientConnection implements Runnable, GameStateListener {
             sendRooms();
             // Send Things
             sendThings();
+            // Send Things In Room
+            sendThingsInRoom();
             // Logged in Users;
             for (User u : gameController.getGameState().getOnlineUsers()) {
                 if (!u.getId().equals(currentUser.getId())) {
@@ -221,6 +224,14 @@ public class ClientConnection implements Runnable, GameStateListener {
                     handleUserOnline(u);
                 }
             }
+        }
+    }
+
+    private void sendThingsInRoom() {
+        for (Thing thing : ThingFactory.getInstance().getAllThingsInRoom(currentUser.getLocation().getRoom().getId()) ) {
+            ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
+            GetThingResultDTO getThingResultDTO = new GetThingResultDTO(true, null, thingDto);
+            send(getThingResultDTO);
         }
     }
 

@@ -14,13 +14,6 @@ public class Location implements Serializable {
         this.y = y;
     }
 
-    public Location(long sequence, Room r, int x, int y) {
-        this.sequence = sequence;
-        this.room = r;
-        this.x = x;
-        this.y = y;
-    }
-
 
     public int getX() {
         return x;

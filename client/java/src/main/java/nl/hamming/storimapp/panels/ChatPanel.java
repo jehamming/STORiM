@@ -2,10 +2,7 @@ package nl.hamming.storimapp.panels;
 
 
 import com.hamming.storim.Controllers;
-import com.hamming.storim.interfaces.ConnectionListener;
-import com.hamming.storim.interfaces.RoomListener;
-import com.hamming.storim.interfaces.UserListener;
-import com.hamming.storim.interfaces.VerbListener;
+import com.hamming.storim.interfaces.*;
 import com.hamming.storim.model.dto.*;
 import com.hamming.storim.model.dto.protocol.verb.ExecVerbResultDTO;
 
@@ -33,7 +30,6 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
     public void disconnected() {
         empty();
     }
-
 
 
     private class VerbListItem {
@@ -117,12 +113,9 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
     }
 
     public void empty() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                chatOutput.setText("");
-                verbsModel.removeAllElements();
-            }
+        SwingUtilities.invokeLater(() -> {
+            chatOutput.setText("");
+            verbsModel.removeAllElements();
         });
     }
 
@@ -204,6 +197,15 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
             Long roomId = controllers.getUserController().getCurrentUserLocation().getRoomId();
             RoomDto roomDto = controllers.getRoomController().findRoomByID(roomId);
             addText("You wake up in " + roomDto.getName());
+            String things = "";
+            for (ThingDto thing : controllers.getThingController().getThingsInRoom(roomDto.getId())) {
+                things = things.concat(thing.getName()+",");
+            }
+            if (things != "") {
+                // Remove trailing ','
+                things = things.substring(0, things.length()-1);
+            }
+            addText("You see : " + things);
         }
     }
 
@@ -261,6 +263,11 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
     @Override
     public void thingPlacedInRoom(ThingDto thing, UserDto byUser) {
         addText(byUser.getName() + " placed " + thing.getName() + " in this room");
+    }
+
+    @Override
+    public void thingRemovedFromRoom(ThingDto thing) {
+        addText(thing.getName() + " disappears...");
     }
 
 

@@ -2,13 +2,8 @@ package com.hamming.storim.controllers;
 
 import com.hamming.storim.Controllers;
 import com.hamming.storim.game.ProtocolHandler;
-import com.hamming.storim.interfaces.RoomUpdateListener;
 import com.hamming.storim.interfaces.ThingListener;
-import com.hamming.storim.interfaces.UserListener;
-import com.hamming.storim.model.dto.AvatarDto;
 import com.hamming.storim.model.dto.ThingDto;
-import com.hamming.storim.model.dto.ThingDto;
-import com.hamming.storim.model.dto.protocol.avatar.DeleteAvatarDTO;
 import com.hamming.storim.model.dto.protocol.thing.*;
 import com.hamming.storim.net.NetCommandReceiver;
 import com.hamming.storim.util.ImageUtils;
@@ -50,7 +45,7 @@ public class ThingController {
     }
 
     private void handleThingDeleted(ThingDeletedDTO dto) {
-        ThingDto thing  = removeFromThingStore(dto.getThingId());
+        ThingDto thing  = removeFromThingStore(dto.getThing().getId());
         if (thing != null) {
             for (ThingListener l : thingListeners) {
                 l.thingDeleted(thing);
@@ -117,4 +112,16 @@ public class ThingController {
         PlaceThingInRoomRequestDTO dto = new PlaceThingInRoomRequestDTO(thingID, roomId);
         controllers.getConnectionController().send(dto);
     }
+
+    public List<ThingDto> getThingsInRoom(Long roomId) {
+        List<ThingDto> things = new ArrayList<>();
+        for (ThingDto thing: thingStore.values()) {
+            if (thing.getLocation().getRoomId().equals(roomId)) {
+                things.add(thing);
+            }
+        }
+        return things;
+    }
+
+
 }

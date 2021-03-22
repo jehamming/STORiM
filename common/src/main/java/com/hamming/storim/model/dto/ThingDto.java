@@ -10,10 +10,10 @@ public class ThingDto extends DTO {
     private transient Image image;
     private String description;
     private float scale;
-    private float rotation;
+    private int rotation;
     private LocationDto location;
 
-    public ThingDto(Long id, String name, String description, float scale, float rotation, byte[] imageData, LocationDto location ){
+    public ThingDto(Long id, String name, String description, float scale, int rotation, byte[] imageData, LocationDto location ){
         setId(id);
         setName(name);
         this.imageData = imageData;
@@ -42,7 +42,7 @@ public class ThingDto extends DTO {
         return scale;
     }
 
-    public float getRotation() {
+    public int getRotation() {
         return rotation;
     }
 
@@ -53,7 +53,9 @@ public class ThingDto extends DTO {
     @Override
     public String toString() {
         return "ThingDto{" +
-                "description='" + description + '\'' +
+                "id=" + getId() +
+                ", name=" + getName() +
+                ", description='" + description + '\'' +
                 ", scale=" + scale +
                 ", rotation=" + rotation +
                 ", location=" + location +

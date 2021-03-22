@@ -16,7 +16,7 @@ public class DeleteAvatarAction implements Action {
     @Override
     public void execute() {
         Player player = viewer.getPlayer(userId);
-        player.setAvatar(null);
+        player.setImage(null);
     }
 
     @Override

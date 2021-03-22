@@ -1,23 +1,24 @@
 package com.hamming.storim.model.dto.protocol.thing;
 
+import com.hamming.storim.model.dto.ThingDto;
 import com.hamming.storim.model.dto.protocol.ProtocolDTO;
 
 public class ThingDeletedDTO implements ProtocolDTO {
 
-    private Long thingId;
+    private ThingDto thing;
 
-    public ThingDeletedDTO(Long thingId) {
-        this.thingId = thingId;
+    public ThingDeletedDTO(ThingDto thing) {
+        this.thing = thing;
     }
 
-    public Long getThingId() {
-        return thingId;
+    public ThingDto getThing() {
+        return thing;
     }
 
     @Override
     public String toString() {
         return "ThingDeletedDTO{" +
-                "thingId=" + thingId +
+                "thing=" + thing +
                 '}';
     }
 }

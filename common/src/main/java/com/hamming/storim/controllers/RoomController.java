@@ -5,11 +5,13 @@ import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.interfaces.RoomListener;
 import com.hamming.storim.interfaces.RoomUpdateListener;
 import com.hamming.storim.model.dto.RoomDto;
+import com.hamming.storim.model.dto.ThingDto;
 import com.hamming.storim.model.dto.TileDto;
 import com.hamming.storim.model.dto.UserDto;
 import com.hamming.storim.model.dto.protocol.*;
 import com.hamming.storim.model.dto.protocol.room.*;
 import com.hamming.storim.model.dto.protocol.room.GetTileResultDTO;
+import com.hamming.storim.model.dto.protocol.thing.ThingDeletedDTO;
 import com.hamming.storim.model.dto.protocol.thing.ThingPlacedDTO;
 import com.hamming.storim.model.dto.protocol.thing.ThingUpdatedDTO;
 import com.hamming.storim.net.NetCommandReceiver;
@@ -48,6 +50,15 @@ public class RoomController {
         controllers.getConnectionController().registerReceiver(UserLocationUpdateDTO.class, (NetCommandReceiver<UserLocationUpdateDTO>) dto -> handleUserLocationUpdateDTO(dto));
         controllers.getConnectionController().registerReceiver(GetTileResultDTO.class, (NetCommandReceiver<GetTileResultDTO>) dto -> handleGetTileResultDTO(dto));
         controllers.getConnectionController().registerReceiver(ThingPlacedDTO.class, (NetCommandReceiver<ThingPlacedDTO>) dto -> handleThingPlacedDTO(dto));
+        controllers.getConnectionController().registerReceiver(ThingDeletedDTO.class, (NetCommandReceiver<ThingDeletedDTO>) dto -> handleThingDeletedDTO(dto));
+    }
+
+    private void handleThingDeletedDTO(ThingDeletedDTO dto) {
+        if ( currentUserLocation( dto.getThing().getLocation().getRoomId())) {
+            for (RoomListener l : roomListeners) {
+                l.thingRemovedFromRoom(dto.getThing());
+            }
+        }
     }
 
     private void handleThingPlacedDTO(ThingPlacedDTO dto) {
@@ -116,7 +127,6 @@ public class RoomController {
 
 
     private void handleUserOnlineDTO(UserOnlineDTO dto) {
-        RoomDto room = findRoomByID(dto.getLocation().getRoomId());
         if (currentUserLocation(dto.getLocation().getRoomId())) {
             for (RoomListener l : roomListeners) {
                 l.userInRoom(dto.getUser(), dto.getLocation());
@@ -198,7 +208,7 @@ public class RoomController {
     }
 
     public List<RoomDto> getRoomsForUser(Long userId) {
-        List<RoomDto> roomList = new ArrayList<RoomDto>();
+        List<RoomDto> roomList = new ArrayList<>();
         for (RoomDto room : rooms.values()) {
             if (room.getOwnerID().equals(userId)) {
                 roomList.add(room);

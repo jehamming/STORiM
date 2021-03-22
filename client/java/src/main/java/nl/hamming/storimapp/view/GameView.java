@@ -6,14 +6,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
+import com.hamming.storim.Controllers;
 import com.hamming.storim.model.dto.*;
+import com.hamming.storim.util.ImageUtils;
 import nl.hamming.storimapp.engine.actions.*;
 import nl.hamming.storimapp.engine.actions.Action;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class GameView extends JPanel implements Runnable {
@@ -22,6 +27,7 @@ public class GameView extends JPanel implements Runnable {
     volatile boolean playing;
     private int fps = 30;
     private int arrowSize = 50;
+    private int maxUsersX = 10;
     private long time;
     private BufferedImage backBuffer;
 
@@ -43,14 +49,32 @@ public class GameView extends JPanel implements Runnable {
     private Image arrowRight;
     Timer timer;
     TimerTask task;
+    DragTimerTask dragTimerTask;
+    private BasicDrawableObject selectedObject;
 
     private boolean forward, back, left, right;
-
 
 
     private class MyTimerTask extends TimerTask {
         public void run() {
             viewController.sendMoveRequest(forward, back, left, right);
+        }
+    }
+
+    private class DragTimerTask extends TimerTask {
+        private Thing thing;
+        private DragTimerTask(Thing thing) {
+            this.thing = thing;
+        }
+        public void run() {
+            Point p = MouseInfo.getPointerInfo().getLocation();
+            SwingUtilities.convertPointFromScreen(p, GameView.this);
+            thing.setX((int) p.getX());
+            thing.setY((int) p.getY() );
+            System.out.println(MouseInfo.getPointerInfo().getLocation().x +", "+ MouseInfo.getPointerInfo().getLocation().y);
+        }
+        public Thing getThing() {
+            return thing;
         }
     }
 
@@ -60,18 +84,29 @@ public class GameView extends JPanel implements Runnable {
         actions = Collections.synchronizedList(new LinkedList<Action>());
         players = new ArrayList<>();
         things = new ArrayList<>();
-        defaultTileImage = Toolkit.getDefaultToolkit().getImage("resources/Tile.png");
-        defaultUserImage = Toolkit.getDefaultToolkit().getImage("resources/User.png");
-        arrowForward = Toolkit.getDefaultToolkit().getImage("resources/arrowForward.png");
-        arrowBack = Toolkit.getDefaultToolkit().getImage("resources/arrowBack.png");
-        arrowLeft = Toolkit.getDefaultToolkit().getImage("resources/arrowLeft.png");
-        arrowRight = Toolkit.getDefaultToolkit().getImage("resources/arrowRight.png");
+        try {
+            defaultTileImage = ImageIO.read(new File("resources/Tile.png"));
+            defaultUserImage = ImageIO.read(new File("resources/User.png"));
+            arrowForward = ImageIO.read(new File("resources/arrowForward.png"));
+            arrowBack = ImageIO.read(new File("resources/arrowBack.png"));
+            arrowLeft = ImageIO.read(new File("resources/arrowLeft.png"));
+            arrowRight = ImageIO.read(new File("resources/arrowRight.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         timer = new Timer();
         setPreferredSize(new Dimension(500, 500));
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                if (selectedObject != null) {
+                    selectedObject.setSelected(false);
+                }
+                selectedObject = getSelectedObject(e.getX(), e.getY());
+                if (selectedObject != null) {
+                    selectedObject.setSelected(true);
+                }
             }
 
             @Override
@@ -81,8 +116,15 @@ public class GameView extends JPanel implements Runnable {
                     back = isBackButton(e.getX(), e.getY());
                     right = isRightButton(e.getX(), e.getY());
                     left = isLeftButton(e.getX(), e.getY());
-                    task = new MyTimerTask();
-                    timer.scheduleAtFixedRate(task, 0, 100); // Time is in milliseconds
+                    if (forward || back || right || left) {
+                        task = new MyTimerTask();
+                        timer.scheduleAtFixedRate(task, 0, 50);
+                    }
+                    BasicDrawableObject b = getSelectedObject(e.getX(), e.getY());
+                    if ( b != null && b instanceof Thing) {
+                            dragTimerTask = new DragTimerTask((Thing) b);
+                            timer.scheduleAtFixedRate(dragTimerTask, 0, 50);
+                    }
                 }
             }
 
@@ -93,8 +135,16 @@ public class GameView extends JPanel implements Runnable {
                     back = false;
                     left = false;
                     right = false;
-                    task.cancel();
+                    if (task != null) task.cancel();
+                    if (dragTimerTask != null) {
+                        Thing thing = dragTimerTask.getThing();
+                        dragTimerTask.cancel();
+                        if (thing != null ) {
+                            updatePosition(thing);
+                        }
+                    }
                 }
+                clearSelection();
             }
 
             @Override
@@ -109,19 +159,24 @@ public class GameView extends JPanel implements Runnable {
         });
     }
 
+    private void updatePosition(Thing thing) {
+        viewController.updateThingLocationRequest(thing.getId(), thing.getX(), thing.getY());
+    }
+
     public void setViewController(ViewController viewController) {
         this.viewController = viewController;
     }
 
+
     @Override
     public void run() {
+        int scaledSize = getWidth() / maxUsersX;
+        defaultUserImage = ImageUtils.resize(defaultUserImage, scaledSize, scaledSize);
         while (playing) {
-            long time = System.currentTimeMillis();
-
+            time = System.currentTimeMillis();
             handleActions();
             draw();
             waitIfNeeded();
-
         }
     }
 
@@ -137,9 +192,8 @@ public class GameView extends JPanel implements Runnable {
     }
 
 
-
     public void scheduleAddThing(ThingDto thing) {
-        Action action = new AddThingAction(this, thing.getId(), thing.getImage(), thing.getScale(), thing.getRotation());
+        Action action = new AddThingAction(this, thing);
         synchronized (actions) {
             actions.add(action);
         }
@@ -183,8 +237,8 @@ public class GameView extends JPanel implements Runnable {
     }
 
 
-
     public void scheduleAddPlayer(Long userId, String name, Image image) {
+        if (image == null) image = defaultUserImage;
         Action action = new AddPlayerAction(this, userId, name, image);
         synchronized (actions) {
             actions.add(action);
@@ -192,10 +246,11 @@ public class GameView extends JPanel implements Runnable {
     }
 
     public void addThing(Thing thing) {
-        if (! things.contains(thing)) {
+        if (!things.contains(thing)) {
             things.add(thing);
         }
     }
+
     public void deleteThing(Thing thing) {
         if (things.contains(thing)) {
             things.remove(thing);
@@ -205,7 +260,7 @@ public class GameView extends JPanel implements Runnable {
     public Thing getThing(Long thingId) {
         Thing thing = null;
         for (Thing t : things) {
-            if (t.getThingId().equals(thingId)) {
+            if (t.getId().equals(thingId)) {
                 thing = t;
                 break;
             }
@@ -214,7 +269,7 @@ public class GameView extends JPanel implements Runnable {
     }
 
     public void addPlayer(Player player) {
-        if (! players.contains(player)) {
+        if (!players.contains(player)) {
             players.add(player);
         }
     }
@@ -222,7 +277,7 @@ public class GameView extends JPanel implements Runnable {
     public Player getPlayer(Long userId) {
         Player player = null;
         for (Player p : players) {
-            if (p.getUserId().equals(userId)) {
+            if (p.getId().equals(userId)) {
                 player = p;
                 break;
             }
@@ -299,30 +354,41 @@ public class GameView extends JPanel implements Runnable {
         }
     }
 
-    public void pause() {
-        //when the game is paused
-        //setting the variable to false
-        playing = false;
-        try {
-            //stopping the thread
-            gameThread.join();
-        } catch (InterruptedException e) {
-        }
-    }
 
     public void start() {
-        resume();
-        ;
-    }
-
-    public void resume() {
-        //when the game is resumed
-        //starting the thread again
         playing = true;
         gameThread = new Thread(this);
         gameThread.start();
     }
 
+    private BasicDrawableObject getSelectedObject(int x, int y) {
+        BasicDrawableObject object = null;
+        for (BasicDrawableObject player : players) {
+            if (player.withinBounds(x, y)) {
+                object = player;
+                break;
+            }
+        }
+        if (object == null) {
+            for (BasicDrawableObject thing : things) {
+                if (thing.withinBounds(x, y)) {
+                    object = thing;
+                    break;
+                }
+            }
+        }
+        return object;
+    }
+
+    private void clearSelection() {
+        for (BasicDrawableObject thing : things) {
+            thing.setSelected(false);
+        }
+        for (BasicDrawableObject player : players) {
+            player.setSelected(false);
+        }
+        selectedObject = null;
+    }
 
     public void draw() {
         backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -381,7 +447,7 @@ public class GameView extends JPanel implements Runnable {
     void drawRoom(Graphics g) {
         Image tileImage = defaultTileImage;
         if (room != null) {
-            if ( tile != null ) {
+            if (tile != null) {
                 tileImage = tile.getImage();
             }
             int roomSize = room.getSize();
@@ -405,69 +471,61 @@ public class GameView extends JPanel implements Runnable {
         g.setFont(font);
         FontMetrics metrics = g.getFontMetrics(font);
         // Determine the X coordinate for the text
-        int textX = (getWidth() / 2 ) -  (metrics.stringWidth(room.getName()) / 2);
+        int textX = (getWidth() / 2) - (metrics.stringWidth(room.getName()) / 2);
 
-        g.setColor( Color.white );
-        g.fillRect(textX - 5, 2 , metrics.stringWidth(room.getName()) + 5, metrics.getAscent() + 2);
+        g.setColor(Color.white);
+        g.fillRect(textX - 5, 2, metrics.stringWidth(room.getName()) + 5, metrics.getAscent() + 2);
         g.setColor(Color.black);
-        g.drawString(room.getName(), textX, metrics.getAscent()+2);
+        g.drawString(room.getName(), textX, metrics.getAscent() + 2);
     }
 
     private void drawThings(Graphics g) {
         for (Thing thing : things) {
-            int x = thing.getX();
-            int y = thing.getY();
-            int width  = new Float( thing.getImage().getWidth(null) * thing.getScale() ).intValue();
-            int height = new Float( thing.getImage().getHeight(null) * thing.getScale() ).intValue();
-
-
-            Graphics2D g2d = (Graphics2D) g;
-            double rotationAngle = Math.toRadians (thing.getRotation());
-            int rx = x + (width/2);
-            int ry = y + (height/2);
-            //Make a backup so that we can reset our graphics object after using it.
-            AffineTransform backup = g2d.getTransform();
-            //rx is the x coordinate for rotation, ry is the y coordinate for rotation, and angle
-            //is the angle to rotate the image. If you want to rotate around the center of an image,
-            //use the image's center x and y coordinates for rx and ry.
-            AffineTransform a = AffineTransform.getRotateInstance(rotationAngle, rx, ry);
-            //Set our Graphics2D object to the transform
-            g2d.setTransform(a);
-            //Draw our image like normal
-            g2d.drawImage(thing.getImage(), x, y, width, height, this);
-            //Reset our graphics object so we can draw with it again.
-            g2d.setTransform(backup);
-
-
-
-            //g.drawImage(thing.getImage(), x, y, width, height, this);
+            int middleX = thing.getImage().getWidth(null) / 2;
+            int middleY = thing.getImage().getHeight(null) / 2;
+            int x = thing.getX() - middleX;
+            int y = thing.getY() - middleY;
+            g.drawImage(thing.getImage(), x, y, this);
+            if (thing.isSelected()) {
+                drawSelectionHighlight(g, thing);
+            }
         }
+    }
+
+    private void drawSelectionHighlight(Graphics g, BasicDrawableObject o) {
+        int middleX = o.getImage().getWidth(null) / 2;
+        int middleY = o.getImage().getHeight(null) / 2;
+        Color old = g.getColor();
+        g.setColor(Color.red);
+        g.drawRect(o.getX() - middleX, o.getY() - middleY, o.getImage().getWidth(null), o.getImage().getHeight(null));
+        g.setColor(old);
     }
 
     private void drawUsers(Graphics g) {
         int roomSize = 10;
         int widthPerTile = getWidth() / roomSize;
         for (Player player : players) {
-            int x = player.getX();
-            int y = player.getY();
-            Image playerAvatar = player.getAvatar();
-            if (playerAvatar == null ) {
-                playerAvatar = defaultUserImage;
-            }
-            g.drawImage(playerAvatar, x, y, widthPerTile, widthPerTile, this);
-
+            int middleX = player.getImage().getWidth(null) / 2;
+            int middleY = player.getImage().getHeight(null) / 2;
+            int x = player.getX() - middleX;
+            int y = player.getY() - middleY;
+            Image playerAvatar = player.getImage();
+            g.drawImage(playerAvatar, x, y, this);
             Font font = new Font("Arial", Font.BOLD, 12);
             g.setFont(font);
             FontMetrics metrics = g.getFontMetrics(font);
-            int middle = x + (widthPerTile / 2 );
+            int middle = x + (widthPerTile / 2);
             y = y + widthPerTile + 10;
             for (String line : player.getDisplayName().split(" ")) {
-                x =  middle- (metrics.stringWidth(line) / 2);
-                g.setColor( Color.white );
-                g.fillRect(x - 5, y - 10 , metrics.stringWidth(line) + 5, metrics.getAscent() + 2);
+                x = middle - (metrics.stringWidth(line) / 2);
+                g.setColor(Color.white);
+                g.fillRect(x - 5, y - 10, metrics.stringWidth(line) + 5, metrics.getAscent() + 2);
                 g.setColor(Color.black);
                 g.drawString(line, x, y);
                 y += g.getFontMetrics().getHeight();
+            }
+            if (player.isSelected()) {
+                drawSelectionHighlight(g, player);
             }
 
         }
