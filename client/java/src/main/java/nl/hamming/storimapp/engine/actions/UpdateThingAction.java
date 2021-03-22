@@ -1,5 +1,6 @@
 package nl.hamming.storimapp.engine.actions;
 
+import com.hamming.storim.model.dto.ThingDto;
 import nl.hamming.storimapp.view.GameView;
 import nl.hamming.storimapp.view.Thing;
 
@@ -9,35 +10,31 @@ import java.awt.*;
 public class UpdateThingAction implements Action {
 
     private GameView viewer;
-    private Long thingId;
-    private Image image;
-    private float scale;
-    private int rotation;
+    private ThingDto thingDto;
 
-    public UpdateThingAction(GameView viewer, Long thingID, Image image, float scale, int rotation) {
+    public UpdateThingAction(GameView viewer, ThingDto thingDto) {
         this.viewer = viewer;
-        this.thingId = thingID;
-        this.image = image;
-        this.scale = scale;
-        this.rotation = rotation;
+        this.thingDto = thingDto;
     }
 
     @Override
     public void execute() {
-        Thing thing = viewer.getThing(thingId);
+        Thing thing = viewer.getThing(thingDto.getId());
         if ( thing != null ) {
-            thing.setImage(image);
-            thing.setScale(scale);
-            thing.setRotation(rotation);
+            thing.setImage(thingDto.getImage());
+            thing.setScale(thingDto.getScale());
+            thing.setRotation(thingDto.getRotation());
+            thing.setX(thingDto.getLocation().getX());
+            thing.setY(thingDto.getLocation().getY());
         }
     }
 
+
     @Override
-    public String toString() {
+    public String
+    toString() {
         return "UpdateThingAction{" +
-                "thingId=" + thingId +
-                ", scale=" + scale +
-                ", rotation=" + rotation +
+                ", thingDto=" + thingDto +
                 '}';
     }
 }

@@ -71,7 +71,6 @@ public class GameView extends JPanel implements Runnable {
             SwingUtilities.convertPointFromScreen(p, GameView.this);
             thing.setX((int) p.getX());
             thing.setY((int) p.getY() );
-            System.out.println(MouseInfo.getPointerInfo().getLocation().x +", "+ MouseInfo.getPointerInfo().getLocation().y);
         }
         public Thing getThing() {
             return thing;
@@ -201,7 +200,7 @@ public class GameView extends JPanel implements Runnable {
 
 
     public void scheduleUpdateThing(ThingDto thing) {
-        Action action = new UpdateThingAction(this, thing.getId(), thing.getImage(), thing.getScale(), thing.getRotation());
+        Action action = new UpdateThingAction(this, thing);
         synchronized (actions) {
             actions.add(action);
         }

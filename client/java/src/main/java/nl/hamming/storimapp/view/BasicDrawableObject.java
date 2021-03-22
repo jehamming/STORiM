@@ -53,7 +53,7 @@ public class BasicDrawableObject {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Thing thing = (Thing) o;
+        BasicDrawableObject thing = (BasicDrawableObject) o;
         return Objects.equals(getId(), thing.getId());
     }
 
