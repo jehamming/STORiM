@@ -1,5 +1,6 @@
 package nl.hamming.storimapp.engine.actions;
 
+import com.hamming.storim.util.ImageUtils;
 import nl.hamming.storimapp.view.GameView;
 import nl.hamming.storimapp.view.Player;
 
@@ -25,6 +26,9 @@ public class AddPlayerAction implements Action {
         Player player = new Player(userId);
         player.setDisplayName(name);
         if (image != null ) {
+            int roomSize = 10;
+            int widthPerTile = viewer.getWidth() / roomSize;
+            image = ImageUtils.resize(image, widthPerTile, widthPerTile);
             player.setImage(image);
         }
         viewer.addPlayer(player);

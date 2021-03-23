@@ -3,6 +3,7 @@ package nl.hamming.storimapp.panels;
 import com.hamming.storim.Controllers;
 import com.hamming.storim.interfaces.ThingListener;
 import com.hamming.storim.interfaces.UserListener;
+import com.hamming.storim.interfaces.ViewListener;
 import com.hamming.storim.model.dto.AvatarDto;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.ThingDto;
@@ -15,13 +16,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class ThingPanel extends javax.swing.JPanel implements ThingListener, UserListener {
+public class ThingPanel extends javax.swing.JPanel implements ThingListener, UserListener, ViewListener {
 
     private Controllers controllers;
     private JFileChooser fileChooser;
     private DefaultListModel<ThingListItem> thingsModel = new DefaultListModel<>();
     private boolean newThing = false;
     private Image thingImage;
+
+
 
     private class ThingListItem {
         private ThingDto thing;
@@ -53,6 +56,7 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
         empty(true);
         controllers.getThingController().addThingListener(this);
         controllers.getUserController().addUserListener(this);
+        controllers.getViewerController().addViewListener(this);
     }
 
     private void setup() {
@@ -471,6 +475,31 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
 
     }
 
+    @Override
+    public void userSelectedInView(UserDto user) {
 
+    }
+
+    @Override
+    public void thingSelectedInView(ThingDto thing) {
+        SwingUtilities.invokeLater(() -> {
+            ThingListItem item = getItem(thing);
+            if ( item != null ) {
+                listThings.setSelectedValue(item, true);
+            }
+        });
+    }
+
+    private ThingListItem getItem(ThingDto thing) {
+        ThingListItem found = null;
+        for (int i = 0; i < thingsModel.getSize(); i++) {
+            ThingListItem item = thingsModel.get(i);
+            if (item.getThing().equals(thing)) {
+                found = item;
+                break;
+            }
+        }
+        return found;
+    }
 }
 

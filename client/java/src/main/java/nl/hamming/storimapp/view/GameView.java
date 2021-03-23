@@ -63,15 +63,18 @@ public class GameView extends JPanel implements Runnable {
 
     private class DragTimerTask extends TimerTask {
         private Thing thing;
+
         private DragTimerTask(Thing thing) {
             this.thing = thing;
         }
+
         public void run() {
             Point p = MouseInfo.getPointerInfo().getLocation();
             SwingUtilities.convertPointFromScreen(p, GameView.this);
             thing.setX((int) p.getX());
-            thing.setY((int) p.getY() );
+            thing.setY((int) p.getY());
         }
+
         public Thing getThing() {
             return thing;
         }
@@ -99,12 +102,11 @@ public class GameView extends JPanel implements Runnable {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (selectedObject != null) {
-                    selectedObject.setSelected(false);
-                }
+                clearSelection();
                 selectedObject = getSelectedObject(e.getX(), e.getY());
                 if (selectedObject != null) {
                     selectedObject.setSelected(true);
+                    selectObject(selectedObject);
                 }
             }
 
@@ -120,9 +122,9 @@ public class GameView extends JPanel implements Runnable {
                         timer.scheduleAtFixedRate(task, 0, 50);
                     }
                     BasicDrawableObject b = getSelectedObject(e.getX(), e.getY());
-                    if ( b != null && b instanceof Thing) {
-                            dragTimerTask = new DragTimerTask((Thing) b);
-                            timer.scheduleAtFixedRate(dragTimerTask, 0, 50);
+                    if (b != null && b instanceof Thing) {
+                        dragTimerTask = new DragTimerTask((Thing) b);
+                        timer.scheduleAtFixedRate(dragTimerTask, 0, 50);
                     }
                 }
             }
@@ -138,7 +140,7 @@ public class GameView extends JPanel implements Runnable {
                     if (dragTimerTask != null) {
                         Thing thing = dragTimerTask.getThing();
                         dragTimerTask.cancel();
-                        if (thing != null ) {
+                        if (thing != null) {
                             updatePosition(thing);
                         }
                     }
@@ -156,6 +158,19 @@ public class GameView extends JPanel implements Runnable {
 
             }
         });
+    }
+
+    public Image getDefaultUserImage() {
+        return defaultUserImage;
+    }
+
+    private void selectObject(BasicDrawableObject selectedObject) {
+        if ( selectedObject instanceof  Thing ) {
+            viewController.setSelectedThing(selectedObject.getId());
+
+        } else if (selectedObject instanceof Player) {
+            viewController.setSelectedPlayer(selectedObject.getId());
+        }
     }
 
     private void updatePosition(Thing thing) {
@@ -501,20 +516,18 @@ public class GameView extends JPanel implements Runnable {
     }
 
     private void drawUsers(Graphics g) {
-        int roomSize = 10;
-        int widthPerTile = getWidth() / roomSize;
         for (Player player : players) {
             int middleX = player.getImage().getWidth(null) / 2;
             int middleY = player.getImage().getHeight(null) / 2;
             int x = player.getX() - middleX;
             int y = player.getY() - middleY;
             Image playerAvatar = player.getImage();
-            g.drawImage(playerAvatar, x, y, this);
+            g.drawImage(playerAvatar, x, y,  this);
             Font font = new Font("Arial", Font.BOLD, 12);
             g.setFont(font);
             FontMetrics metrics = g.getFontMetrics(font);
-            int middle = x + (widthPerTile / 2);
-            y = y + widthPerTile + 10;
+            int middle = x + (player.getImage().getWidth(null) / 2);
+            y = y + player.getImage().getHeight(null) + 10;
             for (String line : player.getDisplayName().split(" ")) {
                 x = middle - (metrics.stringWidth(line) / 2);
                 g.setColor(Color.white);

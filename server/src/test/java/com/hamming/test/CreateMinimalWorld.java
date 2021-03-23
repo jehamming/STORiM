@@ -25,7 +25,7 @@ public class CreateMinimalWorld {
 
         // Jan-Egbert
         User userJan = UserFactory.getInstance().addUser(rootUser,"Jan-Egbert Hamming", "jehamming", "jehamming", "janneman@hotmail.com");
-        Verb cmdSayJan = VerbFactory.getInstance().createVerb("Say", userLuuk);
+        Verb cmdSayJan = VerbFactory.getInstance().createVerb("Say", userJan);
         cmdSayJan.setToCaller("You say '${message}'");
         cmdSayJan.setToLocation("${caller} says '${message}'");
         Room roomJan = RoomFactory.getInstance().createRoom(userJan, "Jan's Room", 20);

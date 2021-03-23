@@ -124,4 +124,7 @@ public class ThingController {
     }
 
 
+    public ThingDto findThingById(Long id) {
+        return getFromThingStore(id);
+    }
 }

@@ -1,6 +1,7 @@
 package com.hamming.storim;
 
 import com.hamming.storim.controllers.*;
+import com.hamming.storim.interfaces.ViewerController;
 
 public class Controllers {
 
@@ -10,6 +11,7 @@ public class Controllers {
     private VerbController verbController;
     private RoomController roomController;
     private ThingController thingController;
+    private ViewerController viewerController;
 
     public ConnectionController getConnectionController() {
         return connectionController;
@@ -49,5 +51,13 @@ public class Controllers {
 
     public void setThingController(ThingController thingController) {
         this.thingController = thingController;
+    }
+
+    public ViewerController getViewerController() {
+        return viewerController;
+    }
+
+    public void setViewerController(ViewerController viewerController) {
+        this.viewerController = viewerController;
     }
 }

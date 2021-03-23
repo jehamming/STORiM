@@ -3,6 +3,7 @@ package nl.hamming.storimapp.panels;
 import com.hamming.storim.Controllers;
 import com.hamming.storim.game.ProtocolHandler;
 import com.hamming.storim.interfaces.UserListener;
+import com.hamming.storim.interfaces.ViewListener;
 import com.hamming.storim.model.dto.*;
 
 import javax.swing.*;
@@ -17,9 +18,9 @@ import java.util.Enumeration;
  *
  * @author jehamming
  */
-public class UserInfoPanel extends javax.swing.JPanel implements UserListener {
+public class UserInfoPanel extends javax.swing.JPanel implements UserListener, ViewListener {
 
-    private DefaultListModel onlineUsersListmodel;
+    private DefaultListModel<UserListItem> onlineUsersListmodel;
     private DefaultListModel verbsListmodel;
     private ProtocolHandler protocolHandler;
     private Controllers controllers;
@@ -59,6 +60,7 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener {
     public UserInfoPanel(Controllers controllers) {
         this.controllers = controllers;
         controllers.getUserController().addUserListener(this);
+        controllers.getViewerController().addViewListener(this);
         protocolHandler = new ProtocolHandler();
         setBorder(new TitledBorder("Users"));
         initComponents();
@@ -245,6 +247,35 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener {
     @Override
     public void avatarUpdated(AvatarDto avatar) {
 
+    }
+
+
+    @Override
+    public void thingSelectedInView(ThingDto thing) {
+
+    }
+
+
+    @Override
+    public void userSelectedInView(UserDto user) {
+        SwingUtilities.invokeLater(() -> {
+            UserListItem item = getItem(user);
+            if ( item != null ) {
+                listOnlineUsers.setSelectedValue(item, true);
+            }
+        });
+    }
+
+    private UserListItem getItem(UserDto user) {
+        UserListItem found = null;
+        for (int i = 0; i < onlineUsersListmodel.getSize(); i++) {
+            UserListItem item = onlineUsersListmodel.get(i);
+            if (item.getUser().equals(user)) {
+                found = item;
+                break;
+            }
+        }
+        return found;
     }
 
 

@@ -12,15 +12,16 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewController implements ConnectionListener, UserListener, RoomListener, RoomUpdateListener, ThingListener {
+public class ViewController implements ViewerController, ConnectionListener, UserListener, RoomListener, RoomUpdateListener, ThingListener {
 
     private ProtocolHandler protocolHandler;
     private Controllers controllers;
     private GameView gameView;
     private long sequenceNumber;
     private List<MovementRequestDTO> movementRequests;
-    private LocationDto lastrecievedLocation;
+    private LocationDto lastReceivedLocation;
     private Long currentUserid;
+    private List<ViewListener> viewListeners;
 
     public ViewController(GameView gameView, Controllers controllers) {
         this.controllers = controllers;
@@ -32,8 +33,14 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
         controllers.getRoomController().addRoomUpdateListener(this);
         controllers.getThingController().addThingListener(this);
         sequenceNumber = 0;
-        movementRequests = new ArrayList<MovementRequestDTO>();
+        movementRequests = new ArrayList<>();
+        viewListeners = new ArrayList<>();
     }
+
+     @Override
+     public void addViewListener(ViewListener l) {
+        viewListeners.add(l);
+     }
 
     // The method uses client side prediction to counter lag.
     private void moveCurrentUser(Long sequenceNumber, LocationDto l) {
@@ -96,7 +103,7 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
             synchronized (movementRequests) {
                 movementRequests.add(dto);
             }
-            applyMoveRequest(dto, lastrecievedLocation);
+            applyMoveRequest(dto, lastReceivedLocation);
         }
         return dto;
     }
@@ -122,7 +129,7 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
     @Override
     public void disconnected() {
         gameView.scheduleResetView();
-        lastrecievedLocation = null;
+        lastReceivedLocation = null;
         sequenceNumber = 0;
         movementRequests = new ArrayList<MovementRequestDTO>();
         gameView.scheduleRemovePlayer(currentUserid);
@@ -156,7 +163,7 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
         if (success) {
             UserDto currentUser = controllers.getUserController().getCurrentUser();
             LocationDto location = controllers.getUserController().getUserLocation(currentUser.getId());
-            lastrecievedLocation = location;
+            lastReceivedLocation = location;
             RoomDto room = controllers.getRoomController().findRoomByID(location.getRoomId());
             Image image = null;
             if (currentUser.getCurrentAvatarID() != null) {
@@ -255,7 +262,7 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
         }
 
         resetRequests();
-        lastrecievedLocation = location;
+        lastReceivedLocation = location;
     }
 
     @Override
@@ -319,5 +326,19 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
     public void updateThingLocationRequest(Long thingId, int x, int y) {
         UpdateThingLocationDto updateThingLocationDto = new UpdateThingLocationDto(thingId, x, y);
         controllers.getConnectionController().send(updateThingLocationDto);
+    }
+
+    public void setSelectedThing(Long id) {
+        ThingDto thing = controllers.getThingController().findThingById(id);
+        for (ViewListener l : viewListeners ) {
+            l.thingSelectedInView(thing);
+        }
+    }
+
+    public void setSelectedPlayer(Long id) {
+        UserDto user = controllers.getUserController().findUserById(id);
+        for (ViewListener l : viewListeners ) {
+            l.userSelectedInView(user);
+        }
     }
 }

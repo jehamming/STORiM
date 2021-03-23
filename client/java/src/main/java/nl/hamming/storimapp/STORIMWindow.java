@@ -3,6 +3,7 @@ package nl.hamming.storimapp;
 import com.hamming.storim.Controllers;
 import com.hamming.storim.interfaces.ConnectionListener;
 import com.hamming.storim.interfaces.UserListener;
+import com.hamming.storim.interfaces.ViewerController;
 import com.hamming.storim.model.dto.AvatarDto;
 import com.hamming.storim.model.dto.LocationDto;
 import com.hamming.storim.model.dto.UserDto;
@@ -32,7 +33,9 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         controllers.getUserController().addUserListener(this);
         setTitle(BASIC_TITLE);
         gameView = new GameView();
-        gameView.setViewController(new ViewController(getGameView(), controllers));
+        ViewController viewerController = new ViewController(getGameView(), controllers);
+        gameView.setViewController(viewerController);
+        controllers.setViewerController(viewerController);
         initComponents();
         addTabs();
         emptyPanels();
