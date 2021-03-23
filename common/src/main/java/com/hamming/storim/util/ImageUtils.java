@@ -2,6 +2,7 @@ package com.hamming.storim.util;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -56,5 +57,40 @@ public class ImageUtils {
         g2d.dispose();
 
        return outputImage;
+    }
+
+    public static BufferedImage rotateImage(BufferedImage original, int degrees) {
+        double theta = Math.toRadians (degrees);
+        double cos = Math.abs(Math.cos(theta));
+        double sin = Math.abs(Math.sin(theta));
+        double width = original.getWidth();
+        double height = original.getHeight();
+        int w = (int) (width * cos + height * sin);
+        int h = (int) (width * sin + height * cos);
+
+        BufferedImage out = new BufferedImage(w, h, original.getType());
+        Graphics2D g2 = out.createGraphics();
+        double x = w / 2; //the middle of the two new values
+        double y = h / 2;
+
+        AffineTransform at = AffineTransform.getRotateInstance(theta, x, y);
+        x = (w - width) / 2;
+        y = (h - height) / 2;
+        at.translate(x, y);
+        g2.drawRenderedImage(original, at);
+        g2.dispose();
+
+        return out;
+    }
+
+    public static BufferedImage scaleImage(BufferedImage image, float scale) {
+        int width  = new Float( image.getWidth(null) * scale ).intValue();
+        int height = new Float( image.getHeight(null) * scale ).intValue();
+        BufferedImage out = new BufferedImage(width, height, image.getType());
+        Graphics2D g2 = out.createGraphics();
+        g2.drawImage(image, 0, 0, width, height, null);
+        g2.dispose();
+
+        return out;
     }
 }

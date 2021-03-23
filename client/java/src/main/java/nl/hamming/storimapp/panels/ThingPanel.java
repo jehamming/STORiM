@@ -22,8 +22,6 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
     private DefaultListModel<ThingListItem> thingsModel = new DefaultListModel<>();
     private boolean newThing = false;
     private Image thingImage;
-    private SpinnerNumberModel scaleValue;
-    private SpinnerNumberModel rotationValue;
 
     private class ThingListItem {
         private ThingDto thing;
@@ -58,10 +56,6 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
     }
 
     private void setup() {
-        scaleValue = new SpinnerNumberModel(1.0, 0.1, 2.0, 0.1);
-        spScale.setModel(scaleValue);
-        rotationValue = new SpinnerNumberModel(0, 0, 360, 1);
-        spRotation.setModel(rotationValue);
         listThings.setModel(thingsModel);
         btnDelete.addActionListener(e -> deleteThing());
         btnPlace.addActionListener(e -> placeThingInRoom());
@@ -93,8 +87,8 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
             lblID.setText(thing.getId().toString());
             txtName.setText(thing.getName());
             taDescription.setText(thing.getDescription());
-            spScale.setValue(thing.getScale());
-            spRotation.setValue(thing.getRotation());
+            slScale.setValue((int) (thing.getScale() * 100));
+            slRotation.setValue(thing.getRotation());
             btnSave.setEnabled(true);
             btnDelete.setEnabled(true);
             btnPlace.setEnabled(true);
@@ -131,8 +125,8 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
             lblID.setText("");
             txtName.setText("New THING name");
             taDescription.setText("New THING Description");
-            spScale.setValue(new Double(1.0));
-            spRotation.setValue(new Integer(0));
+            slScale.setValue(100);
+            slRotation.setValue(0);
             btnSave.setEnabled(true);
             listThings.clearSelection();
             btnDelete.setEnabled(false);
@@ -145,8 +139,8 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
     private void saveThing() {
         String thingName = txtName.getText().trim();
         String thingDescription = taDescription.getText();
-        Float thingScale = scaleValue.getNumber().floatValue();
-        Integer thingRotation = rotationValue.getNumber().intValue();
+        Float thingScale =  (float) slScale.getValue() / 100;
+        Integer thingRotation = slRotation.getValue();
         if (thingImage == null) {
             JOptionPane.showMessageDialog(this, "Please choose image! ");
             return;
@@ -179,8 +173,8 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
                 txtName.setEnabled(editable);
                 taDescription.setEnabled(editable);
                 btnChooseFile.setEnabled(editable);
-                spRotation.setEnabled(editable);
-                spScale.setEnabled(editable);
+                slRotation.setEnabled(editable);
+                slScale.setEnabled(editable);
             }
         });
     }
@@ -264,12 +258,12 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
         jLabel1 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         taDescription = new javax.swing.JTextArea();
-        spScale = new javax.swing.JSpinner();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        spRotation = new javax.swing.JSpinner();
         btnPlace = new javax.swing.JButton();
         btnTake = new javax.swing.JButton();
+        slScale = new javax.swing.JSlider();
+        slRotation = new javax.swing.JSlider();
 
         jScrollPane1.setViewportView(listThings);
 
@@ -307,6 +301,12 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
 
         btnTake.setText("Take");
 
+        slScale.setMaximum(150);
+        slScale.setValue(100);
+
+        slRotation.setMaximum(360);
+        slRotation.setValue(0);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -335,17 +335,19 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
                                                 .addComponent(btnTake)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(btnSave))
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGroup(layout.createSequentialGroup()
-                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                .addComponent(btnChooseFile, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addComponent(spScale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addComponent(spRotation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                        .addGap(18, 18, 18)
-                                                        .addComponent(lblImagePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(lblID, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                        .addComponent(btnChooseFile, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(slScale, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                                                                        .addComponent(slRotation, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(lblImagePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(lblID, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGap(64, 64, 64)))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -373,14 +375,14 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
                                                                                         .addComponent(btnChooseFile)
                                                                                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                                        .addComponent(spScale)
-                                                                                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                        .addComponent(slScale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                                                         .addComponent(jLabel4)
-                                                                                        .addComponent(spRotation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                                                .addGap(19, 19, 19)
+                                                                                        .addComponent(slRotation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                                         .addComponent(btnSave)
                                                                         .addComponent(btnDelete)
@@ -390,14 +392,16 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
                                                         .addComponent(jLabel1))))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-    }
+    }// </editor-fold>
 
 
     // Variables declaration - do not modify
     private javax.swing.JButton btnChooseFile;
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnPlace;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnTake;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -409,13 +413,10 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
     private javax.swing.JLabel lblID;
     private javax.swing.JLabel lblImagePreview;
     private javax.swing.JList<ThingListItem> listThings;
-    private javax.swing.JSpinner spRotation;
-    private javax.swing.JSpinner spScale;
+    private javax.swing.JSlider slRotation;
+    private javax.swing.JSlider slScale;
     private javax.swing.JTextArea taDescription;
     private javax.swing.JTextField txtName;
-    private javax.swing.JButton btnPlace;
-    private javax.swing.JButton btnTake;
-    // End of variables declaration
 
 
     @Override
