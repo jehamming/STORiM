@@ -1,6 +1,5 @@
-package com.hamming.test;
+package com.hamming.storim;
 
-import com.hamming.storim.Database;
 import com.hamming.storim.factories.*;
 import com.hamming.storim.model.*;
 
