@@ -17,7 +17,7 @@ public class SetTileAction implements Action {
 
     @Override
     public void execute() {
-        viewer.scheduleSetTile(tile);
+        viewer.setTile(tile);
     }
 
     @Override

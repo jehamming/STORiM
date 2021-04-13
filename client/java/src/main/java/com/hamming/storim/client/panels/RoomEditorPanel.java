@@ -94,6 +94,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         SwingUtilities.invokeLater(() -> {
             if ( chosenTile != null ) {
                 Image image = ImageUtils.decode(chosenTile.getImageData());
+                tileImage = (BufferedImage) image;
                 Image iconImage = image.getScaledInstance(lblImagePreview.getWidth(), lblImagePreview.getHeight(), Image.SCALE_SMOOTH);
                 lblImagePreview.setIcon(new ImageIcon(iconImage));
             } else {
@@ -197,7 +198,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
             if ( room.getTileID() == null ) {
                 listTiles.clearSelection();
             } else {
-                TileDto tile = controllers.getRoomController().getTile(room.getTileID());
+                TileDto tile = controllers.getRoomController().getTile(room.getTileID());;
                 int index =  findIndex(tile);
                 listTiles.setSelectedIndex(index);
             }

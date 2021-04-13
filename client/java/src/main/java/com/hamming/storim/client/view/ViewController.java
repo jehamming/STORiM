@@ -246,7 +246,7 @@ public class ViewController implements ViewerController, ConnectionListener, Use
         if (room.getTileID() != null) {
             TileDto tile = controllers.getRoomController().getTile(room.getTileID());
             if (tile != null) {
-                gameView.setTile(tile);
+                gameView.scheduleSetTile(tile);
             }
         }
         gameView.scheduleSetRoom(room);
@@ -292,7 +292,7 @@ public class ViewController implements ViewerController, ConnectionListener, Use
         if (gameView.getRoom().getId().equals(room.getId())) {
             TileDto tile = controllers.getRoomController().getTile(room.getTileID());
             if (tile != null) {
-                gameView.setTile(tile);
+                gameView.scheduleSetTile(tile);
             }
             gameView.scheduleSetRoom(room);
         }
