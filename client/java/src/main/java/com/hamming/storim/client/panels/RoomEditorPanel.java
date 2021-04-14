@@ -167,7 +167,14 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         } else {
             // Update room!
             Long roomId = Long.valueOf(lblRoomID.getText());
-            controllers.getRoomController().updateRoom(roomId, roomName, roomSize, tileID, ImageUtils.encode(tileImage));
+
+            if ( chosenTile == null ) {
+                controllers.getRoomController().updateRoom(roomId, roomName, roomSize, null, ImageUtils.encode(tileImage));
+            } else {
+                controllers.getRoomController().updateRoom(roomId, roomName, roomSize, tileID, null);
+            }
+
+
         }
 
 
