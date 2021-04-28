@@ -22,4 +22,6 @@ public interface RoomListener {
     void thingPlacedInRoom(ThingDto thing, UserDto byUser);
 
     void thingRemovedFromRoom(ThingDto thing);
+
+    void thingInRoom(ThingDto thing);
 }

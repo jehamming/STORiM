@@ -1,19 +1,19 @@
-package com.hamming.storim.client.view;
+package com.hamming.storim.common.controllers;
 
-import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.common.CalcTools;
 import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.ProtocolHandler;
-import com.hamming.storim.common.interfaces.*;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.MovementRequestDTO;
 import com.hamming.storim.common.dto.protocol.thing.UpdateThingLocationDto;
+import com.hamming.storim.common.interfaces.*;
+import com.hamming.storim.common.view.GameView;
+import com.hamming.storim.common.view.ViewListener;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewController implements ViewerController, ConnectionListener, UserListener, RoomListener, RoomUpdateListener, ThingListener {
+public class ViewController implements ConnectionListener, UserListener, RoomListener, RoomUpdateListener, ThingListener {
 
     private ProtocolHandler protocolHandler;
     private Controllers controllers;
@@ -38,7 +38,6 @@ public class ViewController implements ViewerController, ConnectionListener, Use
         viewListeners = new ArrayList<>();
     }
 
-     @Override
      public void addViewListener(ViewListener l) {
         viewListeners.add(l);
      }
@@ -47,7 +46,7 @@ public class ViewController implements ViewerController, ConnectionListener, Use
     private void moveCurrentUser(Long sequenceNumber, LocationDto l) {
         UserDto user = controllers.getUserController().getCurrentUser();
         // First : Set the location based on the server respons (server = authoritive
-        gameView.scheduleSetUserLocation(user.getId(), l.getX(), l.getY());
+        gameView.scheduleAction( () ->  gameView.setPlayerLocation(user.getId(), l.getX(), l.getY()));
         // Remove all the request before this sequence (if any)
         deleteRequestsUpTO(sequenceNumber);
         // Apply all the requests that server has not processed yet.
@@ -89,7 +88,7 @@ public class ViewController implements ViewerController, ConnectionListener, Use
 
     public LocationDto applyMoveRequest(MovementRequestDTO dto, LocationDto loc) {
         LocationDto newLocation = CalcTools.calculateNewPosition(dto, loc);
-        gameView.scheduleSetUserLocation(controllers.getUserController().getCurrentUser().getId(), newLocation.getX(), newLocation.getY());
+        gameView.scheduleAction( () -> gameView.setPlayerLocation(controllers.getUserController().getCurrentUser().getId(), newLocation.getX(), newLocation.getY()));
         System.out.println(this.getClass().getName() + "-Scheduled-" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
         return newLocation;
     }
@@ -122,16 +121,16 @@ public class ViewController implements ViewerController, ConnectionListener, Use
 
     @Override
     public void connected() {
-        gameView.scheduleResetView();
+        gameView.scheduleAction( () ->  gameView.resetView());
     }
 
     @Override
     public void disconnected() {
-        gameView.scheduleResetView();
+        gameView.scheduleAction(() -> gameView.resetView());
         lastReceivedLocation = null;
         sequenceNumber = 0;
-        movementRequests = new ArrayList<MovementRequestDTO>();
-        gameView.scheduleRemovePlayer(currentUserid);
+        movementRequests = new ArrayList<>();
+        gameView.scheduleAction(() -> gameView.removePlayer(currentUserid));
     }
 
     @Override
@@ -141,16 +140,17 @@ public class ViewController implements ViewerController, ConnectionListener, Use
 
     @Override
     public void userUpdated(UserDto user) {
-        AvatarDto avatar = null;
         if (user.getCurrentAvatarID() != null) {
-            avatar = controllers.getUserController().getAvatar(user.getCurrentAvatarID());
+            AvatarDto avatar = controllers.getUserController().getAvatar(user.getCurrentAvatarID());
+            gameView.scheduleAction(() -> gameView.updatePlayer(user, avatar));
+        } else {
+            gameView.scheduleAction(() -> gameView.updatePlayer(user, null));
         }
-        gameView.scheduleUpdateUser(user, avatar);
     }
 
     @Override
     public void userDisconnected(UserDto user) {
-        gameView.scheduleRemovePlayer(user.getId());
+        gameView.scheduleAction(() -> gameView.removePlayer(user.getId()));
     }
 
     @Override
@@ -164,12 +164,13 @@ public class ViewController implements ViewerController, ConnectionListener, Use
             LocationDto location = controllers.getUserController().getUserLocation(currentUser.getId());
             lastReceivedLocation = location;
             RoomDto room = controllers.getRoomController().findRoomByID(location.getRoomId());
-            Image image = null;
             if (currentUser.getCurrentAvatarID() != null) {
                 byte[] imageData = controllers.getUserController().getAvatar(currentUser.getCurrentAvatarID()).getImageData();
-                image = ImageUtils.decode(imageData);
+                gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), imageData));
+            } else {
+                gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), null));
             }
-            gameView.scheduleAddPlayer(currentUser.getId(), currentUser.getName(), image);
+
             currentUserid = currentUser.getId();
             setRoom(room, location);
         }
@@ -189,7 +190,7 @@ public class ViewController implements ViewerController, ConnectionListener, Use
     public void avatarDeleted(AvatarDto avatar) {
         UserDto user = controllers.getUserController().getCurrentUser();
         if (user.getCurrentAvatarID() != null && user.getCurrentAvatarID().equals(avatar.getId())) {
-            gameView.scheduleDeleteAvatar(user.getId());
+            gameView.scheduleAction(() -> gameView.deleteAvatar(user.getId()));
         }
     }
 
@@ -197,42 +198,35 @@ public class ViewController implements ViewerController, ConnectionListener, Use
     public void avatarUpdated(AvatarDto avatar) {
         UserDto user = controllers.getUserController().findUserById(avatar.getOwnerID());
         if (user.getCurrentAvatarID()!= null && user.getCurrentAvatarID().equals(avatar.getId())) {
-            avatar = controllers.getUserController().getAvatar(user.getCurrentAvatarID());
-            gameView.scheduleUpdateUser(user, avatar);
+            gameView.scheduleAction(() -> gameView.updatePlayer(user, avatar));
         }
     }
 
 
     @Override
     public void userInRoom(UserDto user, LocationDto location) {
-        Image image = null;
         if (user.getCurrentAvatarID() != null) {
-            byte[] imageData =controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImageData();
-            image = ImageUtils.decode(imageData);
+            byte[] imageData = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImageData();
+            gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), imageData));
+        } else {
+            gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), null));
         }
-        gameView.scheduleAddPlayer(user.getId(), user.getName(), image);
-        gameView.scheduleSetUserLocation(user.getId(), location.getX(), location.getY());
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(user.getId(), location.getX(), location.getY()));
     }
 
     @Override
     public void userEnteredRoom(UserDto user, LocationDto location) {
-        Image image = null;
-        if (user.getCurrentAvatarID() != null) {
-            byte[] imageData = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImageData();
-            image = ImageUtils.decode(imageData);
-        }
-        gameView.scheduleAddPlayer(user.getId(), user.getName(), image);
-        gameView.scheduleSetUserLocation(user.getId(), location.getX(), location.getY());
+        userInRoom(user, location);
     }
 
     @Override
     public void userLeftRoom(UserDto user) {
-        gameView.scheduleRemovePlayer(user.getId());
+        gameView.scheduleAction(() -> gameView.removePlayer(user.getId()));
     }
 
     @Override
     public void userLocationUpdate(UserDto user, LocationDto location) {
-        gameView.scheduleSetUserLocation(user.getId(), location.getX(), location.getY());
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(user.getId(), location.getX(), location.getY()));
     }
 
     @Override
@@ -242,25 +236,26 @@ public class ViewController implements ViewerController, ConnectionListener, Use
 
     @Override
     public void setRoom(RoomDto room, LocationDto location) {
-        gameView.scheduleResetView();
+        gameView.scheduleAction(() -> gameView.resetView());
         if (room.getTileID() != null) {
             TileDto tile = controllers.getRoomController().getTile(room.getTileID());
             if (tile != null) {
-                gameView.scheduleSetTile(tile);
+                gameView.scheduleAction(() -> gameView.setTile(tile));
             }
         }
-        gameView.scheduleSetRoom(room);
+        gameView.scheduleAction(() -> gameView.setRoom(room));
         UserDto currentUser = controllers.getUserController().getCurrentUser();
-        Image image = null;
         AvatarDto avatar = controllers.getUserController().getAvatar(currentUser.getCurrentAvatarID());
-        if (avatar != null) {
-            image = ImageUtils.decode(avatar.getImageData());
+        if (avatar != null ) {
+            gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), avatar.getImageData()));
+        } else {
+            gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), null));
         }
-        gameView.scheduleAddPlayer(currentUser.getId(), currentUser.getName(), image);
-        gameView.scheduleSetUserLocation(controllers.getUserController().getCurrentUser().getId(), location.getX(), location.getY());
+
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(controllers.getUserController().getCurrentUser().getId(), location.getX(), location.getY()));
         // Things
         for (ThingDto thing : controllers.getThingController().getThingsInRoom(room.getId())) {
-            gameView.scheduleAddThing(thing);
+            gameView.scheduleAction(() -> gameView.addThing(thing));
         }
 
         resetRequests();
@@ -269,12 +264,17 @@ public class ViewController implements ViewerController, ConnectionListener, Use
 
     @Override
     public void thingPlacedInRoom(ThingDto thing, UserDto byUser) {
-        gameView.scheduleAddThing(thing);
+        gameView.scheduleAction(() -> gameView.addThing(thing));
     }
 
     @Override
     public void thingRemovedFromRoom(ThingDto thing) {
-        gameView.scheduleDeleteThing(thing);
+        gameView.scheduleAction(() -> gameView.deleteThing(thing.getId()));
+    }
+
+    @Override
+    public void thingInRoom(ThingDto thing) {
+        gameView.scheduleAction(() -> gameView.addThing(thing));
     }
 
     @Override
@@ -292,9 +292,9 @@ public class ViewController implements ViewerController, ConnectionListener, Use
         if (gameView.getRoom().getId().equals(room.getId())) {
             TileDto tile = controllers.getRoomController().getTile(room.getTileID());
             if (tile != null) {
-                gameView.scheduleSetTile(tile);
+                gameView.scheduleAction(() -> gameView.setTile(tile));
             }
-            gameView.scheduleSetRoom(room);
+            gameView.scheduleAction(() -> gameView.setRoom(room));
         }
     }
 
@@ -302,7 +302,7 @@ public class ViewController implements ViewerController, ConnectionListener, Use
     public void thingAdded(ThingDto thing) {
         if ( thing.getLocation() != null ) {
             if ( thing.getLocation().getRoomId().equals(gameView.getRoom().getId())) {
-                gameView.scheduleAddThing(thing);
+                gameView.scheduleAction(() -> gameView.addThing(thing));
             }
         }
     }
@@ -311,7 +311,7 @@ public class ViewController implements ViewerController, ConnectionListener, Use
     public void thingDeleted(ThingDto thing) {
         if ( thing.getLocation() != null ) {
             if ( thing.getLocation().getRoomId().equals(gameView.getRoom().getId())) {
-                gameView.scheduleDeleteThing(thing);
+                gameView.scheduleAction(() -> gameView.deleteThing(thing.getId()));
             }
         }
     }
@@ -320,7 +320,7 @@ public class ViewController implements ViewerController, ConnectionListener, Use
     public void thingUpdated(ThingDto thing) {
         if ( thing.getLocation() != null ) {
             if ( thing.getLocation().getRoomId().equals(gameView.getRoom().getId())) {
-                gameView.scheduleUpdateThing(thing);
+                gameView.scheduleAction(() -> gameView.updateThing(thing));
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.hamming.storim.client.engine.actions;
+package com.hamming.storim.common.view;
 
 public interface Action {
 

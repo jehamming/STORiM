@@ -160,7 +160,7 @@ public class ClientConnection implements Runnable, GameStateListener {
 
     private void thingPlaced(User user, Thing thing) {
         ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-        ThingPlacedDTO dto = new ThingPlacedDTO(user.getId(),thingDto);
+        ThingPlacedDTO dto = new ThingPlacedDTO(user.getId(), thingDto);
         send(dto);
     }
 
@@ -192,7 +192,7 @@ public class ClientConnection implements Runnable, GameStateListener {
 
     private void handleUserUpdated(User user) {
         UserDto userDto = DTOFactory.getInstance().getUserDTO(user);
-        if (!user.getId().equals(currentUser.getId()) ){
+        if (!user.getId().equals(currentUser.getId())) {
             sendAvatar(user);
         }
         UserUpdatedDTO userUpdatedDTO = new UserUpdatedDTO(userDto);
@@ -214,40 +214,37 @@ public class ClientConnection implements Runnable, GameStateListener {
         }
     }
 
-    public void sendFullGameState() {
-        if (isLoggedIn()) {
-            // Send Commnds
-            sendUserCommands();
-            // Send Tiles
-            sendTiles();
-            // Send Avatars
-            sendAvatars();
-            // Rooms
-            sendRooms();
-            // Send Things
-            sendThings();
-            // Send Things In Room
-            sendThingsInRoom();
-            // Logged in Users;
-            for (User u : gameController.getGameState().getOnlineUsers()) {
-                if (!u.getId().equals(currentUser.getId())) {
-                    sendUserDetails(u);
-                    handleUserOnline(u);
-                }
+    public void sendGameState(User user) {
+        // Send Verbs
+        sendVerbs(user);
+        // Send Tiles
+        sendTiles(user);
+        // Send Avatars
+        sendAvatars(user);
+        // Rooms
+        sendRooms(user);
+        // Send Things
+        sendThings(user);
+        // Logged in Users;
+        for (User u : gameController.getGameState().getOnlineUsers()) {
+            if (!u.getId().equals(currentUser.getId())) {
+                sendUserDetails(u);
+                handleUserOnline(u);
             }
         }
     }
 
-    private void sendThingsInRoom() {
-        for (Thing thing : ThingFactory.getInstance().getAllThingsInRoom(currentUser.getLocation().getRoom().getId()) ) {
+    public void sendThingsInRoom(Room room) {
+        for (Thing thing : ThingFactory.getInstance().getAllThingsInRoom(room.getId())) {
             ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-            GetThingResultDTO getThingResultDTO = new GetThingResultDTO(true, null, thingDto);
-            send(getThingResultDTO);
+            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
+            ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thingDto, roomDto);
+            send(thingInRoomDTO);
         }
     }
 
-    private void sendThings() {
-        for (Thing thing : ThingFactory.getInstance().getThings(currentUser)) {
+    private void sendThings(User user) {
+        for (Thing thing : ThingFactory.getInstance().getThings(user)) {
             sendThing(thing);
         }
     }
@@ -258,8 +255,8 @@ public class ClientConnection implements Runnable, GameStateListener {
         send(getThingResultDTO);
     }
 
-    private void sendAvatars() {
-        for (Avatar avatar : AvatarFactory.getInstance().getAvatars(currentUser)) {
+    private void sendAvatars(User user) {
+        for (Avatar avatar : AvatarFactory.getInstance().getAvatars(user)) {
             sendAvatar(avatar);
         }
     }
@@ -277,20 +274,20 @@ public class ClientConnection implements Runnable, GameStateListener {
     }
 
 
-    private void sendTiles() {
-        for (Tile tile : TileFactory.getInstance().geTiles(currentUser)) {
+    private void sendTiles(User user) {
+        for (Tile tile : TileFactory.getInstance().geTiles(user)) {
             sendTile(tile);
         }
     }
 
-    private void sendRooms() {
-        for (Room room : Database.getInstance().getAll(Room.class, currentUser.getId())) {
+    private void sendRooms(User user) {
+        for (Room room : Database.getInstance().getAll(Room.class, user.getId())) {
             sendRoom(room);
         }
     }
 
-    private void sendUserCommands() {
-        for (Verb verb : Database.getInstance().getAll(Verb.class, currentUser.getId())) {
+    private void sendVerbs(User user) {
+        for (Verb verb : Database.getInstance().getAll(Verb.class, user.getId())) {
             VerbDto verbDto = DTOFactory.getInstance().getVerbDto(verb);
             GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
             send(getCommandResultDTO);
@@ -299,10 +296,6 @@ public class ClientConnection implements Runnable, GameStateListener {
 
     private boolean isOnline(User user) {
         return gameController.getGameState().getOnlineUsers().contains(user);
-    }
-
-    public boolean isLoggedIn() {
-        return currentUser != null;
     }
 
     private void avatarAdded(Avatar avatar) {
@@ -376,11 +369,13 @@ public class ClientConnection implements Runnable, GameStateListener {
     private void handleTeleported(User user, Long oldRoomId) {
         if (user.equals(currentUser)) {
             sendUsersInRoom(user.getLocation().getRoom());
+            sendThingsInRoom(user.getLocation().getRoom());
         } else {
             sendRoom(user.getLocation().getRoom());
             if (user.getLocation().getRoom().getTile() != null) {
                 sendTile(user.getLocation().getRoom().getTile());
             }
+            sendThingsInRoom(user.getLocation().getRoom());
             LocationDto location = DTOFactory.getInstance().getLocationDTO(user.getLocation());
             UserTeleportedDTO userTeleportedDTO = DTOFactory.getInstance().getUserTeleportedDTO(user, oldRoomId, location);
             send(userTeleportedDTO);
@@ -445,5 +440,10 @@ public class ClientConnection implements Runnable, GameStateListener {
 
     public GameProtocolHandler getProtocolHandler() {
         return gameProtocolHandler;
+    }
+
+    public void sendUserLocation(User u) {
+        UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(u);
+        send(userLocationUpdateDTO);
     }
 }

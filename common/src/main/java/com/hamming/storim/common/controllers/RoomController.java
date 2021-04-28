@@ -7,7 +7,9 @@ import com.hamming.storim.common.dto.TileDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.*;
 import com.hamming.storim.common.dto.protocol.room.*;
+import com.hamming.storim.common.dto.protocol.thing.GetThingResultDTO;
 import com.hamming.storim.common.dto.protocol.thing.ThingDeletedDTO;
+import com.hamming.storim.common.dto.protocol.thing.ThingInRoomDTO;
 import com.hamming.storim.common.dto.protocol.thing.ThingPlacedDTO;
 import com.hamming.storim.common.interfaces.RoomListener;
 import com.hamming.storim.common.interfaces.RoomUpdateListener;
@@ -46,6 +48,15 @@ public class RoomController {
         controllers.getConnectionController().registerReceiver(GetTileResultDTO.class, (NetCommandReceiver<GetTileResultDTO>) dto -> handleGetTileResultDTO(dto));
         controllers.getConnectionController().registerReceiver(ThingPlacedDTO.class, (NetCommandReceiver<ThingPlacedDTO>) dto -> handleThingPlacedDTO(dto));
         controllers.getConnectionController().registerReceiver(ThingDeletedDTO.class, (NetCommandReceiver<ThingDeletedDTO>) dto -> handleThingDeletedDTO(dto));
+        controllers.getConnectionController().registerReceiver(ThingInRoomDTO.class, (NetCommandReceiver<ThingInRoomDTO>) dto -> handleThingInRoomDTO(dto));
+    }
+
+    private void handleThingInRoomDTO(ThingInRoomDTO dto) {
+        if ( currentUserLocation( dto.getRoom().getId())) {
+            for (RoomListener l : roomListeners) {
+                l.thingInRoom(dto.getThing());
+            }
+        }
     }
 
     private void handleThingDeletedDTO(ThingDeletedDTO dto) {
@@ -184,9 +195,6 @@ public class RoomController {
     private void handleGetRoomResult(GetRoomResultDTO dto) {
         if (dto.isSuccess()) {
             rooms.put(dto.getRoom().getId(), dto.getRoom());
-            for (RoomUpdateListener l : roomUpdateListeners) {
-                l.roomAdded(dto.getRoom());
-            }
         }
     }
 

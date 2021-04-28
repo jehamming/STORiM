@@ -1,14 +1,14 @@
 package com.hamming.storim.client;
 
+import com.hamming.storim.client.panels.*;
+import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.common.Controllers;
-import com.hamming.storim.common.interfaces.ConnectionListener;
-import com.hamming.storim.common.interfaces.UserListener;
+import com.hamming.storim.common.controllers.ViewController;
 import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.client.panels.*;
-import com.hamming.storim.client.view.GameView;
-import com.hamming.storim.client.view.ViewController;
+import com.hamming.storim.common.interfaces.ConnectionListener;
+import com.hamming.storim.common.interfaces.UserListener;
 
 import javax.swing.*;
 
@@ -22,7 +22,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     private AvatarPanel avatarPanel;
     private ThingPanel thingPanel;
     private Controllers controllers;
-    private GameView gameView;
+    private GameViewPanel gameView;
     private JTabbedPane tabbedPane;
     private static String BASIC_TITLE = "STORIM Java Client";
 
@@ -31,10 +31,10 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         controllers.getConnectionController().addConnectionListener(this);
         controllers.getUserController().addUserListener(this);
         setTitle(BASIC_TITLE);
-        gameView = new GameView();
-        ViewController viewerController = new ViewController(getGameView(), controllers);
-        gameView.setViewController(viewerController);
-        controllers.setViewerController(viewerController);
+        gameView = new GameViewPanel();
+        ViewController viewController = new ViewController(gameView, controllers);
+        gameView.setViewController(viewController);
+        controllers.setViewController(viewController);
         initComponents();
         addTabs();
         emptyPanels();
@@ -121,10 +121,6 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     }
 
 
-    public GameView getGameView() {
-        return gameView;
-    }
-
     @Override
     public void connected() {
     }
@@ -183,5 +179,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
 
     }
 
-
+    public GameViewPanel getGameView() {
+        return gameView;
+    }
 }

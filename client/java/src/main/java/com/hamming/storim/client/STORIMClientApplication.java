@@ -1,6 +1,5 @@
 package com.hamming.storim.client;
 
-import com.hamming.storim.client.view.ViewController;
 import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.controllers.*;

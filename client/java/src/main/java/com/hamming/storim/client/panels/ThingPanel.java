@@ -4,7 +4,7 @@ import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.interfaces.ThingListener;
 import com.hamming.storim.common.interfaces.UserListener;
-import com.hamming.storim.common.interfaces.ViewListener;
+import com.hamming.storim.common.view.ViewListener;
 import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.ThingDto;
@@ -57,7 +57,7 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
         empty(true);
         controllers.getThingController().addThingListener(this);
         controllers.getUserController().addUserListener(this);
-        controllers.getViewerController().addViewListener(this);
+        controllers.getViewController().addViewListener(this);
     }
 
     private void setup() {

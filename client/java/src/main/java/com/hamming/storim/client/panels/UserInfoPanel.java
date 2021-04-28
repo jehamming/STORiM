@@ -3,7 +3,7 @@ package com.hamming.storim.client.panels;
 import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.interfaces.UserListener;
-import com.hamming.storim.common.interfaces.ViewListener;
+import com.hamming.storim.common.view.ViewListener;
 import com.hamming.storim.common.dto.*;
 
 import javax.swing.*;
@@ -60,7 +60,7 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, V
     public UserInfoPanel(Controllers controllers) {
         this.controllers = controllers;
         controllers.getUserController().addUserListener(this);
-        controllers.getViewerController().addViewListener(this);
+        controllers.getViewController().addViewListener(this);
         protocolHandler = new ProtocolHandler();
         setBorder(new TitledBorder("Users"));
         initComponents();

@@ -2,9 +2,10 @@ package com.hamming.storim.client.view;
 
 
 import com.hamming.storim.client.ImageUtils;
-import com.hamming.storim.client.engine.actions.Action;
-import com.hamming.storim.client.engine.actions.*;
+import com.hamming.storim.common.controllers.ViewController;
 import com.hamming.storim.common.dto.*;
+import com.hamming.storim.common.view.Action;
+import com.hamming.storim.common.view.GameView;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.*;
 
-public class GameView extends JPanel implements Runnable {
+public class GameViewPanel extends JPanel implements GameView, Runnable {
 
     //boolean variable to track if the game is playing or not
     volatile boolean playing;
@@ -53,6 +54,7 @@ public class GameView extends JPanel implements Runnable {
     private boolean forward, back, left, right;
 
 
+
     private class MyTimerTask extends TimerTask {
         public void run() {
             viewController.sendMoveRequest(forward, back, left, right);
@@ -68,7 +70,7 @@ public class GameView extends JPanel implements Runnable {
 
         public void run() {
             Point p = MouseInfo.getPointerInfo().getLocation();
-            SwingUtilities.convertPointFromScreen(p, GameView.this);
+            SwingUtilities.convertPointFromScreen(p, GameViewPanel.this);
             thing.setX((int) p.getX());
             thing.setY((int) p.getY());
         }
@@ -80,7 +82,7 @@ public class GameView extends JPanel implements Runnable {
 
 
     //Class constructor
-    public GameView() {
+    public GameViewPanel() {
         actions = Collections.synchronizedList(new LinkedList<Action>());
         players = new ArrayList<>();
         things = new ArrayList<>();
@@ -158,6 +160,10 @@ public class GameView extends JPanel implements Runnable {
         });
     }
 
+    public void setViewController(ViewController viewController) {
+        this.viewController = viewController;
+    }
+
     public Image getDefaultUserImage() {
         return defaultUserImage;
     }
@@ -173,10 +179,6 @@ public class GameView extends JPanel implements Runnable {
 
     private void updatePosition(Thing thing) {
         viewController.updateThingLocationRequest(thing.getId(), thing.getX(), thing.getY());
-    }
-
-    public void setViewController(ViewController viewController) {
-        this.viewController = viewController;
     }
 
 
@@ -196,64 +198,9 @@ public class GameView extends JPanel implements Runnable {
     private void handleActions() {
         synchronized (actions) {
             for (Action action : actions) {
-                System.out.println("GAMEVIEW ACTION : " + action);
                 action.execute();
             }
             actions.removeAll(actions);
-        }
-    }
-
-
-    public void scheduleAddThing(ThingDto thing) {
-        Action action = new AddThingAction(this, thing);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
-
-    public void scheduleUpdateThing(ThingDto thing) {
-        Action action = new UpdateThingAction(this, thing);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
-    public void scheduleDeleteThing(ThingDto thing) {
-        Action action = new DeleteThingAction(this, thing.getId());
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
-
-    public void scheduleResetView() {
-        Action action = new ResetViewAction(this);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
-    public void scheduleDeleteAvatar(Long userId) {
-        Action action = new DeleteAvatarAction(this, userId);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
-    public void scheduleUpdateUser(UserDto user, AvatarDto avatar) {
-        Action action = new UpdatePlayerAction(this, user, avatar);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
-
-    public void scheduleAddPlayer(Long userId, String name, Image image) {
-        if (image == null) image = defaultUserImage;
-        Action action = new AddPlayerAction(this, userId, name, image);
-        synchronized (actions) {
-            actions.add(action);
         }
     }
 
@@ -297,42 +244,16 @@ public class GameView extends JPanel implements Runnable {
         return player;
     }
 
-    public void scheduleRemovePlayer(Long userId) {
-        Action action = new RemovePlayerAction(this, userId);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
-    public void scheduleSetUserLocation(Long userId, int x, int y) {
-        Action action = new SetUserLocationAction(this, userId, x, y);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
     public RoomDto getRoom() {
         return room;
     }
 
-    public void scheduleSetRoom(RoomDto room) {
-        Action action = new SetRoomAction(this, room);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
-    public void scheduleSetTile(TileDto tile) {
-        Action action = new SetTileAction(this, tile);
-        synchronized (actions) {
-            actions.add(action);
-        }
-    }
-
+    @Override
     public void setTile(TileDto tile) {
         this.tile = tile;
     }
 
+    @Override
     public void setRoom(RoomDto room) {
         this.room = room;
     }
@@ -538,6 +459,110 @@ public class GameView extends JPanel implements Runnable {
                 drawSelectionHighlight(g, player);
             }
 
+        }
+    }
+
+
+    @Override
+    public void scheduleAction(Action action) {
+        synchronized (actions) {
+            actions.add(action);
+        }
+    }
+
+    @Override
+    public void addPlayer(Long userId, String name, byte[] imageData) {
+        int roomSize = 10;
+        int widthPerTile = getWidth() / roomSize;
+        Image image = null;
+        Player player = new Player(userId);
+        player.setDisplayName(name);
+        if (imageData != null ) {
+            image = ImageUtils.decode(imageData);
+            image = ImageUtils.resize(image, widthPerTile, widthPerTile);
+        } else {
+            image = ImageUtils.resize(defaultUserImage, widthPerTile, widthPerTile);
+        }
+        player.setImage(image);
+        addPlayer(player);
+    }
+
+
+
+    @Override
+    public void addThing(ThingDto thingDto) {
+        Thing thing = new Thing(thingDto.getId());
+        thing.setImage(ImageUtils.decode(thingDto.getImageData()));
+        thing.setScale(thingDto.getScale());
+        thing.setRotation(thingDto.getRotation());
+        thing.setX(thingDto.getLocation().getX());
+        thing.setY(thingDto.getLocation().getY());
+        addThing(thing);
+    }
+
+    @Override
+    public void deleteAvatar(Long playerId) {
+        Player player = getPlayer(playerId);
+        if (player != null ) {
+            player.setImage(null);
+        }
+    }
+
+    @Override
+    public void deleteThing(Long thingId) {
+        Thing t = getThing(thingId);
+        if ( t != null ) {
+            deleteThing(t);
+        }
+    }
+
+    @Override
+    public void removePlayer(Long playerId) {
+        Player player = getPlayer(playerId);
+        removePlayer(player);
+    }
+
+    @Override
+    public void resetView() {
+        setTile(null);
+        setRoom(null);
+        setPlayers(new ArrayList<>());
+        setThing(new ArrayList<>());
+    }
+
+    @Override
+    public void setPlayerLocation(Long playerId, int x, int y) {
+        Player p = getPlayer(playerId);
+        p.setX(x);
+        p.setY(y);
+    }
+
+    @Override
+    public void updatePlayer(UserDto user, AvatarDto avatar) {
+        Player player = getPlayer(user.getId());
+        if (player != null ) {
+            player.setDisplayName(user.getName());
+            if ( avatar != null ) {
+                Image image = ImageUtils.decode(avatar.getImageData());
+                int roomSize = 10;
+                int widthPerTile = getWidth() / roomSize;
+                image = ImageUtils.resize(image, widthPerTile, widthPerTile);
+                player.setImage(image);
+            } else {
+                player.setImage(getDefaultUserImage());
+            }
+        }
+    }
+
+    @Override
+    public void updateThing(ThingDto thingDto) {
+        Thing thing = getThing(thingDto.getId());
+        if ( thing != null ) {
+            thing.setImage(ImageUtils.decode(thingDto.getImageData()));
+            thing.setScale(thingDto.getScale());
+            thing.setRotation(thingDto.getRotation());
+            thing.setX(thingDto.getLocation().getX());
+            thing.setY(thingDto.getLocation().getY());
         }
     }
 }

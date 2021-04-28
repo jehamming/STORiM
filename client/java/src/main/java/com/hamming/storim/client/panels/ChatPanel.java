@@ -273,5 +273,10 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
         addText(thing.getName() + " disappears...");
     }
 
+    @Override
+    public void thingInRoom(ThingDto thing) {
+        addText( "You see " + thing.getName() );
+    }
+
 
 }
