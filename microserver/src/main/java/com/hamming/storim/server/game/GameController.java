@@ -3,6 +3,7 @@ package com.hamming.storim.server.game;
 import com.hamming.storim.common.util.StringUtils;
 import com.hamming.storim.server.STORIMMicroServer;
 import com.hamming.storim.server.ServerWorker;
+import com.hamming.storim.server.UserCache;
 import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.factories.*;
 import com.hamming.storim.server.common.model.*;
@@ -158,7 +159,7 @@ public class GameController extends ServerWorker {
     }
 
     public void updateUser(Long id, String name, String email, Long avatarID) {
-        User user = UserFactory.getInstance().findUserById(id);
+        User user = UserCache.getInstance().findUserById(id);
         if ( user != null ) {
             if (name != null) user.setName(name);
             if (email != null) user.setEmail(email);

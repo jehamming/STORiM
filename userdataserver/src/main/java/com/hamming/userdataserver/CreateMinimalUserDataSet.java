@@ -2,7 +2,6 @@ package com.hamming.userdataserver;
 
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.common.model.User;
-import com.hamming.storim.server.common.factories.UserFactory;
 
 public class CreateMinimalUserDataSet {
 

@@ -340,7 +340,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     private boolean isInCurrentRoom(Long callerId) {
-        User caller = UserFactory.getInstance().findUserById(callerId);
+        User caller = UserCache.getInstance().findUserById(callerId);
         return currentUser.getLocation().getRoom().getId().equals(caller.getLocation().getRoom().getId());
     }
 
@@ -429,6 +429,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         if ( response.getUser() != null ) {
             userValid = true;
             User verifiedUser = User.valueOf( response.getUser() );
+            UserCache.getInstance().addUser(verifiedUser);
             //FIXME Get the (last) location from somewhere..
             Room room = RoomFactory.getInstance().getRooms().get(0);
             Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());

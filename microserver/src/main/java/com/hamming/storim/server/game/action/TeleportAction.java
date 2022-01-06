@@ -4,10 +4,10 @@ import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.protocol.TeleportRequestDTO;
 import com.hamming.storim.common.dto.protocol.TeleportResultDTO;
 import com.hamming.storim.server.STORIMClientConnection;
+import com.hamming.storim.server.UserCache;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
-import com.hamming.storim.server.common.factories.UserFactory;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.common.model.User;
@@ -29,7 +29,7 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
     }
 
     public void handleTeleportRequest(Long userId, Long roomId) {
-        User user = UserFactory.getInstance().findUserById(userId);
+        User user = UserCache.getInstance().findUserById(userId);
         Room r = RoomFactory.getInstance().findRoomByID(roomId);
         Location loc;
         if (user != null && r != null ) {

@@ -8,7 +8,7 @@ import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserResultDTO;
-import com.hamming.storim.server.common.factories.UserFactory;
+import com.hamming.userdataserver.UserFactory;
 import com.hamming.storim.server.common.model.User;
 
 public class GetUserAction extends Action<GetUserRequestDTO> {
