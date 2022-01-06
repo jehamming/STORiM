@@ -5,11 +5,13 @@ public class ServerRegistration {
     private String serverName;
     private String serverURL;
     private int serverPort;
+    private int hashcode;
 
-    public ServerRegistration(String name, String url, int port) {
+    public ServerRegistration(int hashcode, String name, String url, int port) {
         this.serverName = name;
         this.serverURL = url;
         this.serverPort = port;
+        this.hashcode = hashcode;
     }
 
     public String getServerName() {
@@ -24,12 +26,17 @@ public class ServerRegistration {
         return serverPort;
     }
 
+    public int getHashcode() {
+        return hashcode;
+    }
+
     @Override
     public String toString() {
         return "ServerRegistration{" +
                 "serverName='" + serverName + '\'' +
                 ", serverURL='" + serverURL + '\'' +
                 ", serverPort=" + serverPort +
+                ", hashcode=" + hashcode +
                 '}';
     }
 }

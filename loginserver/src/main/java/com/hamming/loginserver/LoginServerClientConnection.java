@@ -23,13 +23,13 @@ public class LoginServerClientConnection extends ClientConnection {
     @Override
     public void connectionClosed() {
         LoginServerWorker loginServerWorker = (LoginServerWorker) getServerWorker();
-        loginServerWorker.removeRegisteredServer(getClientType().getName());
+        loginServerWorker.removeRegisteredServer(getClientType().getName(), hashCode());
     }
 
     @Override
     public void addActions() {
         LoginServerWorker serverWorker = (LoginServerWorker) getServerWorker();
-        getProtocolHandler().addAction(AddServerRequestDTO.class, new AddServerAction((serverWorker)));
+        getProtocolHandler().addAction(AddServerRequestDTO.class, new AddServerAction(serverWorker, this.hashCode()));
         getProtocolHandler().addAction(VerifyUserRequestDTO.class, new VerifyUserAction(serverWorker, this));
     }
 

@@ -4,6 +4,7 @@ import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
+import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerResponseDTO;
 import com.hamming.storim.server.common.factories.AvatarFactory;
 import com.hamming.storim.server.common.factories.ThingFactory;
 import com.hamming.storim.server.common.factories.TileFactory;
@@ -109,22 +110,31 @@ public class STORIMMicroServer extends Server {
 
 
     public void startServer() {
+        boolean success = false;
         startServer(port);
         connectToDataServer();
         connectToLoginServer();
-        registerToLoginServer();
-        System.out.println(this.getClass().getName() + ":" + "Started MicroServer: "+ SERVERNAME +", port:"+port);
+        success = registerToLoginServer();
+        if (success) {
+            System.out.println(this.getClass().getName() + ":" + "Started MicroServer: " + SERVERNAME + ", port:" + port);
+        } else {
+            System.out.println(this.getClass().getName() + ":" + "Could not start MicroServer: " + SERVERNAME + ", port:" + port);
+            dispose();
+        }
     }
 
-    private void registerToLoginServer() {
+    private boolean registerToLoginServer() {
+        boolean success = false;
         try {
             String url = Inet4Address.getLocalHost().getHostName();
             AddServerRequestDTO dto = new AddServerRequestDTO(SERVERNAME, url , port);
-            loginServerConnection.serverRequest(dto);
+            AddServerResponseDTO responseDTO = (AddServerResponseDTO) loginServerConnection.serverRequest(dto);
+            success = responseDTO.isSuccess();
+            if (!success) System.out.println(this.getClass().getName() + ":" + "Could not register to LoginServer: " + responseDTO.getErrorMessage());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
+        return success;
     }
 
 

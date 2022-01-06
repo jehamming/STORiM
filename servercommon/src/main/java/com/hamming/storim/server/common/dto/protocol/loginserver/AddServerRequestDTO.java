@@ -1,8 +1,8 @@
 package com.hamming.storim.server.common.dto.protocol.loginserver;
 
-import com.hamming.storim.common.dto.protocol.ProtocolASyncRequestDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolSyncRequestDTO;
 
-public class AddServerRequestDTO extends ProtocolASyncRequestDTO {
+public class AddServerRequestDTO extends ProtocolSyncRequestDTO {
 
     private String name;
     private String url;
