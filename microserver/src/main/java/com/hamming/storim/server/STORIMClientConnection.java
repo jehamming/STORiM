@@ -45,6 +45,9 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     public void connectionClosed() {
         clientSender.stopSending();
         clientSender = null;
+        UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
+        gameController.addAction(action);
+        currentUser = null;
     }
 
     @Override
@@ -191,17 +194,17 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         }
     }
 
-    public void sendGameState(User User) {
+    public void sendGameState(User user) {
         // Send Verbs
-        sendVerbs(User);
+        sendVerbs(user);
         // Send Tiles
-        sendTiles(User);
+        sendTiles(user);
         // Send Avatars
-        sendAvatars(User);
+        sendAvatars(user);
         // Rooms
-        sendRooms(User);
+        sendRooms(user);
         // Send Things
-        sendThings(User);
+        sendThings(user);
         // Logged in Users;
         for (User u : gameController.getGameState().getOnlineUsers()) {
             if (!u.getId().equals(currentUser.getId())) {
@@ -434,7 +437,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             Room room = RoomFactory.getInstance().getRooms().get(0);
             Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());
             verifiedUser.setLocation(location);
-
             setCurrentUser(verifiedUser);
         }
         return userValid;
