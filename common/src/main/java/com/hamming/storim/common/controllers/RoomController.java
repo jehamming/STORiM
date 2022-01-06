@@ -220,13 +220,13 @@ public class RoomController {
         return roomList;
     }
 
-    public void addRoom(String roomName, int roomSize, Long tileID, byte[] image) {
-        AddRoomDto addRoomDto = protocolHandler.getAddRoomDTO(roomName, roomSize, tileID, image);
+    public void addRoom(String roomName, Long tileID, byte[] image) {
+        AddRoomDto addRoomDto = protocolHandler.getAddRoomDTO(roomName, tileID, image);
         controllers.getConnectionController().send(addRoomDto);
     }
 
-    public void updateRoom(Long roomId, String roomName, int roomSize, Long tileID, byte[] tileImage) {
-        UpdateRoomDto updateRoomDto = protocolHandler.getUpdateRoomDto(roomId, roomName, roomSize, tileID, tileImage);
+    public void updateRoom(Long roomId, String roomName, int width, int length, int rows, int cols, Long tileID, byte[] tileImage) {
+        UpdateRoomDto updateRoomDto = protocolHandler.getUpdateRoomDto(roomId, roomName, width, length, rows, cols, tileID, tileImage);
         controllers.getConnectionController().send(updateRoomDto);
     }
 

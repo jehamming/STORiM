@@ -1,8 +1,10 @@
 package com.hamming.storim.common.dto.protocol.room;
 
+import com.hamming.storim.common.dto.protocol.ProtocolASyncRequestDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolSyncRequestDTO;
 
-public class GetRoomDTO implements ProtocolDTO {
+public class GetRoomDTO extends ProtocolSyncRequestDTO {
 
     private Long roomID;
 

@@ -2,6 +2,7 @@ package com.hamming.storim.common.controllers;
 
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.NetClient;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class ConnectionController implements NetCommandReceiver {
 
     private NetClient client;
+    private String clientID;
     private ProtocolHandler protocolHandler;
     private UserDto user;
     private List<ConnectionListener> connectionListeners;
@@ -22,7 +24,8 @@ public class ConnectionController implements NetCommandReceiver {
     private Map<Class, List<NetCommandReceiver>> commandReceivers;
 
 
-    public ConnectionController() {
+    public ConnectionController(String clientID) {
+        this.clientID = clientID;
         protocolHandler = new ProtocolHandler();
         connectionListeners = new ArrayList<ConnectionListener>();
         commandReceivers = new HashMap<Class, List<NetCommandReceiver>>();
@@ -42,7 +45,18 @@ public class ConnectionController implements NetCommandReceiver {
         client = new NetClient(this);
         user = null;
         String result = client.connect(serverip, port);
+        while (!client.isConnected()) {
+            try {
+                Thread.sleep(100);
+                //TODO timeout ???
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         if (result != null) throw new Exception("Error:" + result);
+
+        send( new ClientTypeDTO(clientID, ClientTypeDTO.TYPE_CLIENT) ) ;
+
         fireConnectedEvent();
     }
 

@@ -2,24 +2,29 @@ package com.hamming.storim.common.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 public class StringUtils {
 
     private static String delimiter="#_#";
-
     public static String getDelimiter() {
         return delimiter;
     }
-
     public static String combineValuesToString(String ...items) {
         return String.join(getDelimiter(), items);
     }
-
     public static String combineValuesToReadableString(String ...items) {
         return String.join(" ", items).trim();
     }
+    private static final SecureRandom secureRandom = new SecureRandom(); //threadsafe
+    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
+
+
+
+
 
     public static String hashPassword(String password) {
         // Create MessageDigest instance for MD5
@@ -53,6 +58,12 @@ public class StringUtils {
             input = input.replaceAll(Pattern.quote(replaceKey), newValue);
         }
         return input;
+    }
+
+    public static String generateNewToken() {
+        byte[] randomBytes = new byte[24];
+        secureRandom.nextBytes(randomBytes);
+        return base64Encoder.encodeToString(randomBytes);
     }
 
 }

@@ -1,8 +1,8 @@
 package com.hamming.storim.common.dto.protocol.avatar;
 
-import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolASyncRequestDTO;
 
-public class UpdateAvatarDto implements ProtocolDTO {
+public class UpdateAvatarDto extends ProtocolASyncRequestDTO {
 
     private Long avatarId;
     private String name;

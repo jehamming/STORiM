@@ -197,18 +197,19 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
     @Override
     public void loginResult(boolean success, String message) {
         if (success) {
-            Long roomId = controllers.getUserController().getCurrentUserLocation().getRoomId();
-            RoomDto roomDto = controllers.getRoomController().findRoomByID(roomId);
-            addText("You wake up in " + roomDto.getName());
-            String things = "";
-            for (ThingDto thing : controllers.getThingController().getThingsInRoom(roomDto.getId())) {
-                things = things.concat(thing.getName()+",");
-            }
-            if (things != "") {
-                // Remove trailing ','
-                things = things.substring(0, things.length()-1);
-            }
-            addText("You see : " + things);
+            //FIXME
+//            Long roomId = controllers.getUserController().getCurrentUserLocation().getRoomId();
+//            RoomDto roomDto = controllers.getRoomController().findRoomByID(roomId);
+//            addText("You wake up in " + roomDto.getName());
+//            String things = "";
+//            for (ThingDto thing : controllers.getThingController().getThingsInRoom(roomDto.getId())) {
+//                things = things.concat(thing.getName()+",");
+//            }
+//            if (things != "") {
+//                // Remove trailing ','
+//                things = things.substring(0, things.length()-1);
+//            }
+//            addText("You see : " + things);
         }
     }
 

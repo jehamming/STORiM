@@ -9,6 +9,7 @@ import com.hamming.storim.common.dto.protocol.thing.UpdateThingLocationDto;
 import com.hamming.storim.common.interfaces.*;
 import com.hamming.storim.common.view.GameView;
 import com.hamming.storim.common.view.ViewListener;
+import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +136,19 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
 
     @Override
     public void userConnected(UserDto user) {
-        // No actions in here
+        if ( user.getId().equals( controllers.getUserController().getCurrentUser().getId() )) {
+            LocationDto location = controllers.getUserController().getUserLocation(user.getId());
+            lastReceivedLocation = location;
+            RoomDto room = controllers.getRoomController().findRoomByID(location.getRoomId());
+            if (user.getCurrentAvatarID() != null) {
+                byte[] imageData = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImageData();
+                gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), imageData));
+            } else {
+                gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), null));
+            }
+            currentUserid = user.getId();
+            setRoom(room, location);
+        }
     }
 
     @Override
@@ -157,23 +170,10 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
     public void userOnline(UserDto user) {
     }
 
+
     @Override
     public void loginResult(boolean success, String message) {
-        if (success) {
-            UserDto currentUser = controllers.getUserController().getCurrentUser();
-            LocationDto location = controllers.getUserController().getUserLocation(currentUser.getId());
-            lastReceivedLocation = location;
-            RoomDto room = controllers.getRoomController().findRoomByID(location.getRoomId());
-            if (currentUser.getCurrentAvatarID() != null) {
-                byte[] imageData = controllers.getUserController().getAvatar(currentUser.getCurrentAvatarID()).getImageData();
-                gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), imageData));
-            } else {
-                gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), null));
-            }
 
-            currentUserid = currentUser.getId();
-            setRoom(room, location);
-        }
     }
 
     @Override

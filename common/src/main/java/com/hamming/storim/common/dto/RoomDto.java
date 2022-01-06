@@ -3,17 +3,33 @@ package com.hamming.storim.common.dto;
 public class RoomDto extends DTO {
 
     private Long tileID;
-    private int size;
+    private int width, length;
+    private int rows, cols;
 
-    public RoomDto(Long id, String name, int size, Long tileId){
+    public RoomDto(Long id, String name, int width, int length, int rows, int cols, Long tileId){
         setId(id);
         setName(name);
-        this.size = size;
+        this.width = width;
+        this.length = length;
+        this.rows = rows;
+        this.cols = cols;
         this.tileID = tileId;
     }
 
-    public int getSize() {
-        return size;
+    public int getWidth() {
+        return width;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
     }
 
     public Long getTileID() {
@@ -24,11 +40,12 @@ public class RoomDto extends DTO {
     public String toString() {
         return "RoomDto{" +
                 "id=" + getId() +
-                ", name='" + getName() + '\'' +
-                ", creatorID=" + getCreatorID() +
-                ", ownerID=" + getOwnerID() +
-                ", tileID=" + tileID +
-                ", size=" + size +
+                ", name=" + getName() +
+                "  tileID=" + tileID +
+                ", width=" + width +
+                ", length=" + length +
+                ", rows=" + rows +
+                ", cols=" + cols +
                 '}';
     }
 }

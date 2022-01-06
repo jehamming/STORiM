@@ -1,18 +1,25 @@
 package com.hamming.storim.common.dto.protocol.room;
 
+import com.hamming.storim.common.dto.protocol.ProtocolASyncRequestDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class UpdateRoomDto implements ProtocolDTO {
+import java.util.Arrays;
+
+public class UpdateRoomDto extends ProtocolASyncRequestDTO {
 
     private Long roomId;
     private String name;
-    private Integer size;
+    private int width, length;
+    private int rows, cols;
     private Long tileId;
     private byte[] imageData;
 
-    public UpdateRoomDto(Long id, String name, Integer size, Long tileId, byte[] imageData){
+    public UpdateRoomDto(Long id, String name, int width, int length, int rows, int cols, Long tileId, byte[] imageData){
         this.name = name;
-        this.size = size;
+        this.width = width;
+        this.length = length;
+        this.rows = rows;
+        this.cols = cols;
         this.roomId = id;
         this.tileId = tileId;
         this.imageData = imageData;
@@ -28,8 +35,20 @@ public class UpdateRoomDto implements ProtocolDTO {
         return roomId;
     }
 
-    public Integer getSize() {
-        return size;
+    public int getWidth() {
+        return width;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
     }
 
     public Long getTileId() {
@@ -45,8 +64,12 @@ public class UpdateRoomDto implements ProtocolDTO {
         return "UpdateRoomDto{" +
                 "roomId=" + roomId +
                 ", name='" + name + '\'' +
-                ", size=" + size +
+                ", width=" + width +
+                ", length=" + length +
+                ", rows=" + rows +
+                ", cols=" + cols +
                 ", tileId=" + tileId +
+                ", imageData=" + Arrays.toString(imageData) +
                 '}';
     }
 }

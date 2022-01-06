@@ -3,8 +3,9 @@ package com.hamming.storim.common.dto.protocol.thing;
 
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
 
-public class GetThingResultDTO implements ProtocolDTO {
+public class GetThingResultDTO extends ProtocolResponseDTO {
 
     private boolean success = false;
     private String errorMessage;

@@ -1,8 +1,9 @@
 package com.hamming.storim.common.dto.protocol.avatar;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
 
-public class AvatarDeletedDTO implements ProtocolDTO {
+public class AvatarDeletedDTO extends ProtocolResponseDTO {
 
     private Long avatarId;
 

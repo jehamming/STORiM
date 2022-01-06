@@ -1,8 +1,9 @@
 package com.hamming.storim.common.dto.protocol.thing;
 
+import com.hamming.storim.common.dto.protocol.ProtocolASyncRequestDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class UpdateThingLocationDto implements ProtocolDTO {
+public class UpdateThingLocationDto extends ProtocolASyncRequestDTO {
 
     private Long id;
     private int x;

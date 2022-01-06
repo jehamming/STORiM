@@ -6,12 +6,20 @@ public class UserDto extends DTO {
 
     private Long currentAvatarID;
     private String email;
+    private String username;
+    private String password;
 
-    public UserDto(Long id, String name, String email, Long currentAvatarID){
+    public UserDto(){
+
+    }
+
+    public UserDto(Long id, String name, String username, String password, String email, Long currentAvatarID){
         setId(id);
         setName(name);
         this.email = email;
         this.currentAvatarID = currentAvatarID;
+        this.username = username;
+        this.password = password;
     }
 
     public String getEmail() {
@@ -22,14 +30,37 @@ public class UserDto extends DTO {
         return currentAvatarID;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setCurrentAvatarID(Long currentAvatarID) {
+        this.currentAvatarID = currentAvatarID;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Override
     public String toString() {
         return "UserDto{" +
-                "id=" + getId() +
-                ", currentAvatarID=" + currentAvatarID +
-                ", name='" + getName() + '\'' +
+                "currentAvatarID=" + currentAvatarID +
                 ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 

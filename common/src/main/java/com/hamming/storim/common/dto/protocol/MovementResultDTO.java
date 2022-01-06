@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol;
 
 import com.hamming.storim.common.dto.LocationDto;
 
-public class MovementResultDTO implements ProtocolDTO {
+public class MovementResultDTO extends ProtocolResponseDTO {
     private long sequence;
     private LocationDto location;
 

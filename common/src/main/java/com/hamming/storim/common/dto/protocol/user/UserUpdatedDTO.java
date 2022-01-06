@@ -2,8 +2,9 @@ package com.hamming.storim.common.dto.protocol.user;
 
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
 
-public class UserUpdatedDTO implements ProtocolDTO {
+public class UserUpdatedDTO extends ProtocolResponseDTO {
 
     private UserDto user;
 

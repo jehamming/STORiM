@@ -37,7 +37,9 @@ public class LoginPanel extends JPanel implements UserListener {
 
     private void setup() {
         txtIP.setText("127.0.0.1");
-        txtPort.setText("3333");
+        txtPort.setText("3331");
+        txtUsername.setText("jehamming");
+        txtPassword.setText("jehamming");
         txtPassword.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -223,6 +225,7 @@ public class LoginPanel extends JPanel implements UserListener {
     public void avatarUpdated(AvatarDto avatar) {
 
     }
+
 
 
 }

@@ -3,8 +3,9 @@ package com.hamming.storim.common.dto.protocol.thing;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
 
-public class ThingInRoomDTO implements ProtocolDTO {
+public class ThingInRoomDTO extends ProtocolResponseDTO {
 
 
     private ThingDto thing;

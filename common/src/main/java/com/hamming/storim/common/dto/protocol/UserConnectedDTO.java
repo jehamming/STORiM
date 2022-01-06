@@ -3,7 +3,7 @@ package com.hamming.storim.common.dto.protocol;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 
-public class UserConnectedDTO implements ProtocolDTO {
+public class UserConnectedDTO extends ProtocolResponseDTO {
 
     private UserDto user;
     private LocationDto location;

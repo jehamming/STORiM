@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol;
 
 import com.hamming.storim.common.dto.LocationDto;
 
-public class UserTeleportedDTO implements ProtocolDTO {
+public class UserTeleportedDTO extends ProtocolResponseDTO {
 
     private Long userId;
     private LocationDto location;

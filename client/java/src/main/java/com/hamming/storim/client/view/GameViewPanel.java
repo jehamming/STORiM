@@ -50,8 +50,9 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     TimerTask task;
     DragTimerTask dragTimerTask;
     private BasicDrawableObject selectedObject;
-
     private boolean forward, back, left, right;
+    private float unitX = 1f;
+    private float unitY = 1f;
 
 
 
@@ -256,6 +257,10 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     @Override
     public void setRoom(RoomDto room) {
         this.room = room;
+        if (room != null) {
+            unitX = getWidth() / room.getWidth();
+            unitY = getHeight() / room.getLength();
+        }
     }
 
     public void setPlayers(List<Player> players) {
@@ -323,20 +328,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         selectedObject = null;
     }
 
-    public void draw() {
-        backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics g = getGraphics();
-        Graphics bbg = backBuffer.getGraphics();
 
-        bbg.setColor(Color.black);
-        bbg.fillRect(0, 0, getWidth(), getHeight());
-        drawRoom(bbg);
-        drawThings(bbg);
-        drawUsers(bbg);
-        drawControls(bbg);
-
-        g.drawImage(backBuffer, 0, 0, this);
-    }
 
     private void drawControls(Graphics g) {
         g.drawImage(arrowForward, getWidth() - (2 * arrowSize), getHeight() - (3 * arrowSize), arrowSize, arrowSize, this);
@@ -377,23 +369,42 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         return (x > startX) && (x < endX) && (y > startY) && (y < endY);
     }
 
+    public void draw() {
+        backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics g = getGraphics();
+        Graphics bbg = backBuffer.getGraphics();
+
+
+
+        bbg.setColor(Color.black);
+        bbg.fillRect(0, 0, getWidth(), getHeight());
+        drawRoom(bbg);
+        drawThings(bbg);
+        drawUsers(bbg);
+        drawControls(bbg);
+
+        g.drawImage(backBuffer, 0, 0, this);
+    }
+
     void drawRoom(Graphics g) {
         tileImage = defaultTileImage;
         if (room != null) {
             if (tile != null) {
                 tileImage = ImageUtils.decode(tile.getImageData());
             }
-            int roomSize = room.getSize();
-            int widthPerTile = getWidth() / roomSize;
-            int heightPerTile = getHeight() / roomSize;
-            for (int i = 0; i < roomSize; i++) {
-                for (int j = 0; j < roomSize; j++) {
+            //Draw Tiles
+            int rows = room.getRows();
+            int cols = room.getCols();
+
+            int widthPerTile = getWidth() / cols;
+            int heightPerTile = getHeight() / rows;
+            for (int i = 0; i < cols; i++) {
+                for (int j = 0; j < rows; j++) {
                     int x = i * widthPerTile;
                     int y = j * heightPerTile;
                     g.drawImage(tileImage, x, y, widthPerTile, heightPerTile, this);
                 }
             }
-
             drawTitle(g);
         }
     }
@@ -416,8 +427,8 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         for (Thing thing : things) {
             int middleX = thing.getImage().getWidth(null) / 2;
             int middleY = thing.getImage().getHeight(null) / 2;
-            int x = thing.getX() - middleX;
-            int y = thing.getY() - middleY;
+            int x = (int)(thing.getX() * unitX) - middleX;
+            int y = (int)(thing.getY() * unitY) - middleY;
             g.drawImage(thing.getImage(), x, y, this);
             if (thing.isSelected()) {
                 drawSelectionHighlight(g, thing);
@@ -430,7 +441,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         int middleY = o.getImage().getHeight(null) / 2;
         Color old = g.getColor();
         g.setColor(Color.red);
-        g.drawRect(o.getX() - middleX, o.getY() - middleY, o.getImage().getWidth(null), o.getImage().getHeight(null));
+        g.drawRect((int)(o.getX() * unitX) - middleX, (int)(o.getY() * unitY) - middleY, o.getImage().getWidth(null), o.getImage().getHeight(null));
         g.setColor(old);
     }
 
@@ -438,8 +449,8 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         for (Player player : players) {
             int middleX = player.getImage().getWidth(null) / 2;
             int middleY = player.getImage().getHeight(null) / 2;
-            int x = player.getX() - middleX;
-            int y = player.getY() - middleY;
+            int x = (int)(player.getX() * unitX) - middleX;
+            int y = (int)(player.getY() * unitY ) - middleY;
             Image playerAvatar = player.getImage();
             g.drawImage(playerAvatar, x, y,  this);
             Font font = new Font("Arial", Font.BOLD, 12);

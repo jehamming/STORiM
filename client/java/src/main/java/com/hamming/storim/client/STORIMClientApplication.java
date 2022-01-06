@@ -26,7 +26,7 @@ public class STORIMClientApplication  {
     public void initControllers() {
         controllers = new Controllers();
         // Connection
-        controllers.setConnectionController(new ConnectionController());
+        controllers.setConnectionController(new ConnectionController("STORIM_Java_client"));
         // Users
         controllers.setUserController( new UserController(controllers.getConnectionController()));
         // Verbs

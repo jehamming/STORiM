@@ -1,18 +1,18 @@
 package com.hamming.storim.common.net;
 
-import com.hamming.storim.common.Protocol;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
-import com.hamming.storim.common.dto.protocol.VersionCheckDTO;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class NetClient implements Runnable {
     private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private boolean open = true;
+    private boolean running = false;
     private ProtocolHandler protocolHandler;
     private NetCommandReceiver receiver;
 
@@ -27,14 +27,12 @@ public class NetClient implements Runnable {
             socket = new Socket(ip, port);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
-            // Do Protocol handshake
-            doProtocolHandshake();
 
             Thread clientThread = new Thread(this);
             clientThread.setName("Client Connection");
             clientThread.setDaemon(true);
             clientThread.start();
-            open = true;
+            running = true;
         } catch (IOException e) {
             System.out.println(this.getClass().getName() + ":" + "ERROR:" + e.getMessage());
             retval = e.getMessage();
@@ -43,28 +41,9 @@ public class NetClient implements Runnable {
         return retval;
     }
 
-    private void doProtocolHandshake() throws IOException {
-        VersionCheckDTO response = null;
-        try {
-            send(new VersionCheckDTO(Protocol.version));
-            response = (VersionCheckDTO) in.readObject();
-            if (response != null) {
-                if (!response.isVersionCompatible()) {
-                    String failure = Protocol.version + " != " + response.getServerVersion();
-                    throw new IOException(failure);
-                }
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            String failure = e.getMessage();
-            throw new IOException(failure);
-        }
-
-    }
-
     @Override
     public void run() {
-        while (open) {
+        while (running) {
             try {
                 Object read = in.readObject();
                 ProtocolDTO dto = (ProtocolDTO) read;
@@ -73,7 +52,7 @@ public class NetClient implements Runnable {
             } catch (IOException e) {
                // System.out.println(this.getClass().getName() + ":" + "Error:" + e.getMessage());
                // e.printStackTrace();
-                open = false;
+                running = false;
             } catch (ClassNotFoundException e) {
                 System.out.println(this.getClass().getName() + ":" + "Error:" + e.getMessage());
                 e.printStackTrace();
@@ -106,8 +85,8 @@ public class NetClient implements Runnable {
 
     public void dispose() {
         try {
-            if (open) {
-                open = false;
+            if (running) {
+                running = false;
                 closeConnection();
             }
             socket = null;
@@ -133,7 +112,7 @@ public class NetClient implements Runnable {
 
 
     public boolean isConnected() {
-        return open;
+        return running;
     }
 
 }

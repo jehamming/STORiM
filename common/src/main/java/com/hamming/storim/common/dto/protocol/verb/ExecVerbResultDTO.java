@@ -1,8 +1,9 @@
 package com.hamming.storim.common.dto.protocol.verb;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
 
-public class ExecVerbResultDTO implements ProtocolDTO {
+public class ExecVerbResultDTO extends ProtocolResponseDTO {
 
     private Long verbID;
     private boolean success;

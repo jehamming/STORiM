@@ -1,8 +1,9 @@
 package com.hamming.storim.common.dto.protocol.user;
 
+import com.hamming.storim.common.dto.protocol.ProtocolASyncRequestDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class UpdateUserDto implements ProtocolDTO {
+public class UpdateUserDto extends ProtocolASyncRequestDTO {
 
     private String name;
     private Long id;

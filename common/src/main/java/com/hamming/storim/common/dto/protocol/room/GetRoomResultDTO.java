@@ -2,8 +2,9 @@ package com.hamming.storim.common.dto.protocol.room;
 
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
 
-public class GetRoomResultDTO implements ProtocolDTO {
+public class GetRoomResultDTO extends ProtocolResponseDTO {
 
     private boolean success = false;
     private String errorMessage;

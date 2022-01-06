@@ -1,28 +1,22 @@
 package com.hamming.storim.common.dto.protocol.room;
 
+import com.hamming.storim.common.dto.protocol.ProtocolASyncRequestDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class AddRoomDto implements ProtocolDTO {
+public class AddRoomDto extends ProtocolASyncRequestDTO {
 
     private String name;
-    private Integer size;
     private Long tileId;
     private byte[] imageData;
 
-    public AddRoomDto(String name, Integer size, Long tileId, byte[] imageData){
+    public AddRoomDto(String name, Long tileId, byte[] imageData){
         this.name = name;
-        this.size = size;
         this.tileId = tileId;
         this.imageData = imageData;
     }
 
     public String getName() {
         return name;
-
-    }
-
-    public Integer getSize() {
-        return size;
     }
 
     public byte[] getImageData() {
@@ -37,7 +31,6 @@ public class AddRoomDto implements ProtocolDTO {
     public String toString() {
         return "AddRoomDto{" +
                 "name='" + name + '\'' +
-                ", size=" + size +
                 ", tileId=" + tileId +
                 '}';
     }

@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol;
 
 import com.hamming.storim.common.dto.LocationDto;
 
-public class TeleportResultDTO implements ProtocolDTO {
+public class TeleportResultDTO extends ProtocolResponseDTO {
 
 
     private boolean teleportSuccesful;

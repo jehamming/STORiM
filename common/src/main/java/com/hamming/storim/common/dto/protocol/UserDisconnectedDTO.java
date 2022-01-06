@@ -1,6 +1,6 @@
 package com.hamming.storim.common.dto.protocol;
 
-public class UserDisconnectedDTO implements ProtocolDTO {
+public class UserDisconnectedDTO extends ProtocolResponseDTO {
 
     private Long userID;
 

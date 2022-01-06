@@ -1,6 +1,9 @@
-package com.hamming.storim.common.dto.protocol;
+package com.hamming.storim.common.dto.protocol.login;
 
-public class LoginRequestDTO implements ProtocolDTO {
+import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolSyncRequestDTO;
+
+public class LoginRequestDTO extends ProtocolSyncRequestDTO {
 
 
     private String username;

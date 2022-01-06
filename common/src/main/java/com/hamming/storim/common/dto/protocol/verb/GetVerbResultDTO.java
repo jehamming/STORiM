@@ -2,8 +2,9 @@ package com.hamming.storim.common.dto.protocol.verb;
 
 import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
 
-public class GetVerbResultDTO implements ProtocolDTO {
+public class GetVerbResultDTO extends ProtocolResponseDTO {
 
     private boolean success;
     private String errorMessage;

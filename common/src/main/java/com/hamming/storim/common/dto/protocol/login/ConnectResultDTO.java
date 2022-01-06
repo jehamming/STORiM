@@ -1,25 +1,23 @@
-package com.hamming.storim.common.dto.protocol;
+package com.hamming.storim.common.dto.protocol.login;
 
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
 
-public class LoginResultDTO implements ProtocolDTO {
+public class ConnectResultDTO extends ProtocolResponseDTO {
 
-    private boolean loginSucceeded = false;
+    private boolean connectSucceeded = false;
     private String errorMessage;
     private UserDto user;
     private LocationDto location;
 
-    public LoginResultDTO(boolean success, String errorMessage, UserDto user, LocationDto location) {
-        this.loginSucceeded = success;
+    public ConnectResultDTO(boolean success, String errorMessage, UserDto user, LocationDto location) {
+        this.connectSucceeded = success;
         this.errorMessage = errorMessage;
         this.user = user;
         this.location = location;
     }
 
-    public boolean isLoginSucceeded() {
-        return loginSucceeded;
-    }
 
     public String getErrorMessage() {
         return errorMessage;
@@ -33,10 +31,14 @@ public class LoginResultDTO implements ProtocolDTO {
         return location;
     }
 
+    public boolean isConnectSucceeded() {
+        return connectSucceeded;
+    }
+
     @Override
     public String toString() {
-        return "LoginResultDTO{" +
-                "loginSucceeded=" + loginSucceeded +
+        return "ConnectResultDTO{" +
+                "connectSucceeded=" + connectSucceeded +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", user=" + user +
                 ", location=" + location +

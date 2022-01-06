@@ -476,6 +476,7 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
 
     }
 
+
     @Override
     public void userSelectedInView(UserDto user) {
 

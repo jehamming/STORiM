@@ -1,6 +1,6 @@
 package com.hamming.storim.common.dto.protocol;
 
-public class MovementRequestDTO implements ProtocolDTO {
+public class MovementRequestDTO extends ProtocolASyncRequestDTO {
     private long sequence;
     private boolean forward, back, left, right;
 

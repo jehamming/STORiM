@@ -1,8 +1,9 @@
 package com.hamming.storim.common.dto.protocol.verb;
 
+import com.hamming.storim.common.dto.protocol.ProtocolASyncRequestDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class ExecVerbDTO implements ProtocolDTO {
+public class ExecVerbDTO extends ProtocolASyncRequestDTO {
 
     private Long commandID;
     private String input;

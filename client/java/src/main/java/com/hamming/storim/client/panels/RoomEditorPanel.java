@@ -78,8 +78,6 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         btnSave.setEnabled(false);
         btnDelete.setEnabled(false);
         btnCreate.setEnabled(false);
-        SpinnerModel value = new SpinnerNumberModel(10, 1, 20, 1);
-        spinSize.setModel(value);
         btnChooseFile.addActionListener(e -> chooseFile());
         listTiles.setCellRenderer( new TileRenderer() );
         listTiles.addListSelectionListener(e -> {
@@ -151,27 +149,37 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
             for (TileDto tile : controllers.getRoomController().getTiles() ) {
                 tilesModel.addElement(tile);
             }
-            setEditable(true);
+            txtRoomName.setEnabled(true);
+            txtWidth.setEnabled(false);
+            txtLength.setEnabled(false);
+            txtRows.setEnabled(false);
+            txtCols.setEnabled(false);
+            btnChooseFile.setEnabled(true);
         });
     }
 
     private void saveRoom() {
         String roomName = txtRoomName.getText().trim();
-        int roomSize = Integer.valueOf((Integer) spinSize.getModel().getValue());
+        int width = 100, length = 100;
+        int rows = 10, cols = 10;
         Long tileID = null;
         if (chosenTile != null) {
             tileID = chosenTile.getId();
         }
         if (newRoom) {
-            controllers.getRoomController().addRoom(roomName, roomSize, tileID, ImageUtils.encode(tileImage));
+            if (tileImage != null ) {
+                controllers.getRoomController().addRoom(roomName, tileID, ImageUtils.encode(tileImage));
+            } else {
+                controllers.getRoomController().addRoom(roomName, tileID, null);
+            }
         } else {
             // Update room!
             Long roomId = Long.valueOf(lblRoomID.getText());
 
-            if ( chosenTile == null ) {
-                controllers.getRoomController().updateRoom(roomId, roomName, roomSize, null, ImageUtils.encode(tileImage));
+            if ( chosenTile != null ) {
+                controllers.getRoomController().updateRoom(roomId, roomName, width, length, rows, cols, null, ImageUtils.encode(tileImage));
             } else {
-                controllers.getRoomController().updateRoom(roomId, roomName, roomSize, tileID, null);
+                controllers.getRoomController().updateRoom(roomId, roomName, width, length, rows, cols, tileID, null);
             }
 
 
@@ -189,7 +197,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         SwingUtilities.invokeLater(() -> {
             lblRoomID.setText(room.getId().toString());
             txtRoomName.setText(room.getName());
-            spinSize.setValue(room.getSize());
+          //  spinSize.setValue(room.getSize());
             btnSave.setEnabled(true);
             btnDelete.setEnabled(true);
             btnTeleport.setEnabled(true);
@@ -227,13 +235,13 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
     }
 
     private void setEditable(boolean editable) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                txtRoomName.setEnabled(editable);
-                spinSize.setEnabled(editable);
-                btnChooseFile.setEnabled(editable);
-            }
+        SwingUtilities.invokeLater(() -> {
+            txtRoomName.setEnabled(editable);
+            txtWidth.setEnabled(editable);
+            txtLength.setEnabled(editable);
+            txtRows.setEnabled(editable);
+            txtCols.setEnabled(editable);
+            btnChooseFile.setEnabled(editable);
         });
     }
 
@@ -251,8 +259,6 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         btnDelete = new javax.swing.JButton();
         lblRoomID = new javax.swing.JLabel();
         txtRoomName = new javax.swing.JTextField();
-        spinSize = new javax.swing.JSpinner();
-        jLabel1 = new javax.swing.JLabel();
         btnSave = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         btnChooseFile = new javax.swing.JButton();
@@ -260,6 +266,15 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         jScrollPane2 = new javax.swing.JScrollPane();
         listTiles = new javax.swing.JList<>();
         jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtWidth = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        txtLength = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txtRows = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        txtCols = new javax.swing.JTextField();
 
         jLabel3.setText("Rooms");
 
@@ -271,7 +286,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
 
         jLabel8.setText("Room Name");
 
-        jLabel9.setText("Room Size");
+        jLabel9.setText("Room Size ");
 
         btnCreate.setText("Create");
 
@@ -280,8 +295,6 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         lblRoomID.setText("jLabel1");
 
         txtRoomName.setText("jTextField1");
-
-        jLabel1.setText("Number of tiles (square)");
 
         btnSave.setText("Save");
 
@@ -294,6 +307,24 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         jScrollPane2.setViewportView(listTiles);
 
         jLabel4.setText("Choose below or :");
+
+        jLabel5.setText("Width:");
+
+        txtWidth.setText("100");
+
+        jLabel1.setText("Length:");
+
+        txtLength.setText("100");
+
+        jLabel10.setText("Room Tiles ");
+
+        jLabel6.setText("Rows:");
+
+        txtRows.setText("10");
+
+        jLabel11.setText("Cols");
+
+        txtCols.setText("100");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -313,26 +344,40 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
                                                                                 .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                                                 .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
                                                                                 .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                                        .addComponent(jLabel2))
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                        .addComponent(jLabel2)
+                                                                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                                         .addGroup(layout.createSequentialGroup()
                                                                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                                                 .addComponent(lblImagePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                                .addGroup(layout.createSequentialGroup()
-                                                                                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                        .addComponent(lblRoomID, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+                                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                                                .addComponent(jLabel5)
+                                                                                                                .addGap(3, 3, 3)
+                                                                                                                .addComponent(txtWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                                                .addComponent(jLabel6)
+                                                                                                                .addGap(8, 8, 8)
+                                                                                                                .addComponent(txtRows, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                                                .addGap(4, 4, 4)
+                                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                                                        .addComponent(jLabel11)
+                                                                                                        .addComponent(jLabel1))))
+                                                                                .addGap(3, 3, 3)
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                        .addComponent(txtLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                                         .addComponent(btnChooseFile, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                                                                                .addComponent(lblRoomID, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                .addGroup(layout.createSequentialGroup()
-                                                                                        .addComponent(spinSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                                        .addComponent(txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                                        .addComponent(txtCols, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                                .addGap(9, 9, 9)))))
+                                                .addContainerGap(42, Short.MAX_VALUE))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(btnTeleport, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -360,8 +405,17 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel9)
-                                                        .addComponent(spinSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jLabel1))
+                                                        .addComponent(jLabel5)
+                                                        .addComponent(txtWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jLabel1)
+                                                        .addComponent(txtLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabel10)
+                                                        .addComponent(jLabel6)
+                                                        .addComponent(txtRows, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jLabel11)
+                                                        .addComponent(txtCols, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel2)
@@ -369,9 +423,11 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
                                                         .addComponent(jLabel4))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                                        .addComponent(lblImagePreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))
+                                                        .addComponent(lblImagePreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGap(0, 0, Short.MAX_VALUE)
+                                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(btnTeleport)
@@ -390,9 +446,13 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnTeleport;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -400,10 +460,14 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblImagePreview;
     private javax.swing.JLabel lblRoomID;
+    private javax.swing.JTextField txtCols;
+    private javax.swing.JTextField txtLength;
+    private javax.swing.JTextField txtRoomName;
+    private javax.swing.JTextField txtRows;
+    private javax.swing.JTextField txtWidth;
     private javax.swing.JList<RoomListItem> listRooms;
     private javax.swing.JList<TileDto> listTiles;
-    private javax.swing.JSpinner spinSize;
-    private javax.swing.JTextField txtRoomName;
+
 
 
     private void removeRoom(Long id) {
@@ -462,7 +526,10 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
                 lblImagePreview.setText("");
                 lblImagePreview.setIcon(null);
                 tileImage = null;
-                spinSize.setValue(20);
+                txtWidth.setText("100");
+                txtLength.setText("100");
+                txtRows.setText("10");
+                txtCols.setText("10");
                 btnSave.setEnabled(false);
                 btnDelete.setEnabled(false);
                 btnChooseFile.setEnabled(false);

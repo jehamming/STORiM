@@ -1,8 +1,7 @@
 package com.hamming.storim.common;
 
-import com.hamming.storim.common.dto.protocol.LoginRequestDTO;
+import com.hamming.storim.common.dto.protocol.login.LoginRequestDTO;
 import com.hamming.storim.common.dto.protocol.TeleportRequestDTO;
-import com.hamming.storim.common.dto.protocol.VersionCheckDTO;
 import com.hamming.storim.common.dto.protocol.avatar.AddAvatarDto;
 import com.hamming.storim.common.dto.protocol.room.AddRoomDto;
 import com.hamming.storim.common.dto.protocol.room.DeleteRoomDTO;
@@ -22,11 +21,6 @@ public class ProtocolHandler implements Protocol {
     public LoginRequestDTO getLoginDTO(String username, String password) {
         String hashedPassword = StringUtils.hashPassword(password);
         LoginRequestDTO dto = new LoginRequestDTO(username, hashedPassword);
-        return dto;
-    }
-
-    public VersionCheckDTO getVersionCheckDTO(String clientVersion) {
-        VersionCheckDTO dto = new VersionCheckDTO(clientVersion);
         return dto;
     }
 
@@ -57,12 +51,12 @@ public class ProtocolHandler implements Protocol {
         return new UpdateVerbDto(id, name, toCaller, toLocation);
     }
 
-    public AddRoomDto getAddRoomDTO(String roomName, int roomSize, Long tileID, byte[] imageData) {
-        return new AddRoomDto(roomName, roomSize, tileID, imageData);
+    public AddRoomDto getAddRoomDTO(String roomName, Long tileID, byte[] imageData) {
+        return new AddRoomDto(roomName, tileID, imageData);
     }
 
-    public UpdateRoomDto getUpdateRoomDto(Long roomId, String roomName, int roomSize, Long tileID, byte[] imageData) {
-        return new UpdateRoomDto(roomId, roomName, roomSize, tileID, imageData);
+    public UpdateRoomDto getUpdateRoomDto(Long roomId, String roomName, int width, int length, int rows, int cols, Long tileID, byte[] imageData) {
+        return new UpdateRoomDto(roomId, roomName, width, length, rows, cols, tileID, imageData);
     }
 
     public DeleteRoomDTO getDeleteRoomDto(Long roomId) {
