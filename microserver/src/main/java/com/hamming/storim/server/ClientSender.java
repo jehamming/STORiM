@@ -11,7 +11,7 @@ public class ClientSender implements Runnable {
 
 
     private ObjectOutputStream out;
-    boolean running = false;
+    private boolean running = false;
     private Queue<ProtocolDTO> itemsToSend;
     private static int INTERVAL = 50; // Milliseconds, 20Hz
 
@@ -51,6 +51,10 @@ public class ClientSender implements Runnable {
 
     public void stopSending() {
         running = false;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     public void enQueue(ProtocolDTO dto) {

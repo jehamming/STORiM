@@ -20,8 +20,8 @@ public class LoginServerWorker extends ServerWorker {
         if ( findServerRegistration(name) == null ) {
             ServerRegistration registration = new ServerRegistration(name, url, port);
             registeredServers.add(registration);
-            System.out.println("New Server registered: " + registration);
-            System.out.println("No of servers registered: " + registeredServers.size());
+            System.out.println("("+getClass().getSimpleName() +") New Server registered: " + registration);
+            System.out.println("("+getClass().getSimpleName() +") No of servers registered: " + registeredServers.size());
         } else {
             errorMessage = name + " already registered as server!";
         }
@@ -35,7 +35,7 @@ public class LoginServerWorker extends ServerWorker {
         ServerRegistration found = findServerRegistration(servername);
         if ( found != null ) {
             registeredServers.remove(found);
-            System.out.println("Server "+ servername+ " removed, no of servers registered: " + registeredServers.size());
+            System.out.println("("+getClass().getSimpleName() +") Server "+ servername+ " removed, no of servers registered: " + registeredServers.size());
         }
         return found;
     }

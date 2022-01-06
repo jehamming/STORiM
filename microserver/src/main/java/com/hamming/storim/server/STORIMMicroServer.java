@@ -4,8 +4,6 @@ import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
 import com.hamming.storim.server.common.factories.AvatarFactory;
 import com.hamming.storim.server.common.factories.ThingFactory;
 import com.hamming.storim.server.common.factories.TileFactory;
@@ -153,5 +151,4 @@ public class STORIMMicroServer extends Server {
         server.initialize();
         server.startServer();
     }
-
 }

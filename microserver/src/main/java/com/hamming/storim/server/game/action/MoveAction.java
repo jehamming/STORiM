@@ -14,7 +14,6 @@ public class MoveAction extends Action<MovementRequestDTO> {
     private STORIMClientConnection client;
 
     public MoveAction(GameController controller, STORIMClientConnection client) {
-
         this.controller = controller;
         this.client = client;
     }

@@ -30,25 +30,26 @@ import java.net.Socket;
 public class STORIMClientConnection extends ClientConnection implements GameStateListener {
 
     private User currentUser;
-    private GameController gameController;
     private ClientSender clientSender;
     private STORIMMicroServer server;
     private String clientID;
+    private GameController gameController;
 
     public STORIMClientConnection(STORIMMicroServer server, ClientTypeDTO clientTypeDTO, Socket s, ObjectInputStream in, ObjectOutputStream out, GameController controller) {
         super(clientTypeDTO, s, in, out, controller);
-        this.gameController = controller;
         this.server = server;
         clientSender = new ClientSender(out);
     }
 
     @Override
     public void connectionClosed() {
-        //TODO Implement
+        clientSender.stopSending();
+        clientSender = null;
     }
 
     @Override
     public void addActions() {
+        gameController = (GameController) getServerWorker();
         getProtocolHandler().addAction(MovementRequestDTO.class, new MoveAction(gameController, this));
         getProtocolHandler().addAction(TeleportRequestDTO.class, new TeleportAction(gameController, this));
         getProtocolHandler().addAction(GetRoomDTO.class, new GetRoomAction(gameController, this));
@@ -174,7 +175,9 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     public void send(ProtocolDTO dto) {
-        clientSender.enQueue(dto);
+        if (clientSender != null && clientSender.isRunning()) {
+            clientSender.enQueue(dto);
+        }
     }
 
     public User getCurrentUser() {

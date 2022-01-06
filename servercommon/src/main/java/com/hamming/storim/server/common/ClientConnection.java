@@ -39,7 +39,7 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
                 Object read = in.readObject();
                 ProtocolDTO dto = (ProtocolDTO) read;
                 Action action = protocolHandler.getAction(dto);
-                System.out.println(clientTypeDTO.getName() + ":REQUEST  :" + dto);
+                System.out.println("("+getClass().getSimpleName() +") FROM " + clientTypeDTO.getName() + ":" + dto);
                 if (action != null) {
                     action.setDTO(dto);
                     // Check for Async or Sync behavior
@@ -57,7 +57,7 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
                     System.out.println(clientTypeDTO.getName() + ": NOT HANDLED:" + dto.getClass().getSimpleName());
                 }
             } catch (IOException e) {
-                System.out.println(this.getClass().getName() + ":" + "IO Error:" + e.getMessage());
+                System.out.println(this.getClass().getName() + ":" + "IO Error:" + e.getClass().getSimpleName());
                 //e.printStackTrace();
                 running = false;
             } catch (ClassNotFoundException e) {
@@ -69,6 +69,7 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
             socket.close();
         } catch (IOException e) {
         }
+        running = false;
         System.out.println(clientTypeDTO.getName() + ":" + "Client Socket closed");
         connectionClosed();
     }
@@ -93,7 +94,7 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
         serverWorker.addAction(action);
         synchronized (action) {
             try {
-                action.wait();
+                action.wait(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
