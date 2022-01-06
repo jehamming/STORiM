@@ -99,6 +99,9 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
                 e.printStackTrace();
             }
         }
+        if (action.getResult() == null ) {
+            System.out.println("("+getClass().getSimpleName() +") ERROR, SYNChronous Message ("+action.getDto().getClass().getSimpleName()+") did not have a result! (call setResult()?) " );
+        }
         return action.getResult();
     }
 
