@@ -544,8 +544,11 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     @Override
     public void setPlayerLocation(Long playerId, int x, int y) {
         Player p = getPlayer(playerId);
-        p.setX(x);
-        p.setY(y);
+        //FIXME : p should not be null!
+        if ( p != null ) {
+            p.setX(x);
+            p.setY(y);
+        }
     }
 
     @Override

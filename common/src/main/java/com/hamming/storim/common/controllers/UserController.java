@@ -191,7 +191,6 @@ public class UserController implements ConnectionListener {
             }
             fireUserConnectedEvent(dto.getUser());
         }
-
     }
 
 

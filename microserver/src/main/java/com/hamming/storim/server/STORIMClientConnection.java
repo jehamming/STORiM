@@ -432,6 +432,10 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         if ( response.getUser() != null ) {
             userValid = true;
             User verifiedUser = User.valueOf( response.getUser() );
+            if ( UserCache.getInstance().findUserById(verifiedUser.getId()) != null ) {
+                // Remove previous from cache, start new  (reconnect in the same connection?
+                UserCache.getInstance().deleteUser(verifiedUser);
+            }
             UserCache.getInstance().addUser(verifiedUser);
             //FIXME Get the (last) location from somewhere..
             Room room = RoomFactory.getInstance().getRooms().get(0);

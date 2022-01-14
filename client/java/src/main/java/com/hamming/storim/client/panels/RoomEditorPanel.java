@@ -546,6 +546,13 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
 
     @Override
     public void userConnected(UserDto user) {
+        if ((controllers.getUserController().getCurrentUser().getId().equals( user.getId() ))) {
+            empty(true);
+            for (RoomDto room: controllers.getRoomController().getRoomsForUser(controllers.getUserController().getCurrentUser().getId())) {
+                roomAdded(room);
+            }
+            btnCreate.setEnabled(true);
+        }
 
     }
 
@@ -566,13 +573,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
 
     @Override
     public void loginResult(boolean success, String message) {
-        empty(true);
-        if (success) {
-            for (RoomDto room: controllers.getRoomController().getRoomsForUser(controllers.getUserController().getCurrentUser().getId())) {
-                roomAdded(room);
-            }
-        }
-        btnCreate.setEnabled(true);
+
     }
 
     @Override
@@ -597,7 +598,8 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
 
     @Override
     public void connected() {
-
+        empty(true);
+        btnCreate.setEnabled(true);
     }
 
     @Override
