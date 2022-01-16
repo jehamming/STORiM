@@ -1,24 +1,29 @@
 package com.hamming.storim.server.common.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // A baseplate is like a lego baseplate.
 public class Room extends BasicObject   {
 
     private int rows, cols;
     private int length, width;
-    private String name;
     private int spawnPointX;
     private int spawnPointY;
     private Long tileId;
+
+    private List<Exit> exits;
 
     public Room() {
         spawnPointX = 0;
         spawnPointY = 0;
         tileId = null;
-        name = "A basic room";
+        setName("A basic room");
         rows = 10;
         cols = 10;
         length = 200;
         width = 200;
+        exits = new ArrayList<>();
     }
 
     public int getSpawnPointX() {
@@ -27,16 +32,6 @@ public class Room extends BasicObject   {
 
     public void setSpawnPointX(int spawnPointX) {
         this.spawnPointX = spawnPointX;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int getSpawnPointY() {
@@ -87,14 +82,27 @@ public class Room extends BasicObject   {
         this.width = width;
     }
 
+    public void addExit(Exit exit) {
+        exits.add(exit);
+    }
+
+    public void removeExit(Exit exit) {
+        exits.remove(exit);
+    }
+
+    public List<Exit> getExits() {
+        return exits;
+    }
+
     @Override
     public String toString() {
         return "Room{" +
-                "rows=" + rows +
+                "id=" + getId() +
+                ", rows=" + rows +
                 ", cols=" + cols +
                 ", length=" + length +
                 ", width=" + width +
-                ", name='" + name + '\'' +
+                ", name='" + getName() + '\'' +
                 ", spawnPointX=" + spawnPointX +
                 ", spawnPointY=" + spawnPointY +
                 ", tileId=" + tileId +

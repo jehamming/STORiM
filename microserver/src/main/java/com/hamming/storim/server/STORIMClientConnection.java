@@ -384,6 +384,12 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         if (room.getTileId() != null) {
             sendTile(room.getTileId());
         }
+        // First send the Exits
+        for (Exit e : room.getExits() ) {
+            ExitDto exitDto = DTOFactory.getInstance().getExitDTO(e);
+            GetExitResultDTO exitResultDTO = new GetExitResultDTO(true, null, exitDto);
+            send(exitResultDTO);
+        }
         RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
         GetRoomResultDTO getRoomResultDTO = DTOFactory.getInstance().getRoomResultDTO(true, null, roomDto);
         send(getRoomResultDTO);

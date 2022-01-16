@@ -106,8 +106,7 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, V
     private void teleport() {
         UserListItem item = listOnlineUsers.getSelectedValue();
         LocationDto location = controllers.getUserController().getUserLocation(item.getUser().getId());
-        RoomDto roomDto = controllers.getRoomController().findRoomByID(location.getRoomId());
-        controllers.getRoomController().teleportRequest(controllers.getUserController().getCurrentUser(), roomDto);
+        controllers.getRoomController().teleportRequest(controllers.getUserController().getCurrentUser().getId(), location.getRoomId());
     }
 
     private void verbSelected(VerbDto verb) {
@@ -123,7 +122,7 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, V
                 lblUserID.setText(user.getId().toString());
                 lblUserName.setText(user.getName());
                 LocationDto location = controllers.getUserController().getUserLocation(user.getId());
-                RoomDto roomDto = controllers.getRoomController().findRoomByID(location.getRoomId());
+                RoomDto roomDto = controllers.getRoomController().getRoom(location.getRoomId());
                 lblLocation.setText(roomDto.getName());
             }
         });
@@ -226,7 +225,7 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, V
                     public void run() {
                         lblUserID.setText(item.getUser().getId().toString());
                         lblUserName.setText(item.getUser().getName());
-                        RoomDto roomDto = controllers.getRoomController().findRoomByID(location.getRoomId());
+                        RoomDto roomDto = controllers.getRoomController().getRoom(location.getRoomId());
                         lblLocation.setText(roomDto.getName());
                     }
                 });
@@ -253,6 +252,15 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, V
     @Override
     public void thingSelectedInView(ThingDto thing) {
 
+    }
+
+    @Override
+    public void exitSelectedInView(ExitDto exit) {
+        int input = JOptionPane.showConfirmDialog(null, "Use exit '"+ exit.getName() + "'?");
+        // 0=yes, 1=no, 2=cancel
+        if ( input == 0 ) {
+            controllers.getRoomController().teleportRequest(controllers.getUserController().getCurrentUser().getId(), exit.getRoomid());
+        }
     }
 
 

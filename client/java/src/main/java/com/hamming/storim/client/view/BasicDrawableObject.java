@@ -69,7 +69,7 @@ public class BasicDrawableObject {
         int endX = startX + getImage().getWidth(null);
         int startY = getY() - middleY;
         int endY = startY + getImage().getHeight(null);
-        return x > startX && x < endX && y > startY && y < endY;
+        return x >= startX && x <= endX && y >= startY && y <= endY;
     }
 
 

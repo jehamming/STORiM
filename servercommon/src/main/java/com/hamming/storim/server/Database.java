@@ -126,7 +126,7 @@ public class Database {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(data);
             oos.close();
-            System.out.println(getClass().getName() + ": Stored Database in file "+ databaseFilename);
+            System.out.println(getClass().getName() + ": Stored Database in file "+ file.getAbsolutePath());
             printDatabase();
         } catch (IOException e) {
             e.printStackTrace();
@@ -141,7 +141,7 @@ public class Database {
             data = (Map<Class, List<BasicObject>>) ois.readObject();
             setLastAddedID(getHighestID());
             ois.close();
-            System.out.println(getClass().getName()+": Loaded Database from file "+ databaseFilename);
+            System.out.println(getClass().getName()+": Loaded Database from file "+ file.getAbsolutePath());
             printDatabase();
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(this.getClass().getName() + ":" + "ERROR:" + e.getMessage());

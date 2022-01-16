@@ -123,7 +123,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
     private void teleport() {
         RoomListItem item = listRooms.getSelectedValue();
         if (item != null  && item.getRoom() != null ) {
-            controllers.getRoomController().teleportRequest(controllers.getUserController().getCurrentUser(), item.getRoom());
+            controllers.getRoomController().teleportRequest(controllers.getUserController().getCurrentUser().getId(), item.getRoom().getId());
         }
     }
 

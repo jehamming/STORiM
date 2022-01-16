@@ -2,6 +2,7 @@ package com.hamming.storim.common.controllers;
 
 import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.ProtocolHandler;
+import com.hamming.storim.common.dto.ExitDto;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.TileDto;
 import com.hamming.storim.common.dto.UserDto;
@@ -24,6 +25,7 @@ public class RoomController {
     private List<RoomUpdateListener> roomUpdateListeners;
     private Controllers controllers;
     private Map<Long, RoomDto> rooms;
+    private Map<Long, ExitDto> exits;
     private Map<Long, TileDto> tiles;
 
 
@@ -35,6 +37,8 @@ public class RoomController {
 
     private void registerReceivers() {
         controllers.getConnectionController().registerReceiver(GetRoomResultDTO.class, (NetCommandReceiver<GetRoomResultDTO>) dto -> handleGetRoomResult(dto));
+        controllers.getConnectionController().registerReceiver(GetTileResultDTO.class, (NetCommandReceiver<GetTileResultDTO>) dto -> handleGetTileResultDTO(dto));
+        controllers.getConnectionController().registerReceiver(GetExitResultDTO.class, (NetCommandReceiver<GetExitResultDTO>) dto -> handleGetExitResultDTO(dto));
         controllers.getConnectionController().registerReceiver(RoomAddedDTO.class, (NetCommandReceiver<RoomAddedDTO>) dto -> handleRoomAddedDTO(dto));
         controllers.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (NetCommandReceiver<RoomUpdatedDTO>) dto -> handleRoomUpdatedDTO(dto));
         controllers.getConnectionController().registerReceiver(RoomDeletedDTO.class, (NetCommandReceiver<RoomDeletedDTO>) dto -> handleRoomDeletedDTO(dto));
@@ -45,10 +49,17 @@ public class RoomController {
         controllers.getConnectionController().registerReceiver(TeleportResultDTO.class, (NetCommandReceiver<TeleportResultDTO>) dto -> handleTeleportResultDTO(dto));
         controllers.getConnectionController().registerReceiver(MovementResultDTO.class, (NetCommandReceiver<MovementResultDTO>) dto -> handleMovementResult(dto));
         controllers.getConnectionController().registerReceiver(UserLocationUpdateDTO.class, (NetCommandReceiver<UserLocationUpdateDTO>) dto -> handleUserLocationUpdateDTO(dto));
-        controllers.getConnectionController().registerReceiver(GetTileResultDTO.class, (NetCommandReceiver<GetTileResultDTO>) dto -> handleGetTileResultDTO(dto));
         controllers.getConnectionController().registerReceiver(ThingPlacedDTO.class, (NetCommandReceiver<ThingPlacedDTO>) dto -> handleThingPlacedDTO(dto));
         controllers.getConnectionController().registerReceiver(ThingDeletedDTO.class, (NetCommandReceiver<ThingDeletedDTO>) dto -> handleThingDeletedDTO(dto));
         controllers.getConnectionController().registerReceiver(ThingInRoomDTO.class, (NetCommandReceiver<ThingInRoomDTO>) dto -> handleThingInRoomDTO(dto));
+    }
+
+    private void handleGetExitResultDTO(GetExitResultDTO dto) {
+        ExitDto exit = dto.getExit();
+        if ( exit != null ) {
+            exits.put(exit.getId(), exit);
+        }
+
     }
 
     private void handleThingInRoomDTO(ThingInRoomDTO dto) {
@@ -88,6 +99,7 @@ public class RoomController {
         protocolHandler = new ProtocolHandler();
         rooms = new HashMap<>();
         tiles = new HashMap<>();
+        exits = new HashMap<>();
         roomListeners = new ArrayList<>();
         roomUpdateListeners = new ArrayList<>();
     }
@@ -124,7 +136,7 @@ public class RoomController {
     }
 
     private void handleTeleportResultDTO(TeleportResultDTO dto) {
-        RoomDto room = findRoomByID(dto.getLocation().getRoomId());
+        RoomDto room = getRoom(dto.getLocation().getRoomId());
         controllers.getUserController().setCurrentUserLocation(dto.getLocation());
         for (RoomListener l : roomListeners) {
             l.setRoom(room, dto.getLocation());
@@ -160,7 +172,7 @@ public class RoomController {
     }
 
     private void handleRoomDeletedDTO(RoomDeletedDTO dto) {
-        RoomDto room = findRoomByID(dto.getRoomId());
+        RoomDto room = getRoom(dto.getRoomId());
         if (room != null) {
             rooms.remove(room.getId());
             for (RoomUpdateListener l : roomUpdateListeners) {
@@ -206,8 +218,12 @@ public class RoomController {
         roomListeners.add(l);
     }
 
-    public RoomDto findRoomByID(Long id) {
+    public RoomDto getRoom(Long id) {
         return rooms.get(id);
+    }
+
+    public ExitDto getExit(Long id) {
+        return exits.get(id);
     }
 
     public List<RoomDto> getRoomsForUser(Long userId) {
@@ -235,8 +251,8 @@ public class RoomController {
         controllers.getConnectionController().send(deleteRoomDTO);
     }
 
-    public void teleportRequest(UserDto currentUser, RoomDto room) {
-        TeleportRequestDTO dto = protocolHandler.getTeleportRequestDTO(currentUser.getId(), room.getId());
+    public void teleportRequest(Long userId, Long roomId) {
+        TeleportRequestDTO dto = protocolHandler.getTeleportRequestDTO(userId,roomId);
         controllers.getConnectionController().send(dto);
     }
 

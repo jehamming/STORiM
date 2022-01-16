@@ -11,6 +11,9 @@ import com.hamming.storim.common.dto.protocol.verb.*;
 import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DTOFactory {
 
     private static DTOFactory instance;
@@ -48,8 +51,16 @@ public class DTOFactory {
         return new LocationDto(loc.getRoom().getId(), loc.getX(), loc.getY());
     }
 
+    public ExitDto getExitDTO(Exit e) {
+        return new ExitDto(e.getId(), e.getName(), e.getRoomid(), ExitDto.Orientation.valueOf(e.getOrientation().name()));
+    }
+
     public RoomDto getRoomDto(Room b) {
-        RoomDto dto = new RoomDto(b.getId(), b.getName(), b.getWidth(), b.getLength(), b.getRows(), b.getCols(), null);
+        List<Long> exits = new ArrayList<>();
+        for ( Exit e : b.getExits()) {
+            exits.add(e.getId());
+        }
+        RoomDto dto = new RoomDto(b.getId(), b.getName(), b.getWidth(), b.getLength(), b.getRows(), b.getCols(), null, exits);
         fillBasicObjectInfo(dto, b);
         return dto;
     }

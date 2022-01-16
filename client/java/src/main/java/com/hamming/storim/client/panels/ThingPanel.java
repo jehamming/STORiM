@@ -2,13 +2,10 @@ package com.hamming.storim.client.panels;
 
 import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.common.Controllers;
+import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.interfaces.ThingListener;
 import com.hamming.storim.common.interfaces.UserListener;
 import com.hamming.storim.common.view.ViewListener;
-import com.hamming.storim.common.dto.AvatarDto;
-import com.hamming.storim.common.dto.LocationDto;
-import com.hamming.storim.common.dto.ThingDto;
-import com.hamming.storim.common.dto.UserDto;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -490,6 +487,11 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
                 listThings.setSelectedValue(item, true);
             }
         });
+    }
+
+    @Override
+    public void exitSelectedInView(ExitDto exit) {
+
     }
 
     private ThingListItem getItem(ThingDto thing) {

@@ -35,6 +35,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     private List<Action> actions;
     private List<Player> players;
     private List<Thing> things;
+    private List<Exit> exits;
     public RoomDto room;
     public TileDto tile;
     public Image tileImage;
@@ -75,7 +76,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
             thing.setX((int) p.getX());
             thing.setY((int) p.getY());
         }
-
         public Thing getThing() {
             return thing;
         }
@@ -87,6 +87,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         actions = Collections.synchronizedList(new LinkedList<Action>());
         players = new ArrayList<>();
         things = new ArrayList<>();
+        exits = new ArrayList<>();
         try {
             defaultTileImage = ImageIO.read(new File("resources/Tile.png"));
             defaultUserImage = ImageIO.read(new File("resources/User.png"));
@@ -106,8 +107,15 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
                 clearSelection();
                 selectedObject = getSelectedObject(e.getX(), e.getY());
                 if (selectedObject != null) {
-                    selectedObject.setSelected(true);
-                    selectObject(selectedObject);
+
+                    if (selectedObject instanceof Exit) {
+                        viewController.setSelectedExit(selectedObject.getId());
+                    } else {
+                        selectedObject.setSelected(!selectedObject.isSelected()); //Flip
+                        if (selectedObject.isSelected()) {
+                            selectObject(selectedObject);
+                        }
+                    }
                 }
             }
 
@@ -172,7 +180,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     private void selectObject(BasicDrawableObject selectedObject) {
         if ( selectedObject instanceof  Thing ) {
             viewController.setSelectedThing(selectedObject.getId());
-
         } else if (selectedObject instanceof Player) {
             viewController.setSelectedPlayer(selectedObject.getId());
         }
@@ -208,6 +215,12 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     public void addThing(Thing thing) {
         if (!things.contains(thing)) {
             things.add(thing);
+        }
+    }
+
+    public void addExit(Exit exit) {
+        if (!exits.contains(exit)) {
+            exits.add(exit);
         }
     }
 
@@ -268,8 +281,12 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     }
 
 
-    public void setThing(ArrayList<Thing> things) {
+    public void setThings(ArrayList<Thing> things) {
         this.things = things;
+    }
+
+    public void setExits(ArrayList<Exit> exits) {
+        this.exits = exits;
     }
 
     public void removePlayer(Player player) {
@@ -311,6 +328,14 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
             for (BasicDrawableObject thing : things) {
                 if (thing.withinBounds(x, y)) {
                     object = thing;
+                    break;
+                }
+            }
+        }
+        if (object == null) {
+            for (BasicDrawableObject exit : exits) {
+                if (exit.withinBounds(x, y)) {
+                    object = exit;
                     break;
                 }
             }
@@ -374,12 +399,11 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         Graphics g = getGraphics();
         Graphics bbg = backBuffer.getGraphics();
 
-
-
         bbg.setColor(Color.black);
         bbg.fillRect(0, 0, getWidth(), getHeight());
         drawRoom(bbg);
         drawThings(bbg);
+        drawExits(bbg);
         drawUsers(bbg);
         drawControls(bbg);
 
@@ -436,13 +460,29 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         }
     }
 
+    private void drawExits(Graphics g) {
+        for (Exit exit : exits) {
+            int w = exit.getImage().getWidth(null);
+            int h = exit.getImage().getHeight(null);
+            g.drawImage(exit.getImage(), exit.getX() - (w/2), exit.getY()-(h/2), this);
+            if (exit.isSelected()) {
+                drawSelectionHighlight(g, exit);
+            }
+        }
+    }
+
     private void drawSelectionHighlight(Graphics g, BasicDrawableObject o) {
         int middleX = o.getImage().getWidth(null) / 2;
         int middleY = o.getImage().getHeight(null) / 2;
+        float thickness = 4f;
+        Graphics2D g2 = (Graphics2D) g;
+        Stroke oldStroke = g2.getStroke();
+        g2.setStroke(new BasicStroke(thickness));
         Color old = g.getColor();
         g.setColor(Color.red);
-        g.drawRect((int)(o.getX() * unitX) - middleX, (int)(o.getY() * unitY) - middleY, o.getImage().getWidth(null), o.getImage().getHeight(null));
+        g.drawRect((int)(o.getX() ) - middleX, (int)(o.getY()) - middleY, o.getImage().getWidth(null), o.getImage().getHeight(null));
         g.setColor(old);
+        g2.setStroke(oldStroke);
     }
 
     private void drawUsers(Graphics g) {
@@ -512,6 +552,40 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     }
 
     @Override
+    public void addExit(ExitDto exitDto) {
+        //FIXME Multiple exits with the same orientation will be drawn at the same place...
+        Exit exit = new Exit(exitDto.getId(), exitDto.getName(), Exit.Orientation.valueOf(exitDto.getOrientation().name()));
+        Image image = exit.getImage();
+        int x = 0;
+        int y = 0;
+        switch (exit.getOrientation() ) {
+            case NORTH:
+                // Draw on top
+                x = getWidth() / 2;
+                y = image.getHeight(null) / 2;
+                break;
+            case SOUTH:
+                // Draw on bottom
+                x = getWidth() / 2;
+                y = getHeight() - image.getHeight(null) / 2;
+                break;
+            case EAST:
+                // Draw right
+                x = getWidth() - (image.getWidth(null) / 2 );
+                y = getHeight() / 2;
+                break;
+            case WEST:
+                //draw left
+                x = image.getWidth(null) / 2;
+                y = getHeight() / 2;
+                break;
+        }
+        exit.setX(x);
+        exit.setY(y);
+        addExit(exit);
+    }
+
+    @Override
     public void deleteAvatar(Long playerId) {
         Player player = getPlayer(playerId);
         if (player != null ) {
@@ -538,7 +612,8 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         setTile(null);
         setRoom(null);
         setPlayers(new ArrayList<>());
-        setThing(new ArrayList<>());
+        setThings(new ArrayList<>());
+        setExits(new ArrayList<>());
     }
 
     @Override

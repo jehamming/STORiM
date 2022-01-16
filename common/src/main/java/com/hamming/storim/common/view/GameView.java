@@ -9,6 +9,8 @@ public interface GameView {
 
     void addThing(ThingDto thingDto);
 
+    void addExit(ExitDto exit);
+
     void deleteAvatar(Long playerId);
 
     void deleteThing(Long thingId);
@@ -28,4 +30,6 @@ public interface GameView {
     void updateThing(ThingDto thingDto);
 
     RoomDto getRoom();
+
+
 }

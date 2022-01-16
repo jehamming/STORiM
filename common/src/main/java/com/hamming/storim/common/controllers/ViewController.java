@@ -139,7 +139,7 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
         if ( user.getId().equals( controllers.getUserController().getCurrentUser().getId() )) {
             LocationDto location = controllers.getUserController().getUserLocation(user.getId());
             lastReceivedLocation = location;
-            RoomDto room = controllers.getRoomController().findRoomByID(location.getRoomId());
+            RoomDto room = controllers.getRoomController().getRoom(location.getRoomId());
             if (user.getCurrentAvatarID() != null) {
                 byte[] imageData = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImageData();
                 gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), imageData));
@@ -258,6 +258,16 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
             gameView.scheduleAction(() -> gameView.addThing(thing));
         }
 
+        // Exits
+        for (Long exitId : room.getExits()) {
+            ExitDto exit = controllers.getRoomController().getExit(exitId);
+            if ( exit != null ) {
+                gameView.scheduleAction(() -> gameView.addExit(exit));
+            } else {
+                System.err.println(getClass().getSimpleName() +".setRoom: exit"+ exitId+" not found!" );
+            }
+        }
+
         resetRequests();
         lastReceivedLocation = location;
     }
@@ -334,6 +344,13 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
         ThingDto thing = controllers.getThingController().findThingById(id);
         for (ViewListener l : viewListeners ) {
             l.thingSelectedInView(thing);
+        }
+    }
+
+    public void setSelectedExit(Long id) {
+        ExitDto exit = controllers.getRoomController().getExit(id);
+        for (ViewListener l : viewListeners ) {
+            l.exitSelectedInView(exit);
         }
     }
 
