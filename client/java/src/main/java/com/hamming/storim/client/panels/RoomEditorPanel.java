@@ -66,7 +66,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
             if ( !e.getValueIsAdjusting() ) { //Else this is called twice!
                 RoomListItem item = listRooms.getSelectedValue();
                 if (item != null && item.getRoom()!= null) {
-                    roomSelected(item.getRoom());
+                   roomSelected(item.getRoom());
                 }
             }
         });
@@ -83,6 +83,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         listTiles.addListSelectionListener(e -> {
             tileSelected();
         });
+        listTiles.setVisibleRowCount(3);
 
     }
 
@@ -197,7 +198,6 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
         SwingUtilities.invokeLater(() -> {
             lblRoomID.setText(room.getId().toString());
             txtRoomName.setText(room.getName());
-          //  spinSize.setValue(room.getSize());
             btnSave.setEnabled(true);
             btnDelete.setEnabled(true);
             btnTeleport.setEnabled(true);
@@ -217,8 +217,6 @@ public class RoomEditorPanel extends javax.swing.JPanel  implements UserListener
                 int index =  findIndex(tile);
                 listTiles.setSelectedIndex(index);
             }
-
-
         });
 
     }

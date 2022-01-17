@@ -2,6 +2,7 @@ package com.hamming.storim.client.view;
 
 
 import com.hamming.storim.client.ImageUtils;
+import com.hamming.storim.client.STORIMWindow;
 import com.hamming.storim.common.controllers.ViewController;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.view.Action;
@@ -54,6 +55,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     private boolean forward, back, left, right;
     private float unitX = 1f;
     private float unitY = 1f;
+    private STORIMWindow window;
 
 
 
@@ -83,7 +85,8 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
 
 
     //Class constructor
-    public GameViewPanel() {
+    public GameViewPanel(STORIMWindow window) {
+        this.window = window;
         actions = Collections.synchronizedList(new LinkedList<Action>());
         players = new ArrayList<>();
         things = new ArrayList<>();
@@ -222,6 +225,62 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         if (!exits.contains(exit)) {
             exits.add(exit);
         }
+        positionExits();
+    }
+
+    private void positionExits() {
+        positionTopBottom(Exit.Orientation.NORTH);
+        positionTopBottom(Exit.Orientation.SOUTH);
+        positionLeftRight(Exit.Orientation.WEST);
+        positionLeftRight(Exit.Orientation.EAST);
+    }
+
+    private void positionTopBottom(Exit.Orientation o) {
+        List<Exit> exits = getExits(o);
+        int count = exits.size();
+        if ( count > 0 ) {
+            int block = getWidth() / count;
+            int locX = 0;
+            for (int i = 0; i < count; i++) {
+                locX += block;
+                Exit e = exits.get(i);
+                e.setX(locX - (block / 2));
+                int y = e.getImage().getHeight(null)/2;
+                if (o.equals( Exit.Orientation.SOUTH)) {
+                    y = getHeight() - (e.getImage().getHeight(null)/2);
+                }
+                e.setY(y);
+            }
+        }
+    }
+
+    private void positionLeftRight(Exit.Orientation o) {
+        List<Exit> exits = getExits(o);
+        int count = exits.size();
+        if ( count > 0 ) {
+            int block = getHeight() / count;
+            int locY = 0;
+            for (int i = 0; i < count; i++) {
+                locY += block;
+                Exit e = exits.get(i);
+                e.setY(locY - (block / 2));
+                int x = e.getImage().getWidth(null)/2;
+                if (o.equals(Exit.Orientation.EAST)) {
+                    x = getWidth() - (e.getImage().getWidth(null)/2);
+                }
+                e.setX(x);
+            }
+        }
+    }
+
+    private List<Exit> getExits(Exit.Orientation orientation) {
+        List<Exit> retVal = new ArrayList<>();
+        for (Exit e : exits) {
+            if (e.getOrientation().equals(orientation)) {
+                retVal.add( e );
+            }
+        }
+        return retVal;
     }
 
     public void deleteThing(Thing thing) {
@@ -273,7 +332,9 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         if (room != null) {
             unitX = getWidth() / room.getWidth();
             unitY = getHeight() / room.getLength();
+            window.setRoomname(room.getName());
         }
+
     }
 
     public void setPlayers(List<Player> players) {
@@ -403,11 +464,25 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         bbg.fillRect(0, 0, getWidth(), getHeight());
         drawRoom(bbg);
         drawThings(bbg);
+        drawBorder(bbg);
         drawExits(bbg);
         drawUsers(bbg);
         drawControls(bbg);
 
         g.drawImage(backBuffer, 0, 0, this);
+    }
+
+    private void drawBorder(Graphics g) {
+        int thickness = 15;
+        int half = thickness / 2;
+        Graphics2D g2 = (Graphics2D) g;
+        Stroke oldStroke = g2.getStroke();
+        g2.setStroke(new BasicStroke(thickness));
+        Color old = g2.getColor();
+        g2.setColor(Color.BLACK);
+        g2.drawRect(half, half, getWidth() - thickness , getHeight() - thickness);
+        g2.setColor(old);
+        g2.setStroke(oldStroke);
     }
 
     void drawRoom(Graphics g) {
@@ -429,22 +504,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
                     g.drawImage(tileImage, x, y, widthPerTile, heightPerTile, this);
                 }
             }
-            drawTitle(g);
         }
-    }
-
-    private void drawTitle(Graphics g) {
-        // Room name
-        Font font = new Font("Arial", Font.BOLD, 14);
-        g.setFont(font);
-        FontMetrics metrics = g.getFontMetrics(font);
-        // Determine the X coordinate for the text
-        int textX = (getWidth() / 2) - (metrics.stringWidth(room.getName()) / 2);
-
-        g.setColor(Color.white);
-        g.fillRect(textX - 5, 2, metrics.stringWidth(room.getName()) + 5, metrics.getAscent() + 2);
-        g.setColor(Color.black);
-        g.drawString(room.getName(), textX, metrics.getAscent() + 2);
     }
 
     private void drawThings(Graphics g) {
@@ -556,32 +616,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         //FIXME Multiple exits with the same orientation will be drawn at the same place...
         Exit exit = new Exit(exitDto.getId(), exitDto.getName(), Exit.Orientation.valueOf(exitDto.getOrientation().name()));
         Image image = exit.getImage();
-        int x = 0;
-        int y = 0;
-        switch (exit.getOrientation() ) {
-            case NORTH:
-                // Draw on top
-                x = getWidth() / 2;
-                y = image.getHeight(null) / 2;
-                break;
-            case SOUTH:
-                // Draw on bottom
-                x = getWidth() / 2;
-                y = getHeight() - image.getHeight(null) / 2;
-                break;
-            case EAST:
-                // Draw right
-                x = getWidth() - (image.getWidth(null) / 2 );
-                y = getHeight() / 2;
-                break;
-            case WEST:
-                //draw left
-                x = image.getWidth(null) / 2;
-                y = getHeight() / 2;
-                break;
-        }
-        exit.setX(x);
-        exit.setY(y);
         addExit(exit);
     }
 

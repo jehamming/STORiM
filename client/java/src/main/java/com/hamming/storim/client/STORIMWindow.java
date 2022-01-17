@@ -24,6 +24,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     private Controllers controllers;
     private GameViewPanel gameView;
     private JTabbedPane tabbedPane;
+    private  JLabel lblRoomname;
     private static String BASIC_TITLE = "STORIM Java Client";
 
     public STORIMWindow(Controllers controllers) {
@@ -31,7 +32,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         controllers.getConnectionController().addConnectionListener(this);
         controllers.getUserController().addUserListener(this);
         setTitle(BASIC_TITLE);
-        gameView = new GameViewPanel();
+        gameView = new GameViewPanel(this);
         ViewController viewController = new ViewController(gameView, controllers);
         gameView.setViewController(viewController);
         controllers.setViewController(viewController);
@@ -72,6 +73,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
 
     private void initComponents() {
 
+        lblRoomname = new javax.swing.JLabel();
         tabbedPane = new javax.swing.JTabbedPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -86,25 +88,30 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         );
         gameViewLayout.setVerticalGroup(
                 gameViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 550, Short.MAX_VALUE)
+                        .addGap(0, 556, Short.MAX_VALUE)
         );
+
+        lblRoomname.setText("Room name");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(gameView, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
-                                        .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+                                        .addComponent(lblRoomname, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
+                        .addComponent(gameView, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addComponent(gameView, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(gameView, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                                .addComponent(lblRoomname, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
                                 .addContainerGap())
         );
 
@@ -153,10 +160,6 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
 
     @Override
     public void loginResult(boolean success, String message) {
-        if (success) {
-            setTitle(BASIC_TITLE + " - " +  controllers.getUserController().getCurrentUser().getName());
-            tabbedPane.setSelectedIndex(1);
-        }
     }
 
     @Override
@@ -181,5 +184,12 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
 
     public GameViewPanel getGameView() {
         return gameView;
+    }
+
+    public void setRoomname(String roomName) {
+        String text = "User: "+controllers.getUserController().getCurrentUser().getName() + ", room :" + roomName;
+        SwingUtilities.invokeLater(() -> {
+            lblRoomname.setText(text);
+        });
     }
 }
