@@ -4,19 +4,17 @@ import com.hamming.storim.common.CalcTools;
 import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.dto.protocol.MovementRequestDTO;
-import com.hamming.storim.common.dto.protocol.thing.UpdateThingLocationDto;
+import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.common.interfaces.*;
 import com.hamming.storim.common.view.GameView;
 import com.hamming.storim.common.view.ViewListener;
-import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewController implements ConnectionListener, UserListener, RoomListener, RoomUpdateListener, ThingListener {
 
-    private ProtocolHandler protocolHandler;
     private Controllers controllers;
     private GameView gameView;
     private long sequenceNumber;
@@ -28,7 +26,6 @@ public class ViewController implements ConnectionListener, UserListener, RoomLis
     public ViewController(GameView gameView, Controllers controllers) {
         this.controllers = controllers;
         this.gameView = gameView;
-        protocolHandler = new ProtocolHandler();
         controllers.getConnectionController().addConnectionListener(this);
         controllers.getUserController().addUserListener(this);
         controllers.getRoomController().addRoomListener(this);

@@ -1,11 +1,8 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.LocationDto;
-import com.hamming.storim.common.dto.protocol.TeleportRequestDTO;
-import com.hamming.storim.common.dto.protocol.TeleportResultDTO;
+import com.hamming.storim.common.dto.protocol.request.TeleportRequestDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.UserCache;
-import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Location;
@@ -45,14 +42,14 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
             }
 
             client.sendRoom(user.getLocation().getRoom());
-            LocationDto locationDTO = DTOFactory.getInstance().getLocationDTO(user.getLocation());
-            TeleportResultDTO teleportResultDTO = DTOFactory.getInstance().getTeleportResultDTO(true, null, locationDTO,fromRoomId);
-            client.send(teleportResultDTO);
+           // LocationDto locationDTO = DTOFactory.getInstance().getLocationDTO(user.getLocation());
+           // TeleportResultDTO teleportResultDTO = DTOFactory.getInstance().getTeleportResultDTO(true, null, locationDTO,fromRoomId);
+          //  client.send(teleportResultDTO);
             controller.userTeleported(user, fromRoomId, loc);
             }
          else {
-            TeleportResultDTO teleportResultDTO = DTOFactory.getInstance().getTeleportResultDTO(false, "Failed", null, -1L);
-            client.send(teleportResultDTO);
+           // TeleportResultDTO teleportResultDTO = DTOFactory.getInstance().getTeleportResultDTO(false, "Failed", null, -1L);
+           // client.send(teleportResultDTO);
         }
     }
 

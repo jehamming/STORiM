@@ -22,7 +22,6 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, V
 
     private DefaultListModel<UserListItem> onlineUsersListmodel;
     private DefaultListModel verbsListmodel;
-    private ProtocolHandler protocolHandler;
     private Controllers controllers;
 
 
@@ -61,7 +60,6 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, V
         this.controllers = controllers;
         controllers.getUserController().addUserListener(this);
         controllers.getViewController().addViewListener(this);
-        protocolHandler = new ProtocolHandler();
         setBorder(new TitledBorder("Users"));
         initComponents();
         setup();

@@ -3,11 +3,8 @@ package com.hamming.storim.server.common.dto;
 
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.DTO;
-import com.hamming.storim.common.dto.protocol.*;
-import com.hamming.storim.common.dto.protocol.avatar.*;
-import com.hamming.storim.common.dto.protocol.room.*;
-import com.hamming.storim.common.dto.protocol.user.*;
-import com.hamming.storim.common.dto.protocol.verb.*;
+import com.hamming.storim.common.dto.protocol.requestresponse.*;
+import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.model.*;
 
@@ -97,9 +94,6 @@ public class DTOFactory {
         return new UserDisconnectedDTO(userId);
     }
 
-    public TeleportResultDTO getTeleportResultDTO(boolean success, String error, LocationDto locationDTO, Long fromRoomID) {
-        return new TeleportResultDTO(success, error, locationDTO, fromRoomID);
-    }
 
     public UserConnectedDTO getUserConnectedDTO(UserDto userDto, LocationDto location) {
         return new UserConnectedDTO(userDto, location);
@@ -117,21 +111,8 @@ public class DTOFactory {
         return new GetVerbResultDTO(success, error, verb);
     }
 
-    public ExecVerbResultDTO getExecVerbResultDto(Long verbID, String output) {
-        return new ExecVerbResultDTO(verbID, true, null, output);
-    }
-
-    public UserLocationUpdateDTO getUserLocationUpdateDTO(User user) {
-        LocationDto locationDto = getLocationDTO(user.getLocation());
-        return new UserLocationUpdateDTO(user.getId(), locationDto);
-    }
-
     public UserInRoomDTO getUserInRoomDTO(User user, Room room, LocationDto location) {
         return new UserInRoomDTO(user.getId(), room.getId(), location);
-    }
-
-    public UserTeleportedDTO getUserTeleportedDTO(User user, Long fromRoomId, LocationDto location) {
-        return new UserTeleportedDTO(user.getId(), fromRoomId, location);
     }
 
     public UserOnlineDTO getUserOnlineDTO(UserDto userDTO, LocationDto locationDto) {

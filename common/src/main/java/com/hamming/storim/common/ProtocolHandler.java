@@ -1,21 +1,32 @@
 package com.hamming.storim.common;
 
-import com.hamming.storim.common.dto.protocol.login.LoginRequestDTO;
-import com.hamming.storim.common.dto.protocol.TeleportRequestDTO;
-import com.hamming.storim.common.dto.protocol.avatar.AddAvatarDto;
-import com.hamming.storim.common.dto.protocol.room.AddRoomDto;
-import com.hamming.storim.common.dto.protocol.room.DeleteRoomDTO;
-import com.hamming.storim.common.dto.protocol.room.UpdateRoomDto;
-import com.hamming.storim.common.dto.protocol.thing.AddThingDto;
-import com.hamming.storim.common.dto.protocol.user.GetUserDTO;
-import com.hamming.storim.common.dto.protocol.verb.AddVerbDto;
-import com.hamming.storim.common.dto.protocol.verb.DeleteVerbDTO;
-import com.hamming.storim.common.dto.protocol.verb.ExecVerbDTO;
-import com.hamming.storim.common.dto.protocol.verb.UpdateVerbDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginRequestDTO;
+import com.hamming.storim.common.dto.protocol.request.TeleportRequestDTO;
+import com.hamming.storim.common.dto.protocol.request.AddAvatarDto;
+import com.hamming.storim.common.dto.protocol.request.AddRoomDto;
+import com.hamming.storim.common.dto.protocol.request.DeleteRoomDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateRoomDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.AddThingDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetUserDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.AddVerbDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.DeleteVerbDTO;
+import com.hamming.storim.common.dto.protocol.request.ExecVerbDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateVerbDto;
 import com.hamming.storim.common.util.StringUtils;
 
 public class ProtocolHandler implements Protocol {
 
+    private static ProtocolHandler instance;
+
+    private ProtocolHandler() {
+    }
+
+    public static ProtocolHandler getInstance() {
+        if (instance == null) {
+            instance = new ProtocolHandler();
+        }
+        return instance;
+    }
 
 
     public LoginRequestDTO getLoginDTO(String username, String password) {

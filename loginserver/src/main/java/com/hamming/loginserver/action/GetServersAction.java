@@ -2,15 +2,15 @@ package com.hamming.loginserver.action;
 
 import com.hamming.loginserver.LoginServerWorker;
 import com.hamming.loginserver.ServerRegistration;
-import com.hamming.storim.common.dto.protocol.login.GetServersResponseDTO;
-import com.hamming.storim.common.dto.protocol.login.ServerRegistrationDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsResponseDTO;
+import com.hamming.storim.common.dto.ServerRegistrationDTO;
 import com.hamming.storim.server.common.action.Action;
-import com.hamming.storim.common.dto.protocol.login.GetServersRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsRequestDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetServersAction extends Action<GetServersRequestDTO> {
+public class GetServersAction extends Action<GetServerRegistrationsRequestDTO> {
 
     private LoginServerWorker serverWorker;
 
@@ -28,7 +28,7 @@ public class GetServersAction extends Action<GetServersRequestDTO> {
             servers.add(serverRegistrationDTO);
         }
 
-        GetServersResponseDTO getServersResponseDTO = new GetServersResponseDTO(servers);
+        GetServerRegistrationsResponseDTO getServersResponseDTO = new GetServerRegistrationsResponseDTO(servers);
 
         setResult(getServersResponseDTO);
     }

@@ -1,8 +1,8 @@
 package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.VerbDto;
-import com.hamming.storim.common.dto.protocol.verb.GetVerbDTO;
-import com.hamming.storim.common.dto.protocol.verb.GetVerbResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbResultDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.action.Action;

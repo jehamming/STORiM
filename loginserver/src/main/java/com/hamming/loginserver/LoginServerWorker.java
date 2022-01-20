@@ -15,10 +15,10 @@ public class LoginServerWorker extends ServerWorker {
         this.loginServer = loginServer;
     }
 
-    public String addServer(int hashcode, String name, String url, int port) {
+    public String addServer(LoginServerClientConnection connection, int hashcode, String name, String url, int port) {
         String errorMessage = null;
         if ( findServerRegistration(name) == null ) {
-            ServerRegistration registration = new ServerRegistration(hashcode, name, url, port);
+            ServerRegistration registration = new ServerRegistration(connection, hashcode, name, url, port);
             registeredServers.add(registration);
             System.out.println("("+getClass().getSimpleName() +") New Server registered: " + registration);
             System.out.println("("+getClass().getSimpleName() +") No of servers registered: " + registeredServers.size());

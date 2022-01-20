@@ -1,13 +1,15 @@
 package com.hamming.storim.common.controllers;
 
-import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.RequestDTO;
+import com.hamming.storim.common.dto.protocol.RequestResponseDTO;
+import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.NetClient;
 import com.hamming.storim.common.net.NetCommandReceiver;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +19,6 @@ public class ConnectionController implements NetCommandReceiver {
 
     private NetClient client;
     private String clientID;
-    private ProtocolHandler protocolHandler;
     private UserDto user;
     private List<ConnectionListener> connectionListeners;
 
@@ -26,7 +27,6 @@ public class ConnectionController implements NetCommandReceiver {
 
     public ConnectionController(String clientID) {
         this.clientID = clientID;
-        protocolHandler = new ProtocolHandler();
         connectionListeners = new ArrayList<ConnectionListener>();
         commandReceivers = new HashMap<Class, List<NetCommandReceiver>>();
     }
@@ -55,15 +55,7 @@ public class ConnectionController implements NetCommandReceiver {
         }
         if (result != null) throw new Exception("Error:" + result);
 
-        send( new ClientTypeDTO(clientID, ClientTypeDTO.TYPE_CLIENT) ) ;
-
         fireConnectedEvent();
-    }
-
-    public void send(ProtocolDTO dto) {
-        if (client != null ) {
-            client.send(dto);
-        }
     }
 
     public void fireConnectedEvent() {
@@ -96,17 +88,11 @@ public class ConnectionController implements NetCommandReceiver {
     @Override
     public void receiveDTO(ProtocolDTO dto) {
         List<NetCommandReceiver> listReceivers = commandReceivers.get(dto.getClass());
-        boolean handled = false;
         if (listReceivers != null) {
             for (NetCommandReceiver c : listReceivers) {
                 c.receiveDTO(dto);
-                handled = true;
             }
         }
-        if (!handled) {
-            System.out.println(this.getClass().getName() + ":" + "DTO " + dto.getClass().getName() + " NOT handled");
-        }
-
     }
 
 
@@ -130,5 +116,13 @@ public class ConnectionController implements NetCommandReceiver {
 
     public boolean isConnected() {
         return client != null && client.isConnected();
+    }
+
+    public void send(RequestDTO requestDTO) {
+        client.send(requestDTO);
+    }
+
+    public ResponseDTO sendReceive(RequestResponseDTO requestDTO) {
+        return client.sendReceive(requestDTO);
     }
 }

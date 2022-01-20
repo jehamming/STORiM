@@ -11,13 +11,11 @@ import com.hamming.storim.common.interfaces.RoomListener;
 
 public class STORIMClientApplication {
     private Controllers controllers;
-    private ProtocolHandler protocolHandler;
     private static STORIMClientApplication instance;
     private STORIMWindow STORIMWindow;
     private ViewController viewController;
 
     private STORIMClientApplication() {
-        this.protocolHandler = new ProtocolHandler();
         initControllers();
     }
 

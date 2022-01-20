@@ -1,6 +1,6 @@
 package com.hamming.storim.server;
 
-import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 import java.io.IOException;

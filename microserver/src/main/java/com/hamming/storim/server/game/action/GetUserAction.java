@@ -1,8 +1,8 @@
 package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.user.GetUserDTO;
-import com.hamming.storim.common.dto.protocol.user.GetUserResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetUserDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetUserResultDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.UserCache;
 import com.hamming.storim.server.common.action.Action;

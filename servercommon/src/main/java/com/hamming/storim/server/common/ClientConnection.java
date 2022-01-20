@@ -1,11 +1,15 @@
 package com.hamming.storim.server.common;
 
 
-import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.RequestResponseDTO;
+import com.hamming.storim.common.dto.protocol.ResponseDTO;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.net.NetClient;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.action.Action;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -21,6 +25,19 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
     private ObjectOutputStream out;
     private ClientTypeDTO clientTypeDTO;
     private T serverWorker;
+    private ResponseContainer responseContainer;
+
+    private class ResponseContainer{
+        private ResponseDTO response;
+
+        public void setResponse(ResponseDTO response) {
+            this.response = response;
+        }
+
+        public ResponseDTO getResponse() {
+            return response;
+        }
+    }
 
     public ClientConnection(ClientTypeDTO clientTypeDTO, Socket s, ObjectInputStream in, ObjectOutputStream out, T serverWorker) {
         this.socket = s;
@@ -29,6 +46,7 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
         this.out = out;
         protocolHandler = new ProtocolHandler();
         this.serverWorker = serverWorker;
+        responseContainer = new ResponseContainer();
         addActions();
     }
 
@@ -38,27 +56,38 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
             try {
                 Object read = in.readObject();
                 ProtocolDTO dto = (ProtocolDTO) read;
-                Action action = protocolHandler.getAction(dto);
-                System.out.println("("+getClass().getSimpleName() +") FROM " + clientTypeDTO.getName() + ":" + dto);
-                if (action != null) {
-                    action.setDTO(dto);
-                    // Check for Async or Sync behavior
-                    switch (dto.getType()) {
-                        case ProtocolDTO.SYNC:
-                            ProtocolDTO result = executeAction(action);
-                            System.out.println("RESPONSE :" + result);
-                            out.writeObject(result);
-                            break;
-                        case ProtocolDTO.ASYNC:
-                            serverWorker.addAction(action);
-                            break;
+                if ( dto instanceof ResponseDTO ) {
+                    ResponseDTO response = (ResponseDTO) dto;
+                    responseContainer.setResponse(response);
+                    synchronized (responseContainer) {
+                        responseContainer.notify();
                     }
                 } else {
-                    System.out.println(clientTypeDTO.getName() + ": NOT HANDLED:" + dto.getClass().getSimpleName());
+                    Action action = protocolHandler.getAction(dto);
+                    System.out.println("(" + getClass().getSimpleName() + ") FROM " + clientTypeDTO.getName() + ":" + dto);
+                    if (action != null) {
+                        action.setDTO(dto);
+                        // Check for Async or Sync behavior
+                        switch (dto.getType()) {
+                            case ProtocolDTO.SYNC:
+                                ProtocolDTO result = executeAction(action);
+                                System.out.println("RESPONSE :" + result);
+                                out.writeObject(result);
+                                break;
+                            case ProtocolDTO.ASYNC:
+                                serverWorker.addAction(action);
+                                break;
+                        }
+                    } else {
+                        System.out.println(clientTypeDTO.getName() + ": NOT HANDLED:" + dto.getClass().getSimpleName());
+                    }
                 }
+            } catch (EOFException e) {
+                System.out.println(this.getClass().getName() + ":" + "EOF" + e.getClass().getSimpleName());
+                running = false;
             } catch (IOException e) {
                 System.out.println(this.getClass().getName() + ":" + "IO Error:" + e.getClass().getSimpleName());
-                //e.printStackTrace();
+                e.printStackTrace();
                 running = false;
             } catch (ClassNotFoundException e) {
                 System.out.println(this.getClass().getName() + ":" + "ClassNotFoundException:" + e.getMessage());
@@ -86,6 +115,27 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
         }
     }
 
+    public ResponseDTO sendReceive(ProtocolDTO dto) {
+        try {
+            responseContainer.setResponse(null);
+            System.out.println(this.getClass().getName() + ":" + "SendReceive:" + dto );
+            out.writeObject(dto);
+            synchronized (responseContainer) {
+                try {
+                    responseContainer.wait(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (responseContainer.getResponse() == null ) {
+            System.out.println("("+getClass().getSimpleName() +") ERROR, SYNChronous Message ("+dto.getClass().getSimpleName()+") did not have a result!  " );
+        }
+        return responseContainer.getResponse();
+    }
+
     public ProtocolHandler getProtocolHandler() {
         return protocolHandler;
     }
@@ -99,8 +149,8 @@ public abstract class ClientConnection<T extends ServerWorker> implements Runnab
                 e.printStackTrace();
             }
         }
-        if (action.getResult() == null ) {
-            System.out.println("("+getClass().getSimpleName() +") ERROR, SYNChronous Message ("+action.getDto().getClass().getSimpleName()+") did not have a result! (call setResult()?) " );
+        if (action.getResult() == null) {
+            System.out.println("(" + getClass().getSimpleName() + ") ERROR, SYNChronous Message (" + action.getDto().getClass().getSimpleName() + ") did not have a result! (call setResult()?) ");
         }
         return action.getResult();
     }

@@ -2,12 +2,10 @@ package com.hamming.storim.common.controllers;
 
 import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.ProtocolHandler;
-import com.hamming.storim.common.interfaces.VerbListener;
 import com.hamming.storim.common.dto.VerbDto;
-import com.hamming.storim.common.dto.protocol.verb.ExecVerbDTO;
-import com.hamming.storim.common.dto.protocol.verb.ExecVerbResultDTO;
-import com.hamming.storim.common.dto.protocol.verb.GetVerbResultDTO;
-import com.hamming.storim.common.dto.protocol.verb.VerbDeletedDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbResultDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.VerbDeletedDTO;
+import com.hamming.storim.common.interfaces.VerbListener;
 import com.hamming.storim.common.net.NetCommandReceiver;
 
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ public class VerbController {
     public VerbController(Controllers controllers) {
         this.connectionController = controllers.getConnectionController();
         this.userController = controllers.getUserController();
-        protocolHandler = new ProtocolHandler();
+       // protocolHandler = new ProtocolHandler();
         verbListeners = new ArrayList<VerbListener>();
         connectionController.registerReceiver(GetVerbResultDTO.class, new NetCommandReceiver<GetVerbResultDTO>(){
             @Override
@@ -32,12 +30,12 @@ public class VerbController {
                 handleGetVerbResult(dto);
             }
         });
-        connectionController.registerReceiver(ExecVerbResultDTO.class, new NetCommandReceiver<ExecVerbResultDTO>(){
-            @Override
-            public void receiveDTO(ExecVerbResultDTO dto) {
-                handleExecVerbResult(dto);
-            }
-        });
+//        connectionController.registerReceiver(ExecVerbResultDTO.class, new NetCommandReceiver<ExecVerbResultDTO>(){
+//            @Override
+//            public void receiveDTO(ExecVerbResultDTO dto) {
+//                handleExecVerbResult(dto);
+//            }
+//        });
         connectionController.registerReceiver(VerbDeletedDTO.class, new NetCommandReceiver<VerbDeletedDTO>(){
             @Override
             public void receiveDTO(VerbDeletedDTO dto) {
@@ -51,14 +49,6 @@ public class VerbController {
             l.verbDeleted(dto.getVerbID());
         }
 
-    }
-
-    private void handleExecVerbResult(ExecVerbResultDTO dto) {
-        if (dto.isSuccess() ) {
-            for (VerbListener l : verbListeners) {
-                l.verbExecuted(dto);
-            }
-        }
     }
 
     private void handleGetVerbResult(GetVerbResultDTO dto) {
@@ -77,19 +67,19 @@ public class VerbController {
 
 
     public void executeVerb(VerbDto command, String input) {
-        ExecVerbDTO dto = protocolHandler.getExecVerbDTO(command.getId(), input);
-        connectionController.send(dto);
+     //   ExecVerbDTO dto = protocolHandler.getExecVerbDTO(command.getId(), input);
+      //  connectionController.send(dto);
     }
 
     public void deleteVerb(VerbDto verb) {
-        connectionController.send(protocolHandler.getDeleteVerbDTO(verb.getId()));
+       // connectionController.send(protocolHandler.getDeleteVerbDTO(verb.getId()));
     }
 
     public void addVerb( String name, String toCaller, String toLocation) {
-        connectionController.send(protocolHandler.getAddVerbDTO(name,toCaller, toLocation));
+       // connectionController.send(protocolHandler.getAddVerbDTO(name,toCaller, toLocation));
     }
 
     public void updateVerb(Long id, String name, String toCaller, String toLocation) {
-        connectionController.send(protocolHandler.getUpdateVerbDTO(id, name, toCaller, toLocation));
+       // connectionController.send(protocolHandler.getUpdateVerbDTO(id, name, toCaller, toLocation));
     }
 }

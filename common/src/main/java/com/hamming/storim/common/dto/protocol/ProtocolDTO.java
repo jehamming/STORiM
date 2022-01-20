@@ -9,7 +9,7 @@ public abstract class ProtocolDTO implements Serializable {
 
     private int type = ASYNC;
 
-    public ProtocolDTO(int type) {
+    protected ProtocolDTO(int type) {
         this.type = type;
     }
 

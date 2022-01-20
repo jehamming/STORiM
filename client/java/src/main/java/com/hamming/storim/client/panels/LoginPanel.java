@@ -1,85 +1,46 @@
 package com.hamming.storim.client.panels;
 
 import com.hamming.storim.common.Controllers;
+import com.hamming.storim.common.ProtocolHandler;
+import com.hamming.storim.common.dto.*;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsResponseDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.common.interfaces.UserListener;
-import com.hamming.storim.common.dto.AvatarDto;
-import com.hamming.storim.common.dto.LocationDto;
-import com.hamming.storim.common.dto.UserDto;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
 
-public class LoginPanel extends JPanel implements UserListener {
+public class LoginPanel extends JPanel {
 
-    private javax.swing.JButton btnConnect;
+    private javax.swing.JButton btnConnectToServer;
     private javax.swing.JButton btnDisconnect;
+    private javax.swing.JButton btnLogin;
+    private javax.swing.JComboBox<RoomListItem> cmbRoom;
+    private javax.swing.JComboBox<ServerListItem> cmbServer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField txtIP;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtPort;
     private javax.swing.JTextField txtUsername;
 
-    private Controllers controllers;
-
-
-    public LoginPanel(Controllers controllers) {
+    public LoginPanel() {
         initComponents();
-        setup();
-        this.controllers = controllers;
-        controllers.getUserController().addUserListener(this);
     }
 
-    private void setup() {
-        txtIP.setText("127.0.0.1");
-        txtPort.setText("3331");
-        txtUsername.setText("jehamming");
-        txtPassword.setText("jehamming");
-        txtPassword.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    doLogin();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
-        });
-        add(txtPassword);
-
-        btnDisconnect.setEnabled(false);
-        btnDisconnect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                disconnect();
-            }
-        });
-        add(btnDisconnect);
-
-        btnConnect.setEnabled(true);
-        btnConnect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                doLogin();
-            }
-        });
-        add(btnConnect);
-    }
 
     private void initComponents() {
-
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -88,8 +49,13 @@ public class LoginPanel extends JPanel implements UserListener {
         txtPort = new javax.swing.JTextField();
         txtUsername = new javax.swing.JTextField();
         btnDisconnect = new javax.swing.JButton();
-        btnConnect = new javax.swing.JButton();
+        btnLogin = new javax.swing.JButton();
         txtPassword = new javax.swing.JPasswordField();
+        jLabel5 = new javax.swing.JLabel();
+        cmbServer = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
+        cmbRoom = new javax.swing.JComboBox<>();
+        btnConnectToServer = new javax.swing.JButton();
 
         jLabel1.setText("Server IP:");
 
@@ -101,7 +67,13 @@ public class LoginPanel extends JPanel implements UserListener {
 
         btnDisconnect.setText("Disconnect");
 
-        btnConnect.setText("Connect");
+        btnLogin.setText("Login");
+
+        jLabel5.setText("Server");
+
+        jLabel6.setText("Room");
+
+        btnConnectToServer.setText("Jump in! ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -123,9 +95,23 @@ public class LoginPanel extends JPanel implements UserListener {
                                                         .addComponent(txtIP)
                                                         .addComponent(txtPort)
                                                         .addComponent(txtUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE))
-                                                .addComponent(btnConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addComponent(txtPassword))
-                                .addContainerGap(37, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(18, 18, 18)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel5)
+                                                        .addComponent(jLabel6))
+                                                .addGap(30, 30, 30)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(cmbServer, 0, 228, Short.MAX_VALUE)
+                                                        .addComponent(cmbRoom, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addGap(12, 12, 12))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(btnConnectToServer, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addContainerGap())))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -133,15 +119,20 @@ public class LoginPanel extends JPanel implements UserListener {
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel1)
-                                        .addComponent(txtIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel5)
+                                        .addComponent(cmbServer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel2)
-                                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel6)
+                                        .addComponent(cmbRoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel3)
-                                        .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnConnectToServer))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel4)
@@ -149,83 +140,44 @@ public class LoginPanel extends JPanel implements UserListener {
                                 .addGap(24, 24, 24)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(btnDisconnect)
-                                        .addComponent(btnConnect))
-                                .addContainerGap(20, Short.MAX_VALUE))
+                                        .addComponent(btnLogin))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }
 
-
-    private void disconnect() {
-        controllers.getConnectionController().disconnect();
-        btnDisconnect.setEnabled(false);
-        btnConnect.setEnabled(true);
+    public JButton getBtnConnectToServer() {
+        return btnConnectToServer;
     }
 
-    public void doLogin() {
-        String server = txtIP.getText().trim();
-        String strPort = txtPort.getText().trim();
-        Integer port = Integer.valueOf(strPort);
-        String username = txtUsername.getText().trim();
-        String password = String.valueOf(txtPassword.getPassword());
-        try {
-            controllers.getConnectionController().connect(server,port);
-            controllers.getUserController().sendLogin(username, password);
-            btnDisconnect.setEnabled(true);
-            btnConnect.setEnabled(false);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, e.getMessage());
-        }
+    public JButton getBtnDisconnect() {
+        return btnDisconnect;
     }
 
-    @Override
-    public void userConnected(UserDto user) {
-
+    public JButton getBtnLogin() {
+        return btnLogin;
     }
 
-    @Override
-    public void userUpdated(UserDto user) {
-
+    public JComboBox<RoomListItem> getCmbRoom() {
+        return cmbRoom;
     }
 
-    @Override
-    public void userDisconnected(UserDto user) {
-
+    public JComboBox<ServerListItem> getCmbServer() {
+        return cmbServer;
     }
 
-    @Override
-    public void userOnline(UserDto user) {
-
+    public JTextField getTxtIP() {
+        return txtIP;
     }
 
-    @Override
-    public void loginResult(boolean success, String message) {
-        if (!success) {
-            JOptionPane.showMessageDialog(this, message);
-            disconnect();
-        }
+    public JPasswordField getTxtPassword() {
+        return txtPassword;
     }
 
-    @Override
-    public void userTeleported(Long userId, LocationDto location) {
-
+    public JTextField getTxtPort() {
+        return txtPort;
     }
 
-    @Override
-    public void avatarAdded(AvatarDto avatar) {
-
+    public JTextField getTxtUsername() {
+        return txtUsername;
     }
-
-    @Override
-    public void avatarDeleted(AvatarDto avatar) {
-
-    }
-
-    @Override
-    public void avatarUpdated(AvatarDto avatar) {
-
-    }
-
-
-
 }

@@ -2,12 +2,11 @@ package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.login.ConnectRequestDTO;
-import com.hamming.storim.common.dto.protocol.login.ConnectResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.ConnectRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.ConnectResultDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.DTOFactory;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
 import com.hamming.storim.server.game.GameController;
 
 public class ConnectAction extends Action<ConnectRequestDTO> {
@@ -42,7 +41,8 @@ public class ConnectAction extends Action<ConnectRequestDTO> {
 
 
         ConnectResultDTO connectResultDTO = new ConnectResultDTO(validUserAndToken, errorMessage, userDto, locationDto);
-        client.send(connectResultDTO);
+        setResult(connectResultDTO);
+
 
     }
 

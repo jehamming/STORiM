@@ -1,15 +1,15 @@
 package com.hamming.loginserver;
 
+import com.hamming.loginserver.action.GetRoomsForServerAction;
 import com.hamming.loginserver.action.GetServersAction;
 import com.hamming.loginserver.action.LoginAction;
-import com.hamming.loginserver.action.VerifyUserAction;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
-import com.hamming.storim.common.dto.protocol.login.LoginRequestDTO;
-import com.hamming.storim.common.dto.protocol.login.GetServersRequestDTO;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomsForServerRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomsForServerResponseDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsRequestDTO;
 import com.hamming.storim.server.common.ClientConnection;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
-import com.hamming.storim.server.common.model.User;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -30,9 +30,9 @@ public class UserClientConnection extends ClientConnection<LoginServerWorker> {
 
     @Override
     public void addActions() {
-        // TODO Meer Actions
         getProtocolHandler().addAction(LoginRequestDTO.class, new LoginAction(getServerWorker(), this));
-        getProtocolHandler().addAction(GetServersRequestDTO.class, new GetServersAction(getServerWorker()));
+        getProtocolHandler().addAction(GetServerRegistrationsRequestDTO.class, new GetServersAction(getServerWorker()));
+        getProtocolHandler().addAction(GetRoomsForServerRequestDTO.class, new GetRoomsForServerAction(getServerWorker()));
     }
 
     public void setCurrentUser(UserDto currentUser) {

@@ -1,6 +1,6 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.protocol.thing.DeleteThingDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.DeleteThingDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.STORIMMicroServer;
 import com.hamming.storim.server.common.action.Action;

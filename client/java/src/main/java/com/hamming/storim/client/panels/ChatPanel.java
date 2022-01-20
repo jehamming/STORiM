@@ -2,12 +2,11 @@ package com.hamming.storim.client.panels;
 
 
 import com.hamming.storim.common.Controllers;
+import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.interfaces.RoomListener;
 import com.hamming.storim.common.interfaces.UserListener;
 import com.hamming.storim.common.interfaces.VerbListener;
-import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.dto.protocol.verb.ExecVerbResultDTO;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -158,10 +157,6 @@ public class ChatPanel extends JPanel implements VerbListener, UserListener, Roo
         }
     }
 
-    @Override
-    public void verbExecuted(ExecVerbResultDTO result) {
-        addText(result.getOutput());
-    }
 
     public void addText(String txt) {
         SwingUtilities.invokeLater(new Runnable() {

@@ -1,6 +1,6 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.protocol.thing.UpdateThingLocationDto;
+import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.STORIMMicroServer;
 import com.hamming.storim.server.common.action.Action;

@@ -1,8 +1,8 @@
 package com.hamming.storim.server.common.dto.protocol.loginserver;
 
-import com.hamming.storim.common.dto.protocol.ProtocolSyncRequestDTO;
+import com.hamming.storim.common.dto.protocol.RequestResponseDTO;
 
-public class VerifyUserRequestDTO extends ProtocolSyncRequestDTO {
+public class VerifyUserRequestDTO extends RequestResponseDTO {
 
     private Long userId;
     private String token;

@@ -1,9 +1,9 @@
 package com.hamming.storim.server.common.dto.protocol.loginserver;
 
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.ProtocolResponseDTO;
+import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class VerifyUserResponseDTO extends ProtocolResponseDTO {
+public class VerifyUserResponseDTO extends ResponseDTO {
 
     private UserDto user;
     private String errorMessage;

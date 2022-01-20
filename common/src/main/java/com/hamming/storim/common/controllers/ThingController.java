@@ -3,11 +3,17 @@ package com.hamming.storim.common.controllers;
 import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.dto.ThingDto;
-import com.hamming.storim.common.dto.protocol.thing.*;
+import com.hamming.storim.common.dto.protocol.request.PlaceThingInRoomRequestDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.AddThingDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.DeleteThingDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetThingResultDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingUpdatedDTO;
 import com.hamming.storim.common.interfaces.ThingListener;
 import com.hamming.storim.common.net.NetCommandReceiver;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +21,6 @@ import java.util.Map;
 
 public class ThingController {
 
-    private ProtocolHandler protocolHandler;
     private Controllers controllers;
     private List<ThingListener> thingListeners;
     private Map<Long, ThingDto> thingStore;
@@ -23,7 +28,6 @@ public class ThingController {
 
     public ThingController(Controllers controllers) {
         this.controllers = controllers;
-        protocolHandler = new ProtocolHandler();
         thingListeners = new ArrayList<>();
         thingStore = new HashMap<>();
         controllers.getConnectionController().registerReceiver(ThingAddedDTO.class, (NetCommandReceiver<ThingAddedDTO>) dto -> {handleThingAdded(dto);});
@@ -69,8 +73,8 @@ public class ThingController {
 
 
     public void addThingRequest(String name, String description, Float scale, int rotation, byte[] image) {
-        AddThingDto addThingDto = protocolHandler.getAddThingDTO(name, description, scale, rotation, image);
-        controllers.getConnectionController().send(addThingDto);
+        AddThingDto addThingDto = ProtocolHandler.getInstance().getAddThingDTO(name, description, scale, rotation, image);
+        controllers.getConnectionController().sendReceive(addThingDto);
     }
 
 
@@ -99,7 +103,7 @@ public class ThingController {
 
     public void deleteThingRequest(Long thingID) {
         DeleteThingDTO dto = new DeleteThingDTO(thingID);
-        controllers.getConnectionController().send(dto);
+        controllers.getConnectionController().sendReceive(dto);
     }
 
     public void updateThingRequest(Long id, String name, String description, Float scale, int rotation, byte[] image) {

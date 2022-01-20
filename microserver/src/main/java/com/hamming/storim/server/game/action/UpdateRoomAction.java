@@ -3,7 +3,7 @@ package com.hamming.storim.server.game.action;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.game.GameController;
-import com.hamming.storim.common.dto.protocol.room.UpdateRoomDto;
+import com.hamming.storim.common.dto.protocol.request.UpdateRoomDto;
 
 public class UpdateRoomAction extends Action<UpdateRoomDto> {
     private GameController controller;

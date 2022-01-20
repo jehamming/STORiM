@@ -1,6 +1,6 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.protocol.thing.AddThingDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.AddThingDto;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.action.Action;

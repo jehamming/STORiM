@@ -1,18 +1,14 @@
 package com.hamming.storim.server.game;
 
-import com.hamming.storim.common.dto.protocol.MovementRequestDTO;
-import com.hamming.storim.common.dto.protocol.TeleportRequestDTO;
-import com.hamming.storim.common.dto.protocol.avatar.AddAvatarDto;
-import com.hamming.storim.common.dto.protocol.avatar.DeleteAvatarDTO;
-import com.hamming.storim.common.dto.protocol.avatar.UpdateAvatarDto;
-import com.hamming.storim.common.dto.protocol.room.AddRoomDto;
-import com.hamming.storim.common.dto.protocol.room.DeleteRoomDTO;
-import com.hamming.storim.common.dto.protocol.room.GetRoomDTO;
-import com.hamming.storim.common.dto.protocol.room.UpdateRoomDto;
-import com.hamming.storim.common.dto.protocol.thing.*;
-import com.hamming.storim.common.dto.protocol.user.GetUserDTO;
-import com.hamming.storim.common.dto.protocol.user.UpdateUserDto;
-import com.hamming.storim.common.dto.protocol.verb.*;
+import com.hamming.storim.common.dto.protocol.request.*;
+import com.hamming.storim.common.dto.protocol.request.AddAvatarDto;
+import com.hamming.storim.common.dto.protocol.request.DeleteAvatarDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateAvatarDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.*;
+import com.hamming.storim.common.dto.protocol.request.AddRoomDto;
+import com.hamming.storim.common.dto.protocol.request.DeleteRoomDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateRoomDto;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ProtocolHandler;
 import com.hamming.storim.server.common.action.Action;

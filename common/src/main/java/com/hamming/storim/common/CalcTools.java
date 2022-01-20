@@ -1,6 +1,6 @@
 package com.hamming.storim.common;
 
-import com.hamming.storim.common.dto.protocol.MovementRequestDTO;
+import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
 import com.hamming.storim.common.dto.LocationDto;
 
 public class CalcTools {

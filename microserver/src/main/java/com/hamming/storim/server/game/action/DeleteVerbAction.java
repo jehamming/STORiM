@@ -1,6 +1,6 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.protocol.verb.DeleteVerbDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.DeleteVerbDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.VerbFactory;

@@ -4,7 +4,7 @@ import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.ServerWorker;
-import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.factories.AvatarFactory;
 import com.hamming.storim.server.common.factories.ThingFactory;

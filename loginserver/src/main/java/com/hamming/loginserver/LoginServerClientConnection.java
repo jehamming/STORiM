@@ -2,11 +2,10 @@ package com.hamming.loginserver;
 
 import com.hamming.loginserver.action.AddServerAction;
 import com.hamming.loginserver.action.VerifyUserAction;
-import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
-import sun.rmi.runtime.Log;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,7 +28,7 @@ public class LoginServerClientConnection extends ClientConnection {
     @Override
     public void addActions() {
         LoginServerWorker serverWorker = (LoginServerWorker) getServerWorker();
-        getProtocolHandler().addAction(AddServerRequestDTO.class, new AddServerAction(serverWorker, this.hashCode()));
+        getProtocolHandler().addAction(AddServerRequestDTO.class, new AddServerAction(this, serverWorker, this.hashCode()));
         getProtocolHandler().addAction(VerifyUserRequestDTO.class, new VerifyUserAction(serverWorker, this));
     }
 

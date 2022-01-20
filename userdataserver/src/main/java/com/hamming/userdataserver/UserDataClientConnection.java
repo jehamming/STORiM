@@ -1,6 +1,6 @@
 package com.hamming.userdataserver;
 
-import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;

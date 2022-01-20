@@ -2,21 +2,18 @@ package com.hamming.storim.server;
 
 
 import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.dto.protocol.*;
-import com.hamming.storim.common.dto.protocol.avatar.*;
-import com.hamming.storim.common.dto.protocol.login.ConnectRequestDTO;
-import com.hamming.storim.common.dto.protocol.room.*;
-import com.hamming.storim.common.dto.protocol.thing.*;
-import com.hamming.storim.common.dto.protocol.user.GetUserDTO;
-import com.hamming.storim.common.dto.protocol.user.GetUserResultDTO;
-import com.hamming.storim.common.dto.protocol.user.UpdateUserDto;
-import com.hamming.storim.common.dto.protocol.user.UserUpdatedDTO;
-import com.hamming.storim.common.dto.protocol.verb.*;
+import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.request.*;
+import com.hamming.storim.common.dto.protocol.requestresponse.*;
+import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
-import com.hamming.storim.server.common.factories.*;
+import com.hamming.storim.server.common.factories.AvatarFactory;
+import com.hamming.storim.server.common.factories.RoomFactory;
+import com.hamming.storim.server.common.factories.ThingFactory;
+import com.hamming.storim.server.common.factories.TileFactory;
 import com.hamming.storim.server.common.model.*;
 import com.hamming.storim.server.game.GameController;
 import com.hamming.storim.server.game.GameStateEvent;
@@ -75,7 +72,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(PlaceThingInRoomRequestDTO.class, new PlaceThingInRoomAction(gameController, this));
         getProtocolHandler().addAction(UpdateThingLocationDto.class, new UpdateThingLocationAction(gameController, this));
         getProtocolHandler().addAction(ConnectRequestDTO.class, new ConnectAction(gameController, this));
-        getProtocolHandler().addAction(ClientTypeDTO.class, new ClientTypeAction(gameController, this));
     }
 
 
@@ -337,8 +333,8 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             } else {
                 output = cmdResult.getToLocation();
             }
-            ExecVerbResultDTO execVerbResultDTO = DTOFactory.getInstance().getExecVerbResultDto(cmdResult.getId(), output);
-            send(execVerbResultDTO);
+            //ExecVerbResultDTO execVerbResultDTO = DTOFactory.getInstance().getExecVerbResultDto(cmdResult.getId(), output);
+            //send(execVerbResultDTO);
         }
     }
 
@@ -359,8 +355,8 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             }
             sendThingsInRoom(user.getLocation().getRoom());
             LocationDto location = DTOFactory.getInstance().getLocationDTO(user.getLocation());
-            UserTeleportedDTO userTeleportedDTO = DTOFactory.getInstance().getUserTeleportedDTO(user, oldRoomId, location);
-            send(userTeleportedDTO);
+           // UserTeleportedDTO userTeleportedDTO = DTOFactory.getInstance().getUserTeleportedDTO(user, oldRoomId, location);
+            //send(userTeleportedDTO);
         }
     }
 
@@ -376,8 +372,8 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     public void handleUserLocation(User User) {
-        UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(User);
-        send(userLocationUpdateDTO);
+       // UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(User);
+       // send(userLocationUpdateDTO);
     }
 
     public void sendRoom(Room room) {
@@ -427,14 +423,14 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     public void sendUserLocation(User u) {
-        UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(u);
-        send(userLocationUpdateDTO);
+       // UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(u);
+      //  send(userLocationUpdateDTO);
     }
 
     public boolean verifyUser(Long userId, String token) {
         boolean userValid = false;
         VerifyUserRequestDTO dto = new VerifyUserRequestDTO(userId, token);
-        VerifyUserResponseDTO response = (VerifyUserResponseDTO) server.getLoginServerConnection().serverRequest(dto);
+        VerifyUserResponseDTO response = (VerifyUserResponseDTO) server.getLoginServerConnection().sendReceive(dto);
         if ( response.getUser() != null ) {
             userValid = true;
             User verifiedUser = User.valueOf( response.getUser() );

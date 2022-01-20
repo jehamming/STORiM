@@ -3,7 +3,7 @@ package com.hamming.storim.server.game.action;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.game.GameController;
-import com.hamming.storim.common.dto.protocol.user.UpdateUserDto;
+import com.hamming.storim.common.dto.protocol.request.UpdateUserDto;
 
 public class UpdateUserAction extends Action<UpdateUserDto> {
     private GameController controller;

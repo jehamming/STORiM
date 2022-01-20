@@ -2,16 +2,18 @@ package com.hamming.loginserver;
 
 public class ServerRegistration {
 
+    private LoginServerClientConnection connection;
     private String serverName;
     private String serverURL;
     private int serverPort;
     private int hashcode;
 
-    public ServerRegistration(int hashcode, String name, String url, int port) {
+    public ServerRegistration(LoginServerClientConnection connection, int hashcode, String name, String url, int port) {
         this.serverName = name;
         this.serverURL = url;
         this.serverPort = port;
         this.hashcode = hashcode;
+        this.connection = connection;
     }
 
     public String getServerName() {
@@ -28,6 +30,10 @@ public class ServerRegistration {
 
     public int getHashcode() {
         return hashcode;
+    }
+
+    public LoginServerClientConnection getConnection() {
+        return connection;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.protocol.room.DeleteRoomDTO;
+import com.hamming.storim.common.dto.protocol.request.DeleteRoomDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;

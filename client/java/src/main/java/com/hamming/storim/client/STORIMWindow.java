@@ -1,5 +1,6 @@
 package com.hamming.storim.client;
 
+import com.hamming.storim.client.controller.LoginPanelController;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.common.Controllers;
@@ -14,13 +15,17 @@ import javax.swing.*;
 
 public class STORIMWindow extends JFrame implements ConnectionListener, UserListener {
 
-    private UserInfoPanel userInfoPanel;
+
     private LoginPanel loginPanel;
+    private LoginPanelController loginPanelController;
+
+    private UserInfoPanel userInfoPanel;
     private ChatPanel chatPanel;
     private VerbEditorPanel verbEditorPanel;
     private RoomEditorPanel roomEditorPanel;
     private AvatarPanel avatarPanel;
     private ThingPanel thingPanel;
+    private ExitEditorPanel exitEditorPanel;
     private Controllers controllers;
     private GameViewPanel gameView;
     private JTabbedPane tabbedPane;
@@ -44,7 +49,8 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     }
 
     public void addTabs() {
-        loginPanel = new LoginPanel(controllers);
+        loginPanel = new LoginPanel();
+        loginPanelController = new LoginPanelController(loginPanel, controllers.getConnectionController());
         tabbedPane.addTab("Connect/Disconnect", loginPanel);
 
         chatPanel = new ChatPanel(controllers);
@@ -63,10 +69,13 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         tabbedPane.addTab("Rooms", roomEditorPanel);
 
         avatarPanel = new AvatarPanel(controllers);
-        tabbedPane.add("Avatar", avatarPanel);
+        tabbedPane.add("Avatars", avatarPanel);
 
         thingPanel = new ThingPanel(controllers);
-        tabbedPane.add("Thing", thingPanel);
+        tabbedPane.add("Things", thingPanel);
+
+        exitEditorPanel = new ExitEditorPanel(controllers);
+        tabbedPane.add("Exits", exitEditorPanel);
 
     }
 

@@ -1,6 +1,6 @@
 package com.hamming.loginserver;
 
-import com.hamming.storim.common.dto.protocol.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.server.ServerConnection;
