@@ -31,8 +31,8 @@ public class UserClientConnection extends ClientConnection<LoginServerWorker> {
     @Override
     public void addActions() {
         getProtocolHandler().addAction(LoginRequestDTO.class, new LoginAction(getServerWorker(), this));
-        getProtocolHandler().addAction(GetServerRegistrationsRequestDTO.class, new GetServersAction(getServerWorker()));
-        getProtocolHandler().addAction(GetRoomsForServerRequestDTO.class, new GetRoomsForServerAction(getServerWorker()));
+        getProtocolHandler().addAction(GetServerRegistrationsRequestDTO.class, new GetServersAction(getServerWorker(), this));
+        getProtocolHandler().addAction(GetRoomsForServerRequestDTO.class, new GetRoomsForServerAction(getServerWorker(), this));
     }
 
     public void setCurrentUser(UserDto currentUser) {

@@ -1,7 +1,9 @@
 package com.hamming.loginserver.action;
 
+import com.hamming.loginserver.LoginServerClientConnection;
 import com.hamming.loginserver.LoginServerWorker;
 import com.hamming.loginserver.ServerRegistration;
+import com.hamming.loginserver.UserClientConnection;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsResponseDTO;
 import com.hamming.storim.common.dto.ServerRegistrationDTO;
 import com.hamming.storim.server.common.action.Action;
@@ -13,9 +15,11 @@ import java.util.List;
 public class GetServersAction extends Action<GetServerRegistrationsRequestDTO> {
 
     private LoginServerWorker serverWorker;
+    private UserClientConnection client;
 
-    public GetServersAction(LoginServerWorker serverWorker) {
+    public GetServersAction(LoginServerWorker serverWorker, UserClientConnection client) {
         this.serverWorker = serverWorker;
+        this.client = client;
     }
 
     @Override
@@ -30,6 +34,6 @@ public class GetServersAction extends Action<GetServerRegistrationsRequestDTO> {
 
         GetServerRegistrationsResponseDTO getServersResponseDTO = new GetServerRegistrationsResponseDTO(servers);
 
-        setResult(getServersResponseDTO);
+        client.send(getServersResponseDTO);
     }
 }

@@ -4,7 +4,6 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 public abstract class Action<T extends ProtocolDTO> {
     private T dto;
-    public ProtocolDTO result;
 
     public abstract void execute();
 
@@ -16,14 +15,4 @@ public abstract class Action<T extends ProtocolDTO> {
         return dto;
     }
 
-    public ProtocolDTO getResult() {
-        return result;
-    }
-
-    public void setResult(ProtocolDTO result) {
-        synchronized (this) {
-            this.result = result;
-            this.notify();
-        }
-    }
 }

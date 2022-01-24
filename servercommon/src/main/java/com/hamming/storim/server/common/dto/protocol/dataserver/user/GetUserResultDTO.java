@@ -3,7 +3,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.user;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class GetUserResultDTO extends ResponseDTO {
+public class GetUserResultDTO implements ResponseDTO {
 
     private boolean success = false;
     private String errorMessage;

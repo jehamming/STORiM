@@ -38,6 +38,6 @@ public class GetUserAction extends Action<GetUserRequestDTO> {
         } else {
             result = new GetUserResultDTO(false, "User "+request+" not found!", null);
         }
-        setResult(result);
+        client.send(result);
     }
 }

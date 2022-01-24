@@ -1,8 +1,7 @@
 package com.hamming.storim.common.net;
 
+import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
-import com.hamming.storim.common.dto.protocol.RequestDTO;
-import com.hamming.storim.common.dto.protocol.RequestResponseDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 import java.io.IOException;
@@ -11,32 +10,33 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class NetClient<T extends ResponseDTO> implements Runnable {
-    private static final long RESPONSE_TIMEOUT = 2000;
     private Socket socket;
     private ObjectInputStream in;
-    private ObjectOutputStream out;
+    private ProtocolObjectSender protocolObjectSender;
+    private Dispatcher dispatcher;
     private boolean running = false;
-    private NetCommandReceiver receiver;
+    private ConnectionController connectionController;
     private ResponseContainer responseContainer;
 
-    public NetClient(NetCommandReceiver receiver) {
-        this.receiver = receiver;
+    public NetClient(ConnectionController connectionController) {
+        this.connectionController = connectionController;
         responseContainer = new ResponseContainer();
-
+        dispatcher = new Dispatcher(connectionController);
+        Thread t = new Thread(dispatcher);
+        t.start();
     }
 
     public String connect(String ip, int port) {
         String retval = null;
         try {
             socket = new Socket(ip, port);
-            out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            protocolObjectSender = new ProtocolObjectSender(out);
             in = new ObjectInputStream(socket.getInputStream());
-
             Thread clientThread = new Thread(this);
             clientThread.setName("Client Connection");
             clientThread.setDaemon(true);
             clientThread.start();
-            running = true;
         } catch (IOException e) {
             System.out.println(this.getClass().getName() + ":" + "ERROR:" + e.getMessage());
             retval = e.getMessage();
@@ -47,27 +47,25 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
 
     @Override
     public void run() {
+        running = true;
         while (running) {
             try {
                 Object read = in.readObject();
                 ProtocolDTO dto = (ProtocolDTO) read;
-                if ( dto instanceof ResponseDTO) {
+                System.out.println(this.getClass().getName() + ":RECEIVED:" + dto.toString());
+                if (dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
-
                     if (response.getClass().equals(responseContainer.getResponseClass())) {
                         responseContainer.setResponse(response);
                         synchronized (responseContainer) {
                             responseContainer.notify();
                         }
-                    } else {
-                        System.out.println(this.getClass().getName() + ":Received ResponseDTO I was NOT waiting for! :" + dto.toString());
                     }
                 }
-                System.out.println(this.getClass().getName() + ":RECEIVED:" + dto.toString());
-                received(dto);
+                dispatcher.dispatch(dto);
             } catch (IOException e) {
-               // System.out.println(this.getClass().getName() + ":" + "Error:" + e.getMessage());
-               // e.printStackTrace();
+                // System.out.println(this.getClass().getName() + ":" + "Error:" + e.getMessage());
+                // e.printStackTrace();
                 running = false;
             } catch (ClassNotFoundException e) {
                 System.out.println(this.getClass().getName() + ":" + "Error:" + e.getMessage());
@@ -75,7 +73,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             }
         }
 
-        if ( socket != null ) {
+        if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
@@ -84,42 +82,18 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         System.out.println(this.getClass().getName() + ":" + "NetClient finished");
     }
 
-    public void send(RequestDTO pDTO) {
-        try {
-            System.out.println(this.getClass().getName() + ":" + "Send:" + pDTO );
-            out.writeObject(pDTO);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void send(ProtocolDTO pDTO) {
+        protocolObjectSender.send(pDTO);
     }
 
-    public ResponseDTO sendReceive(RequestResponseDTO requestResponseDTO, Class responseClass) {
-        try {
+    public ResponseDTO sendReceive(ProtocolDTO requestResponseDTO, Class responseClass) {
+        synchronized (responseContainer) {
             responseContainer.setResponse(null);
             responseContainer.setResponseClass(responseClass);
             System.out.println(this.getClass().getName() + ":" + "SendReceive:" + requestResponseDTO + ", waiting for: " + responseClass.getSimpleName());
-            out.writeObject(requestResponseDTO);
-            synchronized (responseContainer) {
-                try {
-                    responseContainer.wait(RESPONSE_TIMEOUT);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        if (responseContainer.getResponse() == null ) {
-            System.out.println("("+getClass().getSimpleName() +") ERROR, SYNChronous Message ("+requestResponseDTO.getClass().getSimpleName()+") did not have a result!  " );
-        }
-        return responseContainer.getResponse();
+        return protocolObjectSender.sendReceive(requestResponseDTO, responseContainer);
     }
-
-    public void received(ProtocolDTO dto) {
-        receiver.receiveDTO(dto);
-    }
-
 
     public void dispose() {
         try {
@@ -129,7 +103,8 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             }
             socket = null;
             in = null;
-            out = null;
+            protocolObjectSender.stopSending();
+            protocolObjectSender = null;
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -137,7 +112,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
 
     public void closeConnection() throws IOException {
         try {
-            out.close();
+            protocolObjectSender.stopSending();;
         } finally {
             try {
                 in.close();
@@ -147,7 +122,6 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         }
 
     }
-
 
     public boolean isConnected() {
         return running;

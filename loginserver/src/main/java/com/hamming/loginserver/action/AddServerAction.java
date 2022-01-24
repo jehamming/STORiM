@@ -31,6 +31,6 @@ public class AddServerAction extends Action<AddServerRequestDTO> {
         }
 
         AddServerResponseDTO responseDTO = new AddServerResponseDTO(success, error);
-        setResult(responseDTO);
+        connection.send(responseDTO);
     }
 }

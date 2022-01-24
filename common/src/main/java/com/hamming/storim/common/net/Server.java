@@ -38,7 +38,8 @@ public abstract class Server implements Runnable {
                 ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(s.getInputStream());
                 clientConnected(s, in, out);
-            } catch (SocketException e) {  //Do nothing
+            } catch (SocketException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }

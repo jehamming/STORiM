@@ -13,11 +13,11 @@ import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRespo
 public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
 
     private LoginServerWorker serverWorker;
-    private LoginServerClientConnection clientConnection;
+    private LoginServerClientConnection client;
 
-    public VerifyUserAction(LoginServerWorker serverWorker, LoginServerClientConnection clientConnection) {
+    public VerifyUserAction(LoginServerWorker serverWorker, LoginServerClientConnection client) {
         this.serverWorker = serverWorker;
-        this.clientConnection = clientConnection;
+        this.client = client;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
             UserDto user = new UserDto();
             user.setId(userId);
             GetUserRequestDTO getUserRequestDTO = new GetUserRequestDTO(user);
-            GetUserResultDTO getUserResultDTO = (GetUserResultDTO) serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getUserRequestDTO);
+            GetUserResultDTO getUserResultDTO = (GetUserResultDTO) serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getUserRequestDTO, GetUserResultDTO.class);
             if ( getUserResultDTO != null && getUserResultDTO.isSuccess() ) {
                 userDto = getUserResultDTO.getUser();
             }
@@ -46,7 +46,7 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
         }
 
         VerifyUserResponseDTO responseDTO = new VerifyUserResponseDTO(userDto, errorMessage);
-        setResult(responseDTO);
+        client.send(responseDTO);
 
     }
 

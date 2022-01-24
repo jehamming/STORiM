@@ -8,6 +8,7 @@ import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.old.*;
+import com.hamming.storim.common.net.ProtocolObjectSender;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
@@ -29,7 +30,7 @@ import java.net.Socket;
 public class STORIMClientConnection extends ClientConnection implements GameStateListener {
 
     private User currentUser;
-    private ClientSender clientSender;
+    private ProtocolObjectSender clientSender;
     private STORIMMicroServer server;
     private String clientID;
     private GameController gameController;
@@ -37,7 +38,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     public STORIMClientConnection(STORIMMicroServer server, ClientTypeDTO clientTypeDTO, Socket s, ObjectInputStream in, ObjectOutputStream out, GameController controller) {
         super(clientTypeDTO, s, in, out, controller);
         this.server = server;
-        clientSender = new ClientSender(out);
+        clientSender = new ProtocolObjectSender(out);
     }
 
     @Override
@@ -178,7 +179,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     public void send(ProtocolDTO dto) {
         if (clientSender != null && clientSender.isRunning()) {
-            clientSender.enQueue(dto);
+            clientSender.send(dto);
         }
     }
 
@@ -433,7 +434,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     public boolean verifyUser(Long userId, String token) {
         boolean userValid = false;
         VerifyUserRequestDTO dto = new VerifyUserRequestDTO(userId, token);
-        VerifyUserResponseDTO response = (VerifyUserResponseDTO) server.getLoginServerConnection().sendReceive(dto);
+        VerifyUserResponseDTO response = (VerifyUserResponseDTO) server.getLoginServerConnection().sendReceive(dto, VerifyUserResponseDTO.class);
         if ( response.getUser() != null ) {
             userValid = true;
             User verifiedUser = User.valueOf( response.getUser() );
