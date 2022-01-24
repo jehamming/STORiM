@@ -5,7 +5,9 @@ import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.request.*;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.dto.protocol.serverpush.*;
+import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
@@ -72,6 +74,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(PlaceThingInRoomRequestDTO.class, new PlaceThingInRoomAction(gameController, this));
         getProtocolHandler().addAction(UpdateThingLocationDto.class, new UpdateThingLocationAction(gameController, this));
         getProtocolHandler().addAction(ConnectRequestDTO.class, new ConnectAction(gameController, this));
+        getProtocolHandler().addAction(GetExitDTO.class, new GetExitAction(gameController, this));
     }
 
 
@@ -345,27 +348,27 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
 
     private void handleTeleported(User user, Long oldRoomId) {
-        if (user.equals(currentUser)) {
-            sendUsersInRoom(user.getLocation().getRoom());
-            sendThingsInRoom(user.getLocation().getRoom());
-        } else {
-            sendRoom(user.getLocation().getRoom());
-            if (user.getLocation().getRoom().getTileId() != null) {
-                sendTile(user.getLocation().getRoom().getTileId());
-            }
-            sendThingsInRoom(user.getLocation().getRoom());
-            LocationDto location = DTOFactory.getInstance().getLocationDTO(user.getLocation());
-           // UserTeleportedDTO userTeleportedDTO = DTOFactory.getInstance().getUserTeleportedDTO(user, oldRoomId, location);
-            //send(userTeleportedDTO);
-        }
+        //FIXME handle teleport
+//        if (user.equals(currentUser)) {
+//            sendUsersInRoom(user.getLocation().getRoom());
+//            sendThingsInRoom(user.getLocation().getRoom());
+//        } else {
+//            sendRoom(user.getLocation().getRoom());
+//            if (user.getLocation().getRoom().getTileId() != null) {
+//                sendTile(user.getLocation().getRoom().getTileId());
+//            }
+//            sendThingsInRoom(user.getLocation().getRoom());
+//            LocationDto location = DTOFactory.getInstance().getLocationDTO(user.getLocation());
+//           // UserTeleportedDTO userTeleportedDTO = DTOFactory.getInstance().getUserTeleportedDTO(user, oldRoomId, location);
+//            //send(userTeleportedDTO);
+//        }
     }
 
-    public void sendUsersInRoom(Room room) {
+    public void sendUsersInRoom() {
+        Room room = currentUser.getLocation().getRoom();
         gameController.getGameState().getOnlineUsers().forEach(user -> {
-            if (!user.equals(currentUser) && room.getId().equals(user.getLocation().getRoom().getId())) {
-                LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(user.getLocation());
-                sendAvatar(user);
-                UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user, room, locationDto);
+            if (room.getId().equals(user.getLocation().getRoom().getId())) {
+                UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user);
                 send(dto);
             }
         });
@@ -439,10 +442,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
                 UserCache.getInstance().deleteUser(verifiedUser);
             }
             UserCache.getInstance().addUser(verifiedUser);
-            //FIXME Get the (last) location from somewhere..
-            Room room = RoomFactory.getInstance().getRooms().get(0);
-            Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());
-            verifiedUser.setLocation(location);
             setCurrentUser(verifiedUser);
         }
         return userValid;
@@ -451,4 +450,15 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     public void setClientID(String name) {
         this.clientID = name;
     }
+
+    public void setRoom(Long roomId) {
+        Room room = RoomFactory.getInstance().findRoomByID(roomId);
+        if ( room != null ) {
+            Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());
+            currentUser.setLocation(location);
+            send(new SetRoomDTO(DTOFactory.getInstance().getRoomDto(room)));
+  //          sendUsersInRoom();
+        }
+    }
+
 }

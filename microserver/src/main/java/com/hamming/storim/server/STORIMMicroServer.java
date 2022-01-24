@@ -28,7 +28,7 @@ public class STORIMMicroServer extends Server {
     private int clients = 0;
     private ServerConfig config;
     private LoginServerConnection loginServerConnection;
-    private ServerConnection dataServerConnection;
+    private UserDataServerConnection dataServerConnection;
     private final static String PROPFILE = "microserver.properties";
     public final static String DBFILE = "microserver.db";
     public static String DATADIR = "serverdata";
@@ -61,12 +61,7 @@ public class STORIMMicroServer extends Server {
         controllerThread.setName("GameController");
         controllerThread.start();
         System.out.println(this.getClass().getName() + ":" + "GameController started");
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Database.getInstance().store();
-            }
-        }) {});
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> Database.getInstance().store()));
     }
 
     public void connectToLoginServer() {
@@ -96,19 +91,21 @@ public class STORIMMicroServer extends Server {
     public void connectToDataServer() {
         String dataservername = config.getPropertyAsString("userdataserver");
         int dataserverport = config.getPropertyAsInt("userdataserverport");
-        dataServerConnection = new ServerConnection(SERVERNAME,dataservername, dataserverport);
-        Thread controllerThread = new Thread(dataServerConnection);
-        controllerThread.setDaemon(true);
-        controllerThread.setName("UserDataServerConnection");
-        controllerThread.start();
-        while (! dataServerConnection.isRunning() ) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            Socket socket = new Socket(dataservername, dataserverport);
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ClientTypeDTO clientTypeDTO = new ClientTypeDTO(SERVERNAME, ClientTypeDTO.TYPE_SERVER);
+            out.writeObject(clientTypeDTO);
+            dataServerConnection = new UserDataServerConnection(clientTypeDTO, socket, in, out, controller);
+            Thread controllerThread = new Thread(dataServerConnection);
+            controllerThread.setDaemon(true);
+            controllerThread.setName("UserDataServerConnection");
+            controllerThread.start();
+            System.out.println(this.getClass().getName() + ":" + "Connected to DataServer");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println(this.getClass().getName() + ":" + "Connected to DataServer");
     }
 
 
@@ -130,10 +127,14 @@ public class STORIMMicroServer extends Server {
         boolean success = false;
         try {
             String url = Inet4Address.getLocalHost().getHostName();
-            AddServerRequestDTO dto = new AddServerRequestDTO(SERVERNAME, url , port);
+            AddServerRequestDTO dto = new AddServerRequestDTO(SERVERNAME, url, port);
             AddServerResponseDTO responseDTO = (AddServerResponseDTO) loginServerConnection.sendReceive(dto);
             success = responseDTO.isSuccess();
-            if (!success) System.out.println(this.getClass().getName() + ":" + "Could not register to LoginServer: " + responseDTO.getErrorMessage());
+            if (success) {
+                System.out.println(this.getClass().getName() + ":" + "Registered to LoginServer: " + responseDTO.getErrorMessage());
+            } else {
+                System.out.println(this.getClass().getName() + ":" + "Could not register to LoginServer: " + responseDTO.getErrorMessage());
+            }
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -150,7 +151,7 @@ public class STORIMMicroServer extends Server {
             Thread clientThread = new Thread(client);
             controller.addListener(client);
             clientThread.setDaemon(true);
-            String name = clientTypeDTO.getName()+"-"+clients;
+            String name = clientTypeDTO.getName() + "-" + clients;
             clientThread.setName(name);
             clientThread.start();
             System.out.println(this.getClass().getName() + ":" + "Client " + s.getInetAddress().toString() + ", ClientThread started");

@@ -1,6 +1,5 @@
 package com.hamming.storim.common.net;
 
-import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.RequestDTO;
 import com.hamming.storim.common.dto.protocol.RequestResponseDTO;
@@ -9,28 +8,16 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.annotation.Repeatable;
 import java.net.Socket;
 
-public class NetClient implements Runnable {
+public class NetClient<T extends ResponseDTO> implements Runnable {
+    private static final long RESPONSE_TIMEOUT = 2000;
     private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private boolean running = false;
     private NetCommandReceiver receiver;
     private ResponseContainer responseContainer;
-
-    private class ResponseContainer{
-        private ResponseDTO response;
-
-        public void setResponse(ResponseDTO response) {
-            this.response = response;
-        }
-
-        public ResponseDTO getResponse() {
-            return response;
-        }
-    }
 
     public NetClient(NetCommandReceiver receiver) {
         this.receiver = receiver;
@@ -64,11 +51,16 @@ public class NetClient implements Runnable {
             try {
                 Object read = in.readObject();
                 ProtocolDTO dto = (ProtocolDTO) read;
-                if ( dto instanceof ResponseDTO ) {
+                if ( dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
-                    responseContainer.setResponse(response);
-                    synchronized (responseContainer) {
-                        responseContainer.notify();
+
+                    if (response.getClass().equals(responseContainer.getResponseClass())) {
+                        responseContainer.setResponse(response);
+                        synchronized (responseContainer) {
+                            responseContainer.notify();
+                        }
+                    } else {
+                        System.out.println(this.getClass().getName() + ":Received ResponseDTO I was NOT waiting for! :" + dto.toString());
                     }
                 }
                 System.out.println(this.getClass().getName() + ":RECEIVED:" + dto.toString());
@@ -102,14 +94,15 @@ public class NetClient implements Runnable {
         }
     }
 
-    public ResponseDTO sendReceive(RequestResponseDTO requestResponseDTO) {
+    public ResponseDTO sendReceive(RequestResponseDTO requestResponseDTO, Class responseClass) {
         try {
             responseContainer.setResponse(null);
-            System.out.println(this.getClass().getName() + ":" + "SendReceive:" + requestResponseDTO );
+            responseContainer.setResponseClass(responseClass);
+            System.out.println(this.getClass().getName() + ":" + "SendReceive:" + requestResponseDTO + ", waiting for: " + responseClass.getSimpleName());
             out.writeObject(requestResponseDTO);
             synchronized (responseContainer) {
                 try {
-                    responseContainer.wait(1000);
+                    responseContainer.wait(RESPONSE_TIMEOUT);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

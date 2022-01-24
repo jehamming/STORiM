@@ -54,7 +54,8 @@ public class ThingPanel extends javax.swing.JPanel implements ThingListener, Use
         empty(true);
         controllers.getThingController().addThingListener(this);
         controllers.getUserController().addUserListener(this);
-        controllers.getViewController().addViewListener(this);
+        //FIXME Get GameViewController access here.
+        // controllers.getViewController().addViewListener(this);
     }
 
     private void setup() {

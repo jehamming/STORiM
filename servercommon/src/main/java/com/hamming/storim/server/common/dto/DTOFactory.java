@@ -4,7 +4,8 @@ package com.hamming.storim.server.common.dto;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.DTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.dto.protocol.serverpush.*;
+import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.model.*;
 
@@ -111,8 +112,10 @@ public class DTOFactory {
         return new GetVerbResultDTO(success, error, verb);
     }
 
-    public UserInRoomDTO getUserInRoomDTO(User user, Room room, LocationDto location) {
-        return new UserInRoomDTO(user.getId(), room.getId(), location);
+    public UserInRoomDTO getUserInRoomDTO(User user) {
+        UserDto userDto = getUserDTO(user);
+        LocationDto locationDto = getLocationDTO(user.getLocation());
+        return new UserInRoomDTO(userDto, locationDto);
     }
 
     public UserOnlineDTO getUserOnlineDTO(UserDto userDTO, LocationDto locationDto) {

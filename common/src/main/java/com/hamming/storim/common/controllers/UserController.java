@@ -10,7 +10,7 @@ import com.hamming.storim.common.dto.protocol.request.DeleteAvatarDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateAvatarDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateUserDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.dto.protocol.serverpush.*;
+import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.interfaces.UserListener;
 import com.hamming.storim.common.net.NetCommandReceiver;

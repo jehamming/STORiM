@@ -8,9 +8,9 @@ import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.AddThingDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.DeleteThingDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetThingResultDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.ThingAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.ThingDeletedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.ThingUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingUpdatedDTO;
 import com.hamming.storim.common.interfaces.ThingListener;
 import com.hamming.storim.common.net.NetCommandReceiver;
 
@@ -74,7 +74,7 @@ public class ThingController {
 
     public void addThingRequest(String name, String description, Float scale, int rotation, byte[] image) {
         AddThingDto addThingDto = ProtocolHandler.getInstance().getAddThingDTO(name, description, scale, rotation, image);
-        controllers.getConnectionController().sendReceive(addThingDto);
+        controllers.getConnectionController().send(addThingDto);
     }
 
 
@@ -103,7 +103,7 @@ public class ThingController {
 
     public void deleteThingRequest(Long thingID) {
         DeleteThingDTO dto = new DeleteThingDTO(thingID);
-        controllers.getConnectionController().sendReceive(dto);
+        controllers.getConnectionController().send(dto);
     }
 
     public void updateThingRequest(Long id, String name, String description, Float scale, int rotation, byte[] image) {

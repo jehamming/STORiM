@@ -108,4 +108,15 @@ public class Room extends BasicObject   {
                 ", tileId=" + tileId +
                 '}';
     }
+
+    public Exit getExit(Long exitID) {
+        Exit found = null;
+        for (Exit exit: exits) {
+            if ( exit.getId().equals( exitID)) {
+                found = exit;
+                break;
+            }
+        }
+        return found;
+    }
 }

@@ -5,6 +5,7 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.RequestDTO;
 import com.hamming.storim.common.dto.protocol.RequestResponseDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
+import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.NetClient;
 import com.hamming.storim.common.net.NetCommandReceiver;
@@ -38,7 +39,7 @@ public class ConnectionController implements NetCommandReceiver {
         }
     }
 
-    public void connect(String serverip, int port) throws Exception {
+    public void connect(String clientName, String serverip, int port) throws Exception {
         if (client != null && !client.isConnected()) {
             client.dispose();
         }
@@ -54,6 +55,8 @@ public class ConnectionController implements NetCommandReceiver {
             }
         }
         if (result != null) throw new Exception("Error:" + result);
+
+        send(new ClientTypeDTO(clientName, ClientTypeDTO.TYPE_CLIENT));
 
         fireConnectedEvent();
     }
@@ -122,7 +125,7 @@ public class ConnectionController implements NetCommandReceiver {
         client.send(requestDTO);
     }
 
-    public ResponseDTO sendReceive(RequestResponseDTO requestDTO) {
-        return client.sendReceive(requestDTO);
+    public <T extends ResponseDTO> T sendReceive(RequestResponseDTO requestDTO, Class<T> responseClass) {
+        return responseClass.cast( client.sendReceive(requestDTO, responseClass));
     }
 }

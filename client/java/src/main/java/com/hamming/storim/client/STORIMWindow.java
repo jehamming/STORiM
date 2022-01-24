@@ -3,22 +3,20 @@ package com.hamming.storim.client;
 import com.hamming.storim.client.controller.LoginPanelController;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.GameViewPanel;
-import com.hamming.storim.common.Controllers;
-import com.hamming.storim.common.controllers.ViewController;
-import com.hamming.storim.common.dto.AvatarDto;
-import com.hamming.storim.common.dto.LocationDto;
+import com.hamming.storim.common.controllers.ConnectionController;
+import com.hamming.storim.client.controller.GameViewController;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.interfaces.ConnectionListener;
-import com.hamming.storim.common.interfaces.UserListener;
 
 import javax.swing.*;
 
-public class STORIMWindow extends JFrame implements ConnectionListener, UserListener {
+public class STORIMWindow extends JFrame implements ConnectionListener {
 
 
     private LoginPanel loginPanel;
     private LoginPanelController loginPanelController;
 
+    private ConnectionController connectionController;
     private UserInfoPanel userInfoPanel;
     private ChatPanel chatPanel;
     private VerbEditorPanel verbEditorPanel;
@@ -26,21 +24,21 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
     private AvatarPanel avatarPanel;
     private ThingPanel thingPanel;
     private ExitEditorPanel exitEditorPanel;
-    private Controllers controllers;
     private GameViewPanel gameView;
     private JTabbedPane tabbedPane;
     private  JLabel lblRoomname;
     private static String BASIC_TITLE = "STORIM Java Client";
 
-    public STORIMWindow(Controllers controllers) {
-        this.controllers = controllers;
-        controllers.getConnectionController().addConnectionListener(this);
-        controllers.getUserController().addUserListener(this);
+    private UserDto currentUser;
+    private String userToken;
+
+    public STORIMWindow(ConnectionController connectionController) {
+        this.connectionController = connectionController;
+        connectionController.addConnectionListener(this);
         setTitle(BASIC_TITLE);
         gameView = new GameViewPanel(this);
-        ViewController viewController = new ViewController(gameView, controllers);
+        GameViewController viewController = new GameViewController(this, gameView, connectionController);
         gameView.setViewController(viewController);
-        controllers.setViewController(viewController);
         initComponents();
         addTabs();
         emptyPanels();
@@ -50,32 +48,32 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
 
     public void addTabs() {
         loginPanel = new LoginPanel();
-        loginPanelController = new LoginPanelController(loginPanel, controllers.getConnectionController());
+        loginPanelController = new LoginPanelController(this, loginPanel, connectionController);
         tabbedPane.addTab("Connect/Disconnect", loginPanel);
 
-        chatPanel = new ChatPanel(controllers);
-        //mainPanel.add(chatPanel);
-        tabbedPane.addTab("Chat", chatPanel);
-
-        userInfoPanel = new UserInfoPanel(controllers);
-        //mainPanel.add(userInfoPanel);
-        tabbedPane.addTab("Users", userInfoPanel);
-
-        verbEditorPanel = new VerbEditorPanel(controllers);
-        //mainPanel.add(verbEditorPanel);
-        tabbedPane.addTab("Verbs", verbEditorPanel);
-
-        roomEditorPanel = new RoomEditorPanel(controllers);
-        tabbedPane.addTab("Rooms", roomEditorPanel);
-
-        avatarPanel = new AvatarPanel(controllers);
-        tabbedPane.add("Avatars", avatarPanel);
-
-        thingPanel = new ThingPanel(controllers);
-        tabbedPane.add("Things", thingPanel);
-
-        exitEditorPanel = new ExitEditorPanel(controllers);
-        tabbedPane.add("Exits", exitEditorPanel);
+//        chatPanel = new ChatPanel(controllers);
+//        //mainPanel.add(chatPanel);
+//        tabbedPane.addTab("Chat", chatPanel);
+//
+//        userInfoPanel = new UserInfoPanel(controllers);
+//        //mainPanel.add(userInfoPanel);
+//        tabbedPane.addTab("Users", userInfoPanel);
+//
+//        verbEditorPanel = new VerbEditorPanel(controllers);
+//        //mainPanel.add(verbEditorPanel);
+//        tabbedPane.addTab("Verbs", verbEditorPanel);
+//
+//        roomEditorPanel = new RoomEditorPanel(controllers);
+//        tabbedPane.addTab("Rooms", roomEditorPanel);
+//
+//        avatarPanel = new AvatarPanel(controllers);
+//        tabbedPane.add("Avatars", avatarPanel);
+//
+//        thingPanel = new ThingPanel(controllers);
+//        tabbedPane.add("Things", thingPanel);
+//
+//        exitEditorPanel = new ExitEditorPanel(controllers);
+//        tabbedPane.add("Exits", exitEditorPanel);
 
     }
 
@@ -129,11 +127,12 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
 
 
     public void emptyPanels() {
-        userInfoPanel.empty();
-        chatPanel.empty();
-        verbEditorPanel.empty();
-        roomEditorPanel.empty(true);
-        avatarPanel.empty(true);
+        //FIXME
+//        userInfoPanel.empty();
+//        chatPanel.empty();
+//        verbEditorPanel.empty();
+//        roomEditorPanel.empty(true);
+//        avatarPanel.empty(true);
     }
 
 
@@ -147,58 +146,32 @@ public class STORIMWindow extends JFrame implements ConnectionListener, UserList
         setTitle(BASIC_TITLE);
     }
 
-    @Override
-    public void userConnected(UserDto user) {
-
-    }
-
-    @Override
-    public void userUpdated(UserDto user) {
-
-    }
-
-    @Override
-    public void userDisconnected(UserDto user) {
-
-    }
-
-    @Override
-    public void userOnline(UserDto user) {
-
-    }
-
-    @Override
-    public void loginResult(boolean success, String message) {
-    }
-
-    @Override
-    public void userTeleported(Long userId, LocationDto location) {
-
-    }
-
-    @Override
-    public void avatarAdded(AvatarDto avatar) {
-
-    }
-
-    @Override
-    public void avatarDeleted(AvatarDto avatar) {
-
-    }
-
-    @Override
-    public void avatarUpdated(AvatarDto avatar) {
-
-    }
 
     public GameViewPanel getGameView() {
         return gameView;
     }
 
     public void setRoomname(String roomName) {
-        String text = "User: "+controllers.getUserController().getCurrentUser().getName() + ", room :" + roomName;
+        //TODO - CurrentUser!
+        String text = "User: "+ currentUser.getName() + ", room :" + roomName;
         SwingUtilities.invokeLater(() -> {
             lblRoomname.setText(text);
         });
+    }
+
+    public UserDto getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(UserDto currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 }

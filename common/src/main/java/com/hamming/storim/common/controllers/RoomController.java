@@ -14,7 +14,8 @@ import com.hamming.storim.common.dto.protocol.requestresponse.ConnectResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetExitResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetTileResultDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.*;
+import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.common.interfaces.RoomListener;
 import com.hamming.storim.common.interfaces.RoomUpdateListener;
 import com.hamming.storim.common.net.NetCommandReceiver;
@@ -44,7 +45,6 @@ public class RoomController {
         controllers.getConnectionController().registerReceiver(RoomAddedDTO.class, (NetCommandReceiver<RoomAddedDTO>) dto -> handleRoomAddedDTO(dto));
         controllers.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (NetCommandReceiver<RoomUpdatedDTO>) dto -> handleRoomUpdatedDTO(dto));
         controllers.getConnectionController().registerReceiver(RoomDeletedDTO.class, (NetCommandReceiver<RoomDeletedDTO>) dto -> handleRoomDeletedDTO(dto));
-        controllers.getConnectionController().registerReceiver(UserInRoomDTO.class, (NetCommandReceiver<UserInRoomDTO>) dto -> handleUserInRoomDTO(dto));
         controllers.getConnectionController().registerReceiver(UserConnectedDTO.class, (NetCommandReceiver<UserConnectedDTO>) dto -> handleUserConnectedDTO(dto));
         controllers.getConnectionController().registerReceiver(UserOnlineDTO.class, (NetCommandReceiver<UserOnlineDTO>) dto -> handleUserOnlineDTO(dto));
          controllers.getConnectionController().registerReceiver(ThingPlacedDTO.class, (NetCommandReceiver<ThingPlacedDTO>) dto -> handleThingPlacedDTO(dto));
@@ -164,14 +164,6 @@ public class RoomController {
         }
     }
 
-    private void handleUserInRoomDTO(UserInRoomDTO dto) {
-        UserDto user = controllers.getUserController().findUserById(dto.getUserId());
-        if (currentUserLocation(dto.getLocation().getRoomId())) {
-            for (RoomListener l : roomListeners) {
-                l.userInRoom(user, dto.getLocation());
-            }
-        }
-    }
 
     private void handleGetRoomResult(GetRoomResultDTO dto) {
         if (dto.isSuccess()) {

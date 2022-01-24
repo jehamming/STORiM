@@ -15,35 +15,20 @@ public class ConnectAction extends Action<ConnectRequestDTO> {
 
 
     public ConnectAction(GameController controller, STORIMClientConnection client) {
-
         this.controller = controller;
         this.client = client;
     }
 
     @Override
     public void execute() {
-        // Verify UserId + token with LoginServer
         boolean validUserAndToken = client.verifyUser(getDto().getUserId(), getDto().getToken());
-        UserDto userDto = null;
-        LocationDto locationDto = null;
-        String errorMessage = null;
         if ( validUserAndToken ) {
-            // Send Location & Details
-            client.sendGameState(client.getCurrentUser());
-            client.sendRoom(client.getCurrentUser().getLocation().getRoom());
-            client.sendThingsInRoom(client.getCurrentUser().getLocation().getRoom());
-            client.sendUserLocation(client.getCurrentUser());
-            userDto = DTOFactory.getInstance().getUserDTO(client.getCurrentUser());
-            locationDto = DTOFactory.getInstance().getLocationDTO(client.getCurrentUser().getLocation());
+            Long roomId = getDto().getRoomId();
+            client.setRoom(roomId);
         } else {
-            errorMessage = "Not a valid user or valid token!";
+            String errorMessage = "Not a valid user or valid token!";
+            client.send(new ConnectResultDTO(false, errorMessage, null, null));
         }
-
-
-        ConnectResultDTO connectResultDTO = new ConnectResultDTO(validUserAndToken, errorMessage, userDto, locationDto);
-        setResult(connectResultDTO);
-
-
     }
 
 }

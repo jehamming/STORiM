@@ -10,10 +10,9 @@ import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.interfaces.RoomListener;
 
 public class STORIMClientApplication {
-    private Controllers controllers;
     private static STORIMClientApplication instance;
     private STORIMWindow STORIMWindow;
-    private ViewController viewController;
+    private ConnectionController connectionController;
 
     private STORIMClientApplication() {
         initControllers();
@@ -27,22 +26,12 @@ public class STORIMClientApplication {
     }
 
     public void initControllers() {
-        controllers = new Controllers();
-        // Connection
-        controllers.setConnectionController(new ConnectionController("STORIM_Java_client"));
-        // Users
-        controllers.setUserController( new UserController(controllers.getConnectionController()));
-        // Verbs
-        controllers.setVerbController(new VerbController(controllers));
-        // Rooms
-        controllers.setRoomController(new RoomController(controllers));
-        // Things
-        controllers.setThingController(new ThingController(controllers));
+        connectionController = new ConnectionController("STORIM_Java_client");
     }
 
 
     private void createAndShowGUI() {
-        STORIMWindow = new STORIMWindow(controllers);
+        STORIMWindow = new STORIMWindow(connectionController);
         STORIMWindow.getGameView().start();
         initControllers();
 

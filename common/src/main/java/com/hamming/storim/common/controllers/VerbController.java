@@ -4,7 +4,7 @@ import com.hamming.storim.common.Controllers;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbResultDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.VerbDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.VerbDeletedDTO;
 import com.hamming.storim.common.interfaces.VerbListener;
 import com.hamming.storim.common.net.NetCommandReceiver;
 

@@ -10,7 +10,6 @@ public class Controllers {
     private VerbController verbController;
     private RoomController roomController;
     private ThingController thingController;
-    private ViewController viewController;
 
     public ConnectionController getConnectionController() {
         return connectionController;
@@ -52,11 +51,4 @@ public class Controllers {
         this.thingController = thingController;
     }
 
-    public ViewController getViewController() {
-        return viewController;
-    }
-
-    public void setViewController(ViewController viewController) {
-        this.viewController = viewController;
-    }
 }

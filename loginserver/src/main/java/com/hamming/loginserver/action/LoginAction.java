@@ -34,7 +34,7 @@ public class LoginAction extends Action<LoginRequestDTO> {
         user.setUsername(username);
         // Verify User with UserDataServer
         GetUserRequestDTO getUserRequestDTO = new GetUserRequestDTO(user);
-        GetUserResultDTO getUserResultDTO = (GetUserResultDTO) serverWorker.getLoginServer().getUserDataServerConnection().serverRequest(getUserRequestDTO);
+        GetUserResultDTO getUserResultDTO = (GetUserResultDTO) serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getUserRequestDTO);
         if ( getUserResultDTO != null && getUserResultDTO.isSuccess() ) {
             user = getUserResultDTO.getUser();
             if ( user.getPassword().equals(password)) {

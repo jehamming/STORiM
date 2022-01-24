@@ -3,9 +3,9 @@ package com.hamming.loginserver;
 import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
-import com.hamming.storim.server.ServerConnection;
 import com.hamming.storim.server.common.ClientConnection;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
@@ -21,7 +21,7 @@ public class STORIMLoginServer extends Server {
     private int connectedServers = 0;
     private ServerConfig config;
     private final static String PROPFILE = "loginserver.properties";
-    private ServerConnection userDataServerConnection;
+    private UserDataServerConnection userDataServerConnection;
     private LoginServerWorker serverWorker;
     private SessionManager sessionManager;
 
@@ -52,17 +52,20 @@ public class STORIMLoginServer extends Server {
         System.out.println(this.getClass().getName() + ":" + " Trying to connect to the UserDataServer...");
         String dataservername = config.getPropertyAsString("userdataserver");
         int dataserverport = config.getPropertyAsInt("userdataserverport");
-        userDataServerConnection = new ServerConnection(getClass().getSimpleName(), dataservername, dataserverport);
-        Thread controllerThread = new Thread(userDataServerConnection);
-        controllerThread.setDaemon(true);
-        controllerThread.setName("UserDataServerConnection");
-        controllerThread.start();
-        while (!userDataServerConnection.isRunning()) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            Socket socket = new Socket(dataservername, dataserverport);
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ClientTypeDTO clientTypeDTO = new ClientTypeDTO(getClass().getSimpleName(), ClientTypeDTO.TYPE_SERVER);
+            out.writeObject(clientTypeDTO);
+            userDataServerConnection = new UserDataServerConnection(clientTypeDTO, socket, in, out, serverWorker);
+            Thread controllerThread = new Thread(userDataServerConnection);
+            controllerThread.setDaemon(true);
+            controllerThread.setName("UserDataServerConnection");
+            controllerThread.start();
+            System.out.println(this.getClass().getName() + ":" + "Connected to DataServer");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         System.out.println(this.getClass().getName() + ":" + " UserDataServerConnection started");
     }
@@ -125,7 +128,7 @@ public class STORIMLoginServer extends Server {
         return sessionManager;
     }
 
-    public ServerConnection getUserDataServerConnection() {
+    public UserDataServerConnection getUserDataServerConnection() {
         return userDataServerConnection;
     }
 

@@ -57,7 +57,9 @@ public class UserDto extends DTO {
     @Override
     public String toString() {
         return "UserDto{" +
-                "currentAvatarID=" + currentAvatarID +
+                "id=" + getId() +
+                ", name=" + getName() +
+                ", currentAvatarID=" + currentAvatarID +
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +

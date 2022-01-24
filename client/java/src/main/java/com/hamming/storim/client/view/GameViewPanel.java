@@ -3,7 +3,7 @@ package com.hamming.storim.client.view;
 
 import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindow;
-import com.hamming.storim.common.controllers.ViewController;
+import com.hamming.storim.client.controller.GameViewController;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.view.Action;
 import com.hamming.storim.common.view.GameView;
@@ -40,7 +40,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     public RoomDto room;
     public TileDto tile;
     public Image tileImage;
-    private ViewController viewController;
+    private GameViewController viewController;
 
     private Image defaultTileImage;
     private Image defaultUserImage;
@@ -172,7 +172,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         });
     }
 
-    public void setViewController(ViewController viewController) {
+    public void setViewController(GameViewController viewController) {
         this.viewController = viewController;
     }
 

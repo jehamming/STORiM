@@ -59,7 +59,8 @@ public class UserInfoPanel extends javax.swing.JPanel implements UserListener, V
     public UserInfoPanel(Controllers controllers) {
         this.controllers = controllers;
         controllers.getUserController().addUserListener(this);
-        controllers.getViewController().addViewListener(this);
+        //FIXME Get GameViewCOntroller access here...
+        //controllers.getViewController().addViewListener(this);
         setBorder(new TitledBorder("Users"));
         initComponents();
         setup();
