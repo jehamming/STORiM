@@ -15,11 +15,10 @@ import java.util.List;
 public class GetServersAction extends Action<GetServerRegistrationsRequestDTO> {
 
     private LoginServerWorker serverWorker;
-    private UserClientConnection client;
 
     public GetServersAction(LoginServerWorker serverWorker, UserClientConnection client) {
+        super(client);
         this.serverWorker = serverWorker;
-        this.client = client;
     }
 
     @Override
@@ -34,6 +33,6 @@ public class GetServersAction extends Action<GetServerRegistrationsRequestDTO> {
 
         GetServerRegistrationsResponseDTO getServersResponseDTO = new GetServerRegistrationsResponseDTO(servers);
 
-        client.send(getServersResponseDTO);
+        getClient().send(getServersResponseDTO);
     }
 }

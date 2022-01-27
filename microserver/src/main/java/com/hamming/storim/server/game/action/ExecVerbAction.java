@@ -10,25 +10,22 @@ import com.hamming.storim.server.game.GameController;
 
 public class ExecVerbAction extends Action<ExecVerbDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
+
 
     public ExecVerbAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
     }
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         User u = client.getCurrentUser();
-        execVerb(getDto().getCommandID(), getDto().getInput());
-    }
-
-    private void execVerb(long commandID, String message) {
-        Verb cmd = VerbFactory.getInstance().findVerbByID(commandID);
+        Verb cmd = VerbFactory.getInstance().findVerbByID(getDto().getCommandID());
         if (cmd != null ) {
-            controller.executeVeb(client.getCurrentUser(), cmd, message);
+            controller.executeVeb(getClient(), u, cmd, getDto().getInput());
         }
     }
+
 
 }

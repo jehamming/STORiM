@@ -10,19 +10,19 @@ import java.awt.*;
 
 public class UpdateThingAction extends Action<UpdateThingDto> {
     private GameController gameController;
-    private STORIMClientConnection client;
+
 
     public UpdateThingAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.gameController = controller;
-        this.client = client;
+
     }
 
     @Override
     public void execute() {
         UpdateThingDto dto = getDto();
         Image image = ImageUtils.decode(dto.getImageData());
-        gameController.updateThing(dto.getId(), dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), image);
+        gameController.updateThing(getClient(), dto.getId(), dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), image);
     }
 
 }

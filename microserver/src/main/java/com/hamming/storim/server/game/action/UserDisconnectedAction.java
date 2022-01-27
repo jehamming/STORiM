@@ -9,21 +9,17 @@ import com.hamming.storim.server.game.GameController;
 
 public class UserDisconnectedAction extends Action {
     private GameController controller;
-    private STORIMClientConnection client;
     private User user;
 
     public UserDisconnectedAction(GameController controller, STORIMClientConnection client, User user) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
         this.user = user;
     }
 
     @Override
     public void execute() {
-        UserDisconnectedDTO dto = DTOFactory.getInstance().getUserDisconnectedDTO(user);
-        controller.userDisconnected(user);
-        client.send(dto);
+        controller.userDisconnected(getClient(), user);
     }
 
 

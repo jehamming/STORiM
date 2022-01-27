@@ -13,23 +13,24 @@ import com.hamming.storim.server.game.GameController;
 
 public class AddVerbAction extends Action<AddVerbDto> {
     private GameController controller;
-    private STORIMClientConnection client;
+
 
     public AddVerbAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
+
     }
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         AddVerbDto dto = getDto();
         User creator = client.getCurrentUser();
         Verb verb = VerbFactory.getInstance().createVerb(creator, dto.getName(), dto.getToCaller(), dto.getToLocation());
         if ( verb != null ) {
             VerbDto verbDto = DTOFactory.getInstance().getVerbDto(verb);
             GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
-            client.send(getCommandResultDTO);
+            getClient().send(getCommandResultDTO);
         }
     }
 

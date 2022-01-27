@@ -9,12 +9,12 @@ import com.hamming.storim.server.game.GameController;
 
 public class DeleteRoomAction extends Action<DeleteRoomDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
+
 
     public DeleteRoomAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
+
     }
 
     @Override
@@ -22,7 +22,7 @@ public class DeleteRoomAction extends Action<DeleteRoomDTO> {
         Room room = RoomFactory.getInstance().findRoomByID(getDto().getRoomId());
         boolean success = RoomFactory.getInstance().deleteRoom(getDto().getRoomId());
         if (success) {
-            controller.roomDeleted(room);
+            controller.roomDeleted(getClient(), room);
         }
     }
 

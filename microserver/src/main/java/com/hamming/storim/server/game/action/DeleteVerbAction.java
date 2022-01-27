@@ -9,12 +9,10 @@ import com.hamming.storim.server.game.GameController;
 
 public class DeleteVerbAction extends Action<DeleteVerbDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
 
     public DeleteVerbAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
     }
 
     @Override
@@ -22,7 +20,7 @@ public class DeleteVerbAction extends Action<DeleteVerbDTO> {
         Verb verb = VerbFactory.getInstance().findVerbByID(getDto().getVerbID());
         boolean success = VerbFactory.getInstance().deleteVerb(getDto().getVerbID());
         if (success) {
-            controller.verbDeleted(verb);
+            controller.verbDeleted(getClient(), verb);
         }
     }
 

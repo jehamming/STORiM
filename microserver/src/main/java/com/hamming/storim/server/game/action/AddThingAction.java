@@ -11,20 +11,21 @@ import java.awt.*;
 
 public class AddThingAction extends Action<AddThingDto> {
     private GameController gameController;
-    private STORIMClientConnection client;
+
 
     public AddThingAction(GameController controller, STORIMClientConnection client) {
-        this.gameController = controller;
-        this.client = client;
+        super(client); this.gameController = controller;
+
     }
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         AddThingDto dto = getDto();
         User creator = client.getCurrentUser();
 
         Image image = ImageUtils.decode(dto.getImageData());
-        gameController.addThing(creator.getId(), dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), image);
+        gameController.addThing(getClient(), creator.getId(), dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), image);
     }
 
 }

@@ -12,12 +12,11 @@ import com.hamming.storim.server.game.GameController;
 
 public class UpdateVerbAction extends Action<UpdateVerbDto> {
     private GameController controller;
-    private STORIMClientConnection client;
+
 
     public UpdateVerbAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
     }
 
     @Override
@@ -27,7 +26,7 @@ public class UpdateVerbAction extends Action<UpdateVerbDto> {
         if ( verb != null ) {
             VerbDto verbDto = DTOFactory.getInstance().getVerbDto(verb);
             GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
-            client.send(getCommandResultDTO);
+            getClient().send(getCommandResultDTO);
         }
     }
 

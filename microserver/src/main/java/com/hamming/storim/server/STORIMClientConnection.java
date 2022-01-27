@@ -10,6 +10,7 @@ import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.common.net.ProtocolObjectSender;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.DTOFactory;
+import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
 import com.hamming.storim.server.common.factories.AvatarFactory;
@@ -41,7 +42,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     @Override
     public void connectionClosed() {
-        gameController.removeListener(this);
+        gameController.removeGameStateListener(this);
         clientSender.stopSending();
         clientSender = null;
         UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
@@ -203,9 +204,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
-        if (currentUser != null) {
-            gameController.userConnected(currentUser);
-        }
     }
 
     public void sendGameState() {
@@ -282,11 +280,12 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     private void sendVerbs(User user) {
-        for (Verb verb : Database.getInstance().getAll(Verb.class, user.getId())) {
-            VerbDto verbDto = DTOFactory.getInstance().getVerbDto(verb);
-            GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
-            send(getCommandResultDTO);
-        }
+        //FIXME get verbs from userdataserver
+//        for (Verb verb : Database.getInstance().getAll(Verb.class, user.getId())) {
+//            VerbDto verbDto = DTOFactory.getInstance().getVerbDto(verb);
+//            GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
+//            send(getCommandResultDTO);
+//        }
     }
 
     private boolean isOnline(User User) {
@@ -384,7 +383,9 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         Room room = currentUser.getLocation().getRoom();
         gameController.getGameState().getOnlineUsers().forEach(user -> {
             if (room.getId().equals(user.getLocation().getRoom().getId())) {
-                sendUserInRoom(user);
+                if ( !currentUser.getId().equals(user.getId())) {
+                    sendUserInRoom(user);
+                }
             }
         });
     }
@@ -437,16 +438,10 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     private void handleUserDisconnected(User u) {
-        if (currentUser != null && !currentUser.equals(u)) {
-            UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, u);
-            gameController.addAction(action);
-        }
+        UserDisconnectedDTO dto = DTOFactory.getInstance().getUserDisconnectedDTO(u);
+        send(dto);
     }
 
-    public void sendUserLocation(User u) {
-        // UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(u);
-        //  send(userLocationUpdateDTO);
-    }
 
     public boolean verifyUser(Long userId, String token) {
         boolean userValid = false;
@@ -456,7 +451,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             userValid = true;
             User verifiedUser = User.valueOf(response.getUser());
             if (UserCache.getInstance().findUserById(verifiedUser.getId()) != null) {
-                // Remove previous from cache, start new  (reconnect in the same connection?
+                // Remove previous from cache, start new  (reconnect in the same connection?)
                 UserCache.getInstance().deleteUser(verifiedUser);
             }
             UserCache.getInstance().addUser(verifiedUser);
@@ -470,10 +465,16 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         if (room != null) {
             Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());
             currentUser.setLocation(location);
-            send(new SetRoomDTO(DTOFactory.getInstance().getRoomDto(room)));
+            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
+            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
+            send(new SetRoomDTO(roomDto, locationDto));
             sendUsersInRoom();
             sendThingsInRoom();
         }
     }
 
+    public void updateRoomForUser(User user) {
+        UpdateUserRoomDto updateUserRoomDto = new UpdateUserRoomDto(user.getId(), user.getLocation().getRoom().getId());
+        server.getDataServerConnection().send(updateUserRoomDto);
+    }
 }

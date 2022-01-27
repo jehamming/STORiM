@@ -7,23 +7,24 @@ import com.hamming.storim.server.game.GameController;
 
 public class AddRoomAction extends Action<AddRoomDto> {
     private GameController gameController;
-    private STORIMClientConnection client;
+
 
     public AddRoomAction(GameController controller, STORIMClientConnection client) {
-        this.gameController = controller;
-        this.client = client;
+        super(client); this.gameController = controller;
+
     }
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         AddRoomDto dto = getDto();
         Long creator = client.getCurrentUser().getId();
         if (dto.getImageData() != null ) {
-            gameController.addRoom(creator, dto.getName(), dto.getImageData());
+            gameController.addRoom(getClient(), creator, dto.getName(), dto.getImageData());
         } else if (dto.getTileId() != null ) {
-            gameController.addRoom(creator, dto.getName(), dto.getTileId());
+            gameController.addRoom(getClient(), creator, dto.getName(), dto.getTileId());
         } else {
-            gameController.addRoom(creator, dto.getName());
+            gameController.addRoom(getClient(), creator, dto.getName());
         }
     }
 

@@ -8,6 +8,7 @@ public class GetUserResultDTO implements ResponseDTO {
     private boolean success = false;
     private String errorMessage;
     private UserDto user;
+    private Long roomId;
 
     public GetUserResultDTO(boolean success, String errorMessage, UserDto user) {
         this.success =success;

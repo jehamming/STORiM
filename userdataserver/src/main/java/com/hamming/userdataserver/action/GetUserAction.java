@@ -8,16 +8,16 @@ import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserResultDTO;
+import com.hamming.storim.server.common.model.Location;
 import com.hamming.userdataserver.UserFactory;
 import com.hamming.storim.server.common.model.User;
 
 public class GetUserAction extends Action<GetUserRequestDTO> {
 
-    private ClientConnection client;
     private ServerWorker serverWorker;
 
     public GetUserAction(ServerWorker serverWorker, ClientConnection client) {
-        this.client = client;
+        super(client);
         this.serverWorker = serverWorker;
     }
 
@@ -38,6 +38,6 @@ public class GetUserAction extends Action<GetUserRequestDTO> {
         } else {
             result = new GetUserResultDTO(false, "User "+request+" not found!", null);
         }
-        client.send(result);
+        getClient().send(result);
     }
 }

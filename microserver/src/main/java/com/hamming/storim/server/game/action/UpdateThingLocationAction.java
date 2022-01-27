@@ -10,12 +10,12 @@ import com.hamming.storim.server.game.GameController;
 
 public class UpdateThingLocationAction extends Action<UpdateThingLocationDto> {
     private GameController gameController;
-    private STORIMClientConnection client;
+
 
     public UpdateThingLocationAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.gameController = controller;
-        this.client = client;
+
     }
 
     @Override
@@ -23,7 +23,7 @@ public class UpdateThingLocationAction extends Action<UpdateThingLocationDto> {
         UpdateThingLocationDto dto = getDto();
         Thing thing = ThingFactory.getInstance(STORIMMicroServer.DATADIR).findThingById(dto.getId());
         if ( thing != null ) {
-            gameController.updateThingLocation(thing, dto.getX(), dto.getY());
+            gameController.updateThingLocation(getClient(), thing, dto.getX(), dto.getY());
         }
     }
 

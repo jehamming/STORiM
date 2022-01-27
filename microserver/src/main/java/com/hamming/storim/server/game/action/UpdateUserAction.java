@@ -7,19 +7,16 @@ import com.hamming.storim.common.dto.protocol.request.UpdateUserDto;
 
 public class UpdateUserAction extends Action<UpdateUserDto> {
     private GameController controller;
-    private STORIMClientConnection client;
 
     public UpdateUserAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
     }
 
     @Override
     public void execute() {
         UpdateUserDto dto = getDto();
-
-        controller.updateUser(dto.getId(), dto.getName(), dto.getEmail(), dto.getAvatarID());
+        controller.updateUser(getClient(), dto.getId(), dto.getName(), dto.getEmail(), dto.getAvatarID());
 
     }
 

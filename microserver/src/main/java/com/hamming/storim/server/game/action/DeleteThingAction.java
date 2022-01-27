@@ -10,12 +10,12 @@ import com.hamming.storim.server.game.GameController;
 
 public class DeleteThingAction extends Action<DeleteThingDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
+
 
     public DeleteThingAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
+
     }
 
     @Override
@@ -23,7 +23,7 @@ public class DeleteThingAction extends Action<DeleteThingDTO> {
         DeleteThingDTO dto = getDto();
         Thing thing  = ThingFactory.getInstance(STORIMMicroServer.DATADIR).findThingById(dto.getThingId());
         if ( thing != null ) {
-            controller.deleteThing(thing);
+            controller.deleteThing(getClient(), thing);
         }
     }
 

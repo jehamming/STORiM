@@ -10,12 +10,12 @@ import java.awt.*;
 
 public class UpdateAvatarAction extends Action<UpdateAvatarDto> {
     private GameController gameController;
-    private STORIMClientConnection client;
+
 
     public UpdateAvatarAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.gameController = controller;
-        this.client = client;
+
     }
 
     @Override
@@ -23,7 +23,7 @@ public class UpdateAvatarAction extends Action<UpdateAvatarDto> {
         UpdateAvatarDto dto = getDto();
         if (dto.getImageData() != null ) {
             Image image = ImageUtils.decode(dto.getImageData());
-            gameController.updateAvatar(dto.getAvatarId(), dto.getName(), image);
+            gameController.updateAvatar(getClient(), dto.getAvatarId(), dto.getName(), image);
         }
     }
 

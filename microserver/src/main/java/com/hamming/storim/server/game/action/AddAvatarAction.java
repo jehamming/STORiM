@@ -11,20 +11,20 @@ import java.awt.*;
 
 public class AddAvatarAction extends Action<AddAvatarDto> {
     private GameController gameController;
-    private STORIMClientConnection client;
 
     public AddAvatarAction(GameController controller, STORIMClientConnection client) {
+        super(client);
         this.gameController = controller;
-        this.client = client;
     }
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         AddAvatarDto dto = getDto();
         User creator = client.getCurrentUser();
         if (dto.getImageData() != null ) {
             Image image = ImageUtils.decode(dto.getImageData());
-            gameController.addAvatar(creator.getId(), dto.getName(), image);
+            gameController.addAvatar(getClient(), creator.getId(), dto.getName(), image);
         }
     }
 

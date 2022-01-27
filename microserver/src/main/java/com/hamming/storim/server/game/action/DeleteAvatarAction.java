@@ -10,12 +10,12 @@ import com.hamming.storim.server.game.GameController;
 
 public class DeleteAvatarAction extends Action<DeleteAvatarDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
+
 
     public DeleteAvatarAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
+
     }
 
     @Override
@@ -23,7 +23,7 @@ public class DeleteAvatarAction extends Action<DeleteAvatarDTO> {
         DeleteAvatarDTO dto = getDto();
         Avatar avatar = AvatarFactory.getInstance(STORIMMicroServer.DATADIR).findAvatarById(dto.getAvatarID());
         if ( avatar != null ) {
-            controller.deleteAvatar(avatar);
+            controller.deleteAvatar(getClient(), avatar);
         }
     }
 

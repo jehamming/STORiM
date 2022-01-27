@@ -8,20 +8,20 @@ import com.hamming.storim.server.game.GameController;
 
 public class UserConnectedAction extends Action {
     private GameController controller;
-    private STORIMClientConnection client;
 
     private User user;
 
     public UserConnectedAction(GameController controller, STORIMClientConnection client, User user) {
+        super(client);
         this.controller = controller;
-        this.client = client;
         this.user = user;
     }
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserConnectedDTO connectedDTO = new UserConnectedDTO(user.getId(), user.getName());
-        client.send(connectedDTO);
+        getClient().send(connectedDTO);
         if ( client.getCurrentUser().getLocation().getRoom().getId().equals( user.getLocation().getRoom().getId())) {
             client.sendUserInRoom(user);
         }

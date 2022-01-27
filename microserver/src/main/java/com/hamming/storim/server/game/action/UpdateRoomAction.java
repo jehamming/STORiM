@@ -7,21 +7,19 @@ import com.hamming.storim.common.dto.protocol.request.UpdateRoomDto;
 
 public class UpdateRoomAction extends Action<UpdateRoomDto> {
     private GameController controller;
-    private STORIMClientConnection client;
 
     public UpdateRoomAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
     }
 
     @Override
     public void execute() {
         UpdateRoomDto dto = getDto();
         if ( dto.getImageData() != null ) {
-            controller.updateRoom(dto.getRoomId(), dto.getName(), dto.getWidth(), dto.getLength(), dto.getRows(), dto.getCols(), dto.getImageData());
+            controller.updateRoom(getClient(), dto.getRoomId(), dto.getName(), dto.getWidth(), dto.getLength(), dto.getRows(), dto.getCols(), dto.getImageData());
         } else {
-            controller.updateRoom(dto.getRoomId(), dto.getName(), dto.getWidth(), dto.getLength(), dto.getRows(), dto.getCols(), dto.getTileId());
+            controller.updateRoom(getClient(), dto.getRoomId(), dto.getName(), dto.getWidth(), dto.getLength(), dto.getRows(), dto.getCols(), dto.getTileId());
         }
     }
 

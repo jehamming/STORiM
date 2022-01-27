@@ -14,11 +14,10 @@ import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserResu
 public class LoginAction extends Action<LoginRequestDTO> {
 
     private LoginServerWorker serverWorker;
-    private UserClientConnection clientConnection;
 
     public LoginAction(LoginServerWorker serverWorker, UserClientConnection clientConnection) {
+        super(clientConnection);
         this.serverWorker = serverWorker;
-        this.clientConnection = clientConnection;
     }
 
     @Override
@@ -39,9 +38,9 @@ public class LoginAction extends Action<LoginRequestDTO> {
             user = getUserResultDTO.getUser();
             if ( user.getPassword().equals(password)) {
                 // Success!
-                clientConnection.setCurrentUser(user);
+                ((UserClientConnection) getClient()).setCurrentUser(user);
                 // Create a new Session for this connection
-                String source = clientConnection.getSource();
+                String source = getClient().getSource();
                 session = serverWorker.getLoginServer().getSessionManager().createSession(user.getId(), source);
                 // Check location of the user
                 loginSucceeded = true;
@@ -59,7 +58,7 @@ public class LoginAction extends Action<LoginRequestDTO> {
         }
         LoginResultDTO loginResultDTO = new LoginResultDTO(loginSucceeded, token, errorMessage, user, location);
 
-        clientConnection.send(loginResultDTO);
+        getClient().send(loginResultDTO);
 
     }
 

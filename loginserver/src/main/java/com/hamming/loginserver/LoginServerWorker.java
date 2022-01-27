@@ -1,6 +1,8 @@
 package com.hamming.loginserver;
 
 import com.hamming.storim.server.ServerWorker;
+import com.hamming.storim.server.common.ClientConnection;
+import com.sun.security.ntlm.Client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +17,10 @@ public class LoginServerWorker extends ServerWorker {
         this.loginServer = loginServer;
     }
 
-    public String addServer(LoginServerClientConnection connection, int hashcode, String name, String url, int port) {
+    public String addServer(ClientConnection connection, String name, String url, int port) {
         String errorMessage = null;
         if ( findServerRegistration(name) == null ) {
-            ServerRegistration registration = new ServerRegistration(connection, hashcode, name, url, port);
+            ServerRegistration registration = new ServerRegistration(connection, name, url, port);
             registeredServers.add(registration);
             System.out.println("("+getClass().getSimpleName() +") New Server registered: " + registration);
             System.out.println("("+getClass().getSimpleName() +") No of servers registered: " + registeredServers.size());
@@ -32,9 +34,9 @@ public class LoginServerWorker extends ServerWorker {
         return registeredServers;
     }
 
-    public ServerRegistration removeRegisteredServer(String servername, int hashcode) {
+    public ServerRegistration removeRegisteredServer(String servername, ClientConnection connection) {
         ServerRegistration found = findServerRegistration(servername);
-        if ( found != null && found.getHashcode() == hashcode) {
+        if ( found != null && found.getConnection().equals(connection)) {
             registeredServers.remove(found);
             System.out.println("("+getClass().getSimpleName() +") Server "+ servername+ " removed, no of servers registered: " + registeredServers.size());
         }

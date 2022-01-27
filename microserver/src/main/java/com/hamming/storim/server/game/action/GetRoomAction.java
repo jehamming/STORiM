@@ -11,22 +11,23 @@ import com.hamming.storim.server.game.GameController;
 
 public class GetRoomAction extends Action<GetRoomDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
+
 
     public GetRoomAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
+
     }
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         Room bp = RoomFactory.getInstance().findRoomByID(getDto().getRoomID());
         if ( bp != null ) {
             client.sendRoom(bp);
         } else {
             GetRoomResultDTO getRoomResultDTO = DTOFactory.getInstance().getRoomResultDTO(false, "Room not found!", null);
-            client.send(getRoomResultDTO);
+            getClient().send(getRoomResultDTO);
         }
     }
 

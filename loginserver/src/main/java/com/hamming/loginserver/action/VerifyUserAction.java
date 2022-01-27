@@ -13,11 +13,10 @@ import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRespo
 public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
 
     private LoginServerWorker serverWorker;
-    private LoginServerClientConnection client;
 
     public VerifyUserAction(LoginServerWorker serverWorker, LoginServerClientConnection client) {
+        super(client);
         this.serverWorker = serverWorker;
-        this.client = client;
     }
 
     @Override
@@ -46,7 +45,7 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
         }
 
         VerifyUserResponseDTO responseDTO = new VerifyUserResponseDTO(userDto, errorMessage);
-        client.send(responseDTO);
+        getClient().send(responseDTO);
 
     }
 

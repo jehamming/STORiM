@@ -12,12 +12,12 @@ import com.hamming.storim.server.game.GameController;
 
 public class GetVerbAction extends Action<GetVerbDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
+
 
     public GetVerbAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
+
     }
 
     @Override
@@ -26,10 +26,10 @@ public class GetVerbAction extends Action<GetVerbDTO> {
         if ( cmd != null ) {
             VerbDto verbDto = DTOFactory.getInstance().getVerbDto(cmd);
             GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
-            client.send(getCommandResultDTO);
+            getClient().send(getCommandResultDTO);
         } else {
             GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(false, "Command "+ getDto().getCommandID() +" not found!", null);
-            client.send(getCommandResultDTO);
+            getClient().send(getCommandResultDTO);
         }
     }
 

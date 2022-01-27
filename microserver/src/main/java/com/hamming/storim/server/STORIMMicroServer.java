@@ -88,6 +88,10 @@ public class STORIMMicroServer extends Server {
         return loginServerConnection;
     }
 
+    public UserDataServerConnection getDataServerConnection() {
+        return dataServerConnection;
+    }
+
     public void connectToDataServer() {
         String dataservername = config.getPropertyAsString("userdataserver");
         int dataserverport = config.getPropertyAsInt("userdataserverport");
@@ -149,7 +153,7 @@ public class STORIMMicroServer extends Server {
             ClientTypeDTO clientTypeDTO = (ClientTypeDTO) in.readObject();
             STORIMClientConnection client = new STORIMClientConnection(this, clientTypeDTO, s, in, out, controller);
             Thread clientThread = new Thread(client);
-            controller.addListener(client);
+            controller.addGamestateListener(client);
             clientThread.setDaemon(true);
             String name = clientTypeDTO.getName() + "-" + clients;
             clientThread.setName(name);

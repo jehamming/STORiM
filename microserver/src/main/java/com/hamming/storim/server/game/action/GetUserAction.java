@@ -12,12 +12,10 @@ import com.hamming.storim.server.game.GameController;
 
 public class GetUserAction extends Action<GetUserDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
 
     public GetUserAction(GameController controller, STORIMClientConnection client) {
-
+        super(client);
         this.controller = controller;
-        this.client = client;
     }
 
     @Override
@@ -26,10 +24,10 @@ public class GetUserAction extends Action<GetUserDTO> {
         if ( user != null ) {
             UserDto userDto = DTOFactory.getInstance().getUserDTO(user);
             GetUserResultDTO getUserResultDTO = DTOFactory.getInstance().getGetUserResultDTO(true, null, userDto);
-            client.send(getUserResultDTO);
+            getClient().send(getUserResultDTO);
         } else {
             GetUserResultDTO getUserResultDTO = DTOFactory.getInstance().getGetUserResultDTO(true, "User not found!", null);
-            client.send(getUserResultDTO);
+            getClient().send(getUserResultDTO);
         }
     }
 }

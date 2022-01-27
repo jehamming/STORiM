@@ -9,20 +9,17 @@ import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRespon
 public class AddServerAction extends Action<AddServerRequestDTO> {
 
     private LoginServerWorker serverWorker;
-    private int connectionHashcode;
-    private LoginServerClientConnection connection;
 
-    public AddServerAction(LoginServerClientConnection connection, LoginServerWorker serverWorker, int connectionHashcode) {
+    public AddServerAction(LoginServerClientConnection connection, LoginServerWorker serverWorker) {
+        super(connection);
         this.serverWorker = serverWorker;
-        this.connectionHashcode = connectionHashcode;
-        this.connection = connection;
     }
 
     @Override
     public void execute() {
         boolean success = false;
         AddServerRequestDTO request = getDto();
-        String error = serverWorker.addServer(connection, connectionHashcode, request.getName(), request.getUrl(), request.getPort());
+        String error = serverWorker.addServer(getClient(), request.getName(), request.getUrl(), request.getPort());
 
         if ( error == null ) {
             success = true;
@@ -31,6 +28,6 @@ public class AddServerAction extends Action<AddServerRequestDTO> {
         }
 
         AddServerResponseDTO responseDTO = new AddServerResponseDTO(success, error);
-        connection.send(responseDTO);
+        getClient().send(responseDTO);
     }
 }

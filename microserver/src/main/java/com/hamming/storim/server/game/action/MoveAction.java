@@ -11,15 +11,15 @@ import com.hamming.storim.server.game.GameController;
 
 public class MoveAction extends Action<MovementRequestDTO> {
     private GameController controller;
-    private STORIMClientConnection client;
 
     public MoveAction(GameController controller, STORIMClientConnection client) {
+        super(client);
         this.controller = controller;
-        this.client = client;
     }
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         User u = client.getCurrentUser();
         handleMoveRequest(getDto().getSequence(), u, getDto().isForward(), getDto().isBack(), getDto().isLeft(), getDto().isRight());
     }
@@ -44,7 +44,7 @@ public class MoveAction extends Action<MovementRequestDTO> {
 
             location.setSequence(sequence);
 
-            controller.userLocationUpdated(u);
+            controller.userLocationUpdated(getClient(), u);
         }
     }
 
