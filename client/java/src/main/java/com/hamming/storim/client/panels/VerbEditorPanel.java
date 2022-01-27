@@ -272,8 +272,9 @@ public class VerbEditorPanel extends JPanel implements VerbListener, ConnectionL
             @Override
             public void run() {
                 txtName.setText(verb.getName());
-                txtToCaller.setText(verb.getToCaller());
-                txtToLocation.setText(verb.getToLocation());
+                //FIXME Verb details
+//                txtToCaller.setText(verb.getToCaller());
+//                txtToLocation.setText(verb.getToLocation());
             }
         });
         setEditable(true);

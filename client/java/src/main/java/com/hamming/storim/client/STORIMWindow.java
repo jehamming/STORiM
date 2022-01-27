@@ -1,5 +1,6 @@
 package com.hamming.storim.client;
 
+import com.hamming.storim.client.controller.ChatPanelController;
 import com.hamming.storim.client.controller.LoginPanelController;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.GameViewPanel;
@@ -15,10 +16,11 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
     private LoginPanel loginPanel;
     private LoginPanelController loginPanelController;
+    private ChatPanel chatPanel;
+    private ChatPanelController chatPanelController;
 
     private ConnectionController connectionController;
     private UserInfoPanel userInfoPanel;
-    private ChatPanel chatPanel;
     private VerbEditorPanel verbEditorPanel;
     private RoomEditorPanel roomEditorPanel;
     private AvatarPanel avatarPanel;
@@ -51,9 +53,9 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         loginPanelController = new LoginPanelController(this, loginPanel, connectionController);
         tabbedPane.addTab("Connect/Disconnect", loginPanel);
 
-//        chatPanel = new ChatPanel(controllers);
-//        //mainPanel.add(chatPanel);
-//        tabbedPane.addTab("Chat", chatPanel);
+        chatPanel = new ChatPanel();
+        chatPanelController = new ChatPanelController(this , chatPanel, connectionController);
+        tabbedPane.addTab("Chat", chatPanel);
 //
 //        userInfoPanel = new UserInfoPanel(controllers);
 //        //mainPanel.add(userInfoPanel);

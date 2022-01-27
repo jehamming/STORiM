@@ -24,8 +24,8 @@ public class ConnectAction extends Action<ConnectRequestDTO> {
         boolean validUserAndToken = client.verifyUser(getDto().getUserId(), getDto().getToken());
         if ( validUserAndToken ) {
             Long roomId = getDto().getRoomId();
+            client.sendGameState();
             client.setRoom(roomId);
-            client.sendUsersInRoom();
         } else {
             String errorMessage = "Not a valid user or valid token!";
             client.send(new ConnectResultDTO(false, errorMessage, null, null));

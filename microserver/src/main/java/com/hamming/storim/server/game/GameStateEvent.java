@@ -8,7 +8,7 @@ public class GameStateEvent {
         USERCONNECTED,
         USERDISCONNECTED,
         USERUPDATED,
-        USERTELEPORTED,
+        USERLEFTROOM,
         USERLOCATION,
         VERBEXECUTED,
         VERBDELETED,

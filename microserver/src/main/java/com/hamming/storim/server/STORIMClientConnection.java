@@ -5,8 +5,7 @@ import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.request.*;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.common.net.ProtocolObjectSender;
 import com.hamming.storim.server.common.ClientConnection;
@@ -32,7 +31,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     private User currentUser;
     private ProtocolObjectSender clientSender;
     private STORIMMicroServer server;
-    private String clientID;
     private GameController gameController;
 
     public STORIMClientConnection(STORIMMicroServer server, ClientTypeDTO clientTypeDTO, Socket s, ObjectInputStream in, ObjectOutputStream out, GameController controller) {
@@ -43,6 +41,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     @Override
     public void connectionClosed() {
+        gameController.removeListener(this);
         clientSender.stopSending();
         clientSender = null;
         UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
@@ -53,7 +52,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     @Override
     public void addActions() {
         gameController = (GameController) getServerWorker();
-        getProtocolHandler().addAction(MovementRequestDTO.class, new MoveAction(gameController, this));
         getProtocolHandler().addAction(TeleportRequestDTO.class, new TeleportAction(gameController, this));
         getProtocolHandler().addAction(GetRoomDTO.class, new GetRoomAction(gameController, this));
         getProtocolHandler().addAction(GetUserDTO.class, new GetUserAction(gameController, this));
@@ -74,8 +72,11 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(UpdateThingDto.class, new UpdateThingAction(gameController, this));
         getProtocolHandler().addAction(PlaceThingInRoomRequestDTO.class, new PlaceThingInRoomAction(gameController, this));
         getProtocolHandler().addAction(UpdateThingLocationDto.class, new UpdateThingLocationAction(gameController, this));
+
         getProtocolHandler().addAction(ConnectRequestDTO.class, new ConnectAction(gameController, this));
         getProtocolHandler().addAction(GetExitDTO.class, new GetExitAction(gameController, this));
+        getProtocolHandler().addAction(MovementRequestDTO.class, new MoveAction(gameController, this));
+        getProtocolHandler().addAction(UseExitRequestDTO.class, new UseExitAction(gameController, this));
     }
 
 
@@ -94,8 +95,8 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             case USERLOCATION:
                 handleUserLocation((User) event.getObject());
                 break;
-            case USERTELEPORTED:
-                handleTeleported((User) event.getObject(), (Long) event.getExtraData());
+            case USERLEFTROOM:
+                handleUserLeftRoom((UserLeftRoomDTO) event.getExtraData());
                 break;
             case VERBEXECUTED:
                 handleVerbExecuted((VerbOutput) event.getObject());
@@ -133,6 +134,19 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             case THINGPLACED:
                 thingPlaced((User) event.getExtraData(), (Thing) event.getObject());
                 break;
+        }
+    }
+
+    private void handleUserLeftRoom(UserLeftRoomDTO data) {
+        Long currentRoomId = currentUser.getLocation().getRoom().getId();
+        if (!currentUser.getId().equals( data.getUserId() ) ) {
+            if ( currentRoomId.equals(data.getOldRoomId())) {
+                send(data);
+            } else if ( currentRoomId.equals(data.getNewRoomId())) {
+                User user = UserCache.getInstance().findUserById(data.getUserId());
+                UserEnteredRoomDTO dto = DTOFactory.getInstance().getUserEnteredRoomDTO(user, data.isTeleported());
+                send(dto);
+            }
         }
     }
 
@@ -194,27 +208,28 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         }
     }
 
-    public void sendGameState(User user) {
+    public void sendGameState() {
         // Send Verbs
-        sendVerbs(user);
+        sendVerbs(currentUser);
         // Send Tiles
-        sendTiles(user);
+        sendTiles(currentUser);
         // Send Avatars
-        sendAvatars(user);
+        sendAvatars(currentUser);
         // Rooms
-        sendRooms(user);
+        sendRooms(currentUser);
         // Send Things
-        sendThings(user);
+        sendThings(currentUser);
         // Logged in Users;
         for (User u : gameController.getGameState().getOnlineUsers()) {
             if (!u.getId().equals(currentUser.getId())) {
-                sendUserDetails(u);
-                handleUserOnline(u);
+                UserOnlineDTO userOnlineDTO = new UserOnlineDTO(u.getId(), u.getName());
+                send(userOnlineDTO);
             }
         }
     }
 
-    public void sendThingsInRoom(Room room) {
+    public void sendThingsInRoom() {
+        Room room = currentUser.getLocation().getRoom();
         for (Thing thing : ThingFactory.getInstance(STORIMMicroServer.DATADIR).getAllThingsInRoom(room.getId())) {
             ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
             RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
@@ -369,15 +384,24 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         Room room = currentUser.getLocation().getRoom();
         gameController.getGameState().getOnlineUsers().forEach(user -> {
             if (room.getId().equals(user.getLocation().getRoom().getId())) {
-                UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user);
-                send(dto);
+                sendUserInRoom(user);
             }
         });
     }
 
-    public void handleUserLocation(User User) {
-       // UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(User);
-       // send(userLocationUpdateDTO);
+    public void sendUserInRoom(User user) {
+        UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user);
+        send(dto);
+    }
+
+    public void handleUserLocation(User user) {
+        if (user.getLocation().getRoom().getId().equals(currentUser.getLocation().getRoom().getId())) {
+            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(user.getLocation());
+            Long sequence = null;
+            if (user.getId().equals(currentUser.getId())) sequence = user.getLocation().getSequence();
+            UserLocationUpdatedDTO userLocationUpdatedDTO = new UserLocationUpdatedDTO(user.getId(), locationDto, sequence);
+            send(userLocationUpdatedDTO);
+        }
     }
 
     public void sendRoom(Room room) {
@@ -385,7 +409,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             sendTile(room.getTileId());
         }
         // First send the Exits
-        for (Exit e : room.getExits() ) {
+        for (Exit e : room.getExits()) {
             ExitDto exitDto = DTOFactory.getInstance().getExitDTO(e);
             GetExitResultDTO exitResultDTO = new GetExitResultDTO(true, null, exitDto);
             send(exitResultDTO);
@@ -412,13 +436,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         }
     }
 
-    private void handleUserOnline(User u) {
-        if (currentUser != null && !currentUser.equals(u)) {
-            UserOnlineAction action = new UserOnlineAction(gameController, this, u);
-            gameController.addAction(action);
-        }
-    }
-
     private void handleUserDisconnected(User u) {
         if (currentUser != null && !currentUser.equals(u)) {
             UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, u);
@@ -427,18 +444,18 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     public void sendUserLocation(User u) {
-       // UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(u);
-      //  send(userLocationUpdateDTO);
+        // UserLocationUpdateDTO userLocationUpdateDTO = DTOFactory.getInstance().getUserLocationUpdateDTO(u);
+        //  send(userLocationUpdateDTO);
     }
 
     public boolean verifyUser(Long userId, String token) {
         boolean userValid = false;
         VerifyUserRequestDTO dto = new VerifyUserRequestDTO(userId, token);
         VerifyUserResponseDTO response = (VerifyUserResponseDTO) server.getLoginServerConnection().sendReceive(dto, VerifyUserResponseDTO.class);
-        if ( response.getUser() != null ) {
+        if (response.getUser() != null) {
             userValid = true;
-            User verifiedUser = User.valueOf( response.getUser() );
-            if ( UserCache.getInstance().findUserById(verifiedUser.getId()) != null ) {
+            User verifiedUser = User.valueOf(response.getUser());
+            if (UserCache.getInstance().findUserById(verifiedUser.getId()) != null) {
                 // Remove previous from cache, start new  (reconnect in the same connection?
                 UserCache.getInstance().deleteUser(verifiedUser);
             }
@@ -448,17 +465,14 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         return userValid;
     }
 
-    public void setClientID(String name) {
-        this.clientID = name;
-    }
-
     public void setRoom(Long roomId) {
         Room room = RoomFactory.getInstance().findRoomByID(roomId);
-        if ( room != null ) {
+        if (room != null) {
             Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());
             currentUser.setLocation(location);
             send(new SetRoomDTO(DTOFactory.getInstance().getRoomDto(room)));
-  //          sendUsersInRoom();
+            sendUsersInRoom();
+            sendThingsInRoom();
         }
     }
 

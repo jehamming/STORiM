@@ -44,7 +44,7 @@ public class MoveAction extends Action<MovementRequestDTO> {
 
             location.setSequence(sequence);
 
-            controller.setLocation(u,location);
+            controller.userLocationUpdated(u);
         }
     }
 

@@ -4,6 +4,8 @@ package com.hamming.storim.server.common.dto;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.DTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
+import com.hamming.storim.common.dto.protocol.serverpush.UserDisconnectedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.UserEnteredRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.server.common.ImageUtils;
@@ -64,7 +66,13 @@ public class DTOFactory {
     }
 
     public VerbDto getVerbDto(Verb c) {
-        VerbDto dto = new VerbDto(c.getId(), c.getName(), c.getToCaller(), c.getToLocation());
+        VerbDto dto = new VerbDto(c.getId(), c.getName());
+        fillBasicObjectInfo(dto, c);
+        return dto;
+    }
+
+    public VerbDetailsDTO getVerbDetailsDto(Verb c) {
+        VerbDetailsDTO dto = new VerbDetailsDTO(c.getId(), c.getName(), c.getToCaller(), c.getToLocation());
         fillBasicObjectInfo(dto, c);
         return dto;
     }
@@ -91,13 +99,8 @@ public class DTOFactory {
         return dto;
     }
 
-    public UserDisconnectedDTO getUserDisconnectedDTO(Long userId) {
-        return new UserDisconnectedDTO(userId);
-    }
-
-
-    public UserConnectedDTO getUserConnectedDTO(UserDto userDto, LocationDto location) {
-        return new UserConnectedDTO(userDto, location);
+    public UserDisconnectedDTO getUserDisconnectedDTO(User user) {
+        return new UserDisconnectedDTO(user.getId(), user.getName());
     }
 
     public GetRoomResultDTO getRoomResultDTO(boolean success, String error, RoomDto dto) {
@@ -118,8 +121,10 @@ public class DTOFactory {
         return new UserInRoomDTO(userDto, locationDto);
     }
 
-    public UserOnlineDTO getUserOnlineDTO(UserDto userDTO, LocationDto locationDto) {
-        return new UserOnlineDTO(userDTO, locationDto);
+    public UserEnteredRoomDTO getUserEnteredRoomDTO(User user, boolean teleported) {
+        UserDto userDto = getUserDTO(user);
+        LocationDto locationDto = getLocationDTO(user.getLocation());
+        return new UserEnteredRoomDTO(userDto, locationDto, teleported);
     }
 
     public VerbDeletedDTO getVerbDeletedDTO(Verb verb) {
@@ -149,6 +154,7 @@ public class DTOFactory {
     public GetAvatarResultDTO getGetAvatarResultDTO(boolean success, String message, Long userId, AvatarDto avatarDto) {
         return new GetAvatarResultDTO(success, message, userId, avatarDto);
     }
+
 
 
 }

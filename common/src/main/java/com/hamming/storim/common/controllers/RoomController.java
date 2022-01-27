@@ -39,18 +39,7 @@ public class RoomController {
     }
 
     private void registerReceivers() {
-        controllers.getConnectionController().registerReceiver(GetRoomResultDTO.class, (NetCommandReceiver<GetRoomResultDTO>) dto -> handleGetRoomResult(dto));
-        controllers.getConnectionController().registerReceiver(GetTileResultDTO.class, (NetCommandReceiver<GetTileResultDTO>) dto -> handleGetTileResultDTO(dto));
-        controllers.getConnectionController().registerReceiver(GetExitResultDTO.class, (NetCommandReceiver<GetExitResultDTO>) dto -> handleGetExitResultDTO(dto));
-        controllers.getConnectionController().registerReceiver(RoomAddedDTO.class, (NetCommandReceiver<RoomAddedDTO>) dto -> handleRoomAddedDTO(dto));
-        controllers.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (NetCommandReceiver<RoomUpdatedDTO>) dto -> handleRoomUpdatedDTO(dto));
-        controllers.getConnectionController().registerReceiver(RoomDeletedDTO.class, (NetCommandReceiver<RoomDeletedDTO>) dto -> handleRoomDeletedDTO(dto));
-        controllers.getConnectionController().registerReceiver(UserConnectedDTO.class, (NetCommandReceiver<UserConnectedDTO>) dto -> handleUserConnectedDTO(dto));
-        controllers.getConnectionController().registerReceiver(UserOnlineDTO.class, (NetCommandReceiver<UserOnlineDTO>) dto -> handleUserOnlineDTO(dto));
-         controllers.getConnectionController().registerReceiver(ThingPlacedDTO.class, (NetCommandReceiver<ThingPlacedDTO>) dto -> handleThingPlacedDTO(dto));
-        controllers.getConnectionController().registerReceiver(ThingDeletedDTO.class, (NetCommandReceiver<ThingDeletedDTO>) dto -> handleThingDeletedDTO(dto));
-        controllers.getConnectionController().registerReceiver(ThingInRoomDTO.class, (NetCommandReceiver<ThingInRoomDTO>) dto -> handleThingInRoomDTO(dto));
-        controllers.getConnectionController().registerReceiver(ConnectResultDTO.class, (NetCommandReceiver<ConnectResultDTO>) dto -> connectResult(dto));    }
+    }
 
     private void connectResult(ConnectResultDTO dto) {
         if (dto.isConnectSucceeded()) {
@@ -121,27 +110,6 @@ public class RoomController {
 
     public boolean currentUserLocation(Long roomID) {
         return controllers.getUserController().getCurrentUserLocation().getRoomId().equals(roomID);
-    }
-
-
-
-
-
-    private void handleUserOnlineDTO(UserOnlineDTO dto) {
-        if (currentUserLocation(dto.getLocation().getRoomId())) {
-            for (RoomListener l : roomListeners) {
-                l.userInRoom(dto.getUser(), dto.getLocation());
-            }
-        }
-    }
-
-    private void handleUserConnectedDTO(UserConnectedDTO dto) {
-        UserDto user = controllers.getUserController().findUserById(dto.getUser().getId());
-        if (currentUserLocation(dto.getLocation().getRoomId())) {
-            for (RoomListener l : roomListeners) {
-                l.userInRoom(user, dto.getLocation());
-            }
-        }
     }
 
     private void handleRoomUpdatedDTO(RoomUpdatedDTO dto) {

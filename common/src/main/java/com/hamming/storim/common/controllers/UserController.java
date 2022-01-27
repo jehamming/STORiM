@@ -10,10 +10,10 @@ import com.hamming.storim.common.dto.protocol.request.DeleteAvatarDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateAvatarDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateUserDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
+import com.hamming.storim.common.dto.protocol.serverpush.UserDisconnectedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.interfaces.UserListener;
-import com.hamming.storim.common.net.NetCommandReceiver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,47 +38,7 @@ public class UserController implements ConnectionListener {
         users = new ArrayList<UserDto>();
         userLocations = new HashMap<Long, LocationDto>();
         avatarStore = new HashMap<>();
-        connectionController.registerReceiver(ConnectResultDTO.class, (NetCommandReceiver<ConnectResultDTO>) dto -> connectResult(dto));
-        connectionController.registerReceiver(UserConnectedDTO.class, (NetCommandReceiver<UserConnectedDTO>) dto -> userConnected(dto));
-        connectionController.registerReceiver(UserDisconnectedDTO.class, (NetCommandReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
-        connectionController.registerReceiver(GetUserResultDTO.class, (NetCommandReceiver<GetUserResultDTO>) dto -> handleGetUserResult(dto));
-        connectionController.registerReceiver(UserOnlineDTO.class, (NetCommandReceiver<UserOnlineDTO>) dto -> handleUserOnlineDTO(dto));
-        connectionController.registerReceiver(AvatarAddedDTO.class, (NetCommandReceiver<AvatarAddedDTO>) dto -> handleAvatarAddedDTO(dto));
-        connectionController.registerReceiver(GetAvatarResultDTO.class, (NetCommandReceiver<GetAvatarResultDTO>) dto -> handleGetAvatarResultDTO(dto));
-        connectionController.registerReceiver(UserUpdatedDTO.class, (NetCommandReceiver<UserUpdatedDTO>) dto -> userUpdated(dto));
-        connectionController.registerReceiver(AvatarDeletedDTO.class, (NetCommandReceiver<AvatarDeletedDTO>) dto -> handleAvatarDeletedDTO(dto));
-        connectionController.registerReceiver(AvatarUpdatedDTO.class, (NetCommandReceiver<AvatarUpdatedDTO>) dto -> handleAvatarUpdatedDTO(dto));
-        connectionController.registerReceiver(GetServerRegistrationsResponseDTO.class, (NetCommandReceiver<GetServerRegistrationsResponseDTO>) dto -> handleGetServersResponseDTO(dto));
-    }
-
-    private void handleGetServersResponseDTO(GetServerRegistrationsResponseDTO dto) {
-//        for (ServerRegistrationDTO server : dto.getServers() ) {
-//            String s = "Received server: " + server.getServerName();
-//            System.out.println(s);
-//
-//        }
-//        if ( dto.getServers().size() == 0) {
-//            fireLoginResultEvent(false, "No Micro Server(s) to connect to!");
-//        } else {
-//            //FIXME For now, connect to the first registered server!
-//            ServerRegistrationDTO server = dto.getServers().get(0);
-//            currentServer = server;
-//            connectionController.disconnect();
-//            try {
-//                connectionController.connect(server.getServerURL(), server.getServerPort());
-//                connectionController.send(new ConnectRequestDTO(currentUser.getId(), token));
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                fireLoginResultEvent(false, "Error connecting to server " + server.getServerName() + ":" + e.getMessage());
-//            }
-//
-//
-//        }
-    }
-
-    public ServerRegistrationDTO getCurrentServer() {
-        return currentServer;
-    }
+  }
 
     private void handleAvatarUpdatedDTO(AvatarUpdatedDTO dto) {
         AvatarDto avatar = dto.getAvatar();
@@ -148,15 +108,6 @@ public class UserController implements ConnectionListener {
     }
 
 
-    private void handleUserOnlineDTO(UserOnlineDTO dto) {
-        users.add(dto.getUser());
-        userLocations.put(dto.getUser().getId(), dto.getLocation());
-        for (UserListener l : userListeners) {
-            l.userOnline(dto.getUser());
-        }
-    }
-
-
 
     private void connectResult(ConnectResultDTO dto) {
         if (dto.isConnectSucceeded()) {
@@ -189,13 +140,6 @@ public class UserController implements ConnectionListener {
             System.out.println("Get user failed: " + dto.getErrorMessage());
         }
     }
-
-    private void userConnected(UserConnectedDTO dto) {
-        users.add(dto.getUser());
-        userLocations.put(dto.getUser().getId(), dto.getLocation());
-        fireUserConnectedEvent(dto.getUser());
-    }
-
     public void fireUserConnectedEvent(UserDto userDto) {
         for (UserListener l : userListeners) {
             l.userConnected(userDto);

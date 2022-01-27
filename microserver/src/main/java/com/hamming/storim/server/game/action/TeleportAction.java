@@ -45,7 +45,7 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
            // LocationDto locationDTO = DTOFactory.getInstance().getLocationDTO(user.getLocation());
            // TeleportResultDTO teleportResultDTO = DTOFactory.getInstance().getTeleportResultDTO(true, null, locationDTO,fromRoomId);
           //  client.send(teleportResultDTO);
-            controller.userTeleported(user, fromRoomId, loc);
+          //  controller.userTeleported(user, fromRoomId, loc);
             }
          else {
            // TeleportResultDTO teleportResultDTO = DTOFactory.getInstance().getTeleportResultDTO(false, "Failed", null, -1L);

@@ -112,7 +112,8 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
                 if (selectedObject != null) {
 
                     if (selectedObject instanceof Exit) {
-                        viewController.setSelectedExit(selectedObject.getId());
+                        Exit exit = (Exit) selectedObject;
+                        viewController.exitClicked(exit.getId(), exit.getName());
                     } else {
                         selectedObject.setSelected(!selectedObject.isSelected()); //Flip
                         if (selectedObject.isSelected()) {
@@ -613,7 +614,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
 
     @Override
     public void addExit(ExitDto exitDto) {
-        //FIXME Multiple exits with the same orientation will be drawn at the same place...
         Exit exit = new Exit(exitDto.getId(), exitDto.getName(), Exit.Orientation.valueOf(exitDto.getOrientation().name()));
         Image image = exit.getImage();
         addExit(exit);

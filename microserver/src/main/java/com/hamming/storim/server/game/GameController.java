@@ -41,7 +41,7 @@ public class GameController extends ServerWorker {
         return gameState;
     }
 
-    private void fireGameStateEvent(GameStateEvent.Type type, BasicObject object, Object extraData) {
+    public void fireGameStateEvent(GameStateEvent.Type type, BasicObject object, Object extraData) {
         for (GameStateListener l : listeners) {
             if (l == null) {
                 // Should not happen, stale client connection..
@@ -62,12 +62,8 @@ public class GameController extends ServerWorker {
         }
     }
 
-    public void setLocation(User u, Location location) {
+    public void userLocationUpdated(User u) {
         fireGameStateEvent(GameStateEvent.Type.USERLOCATION, u, null);
-    }
-
-    public void userTeleported(User u, Long fromRoomId, Location loc) {
-        fireGameStateEvent(GameStateEvent.Type.USERTELEPORTED, u, fromRoomId);
     }
 
     public void executeVeb(User u, Verb verb, String input) {
