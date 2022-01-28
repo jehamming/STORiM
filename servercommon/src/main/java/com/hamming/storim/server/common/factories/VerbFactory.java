@@ -4,6 +4,7 @@ import com.hamming.storim.server.Database;
 import com.hamming.storim.server.common.model.User;
 import com.hamming.storim.server.common.model.Verb;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VerbFactory {
@@ -21,6 +22,16 @@ public class VerbFactory {
 
     public List<Verb> getVerbs() {
         return Database.getInstance().getAll(Verb.class);
+    }
+
+    public List<Verb> getVerbsFor(Long ownerId) {
+        List<Verb> result = new ArrayList<>();
+        for (Verb v : Database.getInstance().getAll(Verb.class)) {
+            if ( v.getOwnerId().equals(ownerId)) {
+                result.add(v);
+            }
+        }
+        return result;
     }
 
     public Verb findVerbByID(Long id ) {

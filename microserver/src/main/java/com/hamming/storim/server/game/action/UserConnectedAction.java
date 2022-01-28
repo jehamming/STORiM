@@ -3,6 +3,7 @@ package com.hamming.storim.server.game.action;
 import com.hamming.storim.common.dto.protocol.serverpush.UserConnectedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
+import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.User;
 import com.hamming.storim.server.game.GameController;
 
@@ -22,7 +23,10 @@ public class UserConnectedAction extends Action {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserConnectedDTO connectedDTO = new UserConnectedDTO(user.getId(), user.getName());
         getClient().send(connectedDTO);
-        if ( client.getCurrentUser().getLocation().getRoom().getId().equals( user.getLocation().getRoom().getId())) {
+
+        Location currentUserLocation = controller.getGameState().getLocation(client.getCurrentUser().getId());
+        Location userLocation = controller.getGameState().getLocation(user.getId());
+        if ( currentUserLocation.getRoom().getId().equals( userLocation.getRoom().getId())) {
             client.sendUserInRoom(user);
         }
     }

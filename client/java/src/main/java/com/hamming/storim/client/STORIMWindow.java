@@ -2,6 +2,7 @@ package com.hamming.storim.client;
 
 import com.hamming.storim.client.controller.ChatPanelController;
 import com.hamming.storim.client.controller.LoginPanelController;
+import com.hamming.storim.client.controller.VerbEditorPanelController;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
@@ -18,10 +19,12 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     private LoginPanelController loginPanelController;
     private ChatPanel chatPanel;
     private ChatPanelController chatPanelController;
+    private VerbEditorPanel verbEditorPanel;
+    private VerbEditorPanelController verbEditorPanelController;
 
     private ConnectionController connectionController;
     private UserInfoPanel userInfoPanel;
-    private VerbEditorPanel verbEditorPanel;
+
     private RoomEditorPanel roomEditorPanel;
     private AvatarPanel avatarPanel;
     private ThingPanel thingPanel;
@@ -56,14 +59,17 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         chatPanel = new ChatPanel();
         chatPanelController = new ChatPanelController(this , chatPanel, connectionController);
         tabbedPane.addTab("Chat", chatPanel);
+
+        verbEditorPanel = new VerbEditorPanel();
+        verbEditorPanelController = new VerbEditorPanelController(this , verbEditorPanel, connectionController);
+        tabbedPane.addTab("Verbs", verbEditorPanel);
+
 //
 //        userInfoPanel = new UserInfoPanel(controllers);
 //        //mainPanel.add(userInfoPanel);
 //        tabbedPane.addTab("Users", userInfoPanel);
 //
-//        verbEditorPanel = new VerbEditorPanel(controllers);
-//        //mainPanel.add(verbEditorPanel);
-//        tabbedPane.addTab("Verbs", verbEditorPanel);
+
 //
 //        roomEditorPanel = new RoomEditorPanel(controllers);
 //        tabbedPane.addTab("Rooms", roomEditorPanel);

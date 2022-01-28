@@ -5,7 +5,11 @@ import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
+import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbResponseDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbsRequestDTO;
 import com.hamming.userdataserver.action.GetUserAction;
+import com.hamming.userdataserver.action.GetVerbAction;
+import com.hamming.userdataserver.action.GetVerbsAction;
 import com.hamming.userdataserver.action.UpdateUserRoomAction;
 
 import java.io.ObjectInputStream;
@@ -26,8 +30,9 @@ public class UserDataClientConnection extends ClientConnection {
 
     @Override
     public void addActions() {
-        // TODO Meer Actions
         getProtocolHandler().addAction(GetUserRequestDTO.class, new GetUserAction(getServerWorker(), this));
         getProtocolHandler().addAction(UpdateUserRoomDto.class, new UpdateUserRoomAction(getServerWorker(), this));
+        getProtocolHandler().addAction(GetVerbsRequestDTO.class, new GetVerbsAction(getServerWorker(), this));
+        getProtocolHandler().addAction(GetVerbResponseDTO.class, new GetVerbAction(getServerWorker(), this));
     }
 }

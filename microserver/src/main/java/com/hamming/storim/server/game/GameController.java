@@ -1,21 +1,19 @@
 package com.hamming.storim.server.game;
 
 import com.hamming.storim.common.dto.protocol.serverpush.UserLeftRoomDTO;
-import com.hamming.storim.common.util.StringUtils;
 import com.hamming.storim.server.STORIMMicroServer;
 import com.hamming.storim.server.ServerWorker;
-import com.hamming.storim.server.UserCache;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.ImageUtils;
-import com.hamming.storim.server.common.factories.*;
+import com.hamming.storim.server.common.factories.AvatarFactory;
+import com.hamming.storim.server.common.factories.RoomFactory;
+import com.hamming.storim.server.common.factories.ThingFactory;
+import com.hamming.storim.server.common.factories.TileFactory;
 import com.hamming.storim.server.common.model.*;
-import com.sun.security.ntlm.Client;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GameController extends ServerWorker {
     private boolean running = true;
@@ -66,19 +64,20 @@ public class GameController extends ServerWorker {
     }
 
     public void executeVeb(ClientConnection source, User u, Verb verb, String input) {
-        Map<String, String> replacements = new HashMap<String, String>();
-        replacements.put(GameConstants.CMD_REPLACE_CALLER, u.getName());
-        replacements.put(GameConstants.CMD_REPLACE_LOCATION, u.getLocation().getRoom().getName());
-        replacements.put(GameConstants.CMD_REPLACE_MESSAGE, input);
-
-        String toCaller = StringUtils.replace(verb.getToCaller(), replacements);
-        String toLocation = StringUtils.replace(verb.getToLocation(), replacements);
-
-        VerbOutput cmdResult = VerbResultFactory.getInstance().createCommandResult(verb, u.getId());
-        cmdResult.setToCaller(toCaller);
-        cmdResult.setToLocation(toLocation);
-        //FIXME, Other sourcs needs to receive another resutl .
-        fireGameStateEvent(source, GameStateEvent.Type.VERBEXECUTED, cmdResult, null);
+        //FIXME Execute Verb
+//        Map<String, String> replacements = new HashMap<String, String>();
+//        replacements.put(GameConstants.CMD_REPLACE_CALLER, u.getName());
+//        replacements.put(GameConstants.CMD_REPLACE_LOCATION, u.getLocation().getRoom().getName());
+//        replacements.put(GameConstants.CMD_REPLACE_MESSAGE, input);
+//
+//        String toCaller = StringUtils.replace(verb.getToCaller(), replacements);
+//        String toLocation = StringUtils.replace(verb.getToLocation(), replacements);
+//
+//        VerbOutput cmdResult = VerbResultFactory.getInstance().createCommandResult(verb, u.getId());
+//        cmdResult.setToCaller(toCaller);
+//        cmdResult.setToLocation(toLocation);
+//        //FIXME, Other sources needs to receive another resutl .
+//        fireGameStateEvent(source, GameStateEvent.Type.VERBEXECUTED, cmdResult, null);
     }
 
     public void verbDeleted(ClientConnection source, Verb verb) {
@@ -155,7 +154,7 @@ public class GameController extends ServerWorker {
     }
 
     public void updateUser(ClientConnection source,Long id, String name, String email, Long avatarID) {
-        User user = UserCache.getInstance().findUserById(id);
+        User user = gameState.findUserById(id);
         if (user != null) {
             if (name != null) user.setName(name);
             if (email != null) user.setEmail(email);

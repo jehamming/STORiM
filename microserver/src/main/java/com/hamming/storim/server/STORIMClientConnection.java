@@ -26,6 +26,7 @@ import com.hamming.storim.server.game.action.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class STORIMClientConnection extends ClientConnection implements GameStateListener {
 
@@ -139,13 +140,15 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     private void handleUserLeftRoom(UserLeftRoomDTO data) {
-        Long currentRoomId = currentUser.getLocation().getRoom().getId();
+        Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
+        Long currentRoomId = currentUserLocation.getRoom().getId();
         if (!currentUser.getId().equals( data.getUserId() ) ) {
             if ( currentRoomId.equals(data.getOldRoomId())) {
                 send(data);
             } else if ( currentRoomId.equals(data.getNewRoomId())) {
-                User user = UserCache.getInstance().findUserById(data.getUserId());
-                UserEnteredRoomDTO dto = DTOFactory.getInstance().getUserEnteredRoomDTO(user, data.isTeleported());
+                User user = gameController.getGameState().findUserById(data.getUserId());
+                Location location = gameController.getGameState().getLocation(user.getId());
+                UserEnteredRoomDTO dto = DTOFactory.getInstance().getUserEnteredRoomDTO(user, location, data.isTeleported());
                 send(dto);
             }
         }
@@ -227,7 +230,8 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     public void sendThingsInRoom() {
-        Room room = currentUser.getLocation().getRoom();
+        Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
+        Room room = currentUserLocation.getRoom();
         for (Thing thing : ThingFactory.getInstance(STORIMMicroServer.DATADIR).getAllThingsInRoom(room.getId())) {
             ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
             RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
@@ -280,16 +284,9 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     private void sendVerbs(User user) {
-        //FIXME get verbs from userdataserver
-//        for (Verb verb : Database.getInstance().getAll(Verb.class, user.getId())) {
-//            VerbDto verbDto = DTOFactory.getInstance().getVerbDto(verb);
-//            GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
-//            send(getCommandResultDTO);
-//        }
-    }
-
-    private boolean isOnline(User User) {
-        return gameController.getGameState().getOnlineUsers().contains(User);
+        HashMap<Long, String> verbs = server.getDataServerConnection().getVerbs(user.getId());
+        UserVerbsDTO userVerbsDTO = new UserVerbsDTO(verbs);
+        send(userVerbsDTO);
     }
 
     private void avatarAdded(Avatar avatar) {
@@ -357,8 +354,9 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     private boolean isInCurrentRoom(Long callerId) {
-        User caller = UserCache.getInstance().findUserById(callerId);
-        return currentUser.getLocation().getRoom().getId().equals(caller.getLocation().getRoom().getId());
+        Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
+        Location callerLocation = gameController.getGameState().getLocation(callerId);
+        return currentUserLocation.getRoom().getId().equals(callerLocation.getRoom().getId());
     }
 
 
@@ -380,9 +378,11 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     public void sendUsersInRoom() {
-        Room room = currentUser.getLocation().getRoom();
+        Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
+        Room room = currentUserLocation.getRoom();
         gameController.getGameState().getOnlineUsers().forEach(user -> {
-            if (room.getId().equals(user.getLocation().getRoom().getId())) {
+            Location location = gameController.getGameState().getLocation(user.getId());
+            if (room.getId().equals(location.getRoom().getId())) {
                 if ( !currentUser.getId().equals(user.getId())) {
                     sendUserInRoom(user);
                 }
@@ -391,15 +391,18 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     public void sendUserInRoom(User user) {
-        UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user);
+        Location location = gameController.getGameState().getLocation(user.getId());
+        UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user, location);
         send(dto);
     }
 
     public void handleUserLocation(User user) {
-        if (user.getLocation().getRoom().getId().equals(currentUser.getLocation().getRoom().getId())) {
-            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(user.getLocation());
+        Location location = gameController.getGameState().getLocation(user.getId());
+        Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
+        if (location.getRoom().getId().equals(currentUserLocation.getRoom().getId())) {
+            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
             Long sequence = null;
-            if (user.getId().equals(currentUser.getId())) sequence = user.getLocation().getSequence();
+            if (user.getId().equals(currentUser.getId())) sequence = location.getSequence();
             UserLocationUpdatedDTO userLocationUpdatedDTO = new UserLocationUpdatedDTO(user.getId(), locationDto, sequence);
             send(userLocationUpdatedDTO);
         }
@@ -422,7 +425,8 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     private void sendUserDetails(User user) {
         UserDto userDTO = DTOFactory.getInstance().getUserDTO(user);
-        Room room = user.getLocation().getRoom();
+        Location location = gameController.getGameState().getLocation(user.getId());
+        Room room = location.getRoom();
         sendRoom(room);
         sendAvatar(user);
         GetUserResultDTO getUserResultDTO = DTOFactory.getInstance().getGetUserResultDTO(true, null, userDTO);
@@ -450,11 +454,11 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         if (response.getUser() != null) {
             userValid = true;
             User verifiedUser = User.valueOf(response.getUser());
-            if (UserCache.getInstance().findUserById(verifiedUser.getId()) != null) {
+            if (gameController.getGameState().findUserById(verifiedUser.getId()) != null) {
                 // Remove previous from cache, start new  (reconnect in the same connection?)
-                UserCache.getInstance().deleteUser(verifiedUser);
+                gameController.getGameState().removeOnlineUser(verifiedUser);
             }
-            UserCache.getInstance().addUser(verifiedUser);
+            gameController.getGameState().addOnlineUser(verifiedUser);
             setCurrentUser(verifiedUser);
         }
         return userValid;
@@ -464,7 +468,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         Room room = RoomFactory.getInstance().findRoomByID(roomId);
         if (room != null) {
             Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());
-            currentUser.setLocation(location);
+            gameController.getGameState().setLocation(currentUser, location);
             LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
             RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
             send(new SetRoomDTO(roomDto, locationDto));
@@ -473,8 +477,8 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         }
     }
 
-    public void updateRoomForUser(User user) {
-        UpdateUserRoomDto updateUserRoomDto = new UpdateUserRoomDto(user.getId(), user.getLocation().getRoom().getId());
+    public void updateRoomForUser(User user, Location location) {
+        UpdateUserRoomDto updateUserRoomDto = new UpdateUserRoomDto(user.getId(), location.getRoom().getId());
         server.getDataServerConnection().send(updateUserRoomDto);
     }
 }

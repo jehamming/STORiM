@@ -1,19 +1,8 @@
 package com.hamming.storim.client.panels;
 
 
-import com.hamming.storim.common.Controllers;
-import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.interfaces.ConnectionListener;
-import com.hamming.storim.common.interfaces.RoomListener;
-import com.hamming.storim.common.interfaces.UserListener;
-import com.hamming.storim.common.interfaces.VerbListener;
-
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 public class ChatPanel extends JPanel  {
 

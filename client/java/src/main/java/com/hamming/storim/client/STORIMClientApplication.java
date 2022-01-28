@@ -1,13 +1,6 @@
 package com.hamming.storim.client;
 
-import com.hamming.storim.common.Controllers;
-import com.hamming.storim.common.ProtocolHandler;
-import com.hamming.storim.common.controllers.*;
-import com.hamming.storim.common.dto.LocationDto;
-import com.hamming.storim.common.dto.RoomDto;
-import com.hamming.storim.common.dto.ThingDto;
-import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.interfaces.RoomListener;
+import com.hamming.storim.common.controllers.ConnectionController;
 
 public class STORIMClientApplication {
     private static STORIMClientApplication instance;

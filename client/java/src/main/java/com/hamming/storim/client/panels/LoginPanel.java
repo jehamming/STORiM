@@ -1,21 +1,6 @@
 package com.hamming.storim.client.panels;
 
-import com.hamming.storim.common.Controllers;
-import com.hamming.storim.common.ProtocolHandler;
-import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsResponseDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.LoginRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
-import com.hamming.storim.common.interfaces.UserListener;
-
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.List;
 
 public class LoginPanel extends JPanel {
 

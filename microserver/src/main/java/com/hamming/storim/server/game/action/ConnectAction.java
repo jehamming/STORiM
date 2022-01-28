@@ -8,6 +8,7 @@ import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.DTOFactory;
+import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.User;
 import com.hamming.storim.server.game.GameController;
 import com.hamming.storim.server.game.GameStateEvent;
@@ -32,7 +33,8 @@ public class ConnectAction extends Action<ConnectRequestDTO> {
             // Send current User info
             User currentUser = client.getCurrentUser();
             UserDto userDto = DTOFactory.getInstance().getUserDTO(currentUser);
-            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(currentUser.getLocation());
+            Location location = controller.getGameState().getLocation(currentUser.getId());
+            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
             SetCurrentUserDTO setCurrentUserDTO = new SetCurrentUserDTO(userDto, locationDto);
             client.send(setCurrentUserDTO);
             // Notify the gamecontroller

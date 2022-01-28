@@ -10,7 +10,6 @@ public class User extends BasicObject implements Serializable {
     private String username;
     private String password;
     private String email = "";
-    private Location location;
     private Avatar currentAvatar;
 
 
@@ -20,14 +19,6 @@ public class User extends BasicObject implements Serializable {
 
     public void setCurrentAvatar(Avatar currentAvatar) {
         this.currentAvatar = currentAvatar;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 
     public String getUsername() {

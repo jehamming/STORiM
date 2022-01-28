@@ -25,7 +25,7 @@ public class MoveAction extends Action<MovementRequestDTO> {
     }
 
     public void handleMoveRequest(Long sequence, User u, boolean forward, boolean back, boolean left, boolean right) {
-        Location location = u.getLocation();
+        Location location = controller.getGameState().getLocation(u.getId());
         if (location != null) {
             if (forward) {
                 location.setY(location.getY() - GameConstants.RUN_SPEED);

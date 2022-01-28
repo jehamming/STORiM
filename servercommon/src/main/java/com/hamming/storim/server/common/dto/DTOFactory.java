@@ -115,15 +115,15 @@ public class DTOFactory {
         return new GetVerbResultDTO(success, error, verb);
     }
 
-    public UserInRoomDTO getUserInRoomDTO(User user) {
+    public UserInRoomDTO getUserInRoomDTO(User user, Location location) {
         UserDto userDto = getUserDTO(user);
-        LocationDto locationDto = getLocationDTO(user.getLocation());
+        LocationDto locationDto = getLocationDTO(location);
         return new UserInRoomDTO(userDto, locationDto);
     }
 
-    public UserEnteredRoomDTO getUserEnteredRoomDTO(User user, boolean teleported) {
+    public UserEnteredRoomDTO getUserEnteredRoomDTO(User user, Location location, boolean teleported) {
         UserDto userDto = getUserDTO(user);
-        LocationDto locationDto = getLocationDTO(user.getLocation());
+        LocationDto locationDto = getLocationDTO(location);
         return new UserEnteredRoomDTO(userDto, locationDto, teleported);
     }
 
