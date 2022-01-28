@@ -5,6 +5,7 @@ import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
+import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbsRequestDTO;
 import com.hamming.userdataserver.action.GetUserAction;
@@ -33,6 +34,6 @@ public class UserDataClientConnection extends ClientConnection {
         getProtocolHandler().addAction(GetUserRequestDTO.class, new GetUserAction(getServerWorker(), this));
         getProtocolHandler().addAction(UpdateUserRoomDto.class, new UpdateUserRoomAction(getServerWorker(), this));
         getProtocolHandler().addAction(GetVerbsRequestDTO.class, new GetVerbsAction(getServerWorker(), this));
-        getProtocolHandler().addAction(GetVerbResponseDTO.class, new GetVerbAction(getServerWorker(), this));
+        getProtocolHandler().addAction(GetVerbRequestDTO.class, new GetVerbAction(getServerWorker(), this));
     }
 }

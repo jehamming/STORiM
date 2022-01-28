@@ -100,9 +100,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             case USERLEFTROOM:
                 handleUserLeftRoom((UserLeftRoomDTO) event.getExtraData());
                 break;
-            case VERBEXECUTED:
-                handleVerbExecuted((VerbOutput) event.getObject());
-                break;
             case VERBDELETED:
                 handleVerbDeleted((Verb) event.getObject());
                 break;
@@ -136,7 +133,20 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
             case THINGPLACED:
                 thingPlaced((User) event.getExtraData(), (Thing) event.getObject());
                 break;
+            case MSGINROOM:
+                messageInROom(event.getObject(), (String) event.getExtraData());
+                break;
         }
+    }
+
+    private void messageInROom(BasicObject source, String message) {
+        MessageInRoomDTO messageInRoomDTO = null;
+        if (source instanceof User) {
+            messageInRoomDTO = new MessageInRoomDTO(source.getId(), MessageInRoomDTO.Type.USER, message);
+        } else if ( source instanceof Thing) {
+            messageInRoomDTO = new MessageInRoomDTO(source.getId(), MessageInRoomDTO.Type.THING, message);
+        }
+        send(messageInRoomDTO);
     }
 
     private void handleUserLeftRoom(UserLeftRoomDTO data) {
@@ -480,5 +490,9 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     public void updateRoomForUser(User user, Location location) {
         UpdateUserRoomDto updateUserRoomDto = new UpdateUserRoomDto(user.getId(), location.getRoom().getId());
         server.getDataServerConnection().send(updateUserRoomDto);
+    }
+
+    public VerbDetailsDTO getVerb(Long verbId) {
+        return server.getDataServerConnection().getVerb(verbId);
     }
 }

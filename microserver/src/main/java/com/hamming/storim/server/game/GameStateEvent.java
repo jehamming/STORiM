@@ -21,7 +21,8 @@ public class GameStateEvent {
         THINGUPDATED,
         ROOMADDED,
         ROOMUPDATED,
-        ROOMDELETED
+        ROOMDELETED,
+        MSGINROOM
     }
 
     private BasicObject object;

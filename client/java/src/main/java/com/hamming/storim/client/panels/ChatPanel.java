@@ -24,7 +24,7 @@ public class ChatPanel extends JPanel  {
 
         JPanel pnlInput = new JPanel();
         cmbVerbs = new JComboBox();
-        tfInput = new JTextField(40);
+        tfInput = new JTextField(35);
         btnSend = new JButton("Send");;
         add(scrollPane);
         pnlInput.add(cmbVerbs);
