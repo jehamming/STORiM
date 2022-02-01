@@ -25,8 +25,9 @@ public class ConnectAction extends Action<ConnectRequestDTO> {
     @Override
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection)  getClient();
-        boolean validUserAndToken = client.verifyUser(getDto().getUserId(), getDto().getToken());
-        if ( validUserAndToken ) {
+        User verifiedUser = client.verifyUser(getDto().getUserId(), getDto().getToken());
+        if ( verifiedUser != null ) {
+            client.setCurrentUser(verifiedUser);
             Long roomId = getDto().getRoomId();
             client.sendGameState();
             client.setRoom(roomId);
@@ -39,6 +40,7 @@ public class ConnectAction extends Action<ConnectRequestDTO> {
             client.send(setCurrentUserDTO);
             // Notify the gamecontroller
             controller.addOnlineUser(client, client.getCurrentUser());
+
         } else {
             String errorMessage = "Not a valid user or valid token!";
             getClient().send(new ConnectResultDTO(false, errorMessage, null, null));

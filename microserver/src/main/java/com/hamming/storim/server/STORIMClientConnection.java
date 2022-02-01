@@ -457,21 +457,16 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
 
-    public boolean verifyUser(Long userId, String token) {
-        boolean userValid = false;
+    public User verifyUser(Long userId, String token) {
+        User verifiedUser = null;
         VerifyUserRequestDTO dto = new VerifyUserRequestDTO(userId, token);
         VerifyUserResponseDTO response = (VerifyUserResponseDTO) server.getLoginServerConnection().sendReceive(dto, VerifyUserResponseDTO.class);
         if (response.getUser() != null) {
-            userValid = true;
-            User verifiedUser = User.valueOf(response.getUser());
-            if (gameController.getGameState().findUserById(verifiedUser.getId()) != null) {
-                // Remove previous from cache, start new  (reconnect in the same connection?)
-                gameController.getGameState().removeOnlineUser(verifiedUser);
-            }
-            gameController.getGameState().addOnlineUser(verifiedUser);
-            setCurrentUser(verifiedUser);
+            verifiedUser = User.valueOf(response.getUser());
+        } else {
+            System.err.println(response.getErrorMessage());
         }
-        return userValid;
+        return verifiedUser;
     }
 
     public void setRoom(Long roomId) {
