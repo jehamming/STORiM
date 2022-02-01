@@ -79,7 +79,7 @@ public class VerbEditorPanel extends JPanel {
         panel1.add(label1, gbc);
         final JLabel label2 = new JLabel();
         txtName = new JTextField();
-        txtName.setColumns(40);
+        txtName.setColumns(30);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;

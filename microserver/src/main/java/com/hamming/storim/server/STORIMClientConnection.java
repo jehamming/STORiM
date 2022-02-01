@@ -57,7 +57,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(TeleportRequestDTO.class, new TeleportAction(gameController, this));
         getProtocolHandler().addAction(GetRoomDTO.class, new GetRoomAction(gameController, this));
         getProtocolHandler().addAction(GetUserDTO.class, new GetUserAction(gameController, this));
-        getProtocolHandler().addAction(GetVerbDTO.class, new GetVerbAction(gameController, this));
+        getProtocolHandler().addAction(GetVerbDetailsRequestDTO.class, new GetVerbAction(gameController, this));
         getProtocolHandler().addAction(ExecVerbDTO.class, new ExecVerbAction(gameController, this));
         getProtocolHandler().addAction(AddVerbDto.class, new AddVerbAction(gameController, this));
         getProtocolHandler().addAction(UpdateVerbDto.class, new UpdateVerbAction(gameController, this));
@@ -488,5 +488,9 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     public VerbDetailsDTO getVerb(Long verbId) {
         return server.getDataServerConnection().getVerb(verbId);
+    }
+
+    public STORIMMicroServer getServer() {
+        return server;
     }
 }

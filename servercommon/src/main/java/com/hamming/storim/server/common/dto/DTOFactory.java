@@ -111,8 +111,8 @@ public class DTOFactory {
         return new GetUserResultDTO(success, error, u);
     }
 
-    public GetVerbResultDTO getVerbResultDto(boolean success, String error, VerbDto verb) {
-        return new GetVerbResultDTO(success, error, verb);
+    public GetVerbDetailsResponseDTO getVerbResultDto(boolean success, String error, VerbDetailsDTO verb) {
+        return new GetVerbDetailsResponseDTO(success, error, verb);
     }
 
     public UserInRoomDTO getUserInRoomDTO(User user, Location location) {

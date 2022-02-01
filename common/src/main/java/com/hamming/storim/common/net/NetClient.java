@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NetClient<T extends ResponseDTO> implements Runnable {
     private Socket socket;
@@ -16,14 +20,26 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private Dispatcher dispatcher;
     private boolean running = false;
     private ConnectionController connectionController;
-    private ResponseContainer responseContainer;
+    private Map<Class,ResponseContainer> responseContainers;
 
     public NetClient(ConnectionController connectionController) {
         this.connectionController = connectionController;
-        responseContainer = new ResponseContainer();
+        responseContainers = new HashMap<>();
         dispatcher = new Dispatcher(connectionController);
         Thread t = new Thread(dispatcher);
         t.start();
+    }
+
+
+    private void addResponseContainer(ResponseContainer responseContainer) {
+        responseContainers.put(responseContainer.getResponseClass(), responseContainer);
+    }
+    private void removeResponseContainer(ResponseContainer responseContainer) {
+        responseContainers.remove(responseContainer.getResponseClass());
+    }
+
+    private ResponseContainer getResponseContainer(Class clazz) {
+        return responseContainers.get(clazz);
     }
 
     public String connect(String ip, int port) {
@@ -55,12 +71,14 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
                 System.out.println(this.getClass().getName() + ":RECEIVED:" + dto.toString());
                 if (dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
-                    if (response.getClass().equals(responseContainer.getResponseClass())) {
+                    ResponseContainer responseContainer = getResponseContainer(response.getClass());
+                    if (responseContainer != null ) {
+                        removeResponseContainer(responseContainer);
                         responseContainer.setResponse(response);
                         synchronized (responseContainer) {
                             responseContainer.notify();
                         }
-                    }
+                   }
                 }
                 dispatcher.dispatch(dto);
             } catch (IOException e) {
@@ -87,9 +105,11 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     }
 
     public ResponseDTO sendReceive(ProtocolDTO requestResponseDTO, Class responseClass) {
+        ResponseContainer responseContainer = new ResponseContainer();
         synchronized (responseContainer) {
             responseContainer.setResponse(null);
             responseContainer.setResponseClass(responseClass);
+            addResponseContainer(responseContainer);
             System.out.println(this.getClass().getName() + ":" + "SendReceive:" + requestResponseDTO + ", waiting for: " + responseClass.getSimpleName());
         }
         return protocolObjectSender.sendReceive(requestResponseDTO, responseContainer);

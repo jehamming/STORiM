@@ -1,8 +1,9 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.VerbDetailsDTO;
 import com.hamming.storim.common.dto.VerbDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbDetailsRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbDetailsResponseDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.action.Action;
@@ -10,7 +11,7 @@ import com.hamming.storim.server.common.factories.VerbFactory;
 import com.hamming.storim.server.common.model.Verb;
 import com.hamming.storim.server.game.GameController;
 
-public class GetVerbAction extends Action<GetVerbDTO> {
+public class GetVerbAction extends Action<GetVerbDetailsRequestDTO> {
     private GameController controller;
 
 
@@ -22,15 +23,18 @@ public class GetVerbAction extends Action<GetVerbDTO> {
 
     @Override
     public void execute() {
-        Verb cmd = VerbFactory.getInstance().findVerbByID(getDto().getCommandID());
-        if ( cmd != null ) {
-            VerbDto verbDto = DTOFactory.getInstance().getVerbDto(cmd);
-            GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(true, null, verbDto);
-            getClient().send(getCommandResultDTO);
+        boolean success = false;
+        String errorMessage = "";
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
+        VerbDetailsDTO verbDetailsDTO = client.getServer().getDataServerConnection().getVerb(getDto().getVerbID());
+        if ( verbDetailsDTO != null ) {
+            success  = true;
         } else {
-            GetVerbResultDTO getCommandResultDTO = DTOFactory.getInstance().getVerbResultDto(false, "Command "+ getDto().getCommandID() +" not found!", null);
-            getClient().send(getCommandResultDTO);
+            errorMessage = "Verb " +getDto().getVerbID()+" not found (??) ";
         }
+
+        GetVerbDetailsResponseDTO reponse = new GetVerbDetailsResponseDTO(success, errorMessage, verbDetailsDTO);
+        getClient().send(reponse);
     }
 
 }

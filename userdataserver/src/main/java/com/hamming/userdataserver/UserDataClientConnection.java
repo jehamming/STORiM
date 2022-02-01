@@ -1,17 +1,16 @@
 package com.hamming.userdataserver;
 
 import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.AddVerbDto;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
+import com.hamming.storim.server.common.dto.protocol.dataserver.verb.AddVerbRequestDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbsRequestDTO;
-import com.hamming.userdataserver.action.GetUserAction;
-import com.hamming.userdataserver.action.GetVerbAction;
-import com.hamming.userdataserver.action.GetVerbsAction;
-import com.hamming.userdataserver.action.UpdateUserRoomAction;
+import com.hamming.userdataserver.action.*;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -35,5 +34,6 @@ public class UserDataClientConnection extends ClientConnection {
         getProtocolHandler().addAction(UpdateUserRoomDto.class, new UpdateUserRoomAction(getServerWorker(), this));
         getProtocolHandler().addAction(GetVerbsRequestDTO.class, new GetVerbsAction(getServerWorker(), this));
         getProtocolHandler().addAction(GetVerbRequestDTO.class, new GetVerbAction(getServerWorker(), this));
+        getProtocolHandler().addAction(AddVerbRequestDto.class, new AddVerbAction(getServerWorker(), this));
     }
 }

@@ -11,6 +11,7 @@ import com.hamming.storim.common.view.GameView;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -323,6 +324,15 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     }
 
     @Override
+    public void componenResized() {
+        if ( room != null ) {
+            unitX = (float) getWidth() / (float) room.getWidth();
+            unitY = (float) getHeight() / (float) room.getLength();
+            positionExits();
+        }
+    }
+
+    @Override
     public void setTile(TileDto tile) {
         this.tile = tile;
     }
@@ -337,6 +347,7 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         }
 
     }
+
 
     public void setPlayers(List<Player> players) {
         this.players = players;

@@ -32,4 +32,5 @@ public interface GameView {
     RoomDto getRoom();
 
 
+    void componenResized();
 }
