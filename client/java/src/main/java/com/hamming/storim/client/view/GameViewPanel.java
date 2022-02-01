@@ -331,8 +331,8 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     public void setRoom(RoomDto room) {
         this.room = room;
         if (room != null) {
-            unitX = getWidth() / room.getWidth();
-            unitY = getHeight() / room.getLength();
+            unitX = (float) getWidth()  / (float) room.getWidth();
+            unitY = (float) getHeight() / (float) room.getLength();
             window.setRoomname(room.getName());
         }
 

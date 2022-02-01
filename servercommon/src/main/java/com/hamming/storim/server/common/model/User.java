@@ -58,8 +58,7 @@ public class User extends BasicObject implements Serializable {
     public String toString() {
         return "User{" +
                 " id=" + getId() +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
+                ", name='" + getName() + '\'' +
                 '}';
     }
 

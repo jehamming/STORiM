@@ -40,7 +40,6 @@ public class ConnectAction extends Action<ConnectRequestDTO> {
             client.send(setCurrentUserDTO);
             // Notify the gamecontroller
             controller.addOnlineUser(client, client.getCurrentUser());
-
         } else {
             String errorMessage = "Not a valid user or valid token!";
             getClient().send(new ConnectResultDTO(false, errorMessage, null, null));

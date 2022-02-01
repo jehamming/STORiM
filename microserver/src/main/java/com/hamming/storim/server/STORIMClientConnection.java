@@ -474,9 +474,8 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         if (room != null) {
             Location location = new Location(room, room.getSpawnPointX(), room.getSpawnPointY());
             gameController.getGameState().setLocation(currentUser, location);
-            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
             RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
-            send(new SetRoomDTO(roomDto, locationDto));
+            send(new SetRoomDTO(roomDto));
             sendUsersInRoom();
             sendThingsInRoom();
         }

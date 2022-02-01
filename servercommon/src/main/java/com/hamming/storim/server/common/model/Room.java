@@ -3,7 +3,6 @@ package com.hamming.storim.server.common.model;
 import java.util.ArrayList;
 import java.util.List;
 
-// A baseplate is like a lego baseplate.
 public class Room extends BasicObject   {
 
     private int rows, cols;
@@ -15,8 +14,8 @@ public class Room extends BasicObject   {
     private List<Exit> exits;
 
     public Room() {
-        spawnPointX = 0;
-        spawnPointY = 0;
+        spawnPointX = 100;
+        spawnPointY = 100;
         tileId = null;
         setName("A basic room");
         rows = 10;
