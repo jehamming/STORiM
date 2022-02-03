@@ -46,7 +46,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(ExecVerbDTO.class, new ExecVerbAction(gameController, this));
         getProtocolHandler().addAction(AddVerbDto.class, new AddVerbAction(gameController, this));
         getProtocolHandler().addAction(UpdateVerbDto.class, new UpdateVerbAction(gameController, this));
-        getProtocolHandler().addAction(DeleteVerbDTO.class, new DeleteVerbAction(gameController, this));
         getProtocolHandler().addAction(AddRoomDto.class, new AddRoomAction(gameController, this));
         getProtocolHandler().addAction(UpdateRoomDto.class, new UpdateRoomAction(gameController, this));
         getProtocolHandler().addAction(DeleteRoomDTO.class, new DeleteRoomAction(gameController, this));
@@ -64,6 +63,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(GetExitDTO.class, new GetExitAction(gameController, this));
         getProtocolHandler().addAction(MovementRequestDTO.class, new MoveAction(gameController, this));
         getProtocolHandler().addAction(UseExitRequestDTO.class, new UseExitAction(gameController, this));
+        getProtocolHandler().addAction(DeleteVerbDTO.class, new DeleteVerbAction(gameController, this));
     }
 
 
