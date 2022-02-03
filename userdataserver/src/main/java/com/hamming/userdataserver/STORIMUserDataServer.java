@@ -4,13 +4,10 @@ import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.ServerWorker;
-import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.factories.AvatarFactory;
 import com.hamming.storim.server.common.factories.ThingFactory;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -71,17 +68,12 @@ public class STORIMUserDataServer extends Server {
 
 
     @Override
-    protected void clientConnected(Socket s, ObjectInputStream in, ObjectOutputStream out) {
+    protected void clientConnected(Socket s) {
         try {
             clients++;
-            ClientTypeDTO clientTypeDTO = (ClientTypeDTO) in.readObject();
-            String name = clientTypeDTO.getName()+"-"+clients;
-            ClientConnection client = new UserDataClientConnection(clientTypeDTO, s, in, out, serverWorker);
-            Thread clientThread = new Thread(client);
-            clientThread.setDaemon(true);
-            clientThread.setName(name +":" + s.getInetAddress().toString());
-            clientThread.start();
-            System.out.println(this.getClass().getName() + ":" + clientThread.getName() + " connected, ClientThread started");
+            //FIXME Keep a record of all the clients?
+            ClientConnection client = new UserDataClientConnection(null, s, serverWorker);
+            System.out.println(this.getClass().getName() + ": new connection, ClientThread started");
         } catch (Exception exception) {
             exception.printStackTrace();
         }

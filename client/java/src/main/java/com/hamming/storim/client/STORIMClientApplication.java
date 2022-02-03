@@ -3,7 +3,6 @@ package com.hamming.storim.client;
 import com.hamming.storim.common.controllers.ConnectionController;
 
 public class STORIMClientApplication {
-    private static STORIMClientApplication instance;
     private STORIMWindow STORIMWindow;
     private ConnectionController connectionController;
 
@@ -11,12 +10,6 @@ public class STORIMClientApplication {
         initControllers();
     }
 
-    public static STORIMClientApplication getInstance() {
-        if (instance == null ) {
-            instance = new STORIMClientApplication();
-        }
-        return instance;
-    }
 
     public void initControllers() {
         connectionController = new ConnectionController("STORIM_Java_client");

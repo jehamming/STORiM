@@ -2,12 +2,10 @@ package com.hamming.storim.server;
 
 
 import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.request.*;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.dto.protocol.serverpush.old.*;
-import com.hamming.storim.common.net.ProtocolObjectSender;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
@@ -23,32 +21,19 @@ import com.hamming.storim.server.game.GameStateEvent;
 import com.hamming.storim.server.game.GameStateListener;
 import com.hamming.storim.server.game.action.*;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 
 public class STORIMClientConnection extends ClientConnection implements GameStateListener {
 
     private User currentUser;
-    private ProtocolObjectSender clientSender;
     private STORIMMicroServer server;
     private GameController gameController;
 
-    public STORIMClientConnection(STORIMMicroServer server, ClientTypeDTO clientTypeDTO, Socket s, ObjectInputStream in, ObjectOutputStream out, GameController controller) {
-        super(clientTypeDTO, s, in, out, controller);
+    public STORIMClientConnection(STORIMMicroServer server, String id, Socket s, GameController controller) {
+        super(id, s,controller);
         this.server = server;
-        clientSender = new ProtocolObjectSender(out);
-    }
-
-    @Override
-    public void connectionClosed() {
-        gameController.removeGameStateListener(this);
-        clientSender.stopSending();
-        clientSender = null;
-        UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
-        gameController.addAction(action);
-        currentUser = null;
+        controller.addGamestateListener(this);
     }
 
     @Override
@@ -203,12 +188,6 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         }
         UserUpdatedDTO userUpdatedDTO = new UserUpdatedDTO(userDto);
         send(userUpdatedDTO);
-    }
-
-    public void send(ProtocolDTO dto) {
-        if (clientSender != null && clientSender.isRunning()) {
-            clientSender.send(dto);
-        }
     }
 
     public User getCurrentUser() {
@@ -492,5 +471,18 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     public STORIMMicroServer getServer() {
         return server;
+    }
+
+    @Override
+    public void connected() {
+
+    }
+
+    @Override
+    public void disconnected() {
+        gameController.removeGameStateListener(this);
+        UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
+        gameController.addAction(action);
+        currentUser = null;
     }
 }

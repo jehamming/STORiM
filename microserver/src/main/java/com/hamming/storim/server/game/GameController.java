@@ -48,7 +48,7 @@ public class GameController extends ServerWorker {
 
     private void fireGameStateEvent(ClientConnection source, GameStateEvent.Type type, BasicObject object, Object extraData) {
         for (GameStateListener l : gameStateListeners) {
-            if ( ! l.equals(source) ) { // No event to the source of this fireGamestateEven call
+            if ( ! l.equals(source) ) { // No event to the source of this fireGameStateEvent call
                 l.newGameState(new GameStateEvent(type, object, extraData));
             }
         }

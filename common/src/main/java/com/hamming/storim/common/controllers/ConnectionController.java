@@ -3,30 +3,29 @@ package com.hamming.storim.common.controllers;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
-import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.NetClient;
-import com.hamming.storim.common.net.NetCommandReceiver;
+import com.hamming.storim.common.net.ProtocolReceiver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConnectionController implements NetCommandReceiver {
+public class ConnectionController implements ProtocolReceiver, ConnectionListener {
 
     private NetClient client;
     private String clientID;
     private UserDto user;
     private List<ConnectionListener> connectionListeners;
 
-    private Map<Class, List<NetCommandReceiver>> commandReceivers;
+    private Map<Class, List<ProtocolReceiver>> commandReceivers;
 
 
     public ConnectionController(String clientID) {
         this.clientID = clientID;
         connectionListeners = new ArrayList<ConnectionListener>();
-        commandReceivers = new HashMap<Class, List<NetCommandReceiver>>();
+        commandReceivers = new HashMap<Class, List<ProtocolReceiver>>();
     }
 
     public void disconnect() {
@@ -40,9 +39,8 @@ public class ConnectionController implements NetCommandReceiver {
         if (client != null && client.isConnected()) {
             client.dispose();
         }
-        client = new NetClient(this);
+        client = new NetClient(this, this , serverip, port);
         user = null;
-        String result = client.connect(serverip, port);
         while (!client.isConnected()) {
             try {
                 Thread.sleep(100);
@@ -51,9 +49,6 @@ public class ConnectionController implements NetCommandReceiver {
                 e.printStackTrace();
             }
         }
-        if (result != null) throw new Exception("Error:" + result);
-
-        send(new ClientTypeDTO(clientName, ClientTypeDTO.TYPE_CLIENT));
 
         fireConnectedEvent();
     }
@@ -87,19 +82,19 @@ public class ConnectionController implements NetCommandReceiver {
 
     @Override
     public void receiveDTO(ProtocolDTO dto) {
-        List<NetCommandReceiver> listReceivers = commandReceivers.get(dto.getClass());
+        List<ProtocolReceiver> listReceivers = commandReceivers.get(dto.getClass());
         if (listReceivers != null) {
-            for (NetCommandReceiver c : listReceivers) {
+            for (ProtocolReceiver c : listReceivers) {
                 c.receiveDTO(dto);
             }
         }
     }
 
 
-    public void registerReceiver(Class c, NetCommandReceiver receiver) {
-        List<NetCommandReceiver> listReceivers = commandReceivers.get(c);
+    public void registerReceiver(Class c, ProtocolReceiver receiver) {
+        List<ProtocolReceiver> listReceivers = commandReceivers.get(c);
         if (listReceivers == null) {
-            listReceivers = new ArrayList<NetCommandReceiver>();
+            listReceivers = new ArrayList<ProtocolReceiver>();
         }
         if (!listReceivers.contains(receiver)) {
             listReceivers.add(receiver);
@@ -107,8 +102,8 @@ public class ConnectionController implements NetCommandReceiver {
         }
     }
 
-    public void unregisterReceiver(Class c, NetCommandReceiver receiver) {
-        List<NetCommandReceiver> listReceivers = commandReceivers.get(c);
+    public void unregisterReceiver(Class c, ProtocolReceiver receiver) {
+        List<ProtocolReceiver> listReceivers = commandReceivers.get(c);
         if ( listReceivers != null && listReceivers.contains(receiver)) {
             listReceivers.remove(receiver);
         }
@@ -124,5 +119,15 @@ public class ConnectionController implements NetCommandReceiver {
 
     public <T extends ResponseDTO> T sendReceive(ProtocolDTO requestDTO, Class<T> responseClass) {
         return responseClass.cast( client.sendReceive(requestDTO, responseClass));
+    }
+
+    @Override
+    public void connected() {
+
+    }
+
+    @Override
+    public void disconnected() {
+
     }
 }

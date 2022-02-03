@@ -40,7 +40,7 @@ public class LoginAction extends Action<LoginRequestDTO> {
                 // Success!
                 ((UserClientConnection) getClient()).setCurrentUser(user);
                 // Create a new Session for this connection
-                String source = getClient().getSource();
+                String source = getClient().getId();
                 session = serverWorker.getLoginServer().getSessionManager().createSession(user.getId(), source);
                 // Check location of the user
                 loginSucceeded = true;

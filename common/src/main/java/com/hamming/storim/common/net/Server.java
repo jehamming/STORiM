@@ -35,9 +35,7 @@ public abstract class Server implements Runnable {
         while (running) {
             try {
                 Socket s = ss.accept();
-                ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
-                ObjectInputStream in = new ObjectInputStream(s.getInputStream());
-                clientConnected(s, in, out);
+                clientConnected(s);
             } catch (SocketException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -56,6 +54,6 @@ public abstract class Server implements Runnable {
         ss = null;
     }
 
-    protected abstract void clientConnected(Socket s, ObjectInputStream in, ObjectOutputStream out);
+    protected abstract void clientConnected(Socket s);
 
 }

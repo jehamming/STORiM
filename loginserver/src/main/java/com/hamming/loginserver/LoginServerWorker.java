@@ -5,15 +5,17 @@ import com.hamming.storim.server.common.ClientConnection;
 import com.sun.security.ntlm.Client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LoginServerWorker extends ServerWorker {
 
-    private List<ServerRegistration> registeredServers;
+    private Map<ClientConnection,ServerRegistration> registeredServers;
     private STORIMLoginServer loginServer;
 
     public LoginServerWorker(STORIMLoginServer loginServer){
-        registeredServers = new ArrayList<ServerRegistration>();
+        registeredServers = new HashMap<>();
         this.loginServer = loginServer;
     }
 
@@ -21,7 +23,7 @@ public class LoginServerWorker extends ServerWorker {
         String errorMessage = null;
         if ( findServerRegistration(name) == null ) {
             ServerRegistration registration = new ServerRegistration(connection, name, url, port);
-            registeredServers.add(registration);
+            registeredServers.put(connection, registration);
             System.out.println("("+getClass().getSimpleName() +") New Server registered: " + registration);
             System.out.println("("+getClass().getSimpleName() +") No of servers registered: " + registeredServers.size());
         } else {
@@ -31,21 +33,22 @@ public class LoginServerWorker extends ServerWorker {
     }
 
     public List<ServerRegistration> getRegisteredServers() {
-        return registeredServers;
+        List<ServerRegistration> result = new ArrayList<>(registeredServers.values());
+        return result;
     }
 
-    public ServerRegistration removeRegisteredServer(String servername, ClientConnection connection) {
-        ServerRegistration found = findServerRegistration(servername);
-        if ( found != null && found.getConnection().equals(connection)) {
-            registeredServers.remove(found);
-            System.out.println("("+getClass().getSimpleName() +") Server "+ servername+ " removed, no of servers registered: " + registeredServers.size());
+    public ServerRegistration removeRegisteredServer(ClientConnection connection) {
+        ServerRegistration serverRegistration = registeredServers.get(connection);
+        if ( serverRegistration != null ) {
+            registeredServers.remove(serverRegistration);
+            System.out.println("("+getClass().getSimpleName() +") Server "+ serverRegistration.getServerName()+ " removed, no of servers registered: " + registeredServers.values().size());
         }
-        return found;
+        return serverRegistration;
     }
 
     public ServerRegistration findServerRegistration(String servername) {
         ServerRegistration found = null;
-        for (ServerRegistration r : registeredServers  ) {
+        for (ServerRegistration r : registeredServers.values()  ) {
             if (r.getServerName().equals(servername)) {
                 found = r;
                 break;
@@ -53,7 +56,6 @@ public class LoginServerWorker extends ServerWorker {
         }
         return found;
     }
-
 
 
     public STORIMLoginServer getLoginServer() {

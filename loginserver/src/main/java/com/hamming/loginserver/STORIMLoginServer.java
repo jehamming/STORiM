@@ -1,39 +1,26 @@
 package com.hamming.loginserver;
 
-import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
-import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
-import com.hamming.storim.server.common.ClientConnection;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Inet4Address;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 // This is the Login Server for storim.
 // CLients connect to this server and login
-public class STORIMLoginServer extends Server {
+public class STORIMLoginServer implements Runnable {
 
-    private int port = 3131;
-    private int connectedClients = 0;
-    private int connectedServers = 0;
     private ServerConfig config;
     private final static String PROPFILE = "loginserver.properties";
     private UserDataServerConnection userDataServerConnection;
     private LoginServerWorker serverWorker;
     private SessionManager sessionManager;
-
-    public STORIMLoginServer() {
-        super("STORIM Login Server");
-    }
+    private ServerConnectionServer serverConnectionServer;
+    private ClientConnectionServer clientConnectionServer;
+    private boolean running = false;
 
     public void initialize() {
         // Load Config
         config = ServerConfig.getInstance(PROPFILE);
-        port = config.getPropertyAsInt("serverport");
-
         sessionManager = new SessionManager();
 
         // Start Worker
@@ -44,7 +31,11 @@ public class STORIMLoginServer extends Server {
         controllerThread.start();
         System.out.println(this.getClass().getName() + ":" + " Login Server Worker started");
 
+        // Connecto to User Data Server
         connectToUserDataServer();
+
+        serverConnectionServer = new ServerConnectionServer(this);
+        clientConnectionServer = new ClientConnectionServer(this);
     }
 
     private void connectToUserDataServer() {
@@ -54,16 +45,7 @@ public class STORIMLoginServer extends Server {
         int dataserverport = config.getPropertyAsInt("userdataserverport");
         try {
             Socket socket = new Socket(dataservername, dataserverport);
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ClientTypeDTO clientTypeDTO = new ClientTypeDTO(getClass().getSimpleName(), ClientTypeDTO.TYPE_SERVER);
-            out.writeObject(clientTypeDTO);
-            userDataServerConnection = new UserDataServerConnection(clientTypeDTO, socket, in, out, serverWorker);
-            Thread controllerThread = new Thread(userDataServerConnection);
-            controllerThread.setDaemon(true);
-            controllerThread.setName("UserDataServerConnection");
-            controllerThread.start();
-            System.out.println(this.getClass().getName() + ":" + "Connected to DataServer");
+            userDataServerConnection = new UserDataServerConnection(getClass().getSimpleName(), socket, serverWorker);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,58 +53,6 @@ public class STORIMLoginServer extends Server {
     }
 
 
-    public void startServer() {
-        startServer(port);
-        System.out.println("---- For property files -----");
-        try {
-            System.out.println("loginserver=" + Inet4Address.getLocalHost().getHostName());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        System.out.println("loginserverport=" + port);
-        System.out.println("-----------------------------");
-        System.out.println(this.getClass().getName() + ":" + "Started STORIM LOGIN Server, port:" + port);
-    }
-
-
-    @Override
-    protected void clientConnected(Socket s, ObjectInputStream in, ObjectOutputStream out) {
-        try {
-            // Check for a server or client connection
-            ClientTypeDTO clientTypeDTO = (ClientTypeDTO) in.readObject();
-            switch (clientTypeDTO.getType()) {
-                case ClientTypeDTO.TYPE_SERVER:
-                    newServerConnection(clientTypeDTO, s, in, out);
-                    break;
-                case ClientTypeDTO.TYPE_CLIENT:
-                    newClientConnection(clientTypeDTO, s, in, out);
-                    break;
-            }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    private void newClientConnection(ClientTypeDTO clientTypeDTO, Socket s, ObjectInputStream in, ObjectOutputStream out) {
-        connectedClients++;
-        ClientConnection client = new UserClientConnection(clientTypeDTO, s, in, out, serverWorker);
-        Thread clientThread = new Thread(client);
-        clientThread.setDaemon(true);
-        clientThread.setName(clientTypeDTO.getName() + ":" + s.getInetAddress().toString());
-        clientThread.start();
-        System.out.println(this.getClass().getName() + ": Client " + clientTypeDTO.getName() + " connected, ClientThread started");
-    }
-
-    private void newServerConnection(ClientTypeDTO clientTypeDTO, Socket s, ObjectInputStream in, ObjectOutputStream out) {
-        connectedServers++;
-        String name = clientTypeDTO.getName() + "-" + connectedServers;
-        ClientConnection client = new LoginServerClientConnection(clientTypeDTO, s, in, out, serverWorker);
-        Thread clientThread = new Thread(client);
-        clientThread.setDaemon(true);
-        clientThread.setName(name + ":" + s.getInetAddress().toString());
-        clientThread.start();
-        System.out.println(this.getClass().getName() + ": Server " + clientThread.getName() + " connected, ClientThread started");
-    }
 
     public SessionManager getSessionManager() {
         return sessionManager;
@@ -132,11 +62,40 @@ public class STORIMLoginServer extends Server {
         return userDataServerConnection;
     }
 
-    public static void main(String[] args) {
-        STORIMLoginServer server = new STORIMLoginServer();
-        server.initialize();
-        server.startServer();
+    public LoginServerWorker getServerWorker() {
+        return serverWorker;
     }
 
+    public ServerConfig getConfig() {
+        return config;
+    }
+
+    @Override
+    public void run() {
+        initialize();
+        // Start listening for servers and clients
+        serverConnectionServer.startServer();
+        clientConnectionServer.startServer();
+        running = true;
+        System.out.println(this.getClass().getName() + ":" + "Started STORIM LOGIN Server" );
+        while (running) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(this.getClass().getName() + ":" + "STORIM LOGIN Servers stopped");
+    }
+
+    public void stopServer() {
+        running = false;
+    }
+
+    public static void main(String[] args) {
+        STORIMLoginServer server = new STORIMLoginServer();
+        Thread t = new Thread(server);
+        t.start();
+    }
 
 }

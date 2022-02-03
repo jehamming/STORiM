@@ -1,6 +1,5 @@
 package com.hamming.storim.server;
 
-import com.hamming.storim.common.dto.protocol.request.ClientTypeDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
@@ -11,8 +10,6 @@ import com.hamming.storim.server.common.factories.TileFactory;
 import com.hamming.storim.server.game.GameController;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -69,15 +66,7 @@ public class STORIMMicroServer extends Server {
         int loginserverport = config.getPropertyAsInt("loginserverport");
         try {
             Socket socket = new Socket(loginservername, loginserverport);
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ClientTypeDTO clientTypeDTO = new ClientTypeDTO(SERVERNAME, ClientTypeDTO.TYPE_SERVER);
-            out.writeObject(clientTypeDTO);
-            loginServerConnection = new LoginServerConnection(clientTypeDTO, socket, in, out, controller);
-            Thread controllerThread = new Thread(loginServerConnection);
-            controllerThread.setDaemon(true);
-            controllerThread.setName("LoginServerConnection");
-            controllerThread.start();
+            loginServerConnection = new LoginServerConnection(getClass().getSimpleName(), socket, controller);
             System.out.println(this.getClass().getName() + ":" + "Connected to LoginServer");
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,15 +86,7 @@ public class STORIMMicroServer extends Server {
         int dataserverport = config.getPropertyAsInt("userdataserverport");
         try {
             Socket socket = new Socket(dataservername, dataserverport);
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ClientTypeDTO clientTypeDTO = new ClientTypeDTO(SERVERNAME, ClientTypeDTO.TYPE_SERVER);
-            out.writeObject(clientTypeDTO);
-            dataServerConnection = new UserDataServerConnection(clientTypeDTO, socket, in, out, controller);
-            Thread controllerThread = new Thread(dataServerConnection);
-            controllerThread.setDaemon(true);
-            controllerThread.setName("UserDataServerConnection");
-            controllerThread.start();
+            dataServerConnection = new UserDataServerConnection(getClass().getSimpleName(), socket,  controller);
             System.out.println(this.getClass().getName() + ":" + "Connected to DataServer");
         } catch (IOException e) {
             e.printStackTrace();
@@ -147,17 +128,10 @@ public class STORIMMicroServer extends Server {
 
 
     @Override
-    protected void clientConnected(Socket s, ObjectInputStream in, ObjectOutputStream out) {
+    protected void clientConnected(Socket s) {
         try {
             clients++;
-            ClientTypeDTO clientTypeDTO = (ClientTypeDTO) in.readObject();
-            STORIMClientConnection client = new STORIMClientConnection(this, clientTypeDTO, s, in, out, controller);
-            Thread clientThread = new Thread(client);
-            controller.addGamestateListener(client);
-            clientThread.setDaemon(true);
-            String name = clientTypeDTO.getName() + "-" + clients;
-            clientThread.setName(name);
-            clientThread.start();
+            STORIMClientConnection client = new STORIMClientConnection(this, null, s,controller);
             System.out.println(this.getClass().getName() + ":" + "Client " + s.getInetAddress().toString() + ", ClientThread started");
         } catch (Exception exception) {
             exception.printStackTrace();

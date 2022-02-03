@@ -1,16 +1,14 @@
 package com.hamming.storim.common.net;
 
-import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
+import com.hamming.storim.common.interfaces.ConnectionListener;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class NetClient<T extends ResponseDTO> implements Runnable {
@@ -19,13 +17,25 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private ProtocolObjectSender protocolObjectSender;
     private Dispatcher dispatcher;
     private boolean running = false;
-    private ConnectionController connectionController;
     private Map<Class,ResponseContainer> responseContainers;
+    private ConnectionListener connectionListener;
 
-    public NetClient(ConnectionController connectionController) {
-        this.connectionController = connectionController;
+    public NetClient(ConnectionListener connectionListener, ProtocolReceiver protocolReceiver, String ip, int port) {
+        this.connectionListener = connectionListener;
+        initialize(protocolReceiver);
+        connect(ip, port);
+    }
+
+    public NetClient(ConnectionListener connectionListener, ProtocolReceiver protocolReceiver, Socket s) {
+        this.socket = s;
+        this.connectionListener = connectionListener;
+        registerStreams();
+        initialize(protocolReceiver);
+    }
+
+    private void initialize(ProtocolReceiver protocolReceiver) {
         responseContainers = new HashMap<>();
-        dispatcher = new Dispatcher(connectionController);
+        dispatcher = new Dispatcher(protocolReceiver);
         Thread t = new Thread(dispatcher);
         t.start();
     }
@@ -42,10 +52,8 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         return responseContainers.get(clazz);
     }
 
-    public String connect(String ip, int port) {
-        String retval = null;
+    private void registerStreams() {
         try {
-            socket = new Socket(ip, port);
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             protocolObjectSender = new ProtocolObjectSender(out);
             in = new ObjectInputStream(socket.getInputStream());
@@ -53,6 +61,18 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             clientThread.setName("Client Connection");
             clientThread.setDaemon(true);
             clientThread.start();
+        } catch (IOException e) {
+            System.out.println(this.getClass().getName() + ":" + "ERROR:" + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private String connect(String ip, int port) {
+        String retval = null;
+        try {
+            socket = new Socket(ip, port);
+            registerStreams();
+            connectionListener.connected();
         } catch (IOException e) {
             System.out.println(this.getClass().getName() + ":" + "ERROR:" + e.getMessage());
             retval = e.getMessage();
@@ -98,6 +118,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             }
         }
         System.out.println(this.getClass().getName() + ":" + "NetClient finished");
+        connectionListener.disconnected();
     }
 
     public void send(ProtocolDTO pDTO) {
