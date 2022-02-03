@@ -439,7 +439,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     public User verifyUser(Long userId, String token) {
         User verifiedUser = null;
         VerifyUserRequestDTO dto = new VerifyUserRequestDTO(userId, token);
-        VerifyUserResponseDTO response = (VerifyUserResponseDTO) server.getLoginServerConnection().sendReceive(dto, VerifyUserResponseDTO.class);
+        VerifyUserResponseDTO response = server.getLoginServerConnection().sendReceive(dto, VerifyUserResponseDTO.class);
         if (response.getUser() != null) {
             verifiedUser = User.valueOf(response.getUser());
         } else {

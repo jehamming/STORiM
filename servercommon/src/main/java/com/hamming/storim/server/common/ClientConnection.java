@@ -12,14 +12,14 @@ import com.hamming.storim.server.common.action.Action;
 import java.net.Socket;
 
 //  ClientConnection, able to handle Async traffic and Sync actions
-public abstract class ClientConnection<T extends ServerWorker> implements ProtocolReceiver, ConnectionListener {
+public abstract class ClientConnection implements ProtocolReceiver, ConnectionListener {
 
     private ProtocolHandler<Action> protocolHandler;
     private String id;
-    private T serverWorker;
+    private ServerWorker serverWorker;
     private NetClient netClient;
 
-    public ClientConnection(String id, Socket s, T serverWorker) {
+    public ClientConnection(String id, Socket s, ServerWorker serverWorker) {
         this.id = id;
         netClient = new NetClient(this,this, s);
         protocolHandler = new ProtocolHandler();
@@ -48,14 +48,14 @@ public abstract class ClientConnection<T extends ServerWorker> implements Protoc
     }
 
     public <T extends ResponseDTO> T sendReceive(ProtocolDTO requestDTO, Class<T> responseClass) {
-        return responseClass.cast(netClient.sendReceive(requestDTO, responseClass));
+        return responseClass.cast( netClient.sendReceive(requestDTO, responseClass));
     }
 
     public ProtocolHandler getProtocolHandler() {
         return protocolHandler;
     }
 
-    public T getServerWorker() {
+    public ServerWorker getServerWorker() {
         return serverWorker;
     }
 

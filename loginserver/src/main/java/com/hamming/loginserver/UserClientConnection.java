@@ -11,7 +11,7 @@ import com.hamming.storim.server.common.ClientConnection;
 
 import java.net.Socket;
 
-public class UserClientConnection extends ClientConnection<LoginServerWorker> {
+public class UserClientConnection extends ClientConnection {
 
     private UserDto currentUser;
 
@@ -21,9 +21,9 @@ public class UserClientConnection extends ClientConnection<LoginServerWorker> {
 
     @Override
     public void addActions() {
-        getProtocolHandler().addAction(LoginRequestDTO.class, new LoginAction(getServerWorker(), this));
-        getProtocolHandler().addAction(GetServerRegistrationsRequestDTO.class, new GetServersAction(getServerWorker(), this));
-        getProtocolHandler().addAction(GetRoomsForServerRequestDTO.class, new GetRoomsForServerAction(getServerWorker(), this));
+        getProtocolHandler().addAction(LoginRequestDTO.class, new LoginAction((LoginServerWorker) getServerWorker(), this));
+        getProtocolHandler().addAction(GetServerRegistrationsRequestDTO.class, new GetServersAction((LoginServerWorker) getServerWorker(), this));
+        getProtocolHandler().addAction(GetRoomsForServerRequestDTO.class, new GetRoomsForServerAction((LoginServerWorker) getServerWorker(), this));
     }
 
     public UserDto getCurrentUser() {

@@ -113,7 +113,7 @@ public class STORIMMicroServer extends Server {
         try {
             String url = Inet4Address.getLocalHost().getHostName();
             AddServerRequestDTO dto = new AddServerRequestDTO(SERVERNAME, url, port);
-            AddServerResponseDTO responseDTO = (AddServerResponseDTO) loginServerConnection.sendReceive(dto, AddServerResponseDTO.class);
+            AddServerResponseDTO responseDTO = loginServerConnection.sendReceive(dto, AddServerResponseDTO.class);
             success = responseDTO.isSuccess();
             if (success) {
                 System.out.println(this.getClass().getName() + ":" + "Registered to LoginServer");

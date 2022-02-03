@@ -32,7 +32,7 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
             UserDto user = new UserDto();
             user.setId(userId);
             GetUserRequestDTO getUserRequestDTO = new GetUserRequestDTO(user);
-            GetUserResultDTO getUserResultDTO = (GetUserResultDTO) serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getUserRequestDTO, GetUserResultDTO.class);
+            GetUserResultDTO getUserResultDTO = serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getUserRequestDTO, GetUserResultDTO.class);
             if ( getUserResultDTO != null && getUserResultDTO.isSuccess() ) {
                 userDto = getUserResultDTO.getUser();
             }
