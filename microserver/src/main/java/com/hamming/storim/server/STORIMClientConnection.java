@@ -49,9 +49,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(AddRoomDto.class, new AddRoomAction(gameController, this));
         getProtocolHandler().addAction(UpdateRoomDto.class, new UpdateRoomAction(gameController, this));
         getProtocolHandler().addAction(DeleteRoomDTO.class, new DeleteRoomAction(gameController, this));
-        getProtocolHandler().addAction(AddAvatarDto.class, new AddAvatarAction(gameController, this));
         getProtocolHandler().addAction(UpdateUserDto.class, new UpdateUserAction(gameController, this));
-        getProtocolHandler().addAction(DeleteAvatarDTO.class, new DeleteAvatarAction(gameController, this));
         getProtocolHandler().addAction(UpdateAvatarDto.class, new UpdateAvatarAction(gameController, this));
         getProtocolHandler().addAction(AddThingDto.class, new AddThingAction(gameController, this));
         getProtocolHandler().addAction(DeleteThingDTO.class, new DeleteThingAction(gameController, this));
@@ -64,6 +62,10 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(MovementRequestDTO.class, new MoveAction(gameController, this));
         getProtocolHandler().addAction(UseExitRequestDTO.class, new UseExitAction(gameController, this));
         getProtocolHandler().addAction(DeleteVerbDTO.class, new DeleteVerbAction(gameController, this));
+        getProtocolHandler().addAction(GetAvatarsRequestDTO.class, new GetAvatarsAction(this));
+        getProtocolHandler().addAction(AddAvatarDto.class, new AddAvatarAction(gameController, this));
+        getProtocolHandler().addAction(GetAvatarRequestDTO.class, new GetAvatarAction(this));
+        getProtocolHandler().addAction(DeleteAvatarDTO.class, new DeleteAvatarAction(gameController, this));
     }
 
 
@@ -249,7 +251,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     public void sendAvatar(Avatar avatar) {
         AvatarDto avatarDto = DTOFactory.getInstance().getAvatarDTO(avatar);
-        GetAvatarResultDTO getAvatarResultDTO = DTOFactory.getInstance().getGetAvatarResultDTO(true, null, currentUser.getId(), avatarDto);
+        GetAvatarResponseDTO getAvatarResultDTO = DTOFactory.getInstance().getGetAvatarResponseDTO(true, null, avatarDto);
         send(getAvatarResultDTO);
     }
 

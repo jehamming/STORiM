@@ -50,7 +50,7 @@ public class UserController implements ConnectionListener {
         }
     }
 
-    private void handleGetAvatarResultDTO(GetAvatarResultDTO dto) {
+    private void handleGetAvatarResultDTO(GetAvatarResponseDTO dto) {
         addToAvatarStore(dto.getAvatar());
     }
 

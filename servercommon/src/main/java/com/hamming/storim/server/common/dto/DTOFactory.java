@@ -151,8 +151,8 @@ public class DTOFactory {
         return new AvatarAddedDTO(avatarDto);
     }
 
-    public GetAvatarResultDTO getGetAvatarResultDTO(boolean success, String message, Long userId, AvatarDto avatarDto) {
-        return new GetAvatarResultDTO(success, message, userId, avatarDto);
+    public GetAvatarResponseDTO getGetAvatarResponseDTO(boolean success, String message, AvatarDto avatarDto) {
+        return new GetAvatarResponseDTO(success, message, avatarDto);
     }
 
 

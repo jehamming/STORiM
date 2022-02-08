@@ -1,12 +1,9 @@
 package com.hamming.storim.client;
 
-import com.hamming.storim.client.controller.ChatPanelController;
-import com.hamming.storim.client.controller.LoginPanelController;
-import com.hamming.storim.client.controller.VerbEditorPanelController;
+import com.hamming.storim.client.controller.*;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
-import com.hamming.storim.client.controller.GameViewController;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 
@@ -21,12 +18,16 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     private ChatPanelController chatPanelController;
     private VerbEditorPanel verbEditorPanel;
     private VerbEditorPanelController verbEditorPanelController;
+    private UserInfoPanel userInfoPanel;
+    private UserInfoPanelController userInfoPanelController;
+    private AvatarPanel avatarPanel;
+    private AvatarPanelController avatarPanelController;
 
     private ConnectionController connectionController;
-    private UserInfoPanel userInfoPanel;
+
 
     private RoomEditorPanel roomEditorPanel;
-    private AvatarPanel avatarPanel;
+
     private ThingPanel thingPanel;
     private ExitEditorPanel exitEditorPanel;
     private GameViewPanel gameView;
@@ -64,18 +65,20 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         verbEditorPanelController = new VerbEditorPanelController(this , verbEditorPanel, connectionController);
         tabbedPane.addTab("Verbs", verbEditorPanel);
 
-//
-//        userInfoPanel = new UserInfoPanel(controllers);
-//        //mainPanel.add(userInfoPanel);
-//        tabbedPane.addTab("Users", userInfoPanel);
-//
+
+        userInfoPanel = new UserInfoPanel();
+        userInfoPanelController = new UserInfoPanelController(this, userInfoPanel, connectionController);
+        tabbedPane.addTab("Users", userInfoPanel);
+
+        avatarPanel = new AvatarPanel();
+        avatarPanelController = new AvatarPanelController(this, avatarPanel, connectionController);
+        tabbedPane.add("Avatars", avatarPanel);
 
 //
 //        roomEditorPanel = new RoomEditorPanel(controllers);
 //        tabbedPane.addTab("Rooms", roomEditorPanel);
 //
-//        avatarPanel = new AvatarPanel(controllers);
-//        tabbedPane.add("Avatars", avatarPanel);
+
 //
 //        thingPanel = new ThingPanel(controllers);
 //        tabbedPane.add("Things", thingPanel);

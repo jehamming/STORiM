@@ -1,5 +1,7 @@
 package com.hamming.storim.client.panels;
 
+import com.hamming.storim.client.listitem.ServerListItem;
+
 import javax.swing.*;
 
 public class LoginPanel extends JPanel {

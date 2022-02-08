@@ -28,6 +28,10 @@ public class AvatarFactory {
         return instance;
     }
 
+    public static AvatarFactory getInstance() {
+        return instance;
+    }
+
     private void sanityCheck() {
         List<Long> avatarIDs = getAllAvatarIds();
         for (Long id : avatarIDs) {

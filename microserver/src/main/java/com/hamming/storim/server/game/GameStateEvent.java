@@ -10,7 +10,6 @@ public class GameStateEvent {
         USERUPDATED,
         USERLEFTROOM,
         USERLOCATION,
-        VERBEXECUTED,
         VERBDELETED,
         AVATARADDED,
         AVATARUPDATED,

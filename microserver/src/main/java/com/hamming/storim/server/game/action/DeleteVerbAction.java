@@ -30,10 +30,8 @@ public class DeleteVerbAction extends Action<DeleteVerbDTO> {
             controller.verbDeleted(getClient(), verb);
         }
 
-
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         DeleteVerbDTO dto = getDto();
-        User creator = client.getCurrentUser();
 
         DeleteVerbResponseDTO response = client.getServer().getDataServerConnection().deleteVerb(dto.getVerbID());
         if (response.isSuccess()) {

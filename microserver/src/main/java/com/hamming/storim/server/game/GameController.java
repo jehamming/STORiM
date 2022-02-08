@@ -1,5 +1,6 @@
 package com.hamming.storim.server.game;
 
+import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.VerbDetailsDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.MessageInRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.UserLeftRoomDTO;
@@ -133,16 +134,9 @@ public class GameController extends ServerWorker {
         fireGameStateEvent(source, GameStateEvent.Type.ROOMADDED, room, null);
     }
 
-    public void addAvatar(ClientConnection source, Long creatorId, String name, Image image) {
-        Avatar avatar = AvatarFactory.getInstance(STORIMMicroServer.DATADIR).createAvatar(creatorId, name, image);
-        fireGameStateEvent(source, GameStateEvent.Type.AVATARADDED, avatar, null);
-    }
-
-    public void updateAvatar(ClientConnection source, Long avatarId, String name, Image image) {
-        Avatar avatar = AvatarFactory.getInstance(STORIMMicroServer.DATADIR).findAvatarById(avatarId);
-        avatar.setName(name);
-        avatar.setImage(image);
-        fireGameStateEvent(source, GameStateEvent.Type.AVATARUPDATED, avatar, null);
+    public void avatarUpdated(ClientConnection source, Long avatarId) {
+        //FIXME Avatar updated - send to appropriate clients
+        //fireGameStateEvent(source, GameStateEvent.Type.AVATARUPDATED, avatar, null);
     }
 
     public void deleteAvatar(ClientConnection source, Avatar avatar) {
