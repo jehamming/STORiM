@@ -1,26 +1,19 @@
 package com.hamming.storim.common.controllers;
 
-import com.hamming.storim.common.dto.ThingDto;
-import com.hamming.storim.common.interfaces.ThingListener;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 public class ThingController {
-    private List<ThingListener> thingListeners;
-    private Map<Long, ThingDto> thingStore;
-
-
-    public ThingController() {
-        thingListeners = new ArrayList<>();
-        thingStore = new HashMap<>();
+//    private List<ThingListener> thingListeners;
+//    private Map<Long, ThingDto> thingStore;
+//
+//
+//    public ThingController() {
+//        thingListeners = new ArrayList<>();
+//        thingStore = new HashMap<>();
 //        controllers.getConnectionController().registerReceiver(ThingAddedDTO.class, (NetCommandReceiver<ThingAddedDTO>) dto -> {handleThingAdded(dto);});
 //        controllers.getConnectionController().registerReceiver(GetThingResultDTO.class, (NetCommandReceiver<GetThingResultDTO>) dto -> {handleGetThingResult(dto);});
 //        controllers.getConnectionController().registerReceiver(ThingDeletedDTO.class, (NetCommandReceiver<ThingDeletedDTO>) dto -> {handleThingDeleted(dto);});
 //        controllers.getConnectionController().registerReceiver(ThingUpdatedDTO.class, (NetCommandReceiver<ThingUpdatedDTO>) dto -> {handleThingUpdated(dto);});
-    }
-
+//    }
+//
 
 //    private void handleThingUpdated(ThingUpdatedDTO dto) {
 //        ThingDto thing = dto.getThing();

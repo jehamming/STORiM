@@ -5,35 +5,34 @@ import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.request.*;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
-import com.hamming.storim.common.dto.protocol.serverpush.old.*;
+import com.hamming.storim.common.dto.protocol.serverpush.old.RoomAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.RoomUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.UserUpdatedDTO;
 import com.hamming.storim.server.common.ClientConnection;
-import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
-import com.hamming.storim.server.common.factories.AvatarFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
-import com.hamming.storim.server.common.factories.ThingFactory;
-import com.hamming.storim.server.common.factories.TileFactory;
-import com.hamming.storim.server.common.model.*;
-import com.hamming.storim.server.game.GameController;
-import com.hamming.storim.server.game.GameStateEvent;
-import com.hamming.storim.server.game.GameStateListener;
+import com.hamming.storim.server.common.model.Exit;
+import com.hamming.storim.server.common.model.Location;
+import com.hamming.storim.server.common.model.Room;
+import com.hamming.storim.server.game.*;
 import com.hamming.storim.server.game.action.*;
 
 import java.net.Socket;
 import java.util.HashMap;
 
-public class STORIMClientConnection extends ClientConnection implements GameStateListener {
+public class STORIMClientConnection extends ClientConnection implements RoomListener, ServerListener {
 
-    private User currentUser;
+    private UserDto currentUser;
     private STORIMMicroServer server;
     private GameController gameController;
 
     public STORIMClientConnection(STORIMMicroServer server, String id, Socket s, GameController controller) {
-        super(id, s,controller);
+        super(id, s, controller);
         this.server = server;
-        controller.addGamestateListener(this);
+        controller.addServerListener(this);
     }
 
     @Override
@@ -63,140 +62,64 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         getProtocolHandler().addAction(UseExitRequestDTO.class, new UseExitAction(gameController, this));
         getProtocolHandler().addAction(DeleteVerbDTO.class, new DeleteVerbAction(gameController, this));
         getProtocolHandler().addAction(GetAvatarsRequestDTO.class, new GetAvatarsAction(this));
-        getProtocolHandler().addAction(AddAvatarDto.class, new AddAvatarAction(gameController, this));
+        getProtocolHandler().addAction(AddAvatarDto.class, new AddAvatarAction( this));
         getProtocolHandler().addAction(GetAvatarRequestDTO.class, new GetAvatarAction(this));
         getProtocolHandler().addAction(DeleteAvatarDTO.class, new DeleteAvatarAction(gameController, this));
+        getProtocolHandler().addAction(SetAvatarDto.class, new SetAvatarAction(gameController, this));
     }
 
 
-    @Override
-    public void newGameState(GameStateEvent event) {
-        switch (event.getType()) {
-            case USERCONNECTED:
-                handleUserConnected((User) event.getObject());
-                break;
-            case USERDISCONNECTED:
-                handleUserDisconnected((User) event.getObject());
-                break;
-            case USERUPDATED:
-                handleUserUpdated((User) event.getObject());
-                break;
-            case USERLOCATION:
-                handleUserLocation((User) event.getObject());
-                break;
-            case USERLEFTROOM:
-                handleUserLeftRoom((UserLeftRoomDTO) event.getExtraData());
-                break;
-            case VERBDELETED:
-                handleVerbDeleted((Verb) event.getObject());
-                break;
-            case ROOMADDED:
-                handleRoomAdded((Room) event.getObject());
-                break;
-            case ROOMDELETED:
-                handleRoomDeleted((Room) event.getObject());
-                break;
-            case ROOMUPDATED:
-                sendRoomUpdate((Room) event.getObject());
-                break;
-            case AVATARADDED:
-                avatarAdded((Avatar) event.getObject());
-                break;
-            case AVATARDELETED:
-                avatarDeleted((Avatar) event.getObject());
-                break;
-            case AVATARUPDATED:
-                avatarUpdated((Avatar) event.getObject());
-                break;
-            case THINGADDED:
-                thingAdded((Thing) event.getObject());
-                break;
-            case THINGDELETED:
-                thingDeleted((Thing) event.getObject());
-                break;
-            case THINGUPDATED:
-                thingUpdated((Thing) event.getObject());
-                break;
-            case THINGPLACED:
-                thingPlaced((User) event.getExtraData(), (Thing) event.getObject());
-                break;
-            case MSGINROOM:
-                messageInROom(event.getObject(), (String) event.getExtraData());
-                break;
-        }
+    private void avatarSet(UserDto user, AvatarDto avatar) {
+        AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), avatar);
+        send(avatarSetDTO);
     }
 
-    private void messageInROom(BasicObject source, String message) {
+    private void messageInROom(DTO source, String message) {
         MessageInRoomDTO messageInRoomDTO = null;
-        if (source instanceof User) {
+        if (source instanceof UserDto) {
             messageInRoomDTO = new MessageInRoomDTO(source.getId(), MessageInRoomDTO.Type.USER, message);
-        } else if ( source instanceof Thing) {
+        } else if (source instanceof ThingDto) {
             messageInRoomDTO = new MessageInRoomDTO(source.getId(), MessageInRoomDTO.Type.THING, message);
         }
         send(messageInRoomDTO);
     }
 
-    private void handleUserLeftRoom(UserLeftRoomDTO data) {
-        Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
-        Long currentRoomId = currentUserLocation.getRoom().getId();
-        if (!currentUser.getId().equals( data.getUserId() ) ) {
-            if ( currentRoomId.equals(data.getOldRoomId())) {
-                send(data);
-            } else if ( currentRoomId.equals(data.getNewRoomId())) {
-                User user = gameController.getGameState().findUserById(data.getUserId());
-                Location location = gameController.getGameState().getLocation(user.getId());
-                UserEnteredRoomDTO dto = DTOFactory.getInstance().getUserEnteredRoomDTO(user, location, data.isTeleported());
-                send(dto);
-            }
-        }
+    private void userLeftRoom(UserDto user, boolean teleported) {
+        Location newLocation = gameController.getGameState().getLocation(user.getId());
+        Room newRoom = newLocation.getRoom();
+        UserLeftRoomDTO userLeftRoomDTO = new UserLeftRoomDTO(user.getId(), user.getName(), newRoom.getId(), newRoom.getName(), teleported);
+        send(userLeftRoomDTO);
     }
 
-    private void thingPlaced(User user, Thing thing) {
-        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-        ThingPlacedDTO dto = new ThingPlacedDTO(user.getId(), thingDto);
-        send(dto);
+    private void userEnteredRoom(UserDto user, boolean teleported) {
+        Location newLocation = gameController.getGameState().getLocation(user.getId());
+        LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(newLocation);
+        UserEnteredRoomDTO userEnteredRoomDTO = new UserEnteredRoomDTO(user, locationDto, teleported);
+        send(userEnteredRoomDTO);
     }
 
 
-    private void thingDeleted(Thing thing) {
-        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-        ThingDeletedDTO dto = new ThingDeletedDTO(thingDto);
-        send(dto);
-    }
 
-
-    private void thingUpdated(Thing thing) {
-        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-        ThingUpdatedDTO dto = new ThingUpdatedDTO(thingDto);
-        send(dto);
-    }
-
-
-    private void avatarUpdated(Avatar avatar) {
-        AvatarDto avatarDto = DTOFactory.getInstance().getAvatarDTO(avatar);
-        AvatarUpdatedDTO avatarUpdatedDTO = new AvatarUpdatedDTO(avatarDto);
+    private void avatarUpdated(AvatarDto avatar) {
+        AvatarUpdatedDTO avatarUpdatedDTO = new AvatarUpdatedDTO(avatar);
         send(avatarUpdatedDTO);
     }
 
-    private void avatarDeleted(Avatar avatar) {
+    private void avatarDeleted(AvatarDto avatar) {
         AvatarDeletedDTO avatarDeletedDTO = new AvatarDeletedDTO(avatar.getId());
         send(avatarDeletedDTO);
     }
 
-    private void handleUserUpdated(User user) {
-        UserDto userDto = DTOFactory.getInstance().getUserDTO(user);
-        if (!userDto.getId().equals(currentUser.getId())) {
-            sendAvatar(user);
-        }
-        UserUpdatedDTO userUpdatedDTO = new UserUpdatedDTO(userDto);
+    private void userUpdated(UserDto user) {
+        UserUpdatedDTO userUpdatedDTO = new UserUpdatedDTO(user);
         send(userUpdatedDTO);
     }
 
-    public User getCurrentUser() {
+    public UserDto getCurrentUser() {
         return currentUser;
     }
 
-    public void setCurrentUser(User currentUser) {
+    public void setCurrentUser(UserDto currentUser) {
         this.currentUser = currentUser;
     }
 
@@ -207,12 +130,14 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         sendTiles(currentUser);
         // Send Avatars
         sendAvatars(currentUser);
+        // Send current avatar
+        sendAvatar(currentUser);
         // Rooms
         sendRooms(currentUser);
         // Send Things
-        sendThings(currentUser);
+       // sendThings(currentUser);
         // Logged in Users;
-        for (User u : gameController.getGameState().getOnlineUsers()) {
+        for (UserDto u : gameController.getGameState().getOnlineUsers()) {
             if (!u.getId().equals(currentUser.getId())) {
                 UserOnlineDTO userOnlineDTO = new UserOnlineDTO(u.getId(), u.getName());
                 send(userOnlineDTO);
@@ -220,80 +145,78 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         }
     }
 
+    private void sendAvatars(UserDto user) {
+        GetAvatarsResponseDTO response = server.getDataServerConnection().getAvatars(user.getId());
+        if ( response.isSuccess() ) {
+            for (Long avatarId : response.getAvatars()) {
+                sendAvatar(avatarId);
+            }
+        }
+    }
+
+    private void sendAvatar(Long avatarId) {
+        GetAvatarResponseDTO response = server.getDataServerConnection().getAvatar(avatarId);
+        if ( response.isSuccess() ) {
+            sendAvatar(response.getAvatar());
+        }
+    }
+
     public void sendThingsInRoom() {
         Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
         Room room = currentUserLocation.getRoom();
-        for (Thing thing : ThingFactory.getInstance(STORIMMicroServer.DATADIR).getAllThingsInRoom(room.getId())) {
-            ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
-            ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thingDto, roomDto);
-            send(thingInRoomDTO);
-        }
+        //FIXME Things
+//        for (ThingDto thing : ThingFactory.getInstance(STORIMMicroServer.DATADIR).getAllThingsInRoom(room.getId())) {
+//            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
+//            ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thing, roomDto);
+//            send(thingInRoomDTO);
+//        }
     }
 
-    private void sendThings(User user) {
-        for (Thing thing : ThingFactory.getInstance(STORIMMicroServer.DATADIR).getThings(user.getId())) {
-            sendThing(thing);
-        }
-    }
+//
+//    public void sendThing(Thing thing) {
+//        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
+//        GetThingResultDTO getThingResultDTO = new GetThingResultDTO(true, null, thingDto);
+//        send(getThingResultDTO);
+//    }
 
-    public void sendThing(Thing thing) {
-        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-        GetThingResultDTO getThingResultDTO = new GetThingResultDTO(true, null, thingDto);
-        send(getThingResultDTO);
-    }
 
-    private void sendAvatars(User User) {
-        for (Avatar avatar : AvatarFactory.getInstance(STORIMMicroServer.DATADIR).getAvatars(User)) {
-            sendAvatar(avatar);
-        }
-    }
-
-    public void sendAvatar(Avatar avatar) {
-        AvatarDto avatarDto = DTOFactory.getInstance().getAvatarDTO(avatar);
-        GetAvatarResponseDTO getAvatarResultDTO = DTOFactory.getInstance().getGetAvatarResponseDTO(true, null, avatarDto);
+    public void sendAvatar(AvatarDto avatar) {
+        GetAvatarResponseDTO getAvatarResultDTO = DTOFactory.getInstance().getGetAvatarResponseDTO(true, null, avatar);
         send(getAvatarResultDTO);
     }
 
-    public void sendAvatar(User user) {
-        if (user.getCurrentAvatar() != null) {
-            sendAvatar(user.getCurrentAvatar());
+    public void sendAvatar(UserDto user) {
+        if (user.getCurrentAvatarID() != null) {
+            GetAvatarResponseDTO response = server.getDataServerConnection().getAvatar(user.getCurrentAvatarID());
+            if ( response.isSuccess() ) {
+                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), response.getAvatar());
+                send(avatarSetDTO);
+            }
         }
     }
 
 
-    private void sendTiles(User User) {
-        for (Tile tile : TileFactory.getInstance(STORIMMicroServer.DATADIR).geTiles(User)) {
-            sendTile(tile.getId());
-        }
+    private void sendTiles(UserDto user) {
+//        for (TileDto tile : TileFactory.getInstance(STORIMMicroServer.DATADIR).geTiles(user)) {
+//            sendTile(tile.getId());
+//        }
     }
 
-    private void sendRooms(User user) {
+    private void sendRooms(UserDto user) {
         for (Room room : Database.getInstance().getAll(Room.class, user.getId())) {
             sendRoom(room);
         }
     }
 
-    private void sendVerbs(User user) {
+    private void sendVerbs(UserDto user) {
         HashMap<Long, String> verbs = server.getDataServerConnection().getVerbs(user.getId());
         UserVerbsDTO userVerbsDTO = new UserVerbsDTO(verbs);
         send(userVerbsDTO);
     }
 
-    private void avatarAdded(Avatar avatar) {
-        AvatarDto avatarDto = DTOFactory.getInstance().getAvatarDTO(avatar);
-        if (avatar.getOwnerId().equals(currentUser.getId())) {
-            AvatarAddedDTO avatarAddedDTO = DTOFactory.getInstance().getAvatarAddedDTO(avatarDto);
-            send(avatarAddedDTO);
-        }
-    }
-
-    private void thingAdded(Thing thing) {
-        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-        if (thing.getOwnerId().equals(currentUser.getId())) {
-            ThingAddedDTO thingAddedDTO = new ThingAddedDTO(thingDto);
+    private void thingAdded(ThingDto thing) {
+            ThingAddedDTO thingAddedDTO = new ThingAddedDTO(thing);
             send(thingAddedDTO);
-        }
     }
 
 
@@ -317,56 +240,16 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
     }
 
     private void sendTile(Long tileId) {
-        Tile tile = TileFactory.getInstance(STORIMMicroServer.DATADIR).findTileById(tileId);
-        TileDto tileDto = DTOFactory.getInstance().getTileDTO(tile);
-        GetTileResultDTO getTileResultDTO = DTOFactory.getInstance().getGetTileResultDTO(true, null, tileDto);
-        send(getTileResultDTO);
+//        TileDto tileDto = DTOFactory.getInstance().getTileDTO(tile);
+//        GetTileResultDTO getTileResultDTO = DTOFactory.getInstance().getGetTileResultDTO(true, null, tileDto);
+//        send(getTileResultDTO);
     }
 
     private void handleRoomDeleted(Room room) {
         send(DTOFactory.getInstance().getRoomDeletedDTO(room));
     }
 
-    private void handleVerbDeleted(Verb verb) {
-        send(DTOFactory.getInstance().getVerbDeletedDTO(verb));
-    }
 
-    private void handleVerbExecuted(VerbOutput cmdResult) {
-        if (isInCurrentRoom(cmdResult.getCallerId())) {
-            String output = "";
-            if (cmdResult.getCallerId().equals(currentUser.getId())) {
-                output = cmdResult.getToCaller();
-            } else {
-                output = cmdResult.getToLocation();
-            }
-            //ExecVerbResultDTO execVerbResultDTO = DTOFactory.getInstance().getExecVerbResultDto(cmdResult.getId(), output);
-            //send(execVerbResultDTO);
-        }
-    }
-
-    private boolean isInCurrentRoom(Long callerId) {
-        Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
-        Location callerLocation = gameController.getGameState().getLocation(callerId);
-        return currentUserLocation.getRoom().getId().equals(callerLocation.getRoom().getId());
-    }
-
-
-    private void handleTeleported(User user, Long oldRoomId) {
-        //FIXME handle teleport
-//        if (user.equals(currentUser)) {
-//            sendUsersInRoom(user.getLocation().getRoom());
-//            sendThingsInRoom(user.getLocation().getRoom());
-//        } else {
-//            sendRoom(user.getLocation().getRoom());
-//            if (user.getLocation().getRoom().getTileId() != null) {
-//                sendTile(user.getLocation().getRoom().getTileId());
-//            }
-//            sendThingsInRoom(user.getLocation().getRoom());
-//            LocationDto location = DTOFactory.getInstance().getLocationDTO(user.getLocation());
-//           // UserTeleportedDTO userTeleportedDTO = DTOFactory.getInstance().getUserTeleportedDTO(user, oldRoomId, location);
-//            //send(userTeleportedDTO);
-//        }
-    }
 
     public void sendUsersInRoom() {
         Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
@@ -374,29 +257,32 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         gameController.getGameState().getOnlineUsers().forEach(user -> {
             Location location = gameController.getGameState().getLocation(user.getId());
             if (room.getId().equals(location.getRoom().getId())) {
-                if ( !currentUser.getId().equals(user.getId())) {
+                if (!currentUser.getId().equals(user.getId())) {
                     sendUserInRoom(user);
                 }
             }
         });
     }
 
-    public void sendUserInRoom(User user) {
+    public void sendUserInRoom(UserDto user) {
         Location location = gameController.getGameState().getLocation(user.getId());
         UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user, location);
         send(dto);
+        if ( user.getCurrentAvatarID() != null ) {
+            //Send Avatar
+            GetAvatarResponseDTO response = server.getDataServerConnection().getAvatar(user.getCurrentAvatarID());
+            AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), response.getAvatar());
+            send(avatarSetDTO);
+        }
     }
 
-    public void handleUserLocation(User user) {
+    public void userLocationUpdate(UserDto user) {
         Location location = gameController.getGameState().getLocation(user.getId());
-        Location currentUserLocation = gameController.getGameState().getLocation(currentUser.getId());
-        if (location.getRoom().getId().equals(currentUserLocation.getRoom().getId())) {
-            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-            Long sequence = null;
-            if (user.getId().equals(currentUser.getId())) sequence = location.getSequence();
-            UserLocationUpdatedDTO userLocationUpdatedDTO = new UserLocationUpdatedDTO(user.getId(), locationDto, sequence);
-            send(userLocationUpdatedDTO);
-        }
+        LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
+        Long sequence = null;
+        if (user.getId().equals(currentUser.getId())) sequence = location.getSequence();
+        UserLocationUpdatedDTO userLocationUpdatedDTO = new UserLocationUpdatedDTO(user.getId(), locationDto, sequence);
+        send(userLocationUpdatedDTO);
     }
 
     public void sendRoom(Room room) {
@@ -414,17 +300,16 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         send(getRoomResultDTO);
     }
 
-    private void sendUserDetails(User user) {
-        UserDto userDTO = DTOFactory.getInstance().getUserDTO(user);
+    private void sendUserDetails(UserDto user) {
         Location location = gameController.getGameState().getLocation(user.getId());
         Room room = location.getRoom();
         sendRoom(room);
         sendAvatar(user);
-        GetUserResultDTO getUserResultDTO = DTOFactory.getInstance().getGetUserResultDTO(true, null, userDTO);
+        GetUserResultDTO getUserResultDTO = DTOFactory.getInstance().getGetUserResultDTO(true, null, user);
         send(getUserResultDTO);
     }
 
-    private void handleUserConnected(User u) {
+    private void userConnected(UserDto u) {
         if (currentUser != null && !currentUser.equals(u)) {
             sendAvatar(u);
             UserConnectedAction action = new UserConnectedAction(gameController, this, u);
@@ -432,18 +317,18 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         }
     }
 
-    private void handleUserDisconnected(User u) {
+    private void userDisconnected(UserDto u) {
         UserDisconnectedDTO dto = DTOFactory.getInstance().getUserDisconnectedDTO(u);
         send(dto);
     }
 
 
-    public User verifyUser(Long userId, String token) {
-        User verifiedUser = null;
+    public UserDto verifyUser(Long userId, String token) {
+        UserDto verifiedUser = null;
         VerifyUserRequestDTO dto = new VerifyUserRequestDTO(userId, token);
         VerifyUserResponseDTO response = server.getLoginServerConnection().sendReceive(dto, VerifyUserResponseDTO.class);
         if (response.getUser() != null) {
-            verifiedUser = User.valueOf(response.getUser());
+            verifiedUser = response.getUser();
         } else {
             System.err.println(response.getErrorMessage());
         }
@@ -462,7 +347,7 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
         }
     }
 
-    public void updateRoomForUser(User user, Location location) {
+    public void updateRoomForUser(UserDto user, Location location) {
         UpdateUserRoomDto updateUserRoomDto = new UpdateUserRoomDto(user.getId(), location.getRoom().getId());
         server.getDataServerConnection().send(updateUserRoomDto);
     }
@@ -482,9 +367,56 @@ public class STORIMClientConnection extends ClientConnection implements GameStat
 
     @Override
     public void disconnected() {
-        gameController.removeGameStateListener(this);
+        gameController.removeServerListener(this);
+        Location location = gameController.getGameState().getLocation(currentUser.getId());
+        gameController.removeRoomListener(location.getRoom().getId(), this);
         UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
         gameController.addAction(action);
         currentUser = null;
+    }
+
+    @Override
+    public void roomEvent(RoomEvent event) {
+        switch (event.getType()) {
+            case AVATARSET:
+                avatarSet((UserDto) event.getData(), (AvatarDto) event.getExtraData());
+                break;
+            case USERUPDATED:
+                userUpdated((UserDto) event.getData());
+                break;
+            case USERLEFTROOM:
+                userLeftRoom((UserDto) event.getData(), (Boolean) event.getExtraData());
+                break;
+            case USERENTEREDROOM:
+                userEnteredRoom((UserDto) event.getData(), (Boolean) event.getExtraData());
+                break;
+            case USERLOCATIONUPDATE:
+                userLocationUpdate((UserDto) event.getData());
+                break;
+            case THINGPLACED:
+                //TODO
+                break;
+            case THINGLOCATIONUPDATE:
+                //TODO
+                break;
+            case ROOMUPDATED:
+                //TODO
+                break;
+            case MESSAGEINROOM:
+                messageInROom(event.getData(), (String) event.getExtraData());
+                break;
+        }
+    }
+
+    @Override
+    public void serverEvent(ServerEvent event) {
+        switch (event.getType()) {
+            case USERCONNECTED:
+                userConnected((UserDto) event.getData());
+                break;
+            case USERDISCONNECTED:
+                userDisconnected((UserDto) event.getData());
+                break;
+        }
     }
 }

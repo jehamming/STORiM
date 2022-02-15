@@ -1,14 +1,10 @@
 package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.VerbDetailsDTO;
-import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbDetailsRequestDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbDetailsResponseDTO;
 import com.hamming.storim.server.STORIMClientConnection;
-import com.hamming.storim.server.common.dto.DTOFactory;
 import com.hamming.storim.server.common.action.Action;
-import com.hamming.storim.server.common.factories.VerbFactory;
-import com.hamming.storim.server.common.model.Verb;
 import com.hamming.storim.server.game.GameController;
 
 public class GetVerbAction extends Action<GetVerbDetailsRequestDTO> {

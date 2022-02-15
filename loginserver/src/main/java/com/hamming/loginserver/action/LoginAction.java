@@ -10,6 +10,8 @@ import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserResultDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserResponseDTO;
 
 public class LoginAction extends Action<LoginRequestDTO> {
 
@@ -27,16 +29,15 @@ public class LoginAction extends Action<LoginRequestDTO> {
         String token = null;
         LocationDto location = null;
         String errorMessage = null;
+        UserDto user = null;
         String username = getDto().getUsername();
         String password = getDto().getPassword();
-        UserDto user = new UserDto();
-        user.setUsername(username);
         // Verify User with UserDataServer
-        GetUserRequestDTO getUserRequestDTO = new GetUserRequestDTO(user);
-        GetUserResultDTO getUserResultDTO = serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getUserRequestDTO, GetUserResultDTO.class);
-        if ( getUserResultDTO != null && getUserResultDTO.isSuccess() ) {
-            user = getUserResultDTO.getUser();
-            if ( user.getPassword().equals(password)) {
+        ValidateUserRequestDTO validateUserRequestDTO = new ValidateUserRequestDTO(username, password);
+        ValidateUserResponseDTO validateUserResponseDTO = serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(validateUserRequestDTO, ValidateUserResponseDTO.class);
+        if ( validateUserResponseDTO != null) {
+            user = validateUserResponseDTO.getUser();
+            if (user != null) {
                 // Success!
                 ((UserClientConnection) getClient()).setCurrentUser(user);
                 // Create a new Session for this connection
@@ -45,10 +46,10 @@ public class LoginAction extends Action<LoginRequestDTO> {
                 // Check location of the user
                 loginSucceeded = true;
             } else {
-                errorMessage = "Password is incorrect";
+                errorMessage = validateUserResponseDTO.getErrorMessage();
             }
         } else {
-            errorMessage = " User " + getDto().getUsername() + " not found!";
+            errorMessage = getClass().getSimpleName() + ":Something went wrong";
         }
 
         // Set Result (Sync)

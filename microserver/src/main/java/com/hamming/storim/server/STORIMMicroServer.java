@@ -4,9 +4,6 @@ import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerResponseDTO;
-import com.hamming.storim.server.common.factories.AvatarFactory;
-import com.hamming.storim.server.common.factories.ThingFactory;
-import com.hamming.storim.server.common.factories.TileFactory;
 import com.hamming.storim.server.game.GameController;
 
 import java.io.IOException;
@@ -43,12 +40,6 @@ public class STORIMMicroServer extends Server {
         // Set data variables
         DATADIR = config.getPropertyAsString("datadir");
         SERVERNAME = config.getPropertyAsString("name");
-        //Force Tile loading
-        TileFactory.getInstance(DATADIR);
-        //Force Avatar Loading
-        AvatarFactory.getInstance(DATADIR);
-        //Force Thing Loading
-        ThingFactory.getInstance(DATADIR);
         port = config.getPropertyAsInt("serverport");
 
         // Start GameController

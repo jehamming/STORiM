@@ -1,29 +1,20 @@
 package com.hamming.storim.common.controllers;
 
-import com.hamming.storim.common.dto.ExitDto;
-import com.hamming.storim.common.dto.RoomDto;
-import com.hamming.storim.common.dto.TileDto;
-import com.hamming.storim.common.interfaces.RoomListener;
-import com.hamming.storim.common.interfaces.RoomUpdateListener;
-
-import java.util.List;
-import java.util.Map;
-
 public class RoomController {
 
-    private List<RoomListener> roomListeners;
-    private List<RoomUpdateListener> roomUpdateListeners;
-    private Map<Long, RoomDto> rooms;
-    private Map<Long, ExitDto> exits;
-    private Map<Long, TileDto> tiles;
-
-
-    public RoomController() {
-        registerReceivers();
-    }
-
-    private void registerReceivers() {
-    }
+//    private List<RoomListener> roomListeners;
+//    private List<RoomUpdateListener> roomUpdateListeners;
+//    private Map<Long, RoomDto> rooms;
+//    private Map<Long, ExitDto> exits;
+//    private Map<Long, TileDto> tiles;
+//
+//
+//    public RoomController() {
+//        registerReceivers();
+//    }
+//
+//    private void registerReceivers() {
+//    }
 
 //    private void connectResult(ConnectResultDTO dto) {
 //        if (dto.isConnectSucceeded()) {

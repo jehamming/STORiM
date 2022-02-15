@@ -16,8 +16,8 @@ public class UpdateUserAction extends Action<UpdateUserDto> {
     @Override
     public void execute() {
         UpdateUserDto dto = getDto();
-        controller.updateUser(getClient(), dto.getId(), dto.getName(), dto.getEmail(), dto.getAvatarID());
-
+        //FIXME Update USer
+       // controller.updateUser(getClient(), dto.getId(), dto.getName(), dto.getEmail(), dto.getAvatarID());
     }
 
 }

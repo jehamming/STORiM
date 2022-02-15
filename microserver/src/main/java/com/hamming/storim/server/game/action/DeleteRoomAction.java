@@ -22,7 +22,8 @@ public class DeleteRoomAction extends Action<DeleteRoomDTO> {
         Room room = RoomFactory.getInstance().findRoomByID(getDto().getRoomId());
         boolean success = RoomFactory.getInstance().deleteRoom(getDto().getRoomId());
         if (success) {
-            controller.roomDeleted(getClient(), room);
+            //FIXME Send room deleted signal?
+            //controller.roomDeleted(getClient(), room);
         }
     }
 

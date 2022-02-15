@@ -11,8 +11,6 @@ public interface GameView {
 
     void addExit(ExitDto exit);
 
-    void deleteAvatar(Long playerId);
-
     void deleteThing(Long thingId);
 
     void removePlayer(Long playerId);
@@ -25,7 +23,9 @@ public interface GameView {
 
     void setPlayerLocation(Long playerId, int x, int y);
 
-    void updatePlayer(UserDto user, AvatarDto avatar);
+    void updatePlayer(UserDto user);
+
+    void setAvatar(Long playerId, AvatarDto avatarDto);
 
     void updateThing(ThingDto thingDto);
 

@@ -5,20 +5,20 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 public class GetUserRequestDTO implements ProtocolDTO {
 
-    private UserDto user;
+    private Long userId;
 
-    public GetUserRequestDTO(UserDto user) {
-        this.user = user;
+    public GetUserRequestDTO(Long userId) {
+        this.userId = userId;
     }
 
-    public UserDto getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
     @Override
     public String toString() {
-        return "GetUserDTO{" +
-                "user=" + user +
+        return "GetUserRequestDTO{" +
+                "userId=" + userId +
                 '}';
     }
 }

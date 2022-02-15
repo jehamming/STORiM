@@ -6,9 +6,11 @@ import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.AddAvatarRequestDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.DeleteAvatarRequestDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.SetAvatarRequestDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.UpdateAvatarRequestDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
+import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.*;
 import com.hamming.userdataserver.action.*;
 
@@ -35,6 +37,8 @@ public class UserDataClientConnection extends ClientConnection {
         getProtocolHandler().addAction(GetAvatarRequestDTO.class, new GetAvatarAction(getServerWorker(), this));
         getProtocolHandler().addAction(DeleteAvatarRequestDTO.class, new DeleteAvatarAction(getServerWorker(), this));
         getProtocolHandler().addAction(UpdateAvatarRequestDto.class, new UpdateAvatarAction(getServerWorker(), this));
+        getProtocolHandler().addAction(SetAvatarRequestDto.class, new SetAvatarAction(getServerWorker(), this));
+        getProtocolHandler().addAction(ValidateUserRequestDTO.class, new ValidateUserAction(getServerWorker(), this));
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.hamming.storim.server.game;
 
 
+import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.server.common.model.Location;
-import com.hamming.storim.server.common.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class GameState {
 
-    private List<User> onlineUsers;
+    private List<UserDto> onlineUsers;
     private HashMap<Long, Location> userLocations;
 
     public GameState() {
@@ -18,11 +18,11 @@ public class GameState {
         userLocations = new HashMap<>();
     }
 
-    public List<User> getOnlineUsers() {
+    public List<UserDto> getOnlineUsers() {
         return onlineUsers;
     }
 
-    public boolean removeOnlineUser(User user) {
+    public boolean removeOnlineUser(UserDto user) {
         boolean existed = onlineUsers.remove(user);
         userLocations.remove(user.getId());
         return existed;
@@ -32,13 +32,13 @@ public class GameState {
         return userLocations.get(userId);
     }
 
-    public void setLocation(User user, Location location) {
+    public void setLocation(UserDto user, Location location) {
         userLocations.put(user.getId(), location);
     }
 
-    public User findUserById( Long id ) {
-        User returnValue = null;
-        for (User u : onlineUsers ) {
+    public UserDto findUserById( Long id ) {
+        UserDto returnValue = null;
+        for (UserDto u : onlineUsers ) {
             if (u.getId().equals(id)) {
                 returnValue = u;
                 break;
@@ -47,7 +47,7 @@ public class GameState {
         return returnValue;
     }
 
-    public void addOnlineUser(User user) {
+    public void addOnlineUser(UserDto user) {
         onlineUsers.add(user);
     }
 }

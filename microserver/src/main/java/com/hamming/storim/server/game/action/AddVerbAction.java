@@ -1,12 +1,12 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ErrorDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.AddVerbDto;
+import com.hamming.storim.common.dto.protocol.request.AddVerbDto;
 import com.hamming.storim.common.dto.protocol.serverpush.VerbAddedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.AddVerbResponseDTO;
-import com.hamming.storim.server.common.model.User;
 import com.hamming.storim.server.game.GameController;
 
 public class AddVerbAction extends Action<AddVerbDto> {
@@ -22,7 +22,7 @@ public class AddVerbAction extends Action<AddVerbDto> {
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         AddVerbDto dto = getDto();
-        User creator = client.getCurrentUser();
+        UserDto creator = client.getCurrentUser();
 
         AddVerbResponseDTO response = client.getServer().getDataServerConnection().addVerb(creator, dto.getName(), dto.getToCaller(), dto.getToLocation());
         if (response.isSuccess()) {

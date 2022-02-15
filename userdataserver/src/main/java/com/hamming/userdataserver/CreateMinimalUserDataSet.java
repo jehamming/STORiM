@@ -1,9 +1,10 @@
 package com.hamming.userdataserver;
 
 import com.hamming.storim.server.Database;
-import com.hamming.storim.server.common.factories.VerbFactory;
-import com.hamming.storim.server.common.model.User;
-import com.hamming.storim.server.common.model.Verb;
+import com.hamming.userdataserver.factories.VerbFactory;
+import com.hamming.userdataserver.factories.UserFactory;
+import com.hamming.userdataserver.model.User;
+import com.hamming.userdataserver.model.Verb;
 
 public class CreateMinimalUserDataSet {
 

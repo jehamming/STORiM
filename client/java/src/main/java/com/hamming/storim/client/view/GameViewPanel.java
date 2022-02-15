@@ -631,14 +631,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     }
 
     @Override
-    public void deleteAvatar(Long playerId) {
-        Player player = getPlayer(playerId);
-        if (player != null ) {
-            player.setImage(null);
-        }
-    }
-
-    @Override
     public void deleteThing(Long thingId) {
         Thing t = getThing(thingId);
         if ( t != null ) {
@@ -672,18 +664,23 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     }
 
     @Override
-    public void updatePlayer(UserDto user, AvatarDto avatar) {
+    public void updatePlayer(UserDto user) {
         Player player = getPlayer(user.getId());
         if (player != null ) {
             player.setDisplayName(user.getName());
+        }
+    }
+
+    @Override
+    public void setAvatar(Long playerId, AvatarDto avatar) {
+        Player player = getPlayer(playerId);
+        if (player != null ) {
             if ( avatar != null ) {
                 Image image = ImageUtils.decode(avatar.getImageData());
                 int roomSize = 10;
                 int widthPerTile = getWidth() / roomSize;
                 image = ImageUtils.resize(image, widthPerTile, widthPerTile);
                 player.setImage(image);
-            } else {
-                player.setImage(getDefaultUserImage());
             }
         }
     }

@@ -29,9 +29,7 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
         Session session = serverWorker.getLoginServer().getSessionManager().getSession(userId);
         if ( session != null && session.getToken().equals(token)) {
             // GetUser
-            UserDto user = new UserDto();
-            user.setId(userId);
-            GetUserRequestDTO getUserRequestDTO = new GetUserRequestDTO(user);
+            GetUserRequestDTO getUserRequestDTO = new GetUserRequestDTO(userId);
             GetUserResultDTO getUserResultDTO = serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getUserRequestDTO, GetUserResultDTO.class);
             if ( getUserResultDTO != null && getUserResultDTO.isSuccess() ) {
                 userDto = getUserResultDTO.getUser();

@@ -1,8 +1,6 @@
 package com.hamming.storim.server.common;
 
 
-import com.hamming.storim.server.common.model.ImageObject;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;

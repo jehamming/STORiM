@@ -1,12 +1,12 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.TeleportRequestDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
-import com.hamming.storim.server.common.model.User;
 import com.hamming.storim.server.game.GameController;
 
 public class TeleportAction extends Action<TeleportRequestDTO> {
@@ -26,7 +26,7 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
 
     public void handleTeleportRequest(Long userId, Long roomId) {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
-        User user = controller.getGameState().findUserById(userId);
+        UserDto user = controller.getGameState().findUserById(userId);
         Room r = RoomFactory.getInstance().findRoomByID(roomId);
         Location loc;
         if (user != null && r != null ) {

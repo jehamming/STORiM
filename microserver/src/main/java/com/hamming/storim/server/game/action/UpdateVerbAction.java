@@ -2,14 +2,10 @@ package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateVerbDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.AddVerbDto;
-import com.hamming.storim.common.dto.protocol.serverpush.VerbAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.VerbUpdatedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
-import com.hamming.storim.server.common.dto.protocol.dataserver.verb.AddVerbResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.UpdateVerbResponseDTO;
-import com.hamming.storim.server.common.model.User;
 import com.hamming.storim.server.game.GameController;
 
 public class UpdateVerbAction extends Action<UpdateVerbDto> {

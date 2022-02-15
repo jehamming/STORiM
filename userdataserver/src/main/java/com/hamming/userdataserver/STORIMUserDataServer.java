@@ -5,8 +5,9 @@ import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
-import com.hamming.storim.server.common.factories.AvatarFactory;
-import com.hamming.storim.server.common.factories.ThingFactory;
+import com.hamming.userdataserver.factories.AvatarFactory;
+import com.hamming.userdataserver.factories.ThingFactory;
+import com.hamming.userdataserver.factories.TileFactory;
 
 import java.net.Inet4Address;
 import java.net.Socket;
@@ -39,6 +40,11 @@ public class STORIMUserDataServer extends Server {
         AvatarFactory.getInstance(DATADIR);
         //Force Thing Loading
         ThingFactory.getInstance(DATADIR);
+        //Force Tile loading
+        TileFactory.getInstance(DATADIR);
+
+
+
 
         port = config.getPropertyAsInt("serverport");
 
