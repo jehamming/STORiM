@@ -21,7 +21,7 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
 
     public ClientConnection(String id, Socket s, ServerWorker serverWorker) {
         this.id = id;
-        netClient = new NetClient(this,this, s);
+        netClient = new NetClient(id, this,this, s);
         protocolHandler = new ProtocolHandler();
         this.serverWorker = serverWorker;
         addActions();
@@ -30,11 +30,16 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
     @Override
     public void receiveDTO(ProtocolDTO dto) {
         Action action = protocolHandler.getAction(dto);
-        System.out.println("(" + getClass().getSimpleName() + ") Received:" + dto);
+        System.out.println("(" + getClientId() + ") Received:" + dto);
         if (action != null) {
             action.setDTO(dto);
             serverWorker.addAction(action);
         }
+    }
+
+    public String getClientId() {
+        String clientId = this.getClass().getSimpleName() + "-" + getId();
+        return clientId;
     }
 
     public abstract void addActions();

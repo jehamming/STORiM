@@ -11,6 +11,7 @@ import com.hamming.storim.common.dto.protocol.serverpush.old.ThingAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.old.UserUpdatedDTO;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
+import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbDetailsResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
 import com.hamming.storim.server.common.factories.RoomFactory;
@@ -36,12 +37,21 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     @Override
+    public String getClientId() {
+        String clientId = this.getClass().getSimpleName();
+        if ( currentUser != null ) {
+            clientId = clientId.concat("-UserId:"+ currentUser.getId() );
+        }
+        return clientId;
+    }
+
+    @Override
     public void addActions() {
         gameController = (GameController) getServerWorker();
         getProtocolHandler().addAction(TeleportRequestDTO.class, new TeleportAction(gameController, this));
         getProtocolHandler().addAction(GetRoomDTO.class, new GetRoomAction(gameController, this));
         getProtocolHandler().addAction(GetUserDTO.class, new GetUserAction(gameController, this));
-        getProtocolHandler().addAction(GetVerbDetailsRequestDTO.class, new GetVerbAction(gameController, this));
+        getProtocolHandler().addAction(GetVerbDTO.class, new GetVerbAction(gameController, this));
         getProtocolHandler().addAction(ExecVerbDTO.class, new ExecVerbAction(gameController, this));
         getProtocolHandler().addAction(AddVerbDto.class, new AddVerbAction(gameController, this));
         getProtocolHandler().addAction(UpdateVerbDto.class, new UpdateVerbAction(gameController, this));
@@ -84,18 +94,21 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         send(messageInRoomDTO);
     }
 
-    private void userLeftRoom(UserDto user, boolean teleported) {
+    private void userLeftRoom(UserDto user) {
         Location newLocation = gameController.getGameState().getLocation(user.getId());
         Room newRoom = newLocation.getRoom();
-        UserLeftRoomDTO userLeftRoomDTO = new UserLeftRoomDTO(user.getId(), user.getName(), newRoom.getId(), newRoom.getName(), teleported);
+        UserLeftRoomDTO userLeftRoomDTO = new UserLeftRoomDTO(user.getId(), user.getName(), newRoom.getId(), newRoom.getName());
         send(userLeftRoomDTO);
     }
 
-    private void userEnteredRoom(UserDto user, boolean teleported) {
+    private void userEnteredRoom(UserDto user, Long oldRoomId) {
+        Room oldRoom = RoomFactory.getInstance().findRoomByID(oldRoomId);
         Location newLocation = gameController.getGameState().getLocation(user.getId());
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(newLocation);
-        UserEnteredRoomDTO userEnteredRoomDTO = new UserEnteredRoomDTO(user, locationDto, teleported);
+        UserEnteredRoomDTO userEnteredRoomDTO = new UserEnteredRoomDTO(user, locationDto, oldRoomId, oldRoom.getName());
         send(userEnteredRoomDTO);
+        //Send User Avatar
+        sendAvatar(user);
     }
 
 
@@ -130,8 +143,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         sendTiles(currentUser);
         // Send Avatars
         sendAvatars(currentUser);
-        // Send current avatar
-        sendAvatar(currentUser);
         // Rooms
         sendRooms(currentUser);
         // Send Things
@@ -352,10 +363,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         server.getDataServerConnection().send(updateUserRoomDto);
     }
 
-    public VerbDetailsDTO getVerb(Long verbId) {
-        return server.getDataServerConnection().getVerb(verbId);
-    }
-
     public STORIMMicroServer getServer() {
         return server;
     }
@@ -385,10 +392,10 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 userUpdated((UserDto) event.getData());
                 break;
             case USERLEFTROOM:
-                userLeftRoom((UserDto) event.getData(), (Boolean) event.getExtraData());
+                userLeftRoom((UserDto) event.getData());
                 break;
             case USERENTEREDROOM:
-                userEnteredRoom((UserDto) event.getData(), (Boolean) event.getExtraData());
+                userEnteredRoom((UserDto) event.getData(), (Long) event.getExtraData());
                 break;
             case USERLOCATIONUPDATE:
                 userLocationUpdate((UserDto) event.getData());
@@ -418,5 +425,14 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 userDisconnected((UserDto) event.getData());
                 break;
         }
+    }
+
+    public VerbDetailsDTO getVerb(Long verbId) {
+        VerbDetailsDTO verbDetailsDTO = null;
+        GetVerbDetailsResponseDTO getVerbDetailsResponseDTO = server.getDataServerConnection().getVerb(verbId);
+        if ( getVerbDetailsResponseDTO.isSuccess()) {
+            verbDetailsDTO = getVerbDetailsResponseDTO.getVerb();
+        }
+        return verbDetailsDTO;
     }
 }

@@ -39,7 +39,7 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
         if (client != null && client.isConnected()) {
             client.dispose();
         }
-        client = new NetClient(this, this , serverip, port);
+        client = new NetClient(clientName, this, this , serverip, port);
         user = null;
         while (!client.isConnected()) {
             try {

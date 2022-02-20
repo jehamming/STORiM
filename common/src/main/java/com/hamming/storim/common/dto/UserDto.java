@@ -22,6 +22,10 @@ public class UserDto extends DTO {
         return currentAvatarID;
     }
 
+    public void setCurrentAvatarID(Long currentAvatarID) {
+        this.currentAvatarID = currentAvatarID;
+    }
+
     @Override
     public String toString() {
         return "UserDto{" +

@@ -27,7 +27,7 @@ public class LoginServerWorker extends ServerWorker {
             System.out.println("("+getClass().getSimpleName() +") New Server registered: " + registration);
             System.out.println("("+getClass().getSimpleName() +") No of servers registered: " + registeredServers.size());
         } else {
-            errorMessage = name + " already registered as server!";
+            errorMessage = name + " already registered as server in another connection!!";
         }
         return errorMessage;
     }
@@ -40,7 +40,7 @@ public class LoginServerWorker extends ServerWorker {
     public ServerRegistration removeRegisteredServer(ClientConnection connection) {
         ServerRegistration serverRegistration = registeredServers.get(connection);
         if ( serverRegistration != null ) {
-            registeredServers.remove(serverRegistration);
+            registeredServers.remove(connection);
             System.out.println("("+getClass().getSimpleName() +") Server "+ serverRegistration.getServerName()+ " removed, no of servers registered: " + registeredServers.values().size());
         }
         return serverRegistration;
