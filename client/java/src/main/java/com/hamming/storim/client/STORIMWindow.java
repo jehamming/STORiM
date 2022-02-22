@@ -22,11 +22,12 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     private UserInfoPanelController userInfoPanelController;
     private AvatarPanel avatarPanel;
     private AvatarPanelController avatarPanelController;
-
+    private RoomEditorPanel roomEditorPanel;
+    private RoomEditorPanelController roomEditorPanelController;
     private ConnectionController connectionController;
 
 
-    private RoomEditorPanel roomEditorPanel;
+
 
     private ThingPanel thingPanel;
     private ExitEditorPanel exitEditorPanel;
@@ -74,10 +75,10 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         avatarPanelController = new AvatarPanelController(this, avatarPanel, connectionController);
         tabbedPane.add("Avatars", avatarPanel);
 
-//
-//        roomEditorPanel = new RoomEditorPanel(controllers);
-//        tabbedPane.addTab("Rooms", roomEditorPanel);
-//
+
+        roomEditorPanel = new RoomEditorPanel();
+        roomEditorPanelController = new RoomEditorPanelController(this, roomEditorPanel, connectionController);
+        tabbedPane.addTab("Rooms", roomEditorPanel);
 
 //
 //        thingPanel = new ThingPanel(controllers);
