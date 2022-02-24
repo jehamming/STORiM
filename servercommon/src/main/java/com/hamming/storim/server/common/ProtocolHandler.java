@@ -17,7 +17,6 @@ public class ProtocolHandler<T extends Action> implements Protocol {
     }
 
     public void addAction(Class clazz, T action) {
-        // Users
         actions.put(clazz, action);
     }
     public void clearActions() {

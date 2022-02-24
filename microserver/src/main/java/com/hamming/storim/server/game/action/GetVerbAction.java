@@ -21,11 +21,8 @@ public class GetVerbAction extends Action<GetVerbDTO> {
 
     @Override
     public void execute() {
-
         STORIMClientConnection client = (STORIMClientConnection) getClient();
-
-        VerbDetailsDTO verbDetailsDTO = client.getVerb(getDto().getVerbID());
-
+        VerbDetailsDTO verbDetailsDTO = client.getServer().getUserDataServerProxy().getVerb(getDto().getVerbID());
         GetVerbResponseDTO response = new GetVerbResponseDTO(verbDetailsDTO);
         getClient().send(response);
     }

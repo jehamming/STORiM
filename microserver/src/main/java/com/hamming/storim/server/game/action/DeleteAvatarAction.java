@@ -22,13 +22,10 @@ public class DeleteAvatarAction extends Action<DeleteAvatarDTO> {
     public void execute() {
         DeleteAvatarDTO dto = getDto();
         STORIMClientConnection client = (STORIMClientConnection) getClient();
-        DeleteAvatarResponseDTO response = client.getServer().getDataServerConnection().deleteAvatar(dto.getAvatarID());
-        if (response.isSuccess()) {
+        boolean success = client.getServer().getUserDataServerProxy().deleteAvatar(dto.getAvatarID());
+        if (success) {
             AvatarDeletedDTO avatarDeletedDTO = new AvatarDeletedDTO(dto.getAvatarID());
             getClient().send(avatarDeletedDTO);
-        } else {
-            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), response.getErrorMessage());
-            getClient().send(errorDTO);
         }
     }
 

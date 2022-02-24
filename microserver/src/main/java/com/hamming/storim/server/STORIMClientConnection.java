@@ -5,15 +5,9 @@ import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.request.*;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomUpdatedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.ThingAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.UserUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
-import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbDetailsResponseDTO;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Location;
@@ -55,9 +49,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(ExecVerbDTO.class, new ExecVerbAction(gameController, this));
         getProtocolHandler().addAction(AddVerbDto.class, new AddVerbAction(gameController, this));
         getProtocolHandler().addAction(UpdateVerbDto.class, new UpdateVerbAction(gameController, this));
-        getProtocolHandler().addAction(AddRoomDto.class, new AddRoomAction(gameController, this));
-        getProtocolHandler().addAction(UpdateRoomDto.class, new UpdateRoomAction(gameController, this));
-        getProtocolHandler().addAction(DeleteRoomDTO.class, new DeleteRoomAction(gameController, this));
         getProtocolHandler().addAction(UpdateUserDto.class, new UpdateUserAction(gameController, this));
         getProtocolHandler().addAction(UpdateAvatarDto.class, new UpdateAvatarAction(gameController, this));
         getProtocolHandler().addAction(AddThingDto.class, new AddThingAction(gameController, this));
@@ -66,16 +57,22 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(PlaceThingInRoomRequestDTO.class, new PlaceThingInRoomAction(gameController, this));
         getProtocolHandler().addAction(UpdateThingLocationDto.class, new UpdateThingLocationAction(gameController, this));
 
-        getProtocolHandler().addAction(ConnectRequestDTO.class, new ConnectAction(gameController, this));
+        getProtocolHandler().addAction(ConnectDTO.class, new ConnectAction(gameController, this));
         getProtocolHandler().addAction(GetExitDTO.class, new GetExitAction(gameController, this));
         getProtocolHandler().addAction(MovementRequestDTO.class, new MoveAction(gameController, this));
         getProtocolHandler().addAction(UseExitRequestDTO.class, new UseExitAction(gameController, this));
         getProtocolHandler().addAction(DeleteVerbDTO.class, new DeleteVerbAction(gameController, this));
-        getProtocolHandler().addAction(GetAvatarsRequestDTO.class, new GetAvatarsAction(this));
+        getProtocolHandler().addAction(GetAvatarsDTO.class, new GetAvatarsAction(this));
         getProtocolHandler().addAction(AddAvatarDto.class, new AddAvatarAction( this));
-        getProtocolHandler().addAction(GetAvatarRequestDTO.class, new GetAvatarAction(this));
+        getProtocolHandler().addAction(GetAvatarDTO.class, new GetAvatarAction(this));
         getProtocolHandler().addAction(DeleteAvatarDTO.class, new DeleteAvatarAction(gameController, this));
         getProtocolHandler().addAction(SetAvatarDto.class, new SetAvatarAction(gameController, this));
+        getProtocolHandler().addAction(AddRoomDto.class, new AddRoomAction(gameController, this));
+        getProtocolHandler().addAction(GetRoomsForUserDTO.class, new GetRoomsForUserAction(this));
+        getProtocolHandler().addAction(UpdateRoomDto.class, new UpdateRoomAction(gameController, this));
+        getProtocolHandler().addAction(DeleteRoomDTO.class, new DeleteRoomAction(gameController, this));
+        getProtocolHandler().addAction(GetTilesForUserDTO.class, new GetTilesForUserAction(this));
+        getProtocolHandler().addAction(GetTileDTO.class, new GetTileAction(this));
     }
 
 
@@ -139,8 +136,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     public void sendGameState() {
         // Send Verbs
         sendVerbs(currentUser);
-        // Send Tiles
-        sendTiles(currentUser);
         // Send Avatars
         sendAvatars(currentUser);
         // Rooms
@@ -157,18 +152,15 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     private void sendAvatars(UserDto user) {
-        GetAvatarsResponseDTO response = server.getDataServerConnection().getAvatars(user.getId());
-        if ( response.isSuccess() ) {
-            for (Long avatarId : response.getAvatars()) {
+            for (Long avatarId : server.getUserDataServerProxy().getAvatars(user.getId())) {
                 sendAvatar(avatarId);
             }
-        }
     }
 
     private void sendAvatar(Long avatarId) {
-        GetAvatarResponseDTO response = server.getDataServerConnection().getAvatar(avatarId);
-        if ( response.isSuccess() ) {
-            sendAvatar(response.getAvatar());
+        AvatarDto avatar = server.getUserDataServerProxy().getAvatar(avatarId);
+        if ( avatar != null ) {
+            sendAvatar(avatar);
         }
     }
 
@@ -183,35 +175,23 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 //        }
     }
 
-//
-//    public void sendThing(Thing thing) {
-//        ThingDto thingDto = DTOFactory.getInstance().getThingDTO(thing);
-//        GetThingResultDTO getThingResultDTO = new GetThingResultDTO(true, null, thingDto);
-//        send(getThingResultDTO);
-//    }
 
 
     public void sendAvatar(AvatarDto avatar) {
-        GetAvatarResponseDTO getAvatarResultDTO = DTOFactory.getInstance().getGetAvatarResponseDTO(true, null, avatar);
+        GetAvatarResponseDTO getAvatarResultDTO = new GetAvatarResponseDTO(avatar);
         send(getAvatarResultDTO);
     }
 
     public void sendAvatar(UserDto user) {
         if (user.getCurrentAvatarID() != null) {
-            GetAvatarResponseDTO response = server.getDataServerConnection().getAvatar(user.getCurrentAvatarID());
-            if ( response.isSuccess() ) {
-                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), response.getAvatar());
+            AvatarDto avatarDto = server.getUserDataServerProxy().getAvatar(user.getCurrentAvatarID());
+            if ( avatarDto != null ) {
+                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), avatarDto);
                 send(avatarSetDTO);
             }
         }
     }
 
-
-    private void sendTiles(UserDto user) {
-//        for (TileDto tile : TileFactory.getInstance(STORIMMicroServer.DATADIR).geTiles(user)) {
-//            sendTile(tile.getId());
-//        }
-    }
 
     private void sendRooms(UserDto user) {
         for (Room room : Database.getInstance().getAll(Room.class, user.getId())) {
@@ -220,7 +200,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     private void sendVerbs(UserDto user) {
-        HashMap<Long, String> verbs = server.getDataServerConnection().getVerbs(user.getId());
+        HashMap<Long, String> verbs =  server.getUserDataServerProxy().getVerbs(user.getId());
         UserVerbsDTO userVerbsDTO = new UserVerbsDTO(verbs);
         send(userVerbsDTO);
     }
@@ -233,31 +213,18 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
     private void handleRoomAdded(Room room) {
         RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room);
-        if (room.getTileId() != null) {
-            sendTile(room.getTileId());
-        }
-        RoomAddedDTO roomAddedDTO = DTOFactory.getInstance().getRoomAddedDTO(roomDTO);
+        RoomAddedDTO roomAddedDTO = new RoomAddedDTO(roomDTO);
         send(roomAddedDTO);
     }
 
-
     private void sendRoomUpdate(Room room) {
         RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room);
-        if (room.getTileId() != null) {
-            sendTile(room.getTileId());
-        }
-        RoomUpdatedDTO roomUpdatedDTO = DTOFactory.getInstance().getRoomUpdatedDTO(roomDTO);
+        RoomUpdatedDTO roomUpdatedDTO = new RoomUpdatedDTO(roomDTO);
         send(roomUpdatedDTO);
     }
 
-    private void sendTile(Long tileId) {
-//        TileDto tileDto = DTOFactory.getInstance().getTileDTO(tile);
-//        GetTileResultDTO getTileResultDTO = DTOFactory.getInstance().getGetTileResultDTO(true, null, tileDto);
-//        send(getTileResultDTO);
-    }
-
     private void handleRoomDeleted(Room room) {
-        send(DTOFactory.getInstance().getRoomDeletedDTO(room));
+        send(new RoomDeletedDTO(room.getId()));
     }
 
 
@@ -281,8 +248,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         send(dto);
         if ( user.getCurrentAvatarID() != null ) {
             //Send Avatar
-            GetAvatarResponseDTO response = server.getDataServerConnection().getAvatar(user.getCurrentAvatarID());
-            AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), response.getAvatar());
+            AvatarDto avatarDto =  server.getUserDataServerProxy().getAvatar(user.getCurrentAvatarID());
+            AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), avatarDto);
             send(avatarSetDTO);
         }
     }
@@ -297,27 +264,15 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     public void sendRoom(Room room) {
-        if (room.getTileId() != null) {
-            sendTile(room.getTileId());
-        }
         // First send the Exits
         for (Exit e : room.getExits()) {
             ExitDto exitDto = DTOFactory.getInstance().getExitDTO(e);
-            GetExitResultDTO exitResultDTO = new GetExitResultDTO(true, null, exitDto);
+            GetExitResponseDTO exitResultDTO = new GetExitResponseDTO(true, null, exitDto);
             send(exitResultDTO);
         }
         RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
-        GetRoomResultDTO getRoomResultDTO = DTOFactory.getInstance().getRoomResultDTO(true, null, roomDto);
+        GetRoomResultDTO getRoomResultDTO = new GetRoomResultDTO(roomDto);
         send(getRoomResultDTO);
-    }
-
-    private void sendUserDetails(UserDto user) {
-        Location location = gameController.getGameState().getLocation(user.getId());
-        Room room = location.getRoom();
-        sendRoom(room);
-        sendAvatar(user);
-        GetUserResultDTO getUserResultDTO = DTOFactory.getInstance().getGetUserResultDTO(true, null, user);
-        send(getUserResultDTO);
     }
 
     private void userConnected(UserDto u) {
@@ -329,20 +284,13 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     private void userDisconnected(UserDto u) {
-        UserDisconnectedDTO dto = DTOFactory.getInstance().getUserDisconnectedDTO(u);
+        UserDisconnectedDTO dto = new UserDisconnectedDTO(u.getId(), u.getName());
         send(dto);
     }
 
 
     public UserDto verifyUser(Long userId, String token) {
-        UserDto verifiedUser = null;
-        VerifyUserRequestDTO dto = new VerifyUserRequestDTO(userId, token);
-        VerifyUserResponseDTO response = server.getLoginServerConnection().sendReceive(dto, VerifyUserResponseDTO.class);
-        if (response.getUser() != null) {
-            verifiedUser = response.getUser();
-        } else {
-            System.err.println(response.getErrorMessage());
-        }
+        UserDto verifiedUser = server.getLoginServerProxy().verifyUser(userId, token);
         return verifiedUser;
     }
 
@@ -360,7 +308,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
     public void updateRoomForUser(UserDto user, Location location) {
         UpdateUserRoomDto updateUserRoomDto = new UpdateUserRoomDto(user.getId(), location.getRoom().getId());
-        server.getDataServerConnection().send(updateUserRoomDto);
+        server.getUserDataServerProxy().send(updateUserRoomDto);
     }
 
     public STORIMMicroServer getServer() {
@@ -427,12 +375,4 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         }
     }
 
-    public VerbDetailsDTO getVerb(Long verbId) {
-        VerbDetailsDTO verbDetailsDTO = null;
-        GetVerbDetailsResponseDTO getVerbDetailsResponseDTO = server.getDataServerConnection().getVerb(verbId);
-        if ( getVerbDetailsResponseDTO.isSuccess()) {
-            verbDetailsDTO = getVerbDetailsResponseDTO.getVerb();
-        }
-        return verbDetailsDTO;
-    }
 }

@@ -1,9 +1,9 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.request.SetAvatarDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.ConnectRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.ConnectDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.ConnectResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarResponseDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.AvatarSetDTO;
@@ -15,7 +15,7 @@ import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.game.GameController;
 import com.hamming.storim.server.game.ServerEvent;
 
-public class ConnectAction extends Action<ConnectRequestDTO> {
+public class ConnectAction extends Action<ConnectDTO> {
     private GameController controller;
 
 
@@ -41,8 +41,8 @@ public class ConnectAction extends Action<ConnectRequestDTO> {
             client.send(setCurrentUserDTO);
             if ( currentUser.getCurrentAvatarID() != null ) {
                 //Send Avatar
-                GetAvatarResponseDTO response = client.getServer().getDataServerConnection().getAvatar(currentUser.getCurrentAvatarID());
-                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(currentUser.getId(), response.getAvatar());
+                AvatarDto avatarDto = client.getServer().getUserDataServerProxy().getAvatar(currentUser.getCurrentAvatarID());
+                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(currentUser.getId(), avatarDto);
                 client.send(avatarSetDTO);
             }
             // Add this user as online user

@@ -5,15 +5,13 @@ import com.hamming.loginserver.Session;
 import com.hamming.loginserver.UserClientConnection;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.LoginRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.server.common.action.Action;
-import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserResultDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserResponseDTO;
 
-public class LoginAction extends Action<LoginRequestDTO> {
+public class LoginAction extends Action<LoginDTO> {
 
     private LoginServerWorker serverWorker;
 

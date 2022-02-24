@@ -19,12 +19,7 @@ public class GetUserAction extends Action<GetUserDTO> {
     @Override
     public void execute() {
         UserDto user = controller.getGameState().findUserById(getDto().getUserID());
-        if ( user != null ) {
-            GetUserResultDTO getUserResultDTO = DTOFactory.getInstance().getGetUserResultDTO(true, null, user);
-            getClient().send(getUserResultDTO);
-        } else {
-            GetUserResultDTO getUserResultDTO = DTOFactory.getInstance().getGetUserResultDTO(true, "User not found!", null);
-            getClient().send(getUserResultDTO);
-        }
+        GetUserResultDTO getUserResultDTO = new GetUserResultDTO(user);
+        getClient().send(getUserResultDTO);
     }
 }

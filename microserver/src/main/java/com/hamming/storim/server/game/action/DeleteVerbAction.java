@@ -21,13 +21,10 @@ public class DeleteVerbAction extends Action<DeleteVerbDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         DeleteVerbDTO dto = getDto();
 
-        DeleteVerbResponseDTO response = client.getServer().getDataServerConnection().deleteVerb(dto.getVerbID());
-        if (response.isSuccess()) {
+        boolean success = client.getServer().getUserDataServerProxy().deleteVerb(dto.getVerbID());
+        if (success) {
             VerbDeletedDTO verbDeletedDTO = new VerbDeletedDTO(dto.getVerbID());
             getClient().send(verbDeletedDTO);
-        } else {
-            ErrorDTO errorDTO = new ErrorDTO("DeleteVerb", response.getErrorMessage());
-            getClient().send(errorDTO);
         }
 
     }

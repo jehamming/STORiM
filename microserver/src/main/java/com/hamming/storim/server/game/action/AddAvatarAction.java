@@ -1,5 +1,6 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.request.AddAvatarDto;
@@ -21,13 +22,10 @@ public class AddAvatarAction extends Action<AddAvatarDto> {
         AddAvatarDto dto = getDto();
         UserDto creator = client.getCurrentUser();
         if (dto.getImageData() != null ) {
-            AddAvatarResponseDTO response = client.getServer().getDataServerConnection().addAvatar(creator, dto.getName(), dto.getImageData());
-            if (response.isSuccess()) {
-                AvatarAddedDTO avatarAddedDTO = new AvatarAddedDTO(response.getAvatar());
+           AvatarDto avatarDto = client.getServer().getUserDataServerProxy().addAvatar(creator, dto.getName(), dto.getImageData());
+            if (avatarDto != null ) {
+                AvatarAddedDTO avatarAddedDTO = new AvatarAddedDTO(avatarDto);
                 getClient().send(avatarAddedDTO);
-            } else {
-                ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), response.getErrorMessage());
-                getClient().send(errorDTO);
             }
         } else {
             ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "No Imagedata!");

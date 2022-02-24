@@ -23,12 +23,7 @@ public class GetRoomAction extends Action<GetRoomDTO> {
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         Room bp = RoomFactory.getInstance().findRoomByID(getDto().getRoomID());
-        if ( bp != null ) {
-            client.sendRoom(bp);
-        } else {
-            GetRoomResultDTO getRoomResultDTO = DTOFactory.getInstance().getRoomResultDTO(false, "Room not found!", null);
-            getClient().send(getRoomResultDTO);
-        }
+        client.sendRoom(bp);
     }
 
 }

@@ -29,7 +29,7 @@ public class ExecVerbAction extends Action<ExecVerbDTO> {
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserDto u = client.getCurrentUser();
-        VerbDetailsDTO verbDetailsDTO = client.getVerb(getDto().getVerbId());
+        VerbDetailsDTO verbDetailsDTO = client.getServer().getUserDataServerProxy().getVerb(getDto().getVerbId());
         if (verbDetailsDTO != null ) {
             MessageInRoomDTO messageInRoomDTO = executeVeb(getClient(), u, verbDetailsDTO, getDto().getInput());
             getClient().send(messageInRoomDTO);

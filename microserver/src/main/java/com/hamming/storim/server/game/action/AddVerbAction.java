@@ -1,6 +1,7 @@
 package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.request.AddVerbDto;
 import com.hamming.storim.common.dto.protocol.serverpush.VerbAddedDTO;
@@ -24,13 +25,10 @@ public class AddVerbAction extends Action<AddVerbDto> {
         AddVerbDto dto = getDto();
         UserDto creator = client.getCurrentUser();
 
-        AddVerbResponseDTO response = client.getServer().getDataServerConnection().addVerb(creator, dto.getName(), dto.getToCaller(), dto.getToLocation());
-        if (response.isSuccess()) {
-            VerbAddedDTO verbAddedDTO = new VerbAddedDTO(response.getVerb());
+        VerbDto verbDto = client.getServer().getUserDataServerProxy().addVerb(creator, dto.getName(), dto.getToCaller(), dto.getToLocation());
+        if (verbDto!= null ) {
+            VerbAddedDTO verbAddedDTO = new VerbAddedDTO(verbDto);
             getClient().send(verbAddedDTO);
-        } else {
-            ErrorDTO errorDTO = new ErrorDTO("AddVerb", response.getErrorMessage());
-            getClient().send(errorDTO);
         }
 
     }

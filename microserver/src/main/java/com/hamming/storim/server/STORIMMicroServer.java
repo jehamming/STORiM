@@ -22,7 +22,9 @@ public class STORIMMicroServer extends Server {
     private int clients = 0;
     private ServerConfig config;
     private LoginServerConnection loginServerConnection;
+    private LoginServerProxy loginServerProxy;
     private UserDataServerConnection dataServerConnection;
+    private UserDataServerProxy userDataServerProxy;
     private final static String PROPFILE = "microserver.properties";
     public final static String DBFILE = "microserver.db";
     public static String DATADIR = "serverdata";
@@ -58,18 +60,15 @@ public class STORIMMicroServer extends Server {
         try {
             Socket socket = new Socket(loginservername, loginserverport);
             loginServerConnection = new LoginServerConnection(getClass().getSimpleName(), socket, controller);
+            loginServerProxy = new LoginServerProxy(loginServerConnection);
             System.out.println(this.getClass().getName() + ":" + "Connected to LoginServer");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public LoginServerConnection getLoginServerConnection() {
-        return loginServerConnection;
-    }
-
-    public UserDataServerConnection getDataServerConnection() {
-        return dataServerConnection;
+    public LoginServerProxy getLoginServerProxy() {
+        return loginServerProxy;
     }
 
     public void connectToDataServer() {
@@ -78,12 +77,16 @@ public class STORIMMicroServer extends Server {
         try {
             Socket socket = new Socket(dataservername, dataserverport);
             dataServerConnection = new UserDataServerConnection(getClass().getSimpleName(), socket,  controller);
+            userDataServerProxy = new UserDataServerProxy(dataServerConnection);
             System.out.println(this.getClass().getName() + ":" + "Connected to DataServer");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public UserDataServerProxy getUserDataServerProxy() {
+        return userDataServerProxy;
+    }
 
     public void startServer() {
         boolean success = false;

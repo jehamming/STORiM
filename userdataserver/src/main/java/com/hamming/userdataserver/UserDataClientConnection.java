@@ -1,14 +1,11 @@
 package com.hamming.userdataserver;
 
-import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarsRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbDTO;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
-import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.AddAvatarRequestDto;
-import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.DeleteAvatarRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.SetAvatarRequestDto;
-import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.UpdateAvatarRequestDto;
+import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.*;
+import com.hamming.storim.server.common.dto.protocol.dataserver.tile.AddTileRequestDto;
+import com.hamming.storim.server.common.dto.protocol.dataserver.tile.GetTileRequestDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.tile.GetTilesForUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
@@ -40,7 +37,11 @@ public class UserDataClientConnection extends ClientConnection {
         getProtocolHandler().addAction(UpdateAvatarRequestDto.class, new UpdateAvatarAction(getServerWorker(), this));
         getProtocolHandler().addAction(SetAvatarRequestDto.class, new SetAvatarAction(getServerWorker(), this));
         getProtocolHandler().addAction(ValidateUserRequestDTO.class, new ValidateUserAction(getServerWorker(), this));
+        getProtocolHandler().addAction(AddTileRequestDto.class, new AddTileAction(getServerWorker(), this));
+        getProtocolHandler().addAction(GetTileRequestDTO.class, new GetTileAction(getServerWorker(), this));
+        getProtocolHandler().addAction(GetTilesForUserRequestDTO.class, new GetTilesForUserAction(getServerWorker(), this));
     }
+
 
     @Override
     public void connected() {

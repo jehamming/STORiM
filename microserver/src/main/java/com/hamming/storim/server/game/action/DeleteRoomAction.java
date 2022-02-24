@@ -1,6 +1,7 @@
 package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.protocol.request.DeleteRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.RoomDeletedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
@@ -19,11 +20,10 @@ public class DeleteRoomAction extends Action<DeleteRoomDTO> {
 
     @Override
     public void execute() {
-        Room room = RoomFactory.getInstance().findRoomByID(getDto().getRoomId());
         boolean success = RoomFactory.getInstance().deleteRoom(getDto().getRoomId());
         if (success) {
-            //FIXME Send room deleted signal?
-            //controller.roomDeleted(getClient(), room);
+            RoomDeletedDTO roomDeletedDTO = new RoomDeletedDTO(getDto().getRoomId());
+            getClient().send(roomDeletedDTO);
         }
     }
 

@@ -22,6 +22,7 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
     @Override
     public void execute() {
         UserDto userDto = null;
+        boolean success = false;
         String errorMessage = null;
         Long userId = getDto().getUserId();
         String token = getDto().getToken();
@@ -32,7 +33,10 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
             GetUserRequestDTO getUserRequestDTO = new GetUserRequestDTO(userId);
             GetUserResultDTO getUserResultDTO = serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getUserRequestDTO, GetUserResultDTO.class);
             if ( getUserResultDTO != null && getUserResultDTO.isSuccess() ) {
+                success = true;
                 userDto = getUserResultDTO.getUser();
+            } else {
+                errorMessage = "User not found: " + userId;
             }
         } else {
             if (session == null) {
@@ -42,7 +46,7 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
             }
         }
 
-        VerifyUserResponseDTO responseDTO = new VerifyUserResponseDTO(userDto, errorMessage);
+        VerifyUserResponseDTO responseDTO = new VerifyUserResponseDTO(success, errorMessage, userDto );
         getClient().send(responseDTO);
 
     }
