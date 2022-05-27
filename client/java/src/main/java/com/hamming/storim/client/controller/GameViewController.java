@@ -1,6 +1,7 @@
 package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.common.CalcTools;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.*;
@@ -9,10 +10,12 @@ import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.common.dto.protocol.request.UseExitRequestDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetExitDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetExitResponseDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetTileDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetTileResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
+import com.hamming.storim.common.dto.protocol.serverpush.old.RoomUpdatedDTO;
 import com.hamming.storim.common.interfaces.*;
 import com.hamming.storim.common.net.ProtocolReceiver;
-import com.hamming.storim.common.view.GameView;
 import com.hamming.storim.common.view.ViewListener;
 
 import javax.swing.*;
@@ -24,7 +27,7 @@ import java.util.List;
 public class GameViewController implements ConnectionListener {
 
     private ConnectionController connectionController;
-    private GameView gameView;
+    private GameViewPanel gameView;
     private long sequenceNumber;
     private List<MovementRequestDTO> movementRequests;
     private LocationDto lastReceivedLocation;
@@ -33,7 +36,7 @@ public class GameViewController implements ConnectionListener {
     private UserDto currentUser;
     private AvatarDto currentUserAvatar;
 
-    public GameViewController(STORIMWindow storimWindow, GameView gameView, ConnectionController connectionController) {
+    public GameViewController(STORIMWindow storimWindow, GameViewPanel gameView, ConnectionController connectionController) {
         this.storimWindow = storimWindow;
         this.connectionController = connectionController;
         this.gameView = gameView;
@@ -68,11 +71,11 @@ public class GameViewController implements ConnectionListener {
     }
 
     private void windowResized() {
-        gameView.scheduleAction( () ->  gameView.componenResized());
+        gameView.scheduleAction( () ->  gameView.componentResized());
     }
 
     private void registerReceivers() {
-       connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto));
+       connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
        connectionController.registerReceiver(UserInRoomDTO.class, (ProtocolReceiver<UserInRoomDTO>) dto -> userInRoom(dto));
        connectionController.registerReceiver(UserLocationUpdatedDTO.class, (ProtocolReceiver<UserLocationUpdatedDTO>) dto -> userLocationUpdate(dto));
        connectionController.registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
@@ -80,6 +83,14 @@ public class GameViewController implements ConnectionListener {
        connectionController.registerReceiver(UserEnteredRoomDTO.class, (ProtocolReceiver<UserEnteredRoomDTO>) dto -> userEnteredRoom(dto));
        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
        connectionController.registerReceiver(AvatarSetDTO.class, (ProtocolReceiver<AvatarSetDTO>) dto -> setAvatar(dto));
+       connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto));
+
+    }
+
+    private void roomUpdated(RoomUpdatedDTO dto) {
+        if (lastReceivedLocation != null && lastReceivedLocation.getRoomId().equals( dto.getRoom().getId() ) ) {
+            updateRoom(dto.getRoom());
+        }
     }
 
     private void setAvatar(AvatarSetDTO dto) {
@@ -171,28 +182,18 @@ public class GameViewController implements ConnectionListener {
         gameView.scheduleAction(() -> gameView.setPlayerLocation(user.getId(), location.getX(), location.getY()));
     }
 
-    private void setRoom(SetRoomDTO dto) {
-        RoomDto room = dto.getRoom();
-        gameView.scheduleAction(() -> gameView.resetView());
-        resetRequests();
-
+    private void updateRoom(RoomDto room) {
         if (room.getTileID() != null) {
-            //FIXME - Get the Tile
-//            TileDto tile = controllers.getRoomController().getTile(room.getTileID());
-//            if (tile != null) {
-//                gameView.scheduleAction(() -> gameView.setTile(tile));
-//            }
+            TileDto tile = getTile(room.getTileID());
+            if (tile != null) {
+                gameView.scheduleAction(() -> gameView.setTile(tile));
+            }
         }
         gameView.scheduleAction(() -> gameView.setRoom(room));
 
-        if (currentUser != null ) {
-            gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), currentUserAvatar.getImageData()));
-        }
-
-
         // Exits
+        gameView.scheduleAction(() -> gameView.setExits(new ArrayList<>()));
         for (Long exitId : room.getExits()) {
-            //FIXME Exits
             GetExitResponseDTO getExitResultDTO = connectionController.sendReceive(new GetExitDTO(room.getId(), exitId), GetExitResponseDTO.class);
             if ( getExitResultDTO != null && getExitResultDTO.getExit() != null ) {
                 ExitDto exit = getExitResultDTO.getExit();
@@ -201,9 +202,24 @@ public class GameViewController implements ConnectionListener {
                 System.err.println(getClass().getSimpleName() +".setRoom: exit"+ exitId+" not found!" );
             }
         }
-        resetRequests();
     }
 
+    private void setRoom(RoomDto room) {
+        gameView.scheduleAction(() -> gameView.resetView());
+        resetRequests();
+
+        updateRoom(room);
+
+        if (currentUser != null ) {
+            gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), currentUserAvatar.getImageData()));
+        }
+
+    }
+
+    private TileDto getTile(Long tileId) {
+        GetTileResultDTO response = connectionController.sendReceive(new GetTileDTO(tileId), GetTileResultDTO.class);
+        return response.getTile();
+    }
 
     private void resetRequests() {
         sequenceNumber = 0;

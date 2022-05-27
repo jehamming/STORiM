@@ -56,7 +56,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(UpdateThingDto.class, new UpdateThingAction(gameController, this));
         getProtocolHandler().addAction(PlaceThingInRoomRequestDTO.class, new PlaceThingInRoomAction(gameController, this));
         getProtocolHandler().addAction(UpdateThingLocationDto.class, new UpdateThingLocationAction(gameController, this));
-
         getProtocolHandler().addAction(ConnectDTO.class, new ConnectAction(gameController, this));
         getProtocolHandler().addAction(GetExitDTO.class, new GetExitAction(gameController, this));
         getProtocolHandler().addAction(MovementRequestDTO.class, new MoveAction(gameController, this));

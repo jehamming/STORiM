@@ -6,12 +6,10 @@ import com.hamming.storim.client.STORIMWindow;
 import com.hamming.storim.client.controller.GameViewController;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.view.Action;
-import com.hamming.storim.common.view.GameView;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -21,7 +19,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.*;
 
-public class GameViewPanel extends JPanel implements GameView, Runnable {
+public class GameViewPanel extends JPanel implements Runnable {
 
     //boolean variable to track if the game is playing or not
     volatile boolean playing;
@@ -323,8 +321,8 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         return room;
     }
 
-    @Override
-    public void componenResized() {
+
+    public void componentResized() {
         if ( room != null ) {
             unitX = (float) getWidth() / (float) room.getWidth();
             unitY = (float) getHeight() / (float) room.getLength();
@@ -332,12 +330,10 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         }
     }
 
-    @Override
     public void setTile(TileDto tile) {
         this.tile = tile;
     }
 
-    @Override
     public void setRoom(RoomDto room) {
         this.room = room;
         if (room != null) {
@@ -586,14 +582,12 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
     }
 
 
-    @Override
     public void scheduleAction(Action action) {
         synchronized (actions) {
             actions.add(action);
         }
     }
 
-    @Override
     public void addPlayer(Long userId, String name, byte[] imageData) {
         int roomSize = 10;
         int widthPerTile = getWidth() / roomSize;
@@ -612,7 +606,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
 
 
 
-    @Override
     public void addThing(ThingDto thingDto) {
         Thing thing = new Thing(thingDto.getId());
         thing.setImage(ImageUtils.decode(thingDto.getImageData()));
@@ -623,14 +616,12 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         addThing(thing);
     }
 
-    @Override
     public void addExit(ExitDto exitDto) {
         Exit exit = new Exit(exitDto.getId(), exitDto.getName(), Exit.Orientation.valueOf(exitDto.getOrientation().name()));
         Image image = exit.getImage();
         addExit(exit);
     }
 
-    @Override
     public void deleteThing(Long thingId) {
         Thing t = getThing(thingId);
         if ( t != null ) {
@@ -638,13 +629,11 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         }
     }
 
-    @Override
     public void removePlayer(Long playerId) {
         Player player = getPlayer(playerId);
         removePlayer(player);
     }
 
-    @Override
     public void resetView() {
         setTile(null);
         setRoom(null);
@@ -653,7 +642,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         setExits(new ArrayList<>());
     }
 
-    @Override
     public void setPlayerLocation(Long playerId, int x, int y) {
         Player p = getPlayer(playerId);
         //FIXME : p should not be null!
@@ -663,7 +651,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         }
     }
 
-    @Override
     public void updatePlayer(UserDto user) {
         Player player = getPlayer(user.getId());
         if (player != null ) {
@@ -671,7 +658,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         }
     }
 
-    @Override
     public void setAvatar(Long playerId, AvatarDto avatar) {
         Player player = getPlayer(playerId);
         if (player != null ) {
@@ -685,7 +671,6 @@ public class GameViewPanel extends JPanel implements GameView, Runnable {
         }
     }
 
-    @Override
     public void updateThing(ThingDto thingDto) {
         Thing thing = getThing(thingDto.getId());
         if ( thing != null ) {

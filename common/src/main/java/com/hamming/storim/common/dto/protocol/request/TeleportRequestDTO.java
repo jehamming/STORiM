@@ -22,7 +22,7 @@ public class TeleportRequestDTO implements ProtocolDTO {
 
     @Override
     public String toString() {
-        return "TeleportProtocolDTO{" +
+        return "TeleportRequestDTO{" +
                 "userID=" + userID +
                 ", roomID=" + roomID +
                 '}';

@@ -1,13 +1,18 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.TeleportRequestDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.UserLocationUpdatedDTO;
+import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
+import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.game.GameController;
+import com.hamming.storim.server.game.RoomEvent;
 
 public class TeleportAction extends Action<TeleportRequestDTO> {
     private GameController controller;
@@ -24,28 +29,35 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
         handleTeleportRequest(getDto().getUserID(), getDto().getRoomID());
     }
 
-    public void handleTeleportRequest(Long userId, Long roomId) {
+    public void handleTeleportRequest(Long userId, Long newRoomId) {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserDto user = controller.getGameState().findUserById(userId);
-        Room r = RoomFactory.getInstance().findRoomByID(roomId);
+        Room newRoom = RoomFactory.getInstance().findRoomByID(newRoomId);
         Location loc;
-        if (user != null && r != null ) {
-            Location location = controller.getGameState().getLocation(user.getId());
-            Long fromRoomId = location.getRoom().getId();
-            location.setRoom(r);
-            location.setX(r.getSpawnPointX());
-            location.setY(r.getSpawnPointY());
-
-            client.sendRoom(location.getRoom());
-           // LocationDto locationDTO = DTOFactory.getInstance().getLocationDTO(user.getLocation());
-           // TeleportResultDTO teleportResultDTO = DTOFactory.getInstance().getTeleportResultDTO(true, null, locationDTO,fromRoomId);
-          //  getClient().send(teleportResultDTO);
-          //  controller.userTeleported(user, fromRoomId, loc);
-            }
-         else {
-           // TeleportResultDTO teleportResultDTO = DTOFactory.getInstance().getTeleportResultDTO(false, "Failed", null, -1L);
-           // getClient().send(teleportResultDTO);
+        if (user != null && newRoom != null ) {
+            Location currentLocation = controller.getGameState().getLocation(user.getId());
+            Long fromRoomId = currentLocation.getRoom().getId();
+            currentLocation.setRoom(newRoom);
+            currentLocation.setX(newRoom.getSpawnPointX());
+            currentLocation.setY(newRoom.getSpawnPointY());
+            controller.getGameState().setLocation(user, currentLocation);
+            client.setRoom(newRoomId);
+            // Send current User info
+            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(currentLocation);
+            UserLocationUpdatedDTO userLocationUpdatedDTO = new UserLocationUpdatedDTO(user.getId(), locationDto, null);
+            client.send(userLocationUpdatedDTO);
+            // Start listening to the new Room!
+            controller.addRoomListener(newRoomId, client);
+            // Send other clients an update
+            userLeftRoom(getClient(), user, fromRoomId, newRoomId, false);
+            //Update userdataserver
+            client.updateRoomForUser(user, currentLocation);
         }
+    }
+
+    public void userLeftRoom(ClientConnection source, UserDto user, Long fromRoomId, Long newRoomId, boolean teleported) {
+        controller.fireRoomEvent(source, fromRoomId, new RoomEvent(RoomEvent.Type.USERLEFTROOM, user, newRoomId));
+        controller.fireRoomEvent(source, newRoomId, new RoomEvent(RoomEvent.Type.USERENTEREDROOM, user, fromRoomId));
     }
 
 }

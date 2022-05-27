@@ -9,8 +9,10 @@ import com.hamming.storim.client.panels.TileRenderer;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.TileDto;
+import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.AddRoomDto;
 import com.hamming.storim.common.dto.protocol.request.DeleteRoomDTO;
+import com.hamming.storim.common.dto.protocol.request.TeleportRequestDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateRoomDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
@@ -40,6 +42,7 @@ public class RoomEditorPanelController implements ConnectionListener {
     private JFileChooser fileChooser;
     private BufferedImage tileImage;
     private TileDto chosenTile;
+    private UserDto currentUser;
 
 
     public RoomEditorPanelController(STORIMWindow storimWindow, RoomEditorPanel panel, ConnectionController connectionController) {
@@ -91,7 +94,8 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private void setCurrentUser(SetCurrentUserDTO dto) {
         empty(true);
-        GetRoomsForUserResponseDTO response = connectionController.sendReceive(new GetRoomsForUserDTO(dto.getUser().getId()), GetRoomsForUserResponseDTO.class);
+        currentUser = dto.getUser();
+        GetRoomsForUserResponseDTO response = connectionController.sendReceive(new GetRoomsForUserDTO(currentUser.getId()), GetRoomsForUserResponseDTO.class);
         if (response != null) {
             for (Long roomId : response.getRooms().keySet()) {
                 RoomDto room = getRoom(roomId);
@@ -101,7 +105,7 @@ public class RoomEditorPanelController implements ConnectionListener {
         panel.getBtnCreate().setEnabled(true);
 
         SwingUtilities.invokeLater(() -> {
-            for (Long tileId : getTilesForUser(dto.getUser().getId())) {
+            for (Long tileId : getTilesForUser(currentUser.getId())) {
                 TileDto tile = getTile(tileId);
                 tilesModel.addElement(tile);
             }
@@ -253,7 +257,9 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private void teleport() {
         RoomDetailsListItem item = panel.getListRooms().getSelectedValue();
-        //FIXME Teleport
+        Long roomId = item.getRoomDto().getId();
+        TeleportRequestDTO teleportRequestDTO = new TeleportRequestDTO(currentUser.getId(), roomId);
+        connectionController.send(teleportRequestDTO);
     }
 
     private void deleteRoom() {
