@@ -21,6 +21,9 @@ There are multiple servers :
 Currently only a Java Based Client exist. I plan to make multiple clients: Android/Web (maybe even IOS?). 
 Note: My core hobby is the Infrastructure, I suck at GUIs ;-) 
 
+# Screenshots
+See https://github.com/jehamming/STORiM/blob/develop/screenshots/Screen002.png 
+
 
 STORIM is Inspired by LambdaMOO (rooms, things, verbs) and Whatsapp
 
