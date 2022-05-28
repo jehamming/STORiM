@@ -63,10 +63,6 @@ public class DTOFactory {
         return new UserEnteredRoomDTO(userDto, locationDto, oldRoomId, oldRoomName);
     }
 
-
-
-
-
 }
 
 

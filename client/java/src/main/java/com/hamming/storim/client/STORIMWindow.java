@@ -24,13 +24,13 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     private AvatarPanelController avatarPanelController;
     private RoomEditorPanel roomEditorPanel;
     private RoomEditorPanelController roomEditorPanelController;
+    private ThingPanelController thingPanelController;
     private ConnectionController connectionController;
-
-
-
-
     private ThingPanel thingPanel;
+
+
     private ExitEditorPanel exitEditorPanel;
+
     private GameViewPanel gameView;
     private JTabbedPane tabbedPane;
     private  JLabel lblRoomname;
@@ -80,6 +80,10 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         roomEditorPanelController = new RoomEditorPanelController(this, roomEditorPanel, connectionController);
         tabbedPane.addTab("Rooms", roomEditorPanel);
 
+
+        thingPanel = new ThingPanel();
+        thingPanelController = new ThingPanelController(this, thingPanel, connectionController);
+        tabbedPane.addTab("Things", thingPanel);
 //
 //        thingPanel = new ThingPanel(controllers);
 //        tabbedPane.add("Things", thingPanel);

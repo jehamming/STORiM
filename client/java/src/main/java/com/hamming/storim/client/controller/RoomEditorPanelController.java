@@ -167,7 +167,7 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private int findIndex(Long tileId) {
         int index = -1;
-        for (int i = 0; i < tilesModel.getSize(); i++) {
+        for (int i = 0; i <= tilesModel.getSize(); i++) {
             if (tilesModel.get(i).getId().equals(tileId)) {
                 index = i;
                 break;
@@ -342,7 +342,6 @@ public class RoomEditorPanelController implements ConnectionListener {
             panel.getBtnTeleport().setEnabled(true);
             panel.getListTiles().setEnabled(true);
             setEditable(true);
-            tilesModel.removeAllElements();
             panel.getLblImagePreview().setIcon(null);
 
             if (room.getTileID() == null) {
@@ -350,6 +349,7 @@ public class RoomEditorPanelController implements ConnectionListener {
             } else {
                 int index =  findIndex(room.getTileID());
                 panel.getListTiles().setSelectedIndex(index);
+                panel.getListTiles().ensureIndexIsVisible(index);
             }
         });
     }
