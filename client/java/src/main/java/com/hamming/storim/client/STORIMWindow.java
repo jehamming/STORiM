@@ -101,7 +101,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        gameView.setPreferredSize(new java.awt.Dimension(430, 430));
+        gameView.setPreferredSize(new java.awt.Dimension(300, 300));
 
         javax.swing.GroupLayout gameViewLayout = new javax.swing.GroupLayout(gameView);
         gameView.setLayout(gameViewLayout);
@@ -122,7 +122,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+                                        .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                                         .addComponent(lblRoomname, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
                         .addComponent(gameView, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)

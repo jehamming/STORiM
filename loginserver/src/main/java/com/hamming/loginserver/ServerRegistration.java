@@ -1,7 +1,6 @@
 package com.hamming.loginserver;
 
 import com.hamming.storim.server.common.ClientConnection;
-import com.sun.security.ntlm.Client;
 
 public class ServerRegistration {
 

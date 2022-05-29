@@ -2,7 +2,6 @@ package com.hamming.loginserver;
 
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
-import com.sun.security.ntlm.Client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
