@@ -211,7 +211,8 @@ public class GameViewController implements ConnectionListener {
         updateRoom(room);
 
         if (currentUser != null ) {
-            gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), currentUserAvatar.getImageData()));
+            final byte[] imageData = currentUserAvatar != null ? currentUserAvatar.getImageData() : null;
+            gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), imageData));
         }
 
     }

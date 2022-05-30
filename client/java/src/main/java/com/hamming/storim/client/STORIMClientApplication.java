@@ -18,6 +18,7 @@ public class STORIMClientApplication {
 
     private void createAndShowGUI() {
         STORIMWindow = new STORIMWindow(connectionController);
+        STORIMWindow.setVisible(true);
         STORIMWindow.getGameView().start();
         initControllers();
 

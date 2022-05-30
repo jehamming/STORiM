@@ -8,6 +8,7 @@ import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class STORIMWindow extends JFrame implements ConnectionListener {
 
@@ -32,8 +33,6 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     private ExitEditorPanel exitEditorPanel;
 
     private GameViewPanel gameView;
-    private JTabbedPane tabbedPane;
-    private  JLabel lblRoomname;
     private static String BASIC_TITLE = "STORIM Java Client";
 
     private UserDto currentUser;
@@ -44,12 +43,11 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         connectionController.addConnectionListener(this);
         setTitle(BASIC_TITLE);
         gameView = new GameViewPanel(this);
+        gameView.setPreferredSize(new Dimension(1000,500));
         GameViewController viewController = new GameViewController(this, gameView, connectionController);
         gameView.setViewController(viewController);
         initComponents();
         addTabs();
-        emptyPanels();
-        pack();
         setVisible(true);
     }
 
@@ -95,61 +93,62 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
 
     private void initComponents() {
-
-        lblRoomname = new javax.swing.JLabel();
+        lblRoomName = new javax.swing.JLabel();
         tabbedPane = new javax.swing.JTabbedPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(1200, 570));
+        setPreferredSize(new java.awt.Dimension(1200, 570));
 
-        gameView.setPreferredSize(new java.awt.Dimension(300, 300));
+        gameView.setPreferredSize(new java.awt.Dimension(500, 500));
 
         javax.swing.GroupLayout gameViewLayout = new javax.swing.GroupLayout(gameView);
         gameView.setLayout(gameViewLayout);
         gameViewLayout.setHorizontalGroup(
                 gameViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 500, Short.MAX_VALUE)
         );
         gameViewLayout.setVerticalGroup(
                 gameViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 556, Short.MAX_VALUE)
+                        .addGap(0, 500, Short.MAX_VALUE)
         );
 
-        lblRoomname.setText("Room name");
+        tabbedPane.setPreferredSize(new java.awt.Dimension(700, 500));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-                                        .addComponent(lblRoomname, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(0, 0, Short.MAX_VALUE)
+                                                .addComponent(gameView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(lblRoomName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 680, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())
-                        .addComponent(gameView, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addComponent(gameView, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblRoomname, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
-                                .addContainerGap())
+                                .addComponent(lblRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(gameView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        getAccessibleContext().setAccessibleDescription("");
+
         pack();
+
     }
 
-
-    public void emptyPanels() {
-        //FIXME
-//        userInfoPanel.empty();
-//        chatPanel.empty();
-//        verbEditorPanel.empty();
-//        roomEditorPanel.empty(true);
-//        avatarPanel.empty(true);
-    }
+    private javax.swing.JLabel lblRoomName;
+    private javax.swing.JTabbedPane tabbedPane;
 
 
     @Override
@@ -158,7 +157,6 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
     @Override
     public void disconnected() {
-        emptyPanels();
         setTitle(BASIC_TITLE);
     }
 
@@ -171,7 +169,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         //TODO - CurrentUser!
         String text = "User: "+ currentUser.getName() + ", room :" + roomName;
         SwingUtilities.invokeLater(() -> {
-            lblRoomname.setText(text);
+            lblRoomName.setText(text);
         });
     }
 

@@ -167,7 +167,7 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private int findIndex(Long tileId) {
         int index = -1;
-        for (int i = 0; i <= tilesModel.getSize(); i++) {
+        for (int i = 0; i < tilesModel.getSize(); i++) {
             if (tilesModel.get(i).getId().equals(tileId)) {
                 index = i;
                 break;
