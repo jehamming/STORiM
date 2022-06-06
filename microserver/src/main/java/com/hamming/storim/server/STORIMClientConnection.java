@@ -7,6 +7,7 @@ import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.server.common.ClientConnection;
+import com.hamming.storim.server.common.dto.protocol.dataserver.tile.GetThingsForUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Exit;
@@ -72,6 +73,9 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(DeleteRoomDTO.class, new DeleteRoomAction(gameController, this));
         getProtocolHandler().addAction(GetTilesForUserDTO.class, new GetTilesForUserAction(this));
         getProtocolHandler().addAction(GetTileDTO.class, new GetTileAction(this));
+        getProtocolHandler().addAction(AddThingDto.class, new AddThingAction(gameController, this));
+        getProtocolHandler().addAction(GetThingsForUserDTO.class, new GetThingsForUserAction(this));
+        getProtocolHandler().addAction(GetThingDTO.class, new GetThingAction(this));
     }
 
 

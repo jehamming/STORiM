@@ -1,7 +1,10 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.ThingDto;
+import com.hamming.storim.common.dto.TileDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.AddThingDto;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingAddedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.ImageUtils;
@@ -23,16 +26,16 @@ public class AddThingAction extends Action<AddThingDto> {
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         AddThingDto dto = getDto();
+        String name = dto.getName();
+        String description = dto.getDescription();
+        float scale = dto.getScale();
+        int rotation = dto.getRotation();
         UserDto creator = client.getCurrentUser();
 
-        Image image = ImageUtils.decode(dto.getImageData());
-        addThing(getClient(), creator.getId(), dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), image);
+        ThingDto thing = client.getServer().getUserDataServerProxy().addThing(creator, name, description, scale, rotation, dto.getImageData());
+        if ( thing != null ) {
+            ThingAddedDTO thingAddedDTO = new ThingAddedDTO(thing);
+            client.send(thingAddedDTO);
+        }
     }
-
-    public void addThing(ClientConnection source, Long creatorId, String name, String description, float scale, int rotation, Image image) {
-        //FIXME THings
-//        Thing thing = ThingFactory.getInstance(STORIMMicroServer.DATADIR).createThing(creatorId, name, description, scale, rotation, image);
-//        fireGameStateEvent(source, GameStateEvent.Type.THINGADDED, thing, null);
-    }
-
 }

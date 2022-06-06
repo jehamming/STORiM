@@ -28,6 +28,10 @@ public class ThingFactory {
         return instance;
     }
 
+    public static ThingFactory getInstance() {
+        return instance;
+    }
+
     private void sanityCheck() {
         List<Long> thingIDs = getAllThingIds();
         for (Long id : thingIDs) {

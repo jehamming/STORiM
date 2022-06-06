@@ -5,8 +5,15 @@ import com.hamming.storim.client.STORIMWindow;
 import com.hamming.storim.client.listitem.ThingListItem;
 import com.hamming.storim.client.panels.ThingPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
+import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.ThingDto;
+import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.request.AddThingDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.*;
+import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingAddedDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
+import com.hamming.storim.common.net.ProtocolReceiver;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,6 +33,7 @@ public class ThingPanelController implements ConnectionListener {
     private DefaultListModel<ThingListItem> thingsModel = new DefaultListModel<>();
     private boolean newThing = false;
     private Image thingImage;
+    private UserDto currentUser;
 
 
     public ThingPanelController(STORIMWindow storimWindow, ThingPanel panel, ConnectionController connectionController) {
@@ -41,7 +49,24 @@ public class ThingPanelController implements ConnectionListener {
 
 
     private void registerReceivers() {
+        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
+        connectionController.registerReceiver(ThingAddedDTO.class, (ProtocolReceiver<ThingAddedDTO>) dto -> thingAdded(dto.getThing()));
+    }
 
+    private void setCurrentUser(SetCurrentUserDTO dto) {
+        currentUser = dto.getUser();
+        GetThingsForUserResponseDTO response = connectionController.sendReceive(new GetThingsForUserDTO(currentUser.getId()), GetThingsForUserResponseDTO.class);
+        if (response != null) {
+            for (Long thingId : response.getThings()) {
+                ThingDto thing = getThing(thingId);
+                thingAdded(thing);
+            }
+        }
+    }
+
+    private ThingDto getThing(Long thingId) {
+        GetThingResultDTO response = connectionController.sendReceive(new GetThingDTO(thingId), GetThingResultDTO.class);
+        return response.getThing();
     }
 
     private void setup() {
@@ -135,8 +160,9 @@ public class ThingPanelController implements ConnectionListener {
             return;
         }
         if (newThing) {
-            //TODO New thing
-            //controllers.getThingController().addThingRequest(thingName, thingDescription, thingScale, thingRotation, ImageUtils.encode(thingImage));
+            byte[] imageData = ImageUtils.encode(thingImage);
+            AddThingDto addThingDto = new AddThingDto(thingName, thingDescription, thingScale, thingRotation, imageData);
+            connectionController.send(addThingDto);
             setEditable(false);
             empty(false);
             panel.getListThings().clearSelection();

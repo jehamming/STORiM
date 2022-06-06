@@ -3,9 +3,7 @@ package com.hamming.userdataserver;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.*;
-import com.hamming.storim.server.common.dto.protocol.dataserver.tile.AddTileRequestDto;
-import com.hamming.storim.server.common.dto.protocol.dataserver.tile.GetTileRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.dataserver.tile.GetTilesForUserRequestDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.tile.*;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
@@ -40,6 +38,9 @@ public class UserDataClientConnection extends ClientConnection {
         getProtocolHandler().addAction(AddTileRequestDto.class, new AddTileAction(getServerWorker(), this));
         getProtocolHandler().addAction(GetTileRequestDTO.class, new GetTileAction(getServerWorker(), this));
         getProtocolHandler().addAction(GetTilesForUserRequestDTO.class, new GetTilesForUserAction(getServerWorker(), this));
+        getProtocolHandler().addAction(AddThingRequestDto.class, new AddThingAction(getServerWorker(), this));
+        getProtocolHandler().addAction(GetThingsForUserRequestDTO.class, new GetThingsForUserAction(getServerWorker(), this));
+        getProtocolHandler().addAction(GetThingRequestDTO.class, new GetThingAction(getServerWorker(), this));
     }
 
 

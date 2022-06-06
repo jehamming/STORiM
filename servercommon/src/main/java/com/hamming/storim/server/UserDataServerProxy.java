@@ -41,6 +41,12 @@ public class UserDataServerProxy {
         return response.getTiles();
     }
 
+    public List<Long> getThingsForUser(Long userId) {
+        GetThingsForUserRequestDTO  getThingsForUserRequestDTO = new GetThingsForUserRequestDTO(userId);
+        GetThingsForUserResponseDTO response = connection.sendReceive(getThingsForUserRequestDTO, GetThingsForUserResponseDTO.class );
+        return response.getThings();
+    }
+
     public HashMap<Long, String> getVerbs(Long userId) {
         GetVerbsResponseDTO getVerbsResponseDTO = connection.sendReceive(new GetVerbsRequestDTO(userId), GetVerbsResponseDTO.class );
         return getVerbsResponseDTO.getVerbs();
@@ -137,5 +143,24 @@ public class UserDataServerProxy {
 
     public void send(ProtocolDTO dto) {
         connection.send(dto);
+    }
+
+    public ThingDto addThing(UserDto creator, String name, String description, float scale, int rotation, byte[] imageData) {
+        AddThingRequestDto addThingRequestDto = new AddThingRequestDto(creator.getId(), name, description, scale, rotation, imageData);
+        AddThingResponseDTO response = connection.sendReceive(addThingRequestDto, AddThingResponseDTO.class);
+        if (!response.isSuccess()) {
+            System.out.println("(" + getClass().getSimpleName() + ") Error :" + response.getErrorMessage());
+        }
+        return response.getThing();
+
+    }
+
+    public ThingDto getThing(Long thingID) {
+        GetThingRequestDTO getThingRequestDTO = new GetThingRequestDTO(thingID);
+        GetThingResponseDTO response = connection.sendReceive(getThingRequestDTO, GetThingResponseDTO.class );
+        if (!response.isSuccess()) {
+            System.out.println("(" + getClass().getSimpleName() + ") Error :" + response.getErrorMessage());
+        }
+        return response.getThing();
     }
 }
