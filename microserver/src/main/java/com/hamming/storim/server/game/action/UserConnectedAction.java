@@ -24,8 +24,8 @@ public class UserConnectedAction extends Action {
         UserConnectedDTO connectedDTO = new UserConnectedDTO(user.getId(), user.getName());
         getClient().send(connectedDTO);
 
-        Location currentUserLocation = controller.getGameState().getLocation(client.getCurrentUser().getId());
-        Location userLocation = controller.getGameState().getLocation(user.getId());
+        Location currentUserLocation = controller.getGameState().getUserLocation(client.getCurrentUser().getId());
+        Location userLocation = controller.getGameState().getUserLocation(user.getId());
         if ( currentUserLocation.getRoom().getId().equals( userLocation.getRoom().getId())) {
             client.sendUserInRoom(user);
         }

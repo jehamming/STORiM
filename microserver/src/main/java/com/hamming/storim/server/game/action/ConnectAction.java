@@ -35,7 +35,7 @@ public class ConnectAction extends Action<ConnectDTO> {
             client.setRoom(roomId);
             // Send current User info
             UserDto currentUser = client.getCurrentUser();
-            Location location = controller.getGameState().getLocation(currentUser.getId());
+            Location location = controller.getGameState().getUserLocation(currentUser.getId());
             LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
             SetCurrentUserDTO setCurrentUserDTO = new SetCurrentUserDTO(currentUser, locationDto);
             client.send(setCurrentUserDTO);

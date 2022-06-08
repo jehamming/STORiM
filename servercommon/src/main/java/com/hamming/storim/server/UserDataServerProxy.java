@@ -163,4 +163,22 @@ public class UserDataServerProxy {
         }
         return response.getThing();
     }
+
+    public boolean deleteThing(Long thingId) {
+        DeleteThingRequestDto deleteThingRequestDto = new DeleteThingRequestDto(thingId);
+        DeleteThingResponseDTO deleteThingResponseDTO = connection.sendReceive(deleteThingRequestDto, DeleteThingResponseDTO.class);
+        if (!deleteThingResponseDTO.isSuccess()) {
+            System.out.println("(" + getClass().getSimpleName() + ") Error :" + deleteThingResponseDTO.getErrorMessage());
+        }
+        return deleteThingResponseDTO.isSuccess();
+    }
+
+    public ThingDto updateThing(Long id, String name, String description, float scale, int rotation, byte[] imageData) {
+        UpdateThingRequestDto updateThingRequestDto = new UpdateThingRequestDto(id, name, description,scale, rotation, imageData);
+        UpdateThingResponseDTO response = connection.sendReceive(updateThingRequestDto, UpdateThingResponseDTO.class);
+        if (!response.isSuccess()) {
+            System.out.println("(" + getClass().getSimpleName() + ") Error :" + response.getErrorMessage());
+        }
+        return response.getThing();
+    }
 }

@@ -56,6 +56,16 @@ public class ThingFactory {
         Database.getInstance().removeBasicObject(Thing.class, thing);
     }
 
+    public boolean deleteThing(Long thingId) {
+        boolean success = false;
+        Thing thing = findThingById(thingId);
+        if ( thing != null ) {
+            deleteThing(thing);
+            success = true;
+        }
+        return success;
+    }
+
     private void readAllThings() {
         Map<Long, Image> images = ImageStore.readAllImages(Thing.class, dataDir);
         for (Long id : images.keySet()) {

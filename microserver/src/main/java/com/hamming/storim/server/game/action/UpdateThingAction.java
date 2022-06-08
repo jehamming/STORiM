@@ -1,6 +1,10 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.ThingDto;
+import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
+import com.hamming.storim.common.dto.protocol.serverpush.VerbUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingUpdatedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.ImageUtils;
@@ -21,24 +25,14 @@ public class UpdateThingAction extends Action<UpdateThingDto> {
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         UpdateThingDto dto = getDto();
-        Image image = ImageUtils.decode(dto.getImageData());
-        updateThing(getClient(), dto.getId(), dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), image);
-    }
 
-
-    public void updateThing(ClientConnection source, Long id, String name, String description, float scale, int rotation, Image image) {
-        //FIXME THings
-//        Thing thing = ThingFactory.getInstance(STORIMMicroServer.DATADIR).findThingById(id);
-//        if (thing != null) {
-//            thing.setName(name);
-//            thing.setDescription(description);
-//            thing.setScale(scale);
-//            thing.setRotation(rotation);
-//            thing.setImage(image);
-//            fireGameStateEvent(source, GameStateEvent.Type.THINGUPDATED, thing, null);
-//        }
-
+        ThingDto thingDto = client.getServer().getUserDataServerProxy().updateThing(dto.getId(), dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), dto.getImageData());
+        if ( thingDto != null) {
+            ThingUpdatedDTO thingUpdatedDTO = new ThingUpdatedDTO(thingDto);
+            getClient().send(thingUpdatedDTO);
+        }
     }
 
 }

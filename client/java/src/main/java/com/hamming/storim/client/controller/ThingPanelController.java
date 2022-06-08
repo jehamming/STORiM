@@ -9,9 +9,15 @@ import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.AddThingDto;
+import com.hamming.storim.common.dto.protocol.request.DeleteThingDTO;
+import com.hamming.storim.common.dto.protocol.request.PlaceThingInRoomDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.old.ThingAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingUpdatedDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
@@ -34,6 +40,7 @@ public class ThingPanelController implements ConnectionListener {
     private boolean newThing = false;
     private Image thingImage;
     private UserDto currentUser;
+    private RoomDto currentRoom;
 
 
     public ThingPanelController(STORIMWindow storimWindow, ThingPanel panel, ConnectionController connectionController) {
@@ -51,6 +58,13 @@ public class ThingPanelController implements ConnectionListener {
     private void registerReceivers() {
         connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
         connectionController.registerReceiver(ThingAddedDTO.class, (ProtocolReceiver<ThingAddedDTO>) dto -> thingAdded(dto.getThing()));
+        connectionController.registerReceiver(ThingDeletedDTO.class, (ProtocolReceiver<ThingDeletedDTO>) dto -> thingDeleted(dto.getThingId()));
+        connectionController.registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> thingUpdated(dto.getThing()));
+        connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
+    }
+
+    private void setRoom(RoomDto room) {
+        currentRoom = room;
     }
 
     private void setCurrentUser(SetCurrentUserDTO dto) {
@@ -92,8 +106,8 @@ public class ThingPanelController implements ConnectionListener {
     private void placeThingInRoom() {
         //TODO PLace THing
         Long thingID = Long.valueOf(panel.getLblID().getText().trim());
-//        Long roomId = controllers.getUserController().getCurrentUserLocation().getRoomId();
-//        controllers.getThingController().placeThingInRoomRequest(thingID, roomId);
+        PlaceThingInRoomDTO placeThingInRoomDTO = new PlaceThingInRoomDTO(thingID, currentRoom.getId());
+        connectionController.send(placeThingInRoomDTO);
     }
 
     private void thingSelected(ThingDto thing) {
@@ -171,16 +185,16 @@ public class ThingPanelController implements ConnectionListener {
         } else {
             // Update !
             Long thingId = Long.valueOf(panel.getLblID().getText());
-            //TODO Update thing
-            //controllers.getThingController().updateThingRequest(thingId, thingName, thingDescription, thingScale, thingRotation, ImageUtils.encode(thingImage));
+            UpdateThingDto updateThingDto = new UpdateThingDto(thingId, thingName, thingDescription, thingScale, thingRotation, ImageUtils.encode(thingImage));
+            connectionController.send(updateThingDto);
         }
 
     }
 
     private void deleteThing() {
         Long thingID = Long.valueOf(panel.getLblID().getText());
-        //TODO Delete thing
-        // controllers.getThingController().deleteThingRequest(thingID);
+        DeleteThingDTO deleteThingDTO = new DeleteThingDTO(thingID);
+        connectionController.send(deleteThingDTO);
         empty(false);
     }
 
@@ -224,6 +238,21 @@ public class ThingPanelController implements ConnectionListener {
         });
     }
 
+    public void thingDeleted(Long thingId) {
+        SwingUtilities.invokeLater(() -> {
+            ThingListItem found = null;
+            for (int i = 0; i < thingsModel.getSize(); i++) {
+                ThingListItem item = thingsModel.get(i);
+                if (item.getThing().getId().equals(thingId)) {
+                    found = item;
+                    break;
+                }
+            }
+            if (found != null) {
+                thingsModel.removeElement(found);
+            }
+        });
+    }
     public void thingDeleted(ThingDto thing) {
         SwingUtilities.invokeLater(() -> {
             ThingListItem found = null;
@@ -281,16 +310,11 @@ public class ThingPanelController implements ConnectionListener {
     public void connected() {
         empty(true);
         panel.getBtnCreate().setEnabled(true);
-        //TODO Get things of current user
-//        List<ThingDto> things = controllers.getThingController().getThings(controllers.getUserController().getCurrentUser().getId());
-//        for (ThingDto thing : things) {
-//            thingAdded(thing);
-//        }
-
     }
 
     @Override
     public void disconnected() {
-
+        currentRoom = null;
+        currentUser = null;
     }
 }

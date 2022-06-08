@@ -2,9 +2,13 @@ package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.protocol.request.DeleteThingDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.VerbDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.RoomDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingDeletedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
+import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.game.GameController;
 
 public class DeleteThingAction extends Action<DeleteThingDTO> {
@@ -20,17 +24,12 @@ public class DeleteThingAction extends Action<DeleteThingDTO> {
     @Override
     public void execute() {
         DeleteThingDTO dto = getDto();
-        //FIXME Things
-//        ThingDto thing  = ThingFactory.getInstance(STORIMMicroServer.DATADIR).findThingById(dto.getThingId());
-//        if ( thing != null ) {
-//            controller.deleteThing(getClient(), thing);
-//        }
-    }
-
-    public void deleteThing(ClientConnection source, ThingDto thing) {
-        //FIXME Things
-//        ThingFactory.getInstance(STORIMMicroServer.DATADIR).deleteThing(thing);
-//        fireGameStateEvent(source, GameStateEvent.Type.THINGDELETED, thing, null);
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
+        boolean success = client.getServer().getUserDataServerProxy().deleteThing(dto.getThingId());
+        if (success) {
+            ThingDeletedDTO thingDeletedDTO = new ThingDeletedDTO(dto.getThingId());
+            getClient().send(thingDeletedDTO);
+        }
     }
 
 }

@@ -39,7 +39,7 @@ public class SetAvatarAction extends Action<SetAvatarDto> {
 
 
     public void avatarSet(ClientConnection source, UserDto user, AvatarDto avatar) {
-        Location location = gameController.getGameState().getLocation(user.getId());
+        Location location = gameController.getGameState().getUserLocation(user.getId());
         gameController.fireRoomEvent(source, location.getRoom().getId(), new RoomEvent(RoomEvent.Type.AVATARSET, user, avatar));
     }
 

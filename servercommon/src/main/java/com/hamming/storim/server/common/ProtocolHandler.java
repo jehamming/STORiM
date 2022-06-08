@@ -16,8 +16,8 @@ public class ProtocolHandler<T extends Action> implements Protocol {
         actions = new HashMap<Class, T>();
     }
 
-    public void addAction(Class clazz, T action) {
-        actions.put(clazz, action);
+    public void addAction(T action) {
+        actions.put(action.getProtocolClass(), action);
     }
     public void clearActions() {
         actions = new HashMap<>();

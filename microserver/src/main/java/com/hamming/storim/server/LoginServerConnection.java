@@ -17,7 +17,7 @@ public class LoginServerConnection extends ClientConnection{
     @Override
     public void addActions() {
         //What kind of messages do you receive from the LoginServer?
-        getProtocolHandler().addAction(GetRoomsDTO.class, new GetRoomsAction(this));
+        getProtocolHandler().addAction(new GetRoomsAction(this));
     }
 
     @Override

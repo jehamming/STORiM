@@ -38,7 +38,7 @@ public class ExecVerbAction extends Action<ExecVerbDTO> {
 
     public MessageInRoomDTO executeVeb(ClientConnection source, UserDto u, VerbDetailsDTO verb, String input) {
         Map<String, String> replacements = new HashMap<>();
-        Location location = controller.getGameState().getLocation(u.getId());
+        Location location = controller.getGameState().getUserLocation(u.getId());
         replacements.put(GameConstants.CMD_REPLACE_CALLER, u.getName());
         replacements.put(GameConstants.CMD_REPLACE_LOCATION, location.getRoom().getName());
         replacements.put(GameConstants.CMD_REPLACE_MESSAGE, input);

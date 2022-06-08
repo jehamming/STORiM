@@ -20,8 +20,8 @@ public class LoginServerClientConnection extends ClientConnection {
     @Override
     public void addActions() {
         LoginServerWorker serverWorker = (LoginServerWorker) getServerWorker();
-        getProtocolHandler().addAction(AddServerRequestDTO.class, new AddServerAction(this, serverWorker));
-        getProtocolHandler().addAction(VerifyUserRequestDTO.class, new VerifyUserAction(serverWorker, this));
+        getProtocolHandler().addAction(new AddServerAction(this, serverWorker));
+        getProtocolHandler().addAction(new VerifyUserAction(serverWorker, this));
     }
 
 

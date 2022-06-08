@@ -1,6 +1,7 @@
 package com.hamming.storim.server.game;
 
 
+import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.server.common.model.Location;
 
@@ -12,10 +13,12 @@ public class GameState {
 
     private List<UserDto> onlineUsers;
     private HashMap<Long, Location> userLocations;
+    private HashMap<Long, Location> thingLocations;
 
     public GameState() {
         onlineUsers = new ArrayList<>();
         userLocations = new HashMap<>();
+        thingLocations = new HashMap<>();
     }
 
     public List<UserDto> getOnlineUsers() {
@@ -28,12 +31,21 @@ public class GameState {
         return existed;
     }
 
-    public Location getLocation(Long userId) {
+    public Location getUserLocation(Long userId) {
         return userLocations.get(userId);
     }
 
-    public void setLocation(UserDto user, Location location) {
+    public Location getThingLocation(Long thingId) {
+        return userLocations.get(thingId);
+    }
+
+
+    public void setUserLocation(UserDto user, Location location) {
         userLocations.put(user.getId(), location);
+    }
+
+    public void setThingLocation(ThingDto thing, Location location) {
+        userLocations.put(thing.getId(), location);
     }
 
     public UserDto findUserById( Long id ) {

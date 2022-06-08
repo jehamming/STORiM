@@ -27,7 +27,7 @@ public class MoveAction extends Action<MovementRequestDTO> {
     }
 
     public void handleMoveRequest(Long sequence, UserDto u, boolean forward, boolean back, boolean left, boolean right) {
-        Location location = controller.getGameState().getLocation(u.getId());
+        Location location = controller.getGameState().getUserLocation(u.getId());
         if (location != null) {
             if (forward) {
                 location.setY(location.getY() - GameConstants.RUN_SPEED);
@@ -49,7 +49,7 @@ public class MoveAction extends Action<MovementRequestDTO> {
     }
 
     public void userLocationUpdated(ClientConnection source, UserDto u) {
-        Location location = controller.getGameState().getLocation(u.getId());
+        Location location = controller.getGameState().getUserLocation(u.getId());
         controller.fireRoomEvent(source, location.getRoom().getId(), new RoomEvent(RoomEvent.Type.USERLOCATIONUPDATE, u));
     }
 

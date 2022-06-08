@@ -29,7 +29,7 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserDto currentUser = client.getCurrentUser();
-        Location location = controller.getGameState().getLocation(currentUser.getId());
+        Location location = controller.getGameState().getUserLocation(currentUser.getId());
         Long fromRoomId = location.getRoom().getId();
         Exit exit = location.getRoom().getExit(getDto().getExitId());
         if (exit != null) {
@@ -41,7 +41,7 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
             location.setY(toRoom.getSpawnPointY());
 
             Long newRoomId = location.getRoom().getId();
-            controller.getGameState().setLocation(currentUser, location);
+            controller.getGameState().setUserLocation(currentUser, location);
             client.setRoom(newRoomId);
             // Send current User info
             LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);

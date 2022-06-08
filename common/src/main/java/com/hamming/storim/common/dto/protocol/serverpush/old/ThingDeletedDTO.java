@@ -6,20 +6,20 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class ThingDeletedDTO implements  ResponseDTO {
 
-    private ThingDto thing;
+    private Long thingId;
 
-    public ThingDeletedDTO(ThingDto thing) {
-        this.thing = thing;
+    public ThingDeletedDTO(Long thingId) {
+        this.thingId = thingId;
     }
 
-    public ThingDto getThing() {
-        return thing;
+    public Long getThingId() {
+        return thingId;
     }
 
     @Override
     public String toString() {
         return "ThingDeletedDTO{" +
-                "thing=" + thing +
+                "thingId=" + thingId +
                 '}';
     }
 }
