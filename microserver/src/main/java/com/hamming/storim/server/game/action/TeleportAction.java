@@ -36,8 +36,8 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
         Location loc;
         if (user != null && newRoom != null ) {
             Location currentLocation = controller.getGameState().getUserLocation(user.getId());
-            Long fromRoomId = currentLocation.getRoom().getId();
-            currentLocation.setRoom(newRoom);
+            Long fromRoomId = currentLocation.getRoomId();
+            currentLocation.setRoomId(newRoom.getId());
             currentLocation.setX(newRoom.getSpawnPointX());
             currentLocation.setY(newRoom.getSpawnPointY());
             controller.getGameState().setUserLocation(user, currentLocation);
@@ -51,7 +51,7 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
             // Send other clients an update
             userLeftRoom(getClient(), user, fromRoomId, newRoomId, false);
             //Update userdataserver
-            client.updateRoomForUser(user, currentLocation);
+            client.getServer().getUserDataServerProxy().setLocation(user.getId(),locationDto);
         }
     }
 

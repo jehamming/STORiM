@@ -8,6 +8,8 @@ import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.server.common.action.Action;
+import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.GetLocationDto;
+import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.GetLocationResponseDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserResponseDTO;
 
@@ -42,6 +44,10 @@ public class LoginAction extends Action<LoginDTO> {
                 String source = getClient().getId();
                 session = serverWorker.getLoginServer().getSessionManager().createSession(user.getId(), source);
                 // Check location of the user
+                GetLocationDto getLocationDto = new GetLocationDto(user.getId());
+                GetLocationResponseDto getLocationResponseDto = serverWorker.getLoginServer().getUserDataServerConnection().sendReceive(getLocationDto, GetLocationResponseDto.class);
+                location = getLocationResponseDto.getLocation();
+
                 loginSucceeded = true;
             } else {
                 errorMessage = validateUserResponseDTO.getErrorMessage();

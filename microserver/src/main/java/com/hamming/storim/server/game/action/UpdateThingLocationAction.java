@@ -1,11 +1,13 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.game.GameController;
+import com.hamming.storim.server.game.RoomEvent;
 
 public class UpdateThingLocationAction extends Action<UpdateThingLocationDto> {
     private GameController gameController;
@@ -20,20 +22,16 @@ public class UpdateThingLocationAction extends Action<UpdateThingLocationDto> {
     @Override
     public void execute() {
         UpdateThingLocationDto dto = getDto();
-        //FIXME Things
-//        Thing thing = ThingFactory.getInstance(STORIMMicroServer.DATADIR).findThingById(dto.getId());
-//        if ( thing != null ) {
-//            updateThingLocation(getClient(), thing, dto.getX(), dto.getY());
-//        }
-    }
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
 
-    public void updateThingLocation(ClientConnection source, ThingDto thing, int x, int y) {
-        //FIXME Things
-//        if (thing != null) {
-//            thing.getLocation().setX(x);
-//            thing.getLocation().setY(y);
-//            fireGameStateEvent(source, GameStateEvent.Type.THINGUPDATED, thing, null);
-//        }
+        LocationDto locationDto = client.getServer().getUserDataServerProxy().getLocation(dto.getId());
+        if ( locationDto != null ) {
+            locationDto.setX(dto.getX());
+            locationDto.setY(dto.getY());
+            client.getServer().getUserDataServerProxy().setLocation(dto.getId(), locationDto );
+        }
+        gameController.fireRoomEvent(client, locationDto.getRoomId(), new RoomEvent(RoomEvent.Type.THINGLOCATIONUPDATE, locationDto));
+
     }
 
 }

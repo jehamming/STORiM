@@ -26,7 +26,7 @@ public class UserConnectedAction extends Action {
 
         Location currentUserLocation = controller.getGameState().getUserLocation(client.getCurrentUser().getId());
         Location userLocation = controller.getGameState().getUserLocation(user.getId());
-        if ( currentUserLocation.getRoom().getId().equals( userLocation.getRoom().getId())) {
+        if ( currentUserLocation.getRoomId().equals( userLocation.getRoomId())) {
             client.sendUserInRoom(user);
         }
     }

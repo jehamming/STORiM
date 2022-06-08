@@ -14,6 +14,7 @@ import com.hamming.storim.common.interfaces.ConnectionListener;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class LoginPanelController implements ConnectionListener {
@@ -58,15 +59,18 @@ public class LoginPanelController implements ConnectionListener {
 
             // Do login request
             LoginDTO dto = ProtocolHandler.getInstance().getLoginDTO(username, password);
-            LoginResultDTO loginResult =  connectionController.sendReceive(dto,LoginResultDTO.class);
+            LoginResultDTO loginResult = connectionController.sendReceive(dto, LoginResultDTO.class);
 
             if (loginResult.isLoginSucceeded()) {
+                updateServerList();
                 storimWindow.setCurrentUser(loginResult.getUser());
                 storimWindow.setUserToken(loginResult.getToken());
                 panel.getBtnDisconnect().setEnabled(true);
                 panel.getBtnLogin().setEnabled(false);
-                if (loginResult.getLocation() == null) {
-                    updateServerList();
+                if (loginResult.getLocation() != null) {
+                    String serverName = loginResult.getLocation().getServerId();
+                    selectServer(serverName);
+                    selectRoom(loginResult.getLocation().getRoomId());
                 }
             } else {
                 JOptionPane.showMessageDialog(panel, loginResult.getErrorMessage());
@@ -79,37 +83,72 @@ public class LoginPanelController implements ConnectionListener {
         }
     }
 
+    private void selectRoom(Long roomId) {
+        RoomListItem item = findRoomListItem(roomId);
+        if (item != null) {
+            roomsModel.setSelectedItem(item);
+        }
+    }
+
+    private void selectServer(String serverName) {
+        ServerListItem item = findServerListItem(serverName);
+        if (item != null) {
+            serversModel.setSelectedItem(item);
+        }
+    }
+
+    private ServerListItem findServerListItem(String serverName) {
+        ServerListItem found = null;
+        for (int i = 0; i < serversModel.getSize(); i++) {
+            ServerListItem item = serversModel.getElementAt(i);
+            if (item.getServerRegistrationDTO().getServerName().equals(serverName)) {
+                found = item;
+                break;
+            }
+        }
+        return found;
+    }
+
+    private RoomListItem findRoomListItem(Long roomId) {
+        RoomListItem found = null;
+        for (int i = 0; i < roomsModel.getSize(); i++) {
+            RoomListItem item = roomsModel.getElementAt(i);
+            if (item.getId().equals(roomId)) {
+                found = item;
+                break;
+            }
+        }
+        return found;
+    }
+
     private void updateServerList() {
         GetServerRegistrationsResponseDTO getServerRegistrationsResponseDTO = connectionController.sendReceive(new GetServerRegistrationsDTO(), GetServerRegistrationsResponseDTO.class);
         if (getServerRegistrationsResponseDTO != null) {
             List<ServerRegistrationDTO> servers = getServerRegistrationsResponseDTO.getServers();
-            SwingUtilities.invokeLater(() -> {
-                serversModel.removeAllElements();
-                if (servers != null) {
-                    for (ServerRegistrationDTO server : servers) {
-                        ServerListItem item = new ServerListItem(server);
-                        serversModel.addElement(item);
-                    }
+            serversModel.removeAllElements();
+            if (servers != null) {
+                for (ServerRegistrationDTO server : servers) {
+                    ServerListItem item = new ServerListItem(server);
+                    serversModel.addElement(item);
                 }
-            });
+            }
         }
     }
 
     private void serverSelected() {
+
         ServerListItem serverListItem = (ServerListItem) serversModel.getSelectedItem();
         if (serverListItem != null) {
-            SwingUtilities.invokeLater(() -> {
-                roomsModel.removeAllElements();
-                String serverName = serverListItem.getServerRegistrationDTO().getServerName();
-                GetRoomsForServerResponseDTO getRoomsForServerResponseDTO = connectionController.sendReceive(new GetRoomsForServerDTO(serverName), GetRoomsForServerResponseDTO.class);
-                if (getRoomsForServerResponseDTO != null && getRoomsForServerResponseDTO.getRooms() != null) {
-                    for (Long id : getRoomsForServerResponseDTO.getRooms().keySet()) {
-                        String roomName = getRoomsForServerResponseDTO.getRooms().get(id);
-                        RoomListItem roomListItem = new RoomListItem(id, roomName);
-                        roomsModel.addElement(roomListItem);
-                    }
+            roomsModel.removeAllElements();
+            String serverName = serverListItem.getServerRegistrationDTO().getServerName();
+            GetRoomsForServerResponseDTO getRoomsForServerResponseDTO = connectionController.sendReceive(new GetRoomsForServerDTO(serverName), GetRoomsForServerResponseDTO.class);
+            if (getRoomsForServerResponseDTO != null && getRoomsForServerResponseDTO.getRooms() != null) {
+                for (Long id : getRoomsForServerResponseDTO.getRooms().keySet()) {
+                    String roomName = getRoomsForServerResponseDTO.getRooms().get(id);
+                    RoomListItem roomListItem = new RoomListItem(id, roomName);
+                    roomsModel.addElement(roomListItem);
                 }
-            });
+            }
         }
     }
 

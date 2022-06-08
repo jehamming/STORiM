@@ -35,8 +35,8 @@ public class DTOFactory {
 
 
 
-    public LocationDto getLocationDTO(Location loc) {
-        return new LocationDto(loc.getRoom().getId(), loc.getX(), loc.getY());
+    public LocationDto getLocationDTO(Location l) {
+        return new LocationDto(l.getObjectId(), l.getServerId(), l.getRoomId(), l.getX(), l.getY());
     }
 
     public ExitDto getExitDTO(Exit e) {

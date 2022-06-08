@@ -1,14 +1,12 @@
 package com.hamming.userdataserver.model;
 
 import com.hamming.storim.server.common.ImageObject;
-import com.hamming.storim.server.common.model.Location;
 
 public class Thing extends ImageObject {
 
     private String description;
     private float scale;
     private int rotation;
-    private Location location;
 
     public String getDescription() {
         return description;
@@ -34,14 +32,6 @@ public class Thing extends ImageObject {
         this.rotation = rotation;
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
     @Override
     public String toString() {
         return "Thing{" +
@@ -49,7 +39,6 @@ public class Thing extends ImageObject {
                 ", description='" + description + '\'' +
                 ", scale=" + scale +
                 ", rotation=" + rotation +
-                ", location=" + location +
                 '}';
     }
 }

@@ -107,17 +107,6 @@ public class ThingFactory {
         return Database.getInstance().getAll(Thing.class);
     }
 
-    public List<Thing> getAllThingsInRoom(Long roomId) {
-      List<Thing> things = new ArrayList<>();
-        for (Thing thing : getAllThings()) {
-            if (thing.getLocation() != null && thing.getLocation().getRoom().getId().equals(roomId)) {
-                things.add(thing);
-            }
-        }
-        return things;
-    }
-
-
     public List<Thing> getThings(Long userId) {
         return Database.getInstance().getAll(Thing.class, userId);
     }

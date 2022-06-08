@@ -5,6 +5,7 @@ import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
+import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.game.GameConstants;
@@ -43,18 +44,17 @@ public class MoveAction extends Action<MovementRequestDTO> {
             }
 
             checkRoomBounds(location);
-            location.setSequence(sequence);
-            userLocationUpdated(getClient(), u);
+            userLocationUpdated(getClient(), u, sequence);
         }
     }
 
-    public void userLocationUpdated(ClientConnection source, UserDto u) {
+    public void userLocationUpdated(ClientConnection source, UserDto u, Long sequence) {
         Location location = controller.getGameState().getUserLocation(u.getId());
-        controller.fireRoomEvent(source, location.getRoom().getId(), new RoomEvent(RoomEvent.Type.USERLOCATIONUPDATE, u));
+        controller.fireRoomEvent(source, location.getRoomId(), new RoomEvent(RoomEvent.Type.USERLOCATIONUPDATE, u, sequence));
     }
 
     private void checkRoomBounds(Location l) {
-        Room r = l.getRoom();
+        Room r = RoomFactory.getInstance().findRoomByID(l.getRoomId());
         if ( l.getX() > r.getWidth()) {
             l.setX(r.getWidth());
         }

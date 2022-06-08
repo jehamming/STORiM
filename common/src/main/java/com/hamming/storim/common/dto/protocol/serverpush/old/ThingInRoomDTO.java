@@ -1,5 +1,6 @@
 package com.hamming.storim.common.dto.protocol.serverpush.old;
 
+import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
@@ -9,26 +10,27 @@ public class ThingInRoomDTO implements  ResponseDTO {
 
 
     private ThingDto thing;
-    private RoomDto room;
 
-    public ThingInRoomDTO(ThingDto thing, RoomDto room) {
+    private LocationDto location;
+
+    public ThingInRoomDTO(ThingDto thing, LocationDto location) {
         this.thing = thing;
-        this.room = room;
+        this.location = location;
     }
 
     public ThingDto getThing() {
         return thing;
     }
 
-    public RoomDto getRoom() {
-        return room;
+    public LocationDto getLocation() {
+        return location;
     }
 
     @Override
     public String toString() {
         return "ThingInRoomDTO{" +
                 "thing=" + thing +
-                ", room=" + room +
+                ", location=" + location +
                 '}';
     }
 }

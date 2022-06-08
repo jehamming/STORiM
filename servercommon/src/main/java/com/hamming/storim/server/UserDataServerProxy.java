@@ -6,6 +6,7 @@ import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.*;
 import com.hamming.storim.server.common.dto.protocol.dataserver.tile.*;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.*;
+import com.hamming.storim.server.common.model.Location;
 
 import java.util.HashMap;
 import java.util.List;
@@ -181,4 +182,16 @@ public class UserDataServerProxy {
         }
         return response.getThing();
     }
+
+    public LocationDto getLocation(Long objectId) {
+        GetLocationDto getLocationDto = new GetLocationDto(objectId);
+        GetLocationResponseDto response = connection.sendReceive(getLocationDto, GetLocationResponseDto.class);
+        return response.getLocation();
+    }
+
+    public void setLocation(Long objectId, LocationDto locationDto) {
+        SetLocationDto setLocationDto = new SetLocationDto(objectId, locationDto);
+        connection.send(setLocationDto);
+    }
+
 }

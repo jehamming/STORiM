@@ -28,10 +28,14 @@ public class STORIMMicroServer extends Server {
     private final static String PROPFILE = "microserver.properties";
     public final static String DBFILE = "microserver.db";
     public static String DATADIR = "serverdata";
-    public static String SERVERNAME = "servername";
+    private String serverName = "servername";
 
     public STORIMMicroServer() {
         super("STORIM Micro Server");
+    }
+
+    public String getServerName() {
+        return serverName;
     }
 
     public void initialize() {
@@ -41,7 +45,7 @@ public class STORIMMicroServer extends Server {
         config = ServerConfig.getInstance(PROPFILE);
         // Set data variables
         DATADIR = config.getPropertyAsString("datadir");
-        SERVERNAME = config.getPropertyAsString("name");
+        serverName = config.getPropertyAsString("name");
         port = config.getPropertyAsInt("serverport");
 
         // Start GameController
@@ -95,9 +99,9 @@ public class STORIMMicroServer extends Server {
         connectToLoginServer();
         success = registerToLoginServer();
         if (success) {
-            System.out.println(this.getClass().getName() + ":" + "Started MicroServer: " + SERVERNAME + ", port:" + port);
+            System.out.println(this.getClass().getName() + ":" + "Started MicroServer: " + getServerName() + ", port:" + port);
         } else {
-            System.out.println(this.getClass().getName() + ":" + "Could not start MicroServer: " + SERVERNAME + ", port:" + port);
+            System.out.println(this.getClass().getName() + ":" + "Could not start MicroServer: " + getServerName() + ", port:" + port);
             dispose();
         }
     }
@@ -106,7 +110,7 @@ public class STORIMMicroServer extends Server {
         boolean success = false;
         try {
             String url = Inet4Address.getLocalHost().getHostName();
-            AddServerRequestDTO dto = new AddServerRequestDTO(SERVERNAME, url, port);
+            AddServerRequestDTO dto = new AddServerRequestDTO(getServerName(), url, port);
             AddServerResponseDTO responseDTO = loginServerConnection.sendReceive(dto, AddServerResponseDTO.class);
             success = responseDTO.isSuccess();
             if (success) {

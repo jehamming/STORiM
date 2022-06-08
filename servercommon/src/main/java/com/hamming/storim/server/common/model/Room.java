@@ -1,5 +1,7 @@
 package com.hamming.storim.server.common.model;
 
+import com.hamming.storim.common.dto.ThingDto;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class Room extends BasicObject   {
     private Long tileId;
 
     private List<Exit> exits;
+    private List<Long> objectsInRoom;
 
     public Room() {
         spawnPointX = 100;
@@ -23,6 +26,7 @@ public class Room extends BasicObject   {
         length = 200;
         width = 200;
         exits = new ArrayList<>();
+        objectsInRoom = new ArrayList<>();
     }
 
     public int getSpawnPointX() {
@@ -118,4 +122,16 @@ public class Room extends BasicObject   {
         }
         return found;
     }
+
+    public List<Long> getObjectsInRoom() {
+        return objectsInRoom;
+    }
+
+    public void addObjectInRoom(Long objectId) {
+        objectsInRoom.add(objectId);
+    }
+    public void removeObjectFromRoom(Long objectId) {
+        objectsInRoom.remove(objectId);
+    }
+
 }

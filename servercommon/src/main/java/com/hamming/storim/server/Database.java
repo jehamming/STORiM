@@ -73,7 +73,7 @@ public class Database {
         return found;
     }
 
-    public <T> List<T> getAll(Class<T> c) {
+    public <T extends BasicObject> List<T> getAll(Class<T> c) {
         List<T> listOfObjects = ( List<T> ) data.get(c);
         if (listOfObjects == null ) {
             listOfObjects = new ArrayList<T>();

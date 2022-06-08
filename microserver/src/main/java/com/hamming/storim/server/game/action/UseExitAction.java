@@ -30,17 +30,18 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserDto currentUser = client.getCurrentUser();
         Location location = controller.getGameState().getUserLocation(currentUser.getId());
-        Long fromRoomId = location.getRoom().getId();
-        Exit exit = location.getRoom().getExit(getDto().getExitId());
+        Long fromRoomId = location.getRoomId();
+        Room room = RoomFactory.getInstance().findRoomByID(location.getRoomId());
+        Exit exit = room.getExit(getDto().getExitId());
         if (exit != null) {
             // Stop listening to the old Room!
             controller.removeRoomListener(fromRoomId, client);
             Room toRoom = RoomFactory.getInstance().findRoomByID(exit.getRoomid());
-            location.setRoom(toRoom);
+            location.setRoomId(toRoom.getId());
             location.setX(toRoom.getSpawnPointX());
             location.setY(toRoom.getSpawnPointY());
 
-            Long newRoomId = location.getRoom().getId();
+            Long newRoomId = location.getRoomId();
             controller.getGameState().setUserLocation(currentUser, location);
             client.setRoom(newRoomId);
             // Send current User info
@@ -50,13 +51,13 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
             // Start listening to the new Room!
             controller.addRoomListener(newRoomId, client);
             // Send other clients an update
-            userLeftRoom(getClient(), currentUser, fromRoomId, newRoomId, false);
+            userLeftRoom(getClient(), currentUser, fromRoomId, newRoomId);
             //Update userdataserver
-            client.updateRoomForUser(currentUser, location);
+            client.getServer().getUserDataServerProxy().setLocation(currentUser.getId(),locationDto);
         }
     }
 
-    public void userLeftRoom(ClientConnection source, UserDto user, Long fromRoomId, Long newRoomId, boolean teleported) {
+    public void userLeftRoom(ClientConnection source, UserDto user, Long fromRoomId, Long newRoomId) {
         controller.fireRoomEvent(source, fromRoomId, new RoomEvent(RoomEvent.Type.USERLEFTROOM, user, newRoomId));
         controller.fireRoomEvent(source, newRoomId, new RoomEvent(RoomEvent.Type.USERENTEREDROOM, user, fromRoomId));
     }

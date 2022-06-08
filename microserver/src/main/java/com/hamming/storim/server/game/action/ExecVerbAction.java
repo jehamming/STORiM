@@ -8,7 +8,9 @@ import com.hamming.storim.common.util.StringUtils;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
+import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Location;
+import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.game.GameConstants;
 import com.hamming.storim.server.game.GameController;
 import com.hamming.storim.server.game.RoomEvent;
@@ -39,13 +41,14 @@ public class ExecVerbAction extends Action<ExecVerbDTO> {
     public MessageInRoomDTO executeVeb(ClientConnection source, UserDto u, VerbDetailsDTO verb, String input) {
         Map<String, String> replacements = new HashMap<>();
         Location location = controller.getGameState().getUserLocation(u.getId());
+        Room room = RoomFactory.getInstance().findRoomByID(location.getRoomId());
         replacements.put(GameConstants.CMD_REPLACE_CALLER, u.getName());
-        replacements.put(GameConstants.CMD_REPLACE_LOCATION, location.getRoom().getName());
+        replacements.put(GameConstants.CMD_REPLACE_LOCATION, room.getName());
         replacements.put(GameConstants.CMD_REPLACE_MESSAGE, input);
 
         String toCaller = StringUtils.replace(verb.getToCaller(), replacements);
         String toLocation = StringUtils.replace(verb.getToLocation(), replacements);
-        controller.fireRoomEvent(source, location.getRoom().getId(), new RoomEvent(RoomEvent.Type.MESSAGEINROOM, u, toLocation));
+        controller.fireRoomEvent(source, location.getRoomId(), new RoomEvent(RoomEvent.Type.MESSAGEINROOM, u, toLocation));
         MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(u.getId(), MessageInRoomDTO.Type.USER, toCaller);
         return messageInRoomDTO;
     }

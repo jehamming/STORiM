@@ -2,12 +2,6 @@ package com.hamming.userdataserver;
 
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
-import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.*;
-import com.hamming.storim.server.common.dto.protocol.dataserver.tile.*;
-import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.dataserver.user.UpdateUserRoomDto;
-import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.dataserver.verb.*;
 import com.hamming.userdataserver.action.*;
 
 import java.net.Socket;
@@ -22,7 +16,6 @@ public class UserDataClientConnection extends ClientConnection {
     @Override
     public void addActions() {
         getProtocolHandler().addAction(new GetUserAction(getServerWorker(), this));
-        getProtocolHandler().addAction(new UpdateUserRoomAction(getServerWorker(), this));
         getProtocolHandler().addAction(new GetVerbsAction(getServerWorker(), this));
         getProtocolHandler().addAction(new GetVerbAction(getServerWorker(), this));
         getProtocolHandler().addAction(new AddVerbAction(getServerWorker(), this));
@@ -43,6 +36,8 @@ public class UserDataClientConnection extends ClientConnection {
         getProtocolHandler().addAction(new GetThingAction(getServerWorker(), this));
         getProtocolHandler().addAction(new DeleteThingAction(getServerWorker(), this));
         getProtocolHandler().addAction(new UpdateThingAction(getServerWorker(), this));
+        getProtocolHandler().addAction(new SetLocationAction(getServerWorker(), this));
+        getProtocolHandler().addAction(new GetLocationAction(getServerWorker(), this));
     }
 
 

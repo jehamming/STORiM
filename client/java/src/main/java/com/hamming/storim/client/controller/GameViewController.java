@@ -6,6 +6,7 @@ import com.hamming.storim.common.CalcTools;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.common.dto.protocol.request.UseExitRequestDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetExitDTO;
@@ -14,6 +15,8 @@ import com.hamming.storim.common.dto.protocol.requestresponse.GetTileDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetTileResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.dto.protocol.serverpush.old.RoomUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingInRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.old.ThingUpdatedDTO;
 import com.hamming.storim.common.interfaces.*;
 import com.hamming.storim.common.net.ProtocolReceiver;
 import com.hamming.storim.common.view.ViewListener;
@@ -84,8 +87,19 @@ public class GameViewController implements ConnectionListener {
        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
        connectionController.registerReceiver(AvatarSetDTO.class, (ProtocolReceiver<AvatarSetDTO>) dto -> setAvatar(dto));
        connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto));
-
+       connectionController.registerReceiver(ThingInRoomDTO.class, (ProtocolReceiver<ThingInRoomDTO>) dto -> addThing(dto));
+       connectionController.registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> updateThing(dto.getThing(), dto.getLocation()));
     }
+
+    private void updateThing(ThingDto thing, LocationDto loc) {
+        gameView.scheduleAction(() -> gameView.updateThing(thing, loc));
+    }
+
+    private void addThing(ThingInRoomDTO dto) {
+        gameView.scheduleAction(() -> gameView.addThing(dto.getThing(), dto.getLocation()));
+    }
+
+
 
     private void roomUpdated(RoomUpdatedDTO dto) {
         if (lastReceivedLocation != null && lastReceivedLocation.getRoomId().equals( dto.getRoom().getId() ) ) {
@@ -157,9 +171,6 @@ public class GameViewController implements ConnectionListener {
         LocationDto location = dto.getLocation();
         lastReceivedLocation = location;
         if (currentUser.getCurrentAvatarID() != null) {
-            //FIXME get Avatar
-            //  byte[] imageData = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImageData();
-            //gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), imageData));
             gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), null));
         } else {
             gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), null));

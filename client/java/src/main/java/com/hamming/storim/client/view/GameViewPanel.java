@@ -107,7 +107,9 @@ public class GameViewPanel extends JPanel implements Runnable {
             @Override
             public void mouseClicked(MouseEvent e) {
                 clearSelection();
-                selectedObject = getSelectedObject(e.getX(), e.getY());
+                Point p = MouseInfo.getPointerInfo().getLocation();
+                SwingUtilities.convertPointFromScreen(p, GameViewPanel.this);
+                selectedObject = getSelectedObject(p.x, p.y);
                 if (selectedObject != null) {
 
                     if (selectedObject instanceof Exit) {
@@ -215,7 +217,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         }
     }
 
-    public void addThing(Thing thing) {
+    private void addThing(Thing thing) {
         if (!things.contains(thing)) {
             things.add(thing);
         }
@@ -321,11 +323,14 @@ public class GameViewPanel extends JPanel implements Runnable {
         return room;
     }
 
+    private void determineUnitXY() {
+        unitX = (float) getWidth() / (float) room.getWidth();
+        unitY = (float) getHeight() / (float) room.getLength();
+    }
 
     public void componentResized() {
         if ( room != null ) {
-            unitX = (float) getWidth() / (float) room.getWidth();
-            unitY = (float) getHeight() / (float) room.getLength();
+            determineUnitXY();
             positionExits();
         }
     }
@@ -337,8 +342,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     public void setRoom(RoomDto room) {
         this.room = room;
         if (room != null) {
-            unitX = (float) getWidth()  / (float) room.getWidth();
-            unitY = (float) getHeight() / (float) room.getLength();
+            determineUnitXY();
             window.setRoomname(room.getName());
         }
 
@@ -519,8 +523,8 @@ public class GameViewPanel extends JPanel implements Runnable {
         for (Thing thing : things) {
             int middleX = thing.getImage().getWidth(null) / 2;
             int middleY = thing.getImage().getHeight(null) / 2;
-            int x = (int)(thing.getX() * unitX) - middleX;
-            int y = (int)(thing.getY() * unitY) - middleY;
+            int x = thing.getX() - middleX;
+            int y = thing.getY() - middleY;
             g.drawImage(thing.getImage(), x, y, this);
             if (thing.isSelected()) {
                 drawSelectionHighlight(g, thing);
@@ -557,8 +561,8 @@ public class GameViewPanel extends JPanel implements Runnable {
         for (Player player : players) {
             int middleX = player.getImage().getWidth(null) / 2;
             int middleY = player.getImage().getHeight(null) / 2;
-            int x = (int)(player.getX() * unitX) - middleX;
-            int y = (int)(player.getY() * unitY ) - middleY;
+            int x = player.getX() - middleX;
+            int y = player.getY() - middleY;
             Image playerAvatar = player.getImage();
             g.drawImage(playerAvatar, x, y,  this);
             Font font = new Font("Arial", Font.BOLD, 12);
@@ -606,13 +610,13 @@ public class GameViewPanel extends JPanel implements Runnable {
 
 
 
-    public void addThing(ThingDto thingDto) {
+    public void addThing(ThingDto thingDto, LocationDto loc) {
         Thing thing = new Thing(thingDto.getId());
         thing.setImage(ImageUtils.decode(thingDto.getImageData()));
         thing.setScale(thingDto.getScale());
         thing.setRotation(thingDto.getRotation());
-        thing.setX(thingDto.getLocation().getX());
-        thing.setY(thingDto.getLocation().getY());
+        thing.setX((int) (loc.getX() * unitX));
+        thing.setY((int) (loc.getY() * unitY));
         addThing(thing);
     }
 
@@ -646,8 +650,8 @@ public class GameViewPanel extends JPanel implements Runnable {
         Player p = getPlayer(playerId);
         //FIXME : p should not be null!
         if ( p != null ) {
-            p.setX(x);
-            p.setY(y);
+            p.setX((int) (x * unitX));
+            p.setY((int) (y * unitY));
         }
     }
 
@@ -671,14 +675,16 @@ public class GameViewPanel extends JPanel implements Runnable {
         }
     }
 
-    public void updateThing(ThingDto thingDto) {
+    public void updateThing(ThingDto thingDto, LocationDto loc) {
         Thing thing = getThing(thingDto.getId());
         if ( thing != null ) {
             thing.setImage(ImageUtils.decode(thingDto.getImageData()));
             thing.setScale(thingDto.getScale());
             thing.setRotation(thingDto.getRotation());
-            thing.setX(thingDto.getLocation().getX());
-            thing.setY(thingDto.getLocation().getY());
+            if ( loc != null ) {
+                thing.setX((int) (loc.getX() * unitX));
+                thing.setY((int) (loc.getY() * unitY));
+            }
         }
     }
 }

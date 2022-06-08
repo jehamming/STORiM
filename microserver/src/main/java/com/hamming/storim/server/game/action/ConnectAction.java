@@ -48,7 +48,7 @@ public class ConnectAction extends Action<ConnectDTO> {
             // Add this user as online user
             controller.getGameState().getOnlineUsers().add(currentUser);
             // RegisterListener for the current Room
-            controller.addRoomListener(location.getRoom().getId(), client);
+            controller.addRoomListener(location.getRoomId(), client);
             // Notify the listeners
             controller.fireServerEvent(getClient(), new ServerEvent(ServerEvent.Type.USERCONNECTED, currentUser));
         } else {

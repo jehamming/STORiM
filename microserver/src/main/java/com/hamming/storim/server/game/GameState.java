@@ -13,12 +13,10 @@ public class GameState {
 
     private List<UserDto> onlineUsers;
     private HashMap<Long, Location> userLocations;
-    private HashMap<Long, Location> thingLocations;
 
     public GameState() {
         onlineUsers = new ArrayList<>();
         userLocations = new HashMap<>();
-        thingLocations = new HashMap<>();
     }
 
     public List<UserDto> getOnlineUsers() {
@@ -44,9 +42,6 @@ public class GameState {
         userLocations.put(user.getId(), location);
     }
 
-    public void setThingLocation(ThingDto thing, Location location) {
-        userLocations.put(thing.getId(), location);
-    }
 
     public UserDto findUserById( Long id ) {
         UserDto returnValue = null;
