@@ -10,26 +10,19 @@ public class ThingUpdatedDTO implements  ResponseDTO {
 
     private ThingDto thing;
 
-    private LocationDto location;
 
-    public ThingUpdatedDTO(ThingDto thing, LocationDto location) {
+    public ThingUpdatedDTO(ThingDto thing) {
         this.thing = thing;
-        this.location = location;
     }
 
     public ThingDto getThing() {
         return thing;
     }
 
-    public LocationDto getLocation() {
-        return location;
-    }
-
     @Override
     public String toString() {
         return "ThingUpdatedDTO{" +
                 "thing=" + thing +
-                ", location=" + location +
                 '}';
     }
 }

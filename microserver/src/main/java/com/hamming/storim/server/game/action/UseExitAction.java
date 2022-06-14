@@ -3,9 +3,7 @@ package com.hamming.storim.server.game.action;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.UseExitRequestDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.UserLeftRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.UserLocationUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.LocationUpdateDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
@@ -46,8 +44,8 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
             client.setRoom(newRoomId);
             // Send current User info
             LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-            UserLocationUpdatedDTO userLocationUpdatedDTO = new UserLocationUpdatedDTO(currentUser.getId(), locationDto, null);
-            client.send(userLocationUpdatedDTO);
+            LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(currentUser.getId(), locationDto);
+            client.send(locationUpdateDTO);
             // Start listening to the new Room!
             controller.addRoomListener(newRoomId, client);
             // Send other clients an update

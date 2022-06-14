@@ -6,6 +6,7 @@ import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
+import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.game.GameController;
 import com.hamming.storim.server.game.RoomEvent;
 
@@ -24,13 +25,15 @@ public class UpdateThingLocationAction extends Action<UpdateThingLocationDto> {
         UpdateThingLocationDto dto = getDto();
         STORIMClientConnection client = (STORIMClientConnection) getClient();
 
-        LocationDto locationDto = client.getServer().getUserDataServerProxy().getLocation(dto.getId());
-        if ( locationDto != null ) {
-            locationDto.setX(dto.getX());
-            locationDto.setY(dto.getY());
-            client.getServer().getUserDataServerProxy().setLocation(dto.getId(), locationDto );
-        }
-        gameController.fireRoomEvent(client, locationDto.getRoomId(), new RoomEvent(RoomEvent.Type.THINGLOCATIONUPDATE, locationDto));
+        LocationDto locationDTO = client.getServer().getUserDataServerProxy().getLocation(dto.getId());
+        locationDTO.setX(dto.getX());
+        locationDTO.setY(dto.getY());
+
+        // Store in Dataserver (when server restarts)
+        // This is only done for Thing updates and User enter/exit/disconnect
+        client.getServer().getUserDataServerProxy().setLocation(dto.getId(), dto.getX(), dto.getY());
+
+        gameController.fireRoomEvent(client, locationDTO.getRoomId(), new RoomEvent(RoomEvent.Type.THINGLOCATIONUPDATE, locationDTO));
 
     }
 

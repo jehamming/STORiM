@@ -95,7 +95,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             try {
                 Object read = in.readObject();
                 ProtocolDTO dto = (ProtocolDTO) read;
-                System.out.println("(" + getId() + ") RECEIVED:" + dto.toString());
+                //System.out.println("(" + getId() + ") RECEIVED:" + dto.toString());
                 if (dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
                     ResponseContainer responseContainer = getResponseContainer(response.getClass());
@@ -109,8 +109,6 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
                 }
                 dispatcher.dispatch(dto);
             } catch (IOException e) {
-                // System.out.println(this.getClass().getName() + ":" + "Error:" + e.getMessage());
-                // e.printStackTrace();
                 running = false;
             } catch (ClassNotFoundException e) {
                 System.out.println("(" + getId() + ") Error:" + e.getMessage());

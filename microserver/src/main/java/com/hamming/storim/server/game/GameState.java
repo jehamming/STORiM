@@ -33,9 +33,6 @@ public class GameState {
         return userLocations.get(userId);
     }
 
-    public Location getThingLocation(Long thingId) {
-        return userLocations.get(thingId);
-    }
 
 
     public void setUserLocation(UserDto user, Location location) {

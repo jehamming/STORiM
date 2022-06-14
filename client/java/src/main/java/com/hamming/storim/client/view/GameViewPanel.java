@@ -5,6 +5,7 @@ import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindow;
 import com.hamming.storim.client.controller.GameViewController;
 import com.hamming.storim.common.dto.*;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.common.view.Action;
 
 import javax.imageio.ImageIO;
@@ -36,6 +37,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     private List<Player> players;
     private List<Thing> things;
     private List<Exit> exits;
+    private Map<Long, BasicDrawableObject> quickRef;
     public RoomDto room;
     public TileDto tile;
     public Image tileImage;
@@ -90,6 +92,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         players = new ArrayList<>();
         things = new ArrayList<>();
         exits = new ArrayList<>();
+        quickRef = new HashMap<>();
         try {
             defaultTileImage = ImageIO.read(new File("resources/Tile.png"));
             defaultUserImage = ImageIO.read(new File("resources/User.png"));
@@ -191,7 +194,9 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
     private void updatePosition(Thing thing) {
-        viewController.updateThingLocationRequest(thing.getId(), thing.getX(), thing.getY());
+        int translatedX = (int) (thing.getX() / unitX);
+        int translatedY = (int) (thing.getY() / unitY);
+        viewController.updateThingLocationRequest(thing.getId(), translatedX, translatedY);
     }
 
 
@@ -220,12 +225,14 @@ public class GameViewPanel extends JPanel implements Runnable {
     private void addThing(Thing thing) {
         if (!things.contains(thing)) {
             things.add(thing);
+            quickRef.put(thing.getId(), thing);
         }
     }
 
     public void addExit(Exit exit) {
         if (!exits.contains(exit)) {
             exits.add(exit);
+            quickRef.put(exit.getId(), exit);
         }
         positionExits();
     }
@@ -305,6 +312,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     public void addPlayer(Player player) {
         if (!players.contains(player)) {
             players.add(player);
+            quickRef.put(player.getId(), player);
         }
     }
 
@@ -610,13 +618,11 @@ public class GameViewPanel extends JPanel implements Runnable {
 
 
 
-    public void addThing(ThingDto thingDto, LocationDto loc) {
+    public void addThing(ThingDto thingDto) {
         Thing thing = new Thing(thingDto.getId());
         thing.setImage(ImageUtils.decode(thingDto.getImageData()));
         thing.setScale(thingDto.getScale());
         thing.setRotation(thingDto.getRotation());
-        thing.setX((int) (loc.getX() * unitX));
-        thing.setY((int) (loc.getY() * unitY));
         addThing(thing);
     }
 
@@ -646,14 +652,18 @@ public class GameViewPanel extends JPanel implements Runnable {
         setExits(new ArrayList<>());
     }
 
-    public void setPlayerLocation(Long playerId, int x, int y) {
-        Player p = getPlayer(playerId);
-        //FIXME : p should not be null!
-        if ( p != null ) {
-            p.setX((int) (x * unitX));
-            p.setY((int) (y * unitY));
+
+
+    public void setObjectLocation(Long objectId, int x, int y) {
+        BasicDrawableObject object = quickRef.get(objectId);
+        if ( object != null ) {
+            object.setX((int) (x * unitX));
+            object.setY((int) (y * unitY));
+        } else {
+           Logger.info(this, " - setLocation: object " + objectId + " not found!" );
         }
     }
+
 
     public void updatePlayer(UserDto user) {
         Player player = getPlayer(user.getId());
@@ -675,16 +685,12 @@ public class GameViewPanel extends JPanel implements Runnable {
         }
     }
 
-    public void updateThing(ThingDto thingDto, LocationDto loc) {
+    public void updateThing(ThingDto thingDto) {
         Thing thing = getThing(thingDto.getId());
         if ( thing != null ) {
             thing.setImage(ImageUtils.decode(thingDto.getImageData()));
             thing.setScale(thingDto.getScale());
             thing.setRotation(thingDto.getRotation());
-            if ( loc != null ) {
-                thing.setX((int) (loc.getX() * unitX));
-                thing.setY((int) (loc.getY() * unitY));
-            }
         }
     }
 }

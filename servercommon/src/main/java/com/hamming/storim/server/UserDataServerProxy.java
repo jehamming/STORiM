@@ -194,4 +194,12 @@ public class UserDataServerProxy {
         connection.send(setLocationDto);
     }
 
+    public void setLocation(Long id, int x, int y) {
+        LocationDto locationDto = getLocation(id);
+        if ( locationDto != null ) {
+            locationDto.setX(x);
+            locationDto.setY(y);
+            setLocation(id, locationDto);
+        }
+    }
 }

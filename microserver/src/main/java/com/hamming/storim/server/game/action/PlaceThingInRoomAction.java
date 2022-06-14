@@ -42,7 +42,9 @@ public class PlaceThingInRoomAction extends Action<PlaceThingInRoomDTO> {
     public void placeThingInRoom(ClientConnection source, UserDto user, ThingDto thing, Room room) {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         String serverName = client.getServer().getServerName();
+
         Location location = new Location(thing.getId(), serverName, room.getId(),room.getSpawnPointX(), room.getSpawnPointY());
+
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
         //Store location at dataserver
         client.getServer().getUserDataServerProxy().setLocation(thing.getId(), locationDto);

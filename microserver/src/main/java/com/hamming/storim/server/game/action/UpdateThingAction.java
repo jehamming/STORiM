@@ -30,7 +30,7 @@ public class UpdateThingAction extends Action<UpdateThingDto> {
 
         ThingDto thingDto = client.getServer().getUserDataServerProxy().updateThing(dto.getId(), dto.getName(), dto.getDescription(), dto.getScale(), dto.getRotation(), dto.getImageData());
         if ( thingDto != null) {
-            ThingUpdatedDTO thingUpdatedDTO = new ThingUpdatedDTO(thingDto, null);
+            ThingUpdatedDTO thingUpdatedDTO = new ThingUpdatedDTO(thingDto);
             getClient().send(thingUpdatedDTO);
         }
     }

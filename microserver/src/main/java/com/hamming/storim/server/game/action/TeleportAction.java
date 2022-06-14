@@ -3,7 +3,7 @@ package com.hamming.storim.server.game.action;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.TeleportRequestDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.UserLocationUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.LocationUpdateDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
@@ -44,8 +44,8 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
             client.setRoom(newRoomId);
             // Send current User info
             LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(currentLocation);
-            UserLocationUpdatedDTO userLocationUpdatedDTO = new UserLocationUpdatedDTO(user.getId(), locationDto, null);
-            client.send(userLocationUpdatedDTO);
+            LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(user.getId(), locationDto);
+            client.send(locationUpdateDTO);
             // Start listening to the new Room!
             controller.addRoomListener(newRoomId, client);
             // Send other clients an update

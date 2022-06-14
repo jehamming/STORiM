@@ -1,7 +1,10 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.LocationUpdateDTO;
+import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
@@ -50,7 +53,11 @@ public class MoveAction extends Action<MovementRequestDTO> {
 
     public void userLocationUpdated(ClientConnection source, UserDto u, Long sequence) {
         Location location = controller.getGameState().getUserLocation(u.getId());
-        controller.fireRoomEvent(source, location.getRoomId(), new RoomEvent(RoomEvent.Type.USERLOCATIONUPDATE, u, sequence));
+        controller.fireRoomEvent(source, location.getRoomId(), new RoomEvent(RoomEvent.Type.USERLOCATIONUPDATE, u));
+        LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(u.getId(), locationDto);
+        locationUpdateDTO.setSequenceNumber(sequence);
+        getClient().send(locationUpdateDTO);
     }
 
     private void checkRoomBounds(Location l) {

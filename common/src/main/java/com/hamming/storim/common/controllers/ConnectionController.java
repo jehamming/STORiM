@@ -6,6 +6,7 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.NetClient;
 import com.hamming.storim.common.net.ProtocolReceiver;
+import com.hamming.storim.common.util.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,6 +86,7 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
         List<ProtocolReceiver> listReceivers = commandReceivers.get(dto.getClass());
         if (listReceivers != null) {
             for (ProtocolReceiver c : listReceivers) {
+                Logger.info(c, "Received:" + dto);
                 c.receiveDTO(dto);
             }
         }
