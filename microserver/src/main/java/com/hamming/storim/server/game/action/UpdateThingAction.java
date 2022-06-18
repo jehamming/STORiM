@@ -37,7 +37,7 @@ public class UpdateThingAction extends Action<UpdateThingDto> {
 
             LocationDto locationDto = client.getServer().getUserDataServerProxy().getLocation(thingDto.getId());
             if ( locationDto != null ) {
-                gameController.fireRoomEvent(client, locationDto.getRoomId(), new RoomEvent(RoomEvent.Type.THINGUPDATED, thingDto));
+                gameController.fireRoomEvent(client, locationDto.getRoomId(), new RoomEvent(RoomEvent.Type.THINGUPDATED, thingDto, client.getCurrentUser()));
             }
         }
     }

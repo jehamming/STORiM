@@ -130,6 +130,7 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
 
     @Override
     public void disconnected() {
-
+        // Disconnected from server
+        fireDisconnectedEvent();
     }
 }

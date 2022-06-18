@@ -126,6 +126,10 @@ public class LoginPanelController implements ConnectionListener {
         if (getServerRegistrationsResponseDTO != null) {
             List<ServerRegistrationDTO> servers = getServerRegistrationsResponseDTO.getServers();
             serversModel.removeAllElements();
+            if (servers == null || (servers !=null && servers.isEmpty())) {
+                JOptionPane.showMessageDialog(panel, "No Micro Servers available! (Need at least 1 registered at the Login Server!");
+                disconnect();
+            }
             if (servers != null) {
                 for (ServerRegistrationDTO server : servers) {
                     ServerListItem item = new ServerListItem(server);
@@ -221,12 +225,12 @@ public class LoginPanelController implements ConnectionListener {
 
     @Override
     public void disconnected() {
-//        SwingUtilities.invokeLater(() -> {
-//            panel.getBtnDisconnect().setEnabled(false);
-//            panel.getBtnLogin().setEnabled(true);
-//            panel.getBtnConnectToServer().setEnabled(false);
-//            serversModel.removeAllElements();
-//            roomsModel.removeAllElements();
-//        });
+        SwingUtilities.invokeLater(() -> {
+            panel.getBtnDisconnect().setEnabled(false);
+            panel.getBtnLogin().setEnabled(true);
+            panel.getBtnConnectToServer().setEnabled(false);
+            serversModel.removeAllElements();
+            roomsModel.removeAllElements();
+        });
     }
 }

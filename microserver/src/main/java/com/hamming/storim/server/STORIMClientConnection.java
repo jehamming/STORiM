@@ -6,7 +6,6 @@ import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.dto.protocol.serverpush.old.*;
 import com.hamming.storim.common.util.Logger;
-import com.hamming.storim.common.util.StringUtils;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Exit;
@@ -359,13 +358,13 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 userLocationUpdate((UserDto) event.getData());
                 break;
             case THINGUPDATED:
-                thingUpdated((ThingDto) event.getData());
+                thingUpdated((ThingDto) event.getData(), (UserDto) event.getExtraData());
                 break;
             case THINGPLACED:
                 thingPlaced((ThingDto) event.getData(), (UserDto) event.getExtraData());
                 break;
             case THINGLOCATIONUPDATE:
-                thingLocationUpdate((LocationDto) event.getData());
+                thingLocationUpdate((LocationDto) event.getData(), (UserDto) event.getExtraData());
                 break;
             case ROOMUPDATED:
                 //TODO
@@ -376,14 +375,24 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         }
     }
 
-    private void thingUpdated(ThingDto thing) {
+    private void thingUpdated(ThingDto thing, UserDto user) {
         ThingUpdatedDTO thingUpdatedDTO = new ThingUpdatedDTO(thing);
         send(thingUpdatedDTO);
+
+        String txt = user.getName() + " changes " + thing.getName();
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(thing.getId(), MessageInRoomDTO.Type.USER, txt);
+        send(messageInRoomDTO);
+
+
     }
 
-    private void thingLocationUpdate(LocationDto locationDto) {
+    private void thingLocationUpdate(LocationDto locationDto, UserDto user) {
         LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(locationDto.getObjectId(), locationDto);
+        ThingDto thingDto = getServer().getUserDataServerProxy().getThing(locationDto.getObjectId());
         send(locationUpdateDTO);
+        String txt = user.getName() + " moves " + thingDto.getName();
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(locationDto.getId(), MessageInRoomDTO.Type.USER, txt);
+        send(messageInRoomDTO);
     }
 
 
