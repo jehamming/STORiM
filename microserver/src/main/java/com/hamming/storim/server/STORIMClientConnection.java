@@ -391,7 +391,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         ThingDto thingDto = getServer().getUserDataServerProxy().getThing(locationDto.getObjectId());
         send(locationUpdateDTO);
         String txt = user.getName() + " moves " + thingDto.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(locationDto.getId(), MessageInRoomDTO.Type.USER, txt);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(locationDto.getObjectId(), MessageInRoomDTO.Type.USER, txt);
         send(messageInRoomDTO);
     }
 
