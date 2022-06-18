@@ -1,5 +1,6 @@
 package com.hamming.loginserver;
 
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 
@@ -23,8 +24,8 @@ public class LoginServerWorker extends ServerWorker {
         if ( findServerRegistration(name) == null ) {
             ServerRegistration registration = new ServerRegistration(connection, name, url, port);
             registeredServers.put(connection, registration);
-            System.out.println("("+getClass().getSimpleName() +") New Server registered: " + registration);
-            System.out.println("("+getClass().getSimpleName() +") No of servers registered: " + registeredServers.size());
+            Logger.info(this, "New Server registered: " + registration);
+            Logger.info(this, "No of servers registered: " + registeredServers.size());
         } else {
             errorMessage = name + " already registered as server in another connection!!";
         }
@@ -40,7 +41,7 @@ public class LoginServerWorker extends ServerWorker {
         ServerRegistration serverRegistration = registeredServers.get(connection);
         if ( serverRegistration != null ) {
             registeredServers.remove(connection);
-            System.out.println("("+getClass().getSimpleName() +") Server "+ serverRegistration.getServerName()+ " removed, no of servers registered: " + registeredServers.values().size());
+            Logger.info(this, "("+getClass().getSimpleName() +") Server "+ serverRegistration.getServerName()+ " removed, no of servers registered: " + registeredServers.values().size());
         }
         return serverRegistration;
     }

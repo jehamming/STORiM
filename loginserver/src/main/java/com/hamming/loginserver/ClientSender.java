@@ -1,6 +1,7 @@
 package com.hamming.loginserver;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.util.Logger;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -30,7 +31,7 @@ public class ClientSender implements Runnable {
             while (!itemsToSend.isEmpty()) {
                 ProtocolDTO dto = itemsToSend.remove();
                 try {
-                    System.out.println("SEND:" + dto);
+                    Logger.info(this, "SEND:" + dto);
                     out.writeObject(dto);
                     out.flush();
                 } catch (IOException e) {

@@ -1,10 +1,10 @@
 package com.hamming.userdataserver.factories;
 
 
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.common.ImageStore;
 import com.hamming.userdataserver.model.Thing;
-
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class ThingFactory {
         for (Long id : thingIDs) {
             Thing thing = findThingById(id);
             if (thing == null) {
-                System.out.println(getClass().getName() + ": sanityCheck(), Thing  "+ id +"' has no Image, deleting Thing");
+                Logger.info(this, getClass().getName() + ": sanityCheck(), Thing  "+ id +"' has no Image, deleting Thing");
                 deleteThing(thing);
             }
         }
@@ -73,7 +73,7 @@ public class ThingFactory {
             if (thing != null ) {
                 thing.setImage(images.get(id));
             } else {
-                System.out.println(getClass().getName() + ": sanityCheck, have Image for Avatar " + id +" , but Avatar not in Database.");
+                Logger.info(this, getClass().getName() + ": sanityCheck, have Image for Avatar " + id +" , but Avatar not in Database.");
                 ImageStore.deleteImageFile(Thing.class, id, dataDir);
             }
         }

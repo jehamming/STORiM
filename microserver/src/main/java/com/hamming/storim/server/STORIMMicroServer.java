@@ -2,6 +2,7 @@ package com.hamming.storim.server;
 
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerResponseDTO;
 import com.hamming.storim.server.game.GameController;
@@ -54,7 +55,7 @@ public class STORIMMicroServer extends Server {
         controllerThread.setDaemon(true);
         controllerThread.setName("GameController");
         controllerThread.start();
-        System.out.println(this.getClass().getName() + ":" + "GameController started");
+        Logger.info(this, "GameController started");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Database.getInstance().store()));
     }
 
@@ -63,9 +64,9 @@ public class STORIMMicroServer extends Server {
         int loginserverport = config.getPropertyAsInt("loginserverport");
         try {
             Socket socket = new Socket(loginservername, loginserverport);
-            loginServerConnection = new LoginServerConnection(getClass().getSimpleName(), socket, controller);
+            loginServerConnection = new LoginServerConnection(socket, controller);
             loginServerProxy = new LoginServerProxy(loginServerConnection);
-            System.out.println(this.getClass().getName() + ":" + "Connected to LoginServer");
+            Logger.info(this, "Connected to LoginServer");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,7 +83,7 @@ public class STORIMMicroServer extends Server {
             Socket socket = new Socket(dataservername, dataserverport);
             dataServerConnection = new UserDataServerConnection(getClass().getSimpleName(), socket,  controller);
             userDataServerProxy = new UserDataServerProxy(dataServerConnection);
-            System.out.println(this.getClass().getName() + ":" + "Connected to DataServer");
+            Logger.info(this, "Connected to DataServer");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,9 +100,9 @@ public class STORIMMicroServer extends Server {
         connectToLoginServer();
         success = registerToLoginServer();
         if (success) {
-            System.out.println(this.getClass().getName() + ":" + "Started MicroServer: " + getServerName() + ", port:" + port);
+            Logger.info(this, "Started MicroServer: " + getServerName() + ", port:" + port);
         } else {
-            System.out.println(this.getClass().getName() + ":" + "Could not start MicroServer: " + getServerName() + ", port:" + port);
+            Logger.info(this, "Could not start MicroServer: " + getServerName() + ", port:" + port);
             dispose();
         }
     }
@@ -114,9 +115,9 @@ public class STORIMMicroServer extends Server {
             AddServerResponseDTO responseDTO = loginServerConnection.sendReceive(dto, AddServerResponseDTO.class);
             success = responseDTO.isSuccess();
             if (success) {
-                System.out.println(this.getClass().getName() + ":" + "Registered to LoginServer");
+                Logger.info(this, "Registered to LoginServer");
             } else {
-                System.out.println(this.getClass().getName() + ":" + "Could not register to LoginServer: " + responseDTO.getErrorMessage());
+                Logger.info(this, "Could not register to LoginServer: " + responseDTO.getErrorMessage());
             }
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -129,8 +130,9 @@ public class STORIMMicroServer extends Server {
     protected void clientConnected(Socket s) {
         try {
             clients++;
-            STORIMClientConnection client = new STORIMClientConnection(this, null, s,controller);
-            System.out.println(this.getClass().getName() + ":" + "Client " + s.getInetAddress().toString() + ", ClientThread started");
+            String id = "client-"+clients;
+            STORIMClientConnection client = new STORIMClientConnection(this, id, s,controller);
+            Logger.info(this, "Client " + s.getInetAddress().toString() + ", ClientThread started");
         } catch (Exception exception) {
             exception.printStackTrace();
         }

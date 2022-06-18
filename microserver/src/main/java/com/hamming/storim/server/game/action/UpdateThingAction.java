@@ -1,5 +1,6 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
@@ -10,6 +11,7 @@ import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.game.GameController;
+import com.hamming.storim.server.game.RoomEvent;
 
 import java.awt.*;
 
@@ -32,6 +34,11 @@ public class UpdateThingAction extends Action<UpdateThingDto> {
         if ( thingDto != null) {
             ThingUpdatedDTO thingUpdatedDTO = new ThingUpdatedDTO(thingDto);
             getClient().send(thingUpdatedDTO);
+
+            LocationDto locationDto = client.getServer().getUserDataServerProxy().getLocation(thingDto.getId());
+            if ( locationDto != null ) {
+                gameController.fireRoomEvent(client, locationDto.getRoomId(), new RoomEvent(RoomEvent.Type.THINGUPDATED, thingDto));
+            }
         }
     }
 

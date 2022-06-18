@@ -6,6 +6,7 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.NetClient;
 import com.hamming.storim.common.net.ProtocolReceiver;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.action.Action;
 
@@ -30,16 +31,11 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
     @Override
     public void receiveDTO(ProtocolDTO dto) {
         Action action = protocolHandler.getAction(dto);
-        System.out.println("(" + getClientId() + ") Received:" + dto);
+        Logger.info(this, getId(),"Received:" + dto);
         if (action != null) {
             action.setDTO(dto);
             serverWorker.addAction(action);
         }
-    }
-
-    public String getClientId() {
-        String clientId = this.getClass().getSimpleName() + "-" + getId();
-        return clientId;
     }
 
     public abstract void addActions();

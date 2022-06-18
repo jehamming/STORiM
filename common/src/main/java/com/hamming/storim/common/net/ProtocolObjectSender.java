@@ -2,6 +2,7 @@ package com.hamming.storim.common.net;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
+import com.hamming.storim.common.util.Logger;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -33,7 +34,7 @@ public class ProtocolObjectSender implements Runnable {
             while (!itemsToSend.isEmpty()) {
                 ProtocolDTO dto = itemsToSend.remove();
                 try {
-                    System.out.println("(" + getClass().getSimpleName() + "-"+id+") Send:" + dto );
+                    Logger.info(this,id, "Send:" + dto );
                     out.writeObject(dto);
                     out.flush();
                 } catch (IOException e) {
@@ -88,7 +89,7 @@ public class ProtocolObjectSender implements Runnable {
             }
         }
         if (responseContainer.getResponse() == null) {
-            System.out.println("(" + getClass().getSimpleName() + ") ERROR, SYNC Message (" + dto + ") did not have a result! ("+reason+") ");
+            Logger.info(this, " ERROR, SYNC Message (" + dto + ") did not have a result! ("+reason+") ");
         }
         return responseContainer.getResponse();
     }

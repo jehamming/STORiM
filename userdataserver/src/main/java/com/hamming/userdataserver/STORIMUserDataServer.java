@@ -2,6 +2,7 @@ package com.hamming.userdataserver;
 
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
@@ -54,22 +55,22 @@ public class STORIMUserDataServer extends Server {
         controllerThread.setDaemon(true);
         controllerThread.setName("UserData Server Worker");
         controllerThread.start();
-        System.out.println(this.getClass().getName() + ":" + " UserData Server Worker started");
+        Logger.info(this, "UserData Server Worker started");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Database.getInstance().store()) {});
     }
 
 
     public void startServer() {
         startServer(port);
-        System.out.println("---- For property files -----");
+        Logger.info(this, "---- For property files -----");
         try {
-            System.out.println("userdataserver=" + Inet4Address.getLocalHost().getHostName());
+            Logger.info(this, "userdataserver="+ Inet4Address.getLocalHost().getHostName());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        System.out.println("userdataserverport=" + port);
-        System.out.println("-----------------------------");
-        System.out.println(this.getClass().getName() + ":" + "Started STORIM DATA Server, open for client connections");
+        Logger.info(this, "userdataserverport="+ port);
+        Logger.info(this, "-----------------------------");
+        Logger.info(this, "Started STORIM DATA Server, open for client connections");
     }
 
 
@@ -79,7 +80,7 @@ public class STORIMUserDataServer extends Server {
             clients++;
             //FIXME Keep a record of all the clients?
             ClientConnection client = new UserDataClientConnection(null, s, serverWorker);
-            System.out.println(this.getClass().getName() + ": new connection, ClientThread started");
+            Logger.info(this, "new connection, ClientThread started");
         } catch (Exception exception) {
             exception.printStackTrace();
         }

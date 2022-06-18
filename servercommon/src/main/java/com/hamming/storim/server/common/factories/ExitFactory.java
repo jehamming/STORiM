@@ -1,6 +1,7 @@
 package com.hamming.storim.server.common.factories;
 
 
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.common.ImageStore;
 import com.hamming.storim.server.common.model.Exit;
@@ -32,7 +33,7 @@ public class ExitFactory {
         for (Long id : exitIds) {
             Exit exit = findExitById(id);
             if (exit == null) {
-                System.out.println(getClass().getName() + ": sanityCheck(), Thing  "+ id +"' has no Image, deleting Thing");
+                Logger.info(this, getClass().getName() + ": sanityCheck(), Thing  "+ id +"' has no Image, deleting Thing");
                 deleteExit(exit);
             }
         }
@@ -59,7 +60,7 @@ public class ExitFactory {
                 //FIXME Add images to exits!
                 // exit.setImage(images.get(id));
             } else {
-                System.out.println(getClass().getName() + ": sanityCheck, have Image for Exit " + id +" , but Exit not in Database.");
+                Logger.info(this, getClass().getName() + ": sanityCheck, have Image for Exit " + id +" , but Exit not in Database.");
                 ImageStore.deleteImageFile(Exit.class, id, dataDir);
             }
         }

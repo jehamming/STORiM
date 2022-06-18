@@ -1,5 +1,6 @@
 package com.hamming.userdataserver.factories;
 
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.common.ImageStore;
 import com.hamming.userdataserver.model.Tile;
@@ -38,7 +39,7 @@ public class TileFactory {
         for (Long id : tileIDs) {
             Tile tile = findTileById(id);
             if (tile == null) {
-                System.out.println(getClass().getName() + ": sanityCheck(), Tile  "+ id +"' has no Image, deleting Tile");
+                Logger.info(this, getClass().getName() + ": sanityCheck(), Tile  "+ id +"' has no Image, deleting Tile");
                 deleteTile(tile);
             }
         }
@@ -64,7 +65,7 @@ public class TileFactory {
             if (tile != null ) {
                 tile.setImage(images.get(id));
             } else {
-                System.out.println(getClass().getName() + ": sanityCheck, have Image for tile " + id +" , but Tile not in Database.");
+                Logger.info(this, getClass().getName() + ": sanityCheck, have Image for tile " + id +" , but Tile not in Database.");
                 ImageStore.deleteImageFile(Tile.class, id, dataDir);
             }
         }

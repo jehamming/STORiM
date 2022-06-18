@@ -1,6 +1,7 @@
 package com.hamming.storim.common.net;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.util.Logger;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -24,7 +25,7 @@ public class Dispatcher implements Runnable {
                         this.wait();
                     }
                 } catch (InterruptedException e) {
-                    System.out.println(this.getClass().getName() + ":" + "Exception : method wait was interrupted!");
+                    Logger.info(this, ":" + "Exception : method wait was interrupted!");
                 }
             }
             while (!dispatchQueue.isEmpty()) {

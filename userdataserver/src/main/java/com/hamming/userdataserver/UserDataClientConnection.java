@@ -1,5 +1,6 @@
 package com.hamming.userdataserver;
 
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.userdataserver.action.*;
@@ -48,6 +49,6 @@ public class UserDataClientConnection extends ClientConnection {
 
     @Override
     public void disconnected() {
-
+        Logger.info(this, "disconnected");
     }
 }

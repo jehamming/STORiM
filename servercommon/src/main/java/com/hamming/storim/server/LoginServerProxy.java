@@ -2,6 +2,7 @@ package com.hamming.storim.server;
 
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
@@ -24,7 +25,7 @@ public class LoginServerProxy {
         if (response.isSuccess() ) {
             verifiedUser = response.getUser();
         } else {
-            System.out.println("(" + getClass().getSimpleName() + ") Error :" + response.getErrorMessage());
+            Logger.info(this, " Error :" + response.getErrorMessage());
         }
         return verifiedUser;
     }

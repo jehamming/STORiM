@@ -48,6 +48,9 @@ public class UpdateThingAction extends Action<UpdateThingRequestDto> {
         }
         UpdateThingResponseDTO reponse = new UpdateThingResponseDTO(success, errorMessage, thingDto);
         getClient().send(reponse);
+
+
+
     }
 
 }

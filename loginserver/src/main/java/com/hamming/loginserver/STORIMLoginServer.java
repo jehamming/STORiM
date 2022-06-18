@@ -1,6 +1,7 @@
 package com.hamming.loginserver;
 
 import com.hamming.storim.common.net.ServerConfig;
+import com.hamming.storim.common.util.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -29,7 +30,7 @@ public class STORIMLoginServer implements Runnable {
         controllerThread.setDaemon(true);
         controllerThread.setName("Login Server Worker");
         controllerThread.start();
-        System.out.println(this.getClass().getName() + ":" + " Login Server Worker started");
+        Logger.info(this, "Login Server Worker started");
 
         // Connecto to User Data Server
         connectToUserDataServer();
@@ -40,7 +41,7 @@ public class STORIMLoginServer implements Runnable {
 
     private void connectToUserDataServer() {
         // Connect to UserDataServer
-        System.out.println(this.getClass().getName() + ":" + " Trying to connect to the UserDataServer...");
+        Logger.info(this, "Trying to connect to the UserDataServer...");
         String dataservername = config.getPropertyAsString("userdataserver");
         int dataserverport = config.getPropertyAsInt("userdataserverport");
         try {
@@ -49,7 +50,7 @@ public class STORIMLoginServer implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(this.getClass().getName() + ":" + " UserDataServerConnection started");
+        Logger.info(this, "UserDataServerConnection started");
     }
 
 
@@ -77,7 +78,7 @@ public class STORIMLoginServer implements Runnable {
         serverConnectionServer.startServer();
         clientConnectionServer.startServer();
         running = true;
-        System.out.println(this.getClass().getName() + ":" + "Started STORIM LOGIN Server" );
+        Logger.info(this, "Started STORIM LOGIN Server" );
         while (running) {
             try {
                 Thread.sleep(100);
@@ -85,7 +86,7 @@ public class STORIMLoginServer implements Runnable {
                 e.printStackTrace();
             }
         }
-        System.out.println(this.getClass().getName() + ":" + "STORIM LOGIN Servers stopped");
+        Logger.info(this, "STORIM LOGIN Servers stopped");
     }
 
     public void stopServer() {

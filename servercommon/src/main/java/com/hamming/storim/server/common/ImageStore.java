@@ -1,6 +1,8 @@
 package com.hamming.storim.server.common;
 
 
+import com.hamming.storim.common.util.Logger;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -22,7 +24,7 @@ public class ImageStore {
                 Image image = ImageIO.read(imageFile);
                 Long id = Long.valueOf(imageFile.getName());
                 images.put(id, image);
-                System.out.println(ImageStore.class.getName() + " - read "+ imageFile.getAbsolutePath());
+                Logger.info (ImageStore.class.getSimpleName() + " - read "+ imageFile.getAbsolutePath());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -38,7 +40,7 @@ public class ImageStore {
         File imageFile = new File(imageFilename);
         BufferedImage bufferedImage = ImageUtils.getBufferedImage(io.getImage());
         ImageIO.write(bufferedImage, "png", imageFile );
-        System.out.println(ImageStore.class.getName() + " - wrote "+ imageFile.getAbsolutePath());
+        Logger.info(ImageStore.class.getSimpleName() + " - wrote "+ imageFile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,7 +52,7 @@ public class ImageStore {
         File imageFile = new File(imageFilename);
         if (imageFile.isFile()) {
             imageFile.delete();
-            System.out.println(ImageStore.class.getName() + " - deleted "+ imageFile.getAbsolutePath());
+            Logger.info(ImageStore.class.getSimpleName() + " - deleted "+ imageFile.getAbsolutePath());
         }
     }
 

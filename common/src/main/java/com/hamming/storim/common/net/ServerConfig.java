@@ -1,5 +1,7 @@
 package com.hamming.storim.common.net;
 
+import com.hamming.storim.common.util.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,7 +44,7 @@ public class ServerConfig {
     public String getPropertyAsString( String name ) {
         String value = properties.getProperty(name);
         if (value == null) {
-            System.out.println(this.getClass().getName() + ":" + "Error loading property '" + name +"', no value found!");
+            Logger.info(this, ":" + "Error loading property '" + name +"', no value found!");
         }
         return value;
     }
@@ -50,7 +52,7 @@ public class ServerConfig {
     public int getPropertyAsInt( String name ) {
         Integer value = Integer.valueOf(properties.getProperty(name));
         if (value == null) {
-            System.out.println(this.getClass().getName() + ":" + "Error loading property '" + name +"', no value found!");
+            Logger.info(this, ":" + "Error loading property '" + name +"', no value found!");
         }
         return value;
     }

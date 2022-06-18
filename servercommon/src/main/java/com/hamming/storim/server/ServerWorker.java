@@ -1,5 +1,6 @@
 package com.hamming.storim.server;
 
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.action.Action;
 
 import java.util.ArrayDeque;
@@ -20,7 +21,7 @@ public class ServerWorker implements Runnable {
                         this.wait();
                     }
                 } catch (InterruptedException e) {
-                    System.out.println(this.getClass().getName() + ":" + "Exception : method wait was interrupted!");
+                    Logger.info(this, ":" + "Exception : method wait was interrupted!");
                 }
             }
             while (!actionQueue.isEmpty()) {

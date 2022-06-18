@@ -1,6 +1,7 @@
 package com.hamming.storim.server;
 
 
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.model.BasicObject;
 
 import java.io.*;
@@ -126,7 +127,7 @@ public class Database {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(data);
             oos.close();
-            System.out.println(getClass().getName() + ": Stored Database in file "+ file.getAbsolutePath());
+            Logger.info(this, getClass().getName() + ": Stored Database in file "+ file.getAbsolutePath());
             printDatabase();
         } catch (IOException e) {
             e.printStackTrace();
@@ -141,22 +142,23 @@ public class Database {
             data = (Map<Class, List<BasicObject>>) ois.readObject();
             setLastAddedID(getHighestID());
             ois.close();
-            System.out.println(getClass().getName()+": Loaded Database from file "+ file.getAbsolutePath());
+            Logger.info(this, "Loaded Database from file "+ file.getAbsolutePath());
             printDatabase();
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println(this.getClass().getName() + ":" + "ERROR:" + e.getMessage());
+            Logger.info(this, ":" + "ERROR:" + e.getMessage());
             //e.printStackTrace();
         }
     }
 
     private void printDatabase() {
-        System.out.print(getClass().getName()+": Database:");
+       Logger.info(this, "Database content:");
         Set<Class> classes = data.keySet();
         for (Class c : classes) {
             long count = data.get(c).size();
             System.out.print(c.getSimpleName() + "(" + count +") ");
         }
-        System.out.println(" - Highest ID = " + lastId);
+        System.out.println();
+        Logger.info(this, "Highest ID = " + lastId);
     }
 
     public void clearDatabase() {

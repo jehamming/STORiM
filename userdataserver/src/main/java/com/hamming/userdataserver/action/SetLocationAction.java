@@ -27,20 +27,20 @@ public class SetLocationAction extends Action<SetLocationDto> {
     @Override
     public void execute() {
         SetLocationDto dto = getDto();
-        Location location  = LocationFactory.getInstance().getLocationForObject(dto.getObjectId());
+        Location location = LocationFactory.getInstance().getLocationForObject(dto.getObjectId());
 
         if (dto.getLocation() == null) {
             //Remove location!
-            if (location != null ) Database.getInstance().removeBasicObject(location);
+            Database.getInstance().removeBasicObject(location);
         } else {
-            if ( location == null ) {
-                LocationFactory.getInstance().createLocation(null, dto.getLocation());
-            } else {
-                location.setServerId(dto.getLocation().getServerId());
-                location.setRoomId(dto.getLocation().getRoomId());
-                location.setX(dto.getLocation().getX());
-                location.setY(dto.getLocation().getY());
+            if (location == null) {
+                location = LocationFactory.getInstance().createLocation(null, dto.getLocation());
             }
+            location.setServerId(dto.getLocation().getServerId());
+            location.setRoomId(dto.getLocation().getRoomId());
+            location.setX(dto.getLocation().getX());
+            location.setY(dto.getLocation().getY());
+            LocationFactory.getInstance().setLocation(dto.getObjectId(), location);
         }
     }
 

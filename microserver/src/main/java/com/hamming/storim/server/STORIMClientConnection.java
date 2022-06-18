@@ -33,15 +33,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     @Override
-    public String getClientId() {
-        String clientId = this.getClass().getSimpleName();
-        if ( currentUser != null ) {
-            clientId = clientId.concat("-UserId:"+ currentUser.getId() );
-        }
-        return clientId;
-    }
-
-    @Override
     public void addActions() {
         gameController = (GameController) getServerWorker();
         getProtocolHandler().addAction(new TeleportAction(gameController, this));
@@ -367,12 +358,14 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
             case USERLOCATIONUPDATE:
                 userLocationUpdate((UserDto) event.getData());
                 break;
+            case THINGUPDATED:
+                thingUpdated((ThingDto) event.getData());
+                break;
             case THINGPLACED:
                 thingPlaced((ThingDto) event.getData(), (UserDto) event.getExtraData());
-                //TODO
                 break;
             case THINGLOCATIONUPDATE:
-                thingLocationUpdate((Long) event.getExtraData());
+                thingLocationUpdate((LocationDto) event.getData());
                 break;
             case ROOMUPDATED:
                 //TODO
@@ -383,9 +376,13 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         }
     }
 
-    private void thingLocationUpdate(Long thingId) {
-        LocationDto locationDto = getServer().getUserDataServerProxy().getLocation(thingId);
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(thingId, locationDto);
+    private void thingUpdated(ThingDto thing) {
+        ThingUpdatedDTO thingUpdatedDTO = new ThingUpdatedDTO(thing);
+        send(thingUpdatedDTO);
+    }
+
+    private void thingLocationUpdate(LocationDto locationDto) {
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(locationDto.getObjectId(), locationDto);
         send(locationUpdateDTO);
     }
 

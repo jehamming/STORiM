@@ -19,6 +19,7 @@ import com.hamming.storim.common.dto.protocol.serverpush.old.ThingInRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.old.ThingUpdatedDTO;
 import com.hamming.storim.common.interfaces.*;
 import com.hamming.storim.common.net.ProtocolReceiver;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.common.view.ViewListener;
 
 import javax.swing.*;
@@ -269,7 +270,7 @@ public class GameViewController implements ConnectionListener {
     public LocationDto applyMoveRequest(MovementRequestDTO dto, LocationDto loc) {
         LocationDto newLocation = CalcTools.calculateNewPosition(dto, loc);
         gameView.scheduleAction( () -> gameView.setObjectLocation(storimWindow.getCurrentUser().getId(), newLocation.getX(), newLocation.getY()));
-        System.out.println(this.getClass().getName() + "-Scheduled-" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
+        Logger.info(this, "ScheduledMove-Sequence:" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
         return newLocation;
     }
 

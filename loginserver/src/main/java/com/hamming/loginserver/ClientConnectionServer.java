@@ -1,6 +1,7 @@
 package com.hamming.loginserver;
 
 import com.hamming.storim.common.net.Server;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
 
 import java.net.Socket;
@@ -23,7 +24,7 @@ public class ClientConnectionServer extends Server {
     public void startServer() {
         port = loginServer.getConfig().getPropertyAsInt("listenport.client");
         startServer(port);
-        System.out.println(this.getClass().getName() + ":" + "Listening for client connections on port:" + port);
+        Logger.info(this, "Listening for client connections on port:" + port);
     }
 
     @Override
@@ -32,9 +33,7 @@ public class ClientConnectionServer extends Server {
         String name = "Client-" + s.getInetAddress().toString() +  "-" + connectedClients;
         //FIXME Keep a record of connected clients ?
         ClientConnection client = new UserClientConnection(name, s, loginServer.getServerWorker());
-        System.out.println(this.getClass().getName() + ": Client " + name + " connected, ClientThread started");
-
-
+        Logger.info(this, "Client " + name + " connected, ClientThread started");
     }
 
 

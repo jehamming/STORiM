@@ -9,8 +9,8 @@ import java.net.Socket;
 public class LoginServerConnection extends ClientConnection{
 
 
-    public LoginServerConnection(String id, Socket s, ServerWorker serverWorker) {
-        super(id, s, serverWorker);
+    public LoginServerConnection(Socket s, ServerWorker serverWorker) {
+        super(null, s, serverWorker);
     }
 
 

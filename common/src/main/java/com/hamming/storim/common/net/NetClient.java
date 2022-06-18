@@ -3,6 +3,7 @@ package com.hamming.storim.common.net;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
+import com.hamming.storim.common.util.Logger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -62,14 +63,18 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private void registerStreams() {
         try {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            protocolObjectSender = new ProtocolObjectSender(id, out);
+            String idText = id;
+            if ( id == null ) {
+                idText = connectionListener.getClass().getSimpleName();
+            }
+            protocolObjectSender = new ProtocolObjectSender(idText, out);
             in = new ObjectInputStream(socket.getInputStream());
             Thread clientThread = new Thread(this);
             clientThread.setName("Client Connection");
             clientThread.setDaemon(true);
             clientThread.start();
         } catch (IOException e) {
-            System.out.println("(" + getId() + ") ERROR:" + e.getMessage());
+            Logger.info(this, "(" + getId() + ") ERROR:" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -81,7 +86,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             registerStreams();
             connectionListener.connected();
         } catch (IOException e) {
-            System.out.println("(" + getId() + ") ERROR:" + e.getMessage());
+            Logger.info(this, "(" + getId() + ") ERROR:" + e.getMessage());
             retval = e.getMessage();
             //e.printStackTrace();
         }
@@ -95,7 +100,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             try {
                 Object read = in.readObject();
                 ProtocolDTO dto = (ProtocolDTO) read;
-                //System.out.println("(" + getId() + ") RECEIVED:" + dto.toString());
+                //Logger.info(this, "Received:" + dto.toString());
                 if (dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
                     ResponseContainer responseContainer = getResponseContainer(response.getClass());
@@ -111,7 +116,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             } catch (IOException e) {
                 running = false;
             } catch (ClassNotFoundException e) {
-                System.out.println("(" + getId() + ") Error:" + e.getMessage());
+                Logger.info(this, "Error:" + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -122,7 +127,6 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             } catch (IOException e) {
             }
         }
-        System.out.println("(" + getId() + ") NetClient finished");
         connectionListener.disconnected();
     }
 
@@ -136,7 +140,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             responseContainer.setResponse(null);
             responseContainer.setResponseClass(responseClass);
             addResponseContainer(responseContainer);
-            System.out.println("(" + getId() + ") SendReceive:" + requestResponseDTO + ", waiting for: " + responseClass.getSimpleName());
+            Logger.info(this, "SendReceive:" + requestResponseDTO + ", waiting for: " + responseClass.getSimpleName());
         }
         return protocolObjectSender.sendReceive(requestResponseDTO, responseContainer);
     }

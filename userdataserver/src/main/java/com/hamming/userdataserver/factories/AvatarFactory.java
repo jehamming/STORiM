@@ -1,6 +1,7 @@
 package com.hamming.userdataserver.factories;
 
 
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.common.ImageStore;
 import com.hamming.userdataserver.model.Avatar;
@@ -37,7 +38,7 @@ public class AvatarFactory {
         for (Long id : avatarIDs) {
             Avatar avatar = findAvatarById(id);
             if (avatar == null) {
-                System.out.println(getClass().getName() + ": sanityCheck(), Avatar  "+ id +"' has no Image, deleting Avatar");
+                Logger.info(this, getClass().getName() + ": sanityCheck(), Avatar  "+ id +"' has no Image, deleting Avatar");
                 deleteAvatar(avatar);
             }
         }
@@ -63,7 +64,7 @@ public class AvatarFactory {
             if (avatar != null ) {
                 avatar.setImage(images.get(id));
             } else {
-                System.out.println(getClass().getName() + ": sanityCheck, have Image for Avatar " + id +" , but Avatar not in Database.");
+                Logger.info(this, getClass().getName() + ": sanityCheck, have Image for Avatar " + id +" , but Avatar not in Database.");
                 ImageStore.deleteImageFile(Avatar.class, id, dataDir);
             }
         }

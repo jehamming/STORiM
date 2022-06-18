@@ -1,11 +1,13 @@
 package com.hamming.storim.server;
 
+import com.hamming.storim.common.util.Logger;
+
 public class ShowDatabase {
 
     public void showDatabase() {
         for (Class c : Database.getInstance().getClassTypes()) {
             for (Object item : Database.getInstance().getAll( c ) ) {
-                System.out.println(item.toString());
+                Logger.info(this, item.toString());
             }
         }
     }

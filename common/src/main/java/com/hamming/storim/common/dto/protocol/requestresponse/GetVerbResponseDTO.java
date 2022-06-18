@@ -17,7 +17,7 @@ public class GetVerbResponseDTO implements ResponseDTO {
 
     @Override
     public String toString() {
-        return "GetVerbRequestDTO{" +
+        return "GetVerbResponseDTO{" +
                 "verb=" + verb +
                 '}';
     }

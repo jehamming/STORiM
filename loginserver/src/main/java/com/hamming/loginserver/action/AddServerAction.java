@@ -2,6 +2,7 @@ package com.hamming.loginserver.action;
 
 import com.hamming.loginserver.LoginServerClientConnection;
 import com.hamming.loginserver.LoginServerWorker;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerResponseDTO;
@@ -24,7 +25,7 @@ public class AddServerAction extends Action<AddServerRequestDTO> {
         if ( error == null ) {
             success = true;
         } else {
-            System.out.println("ERROR:("+getClass().getSimpleName()+"):" + error);
+            Logger.info(this, "ERROR:("+getClass().getSimpleName()+"):" + error);
         }
 
         AddServerResponseDTO responseDTO = new AddServerResponseDTO(success, error);
