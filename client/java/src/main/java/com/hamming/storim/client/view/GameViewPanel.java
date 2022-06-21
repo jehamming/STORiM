@@ -51,13 +51,22 @@ public class GameViewPanel extends JPanel implements Runnable {
     private Image arrowRight;
     Timer timer;
     TimerTask task;
-    DragTimerTask dragTimerTask;
+    DragThingTimerTask dragThingTimerTask;
+    DragExitTimerTask dragExitTimerTask;
     private BasicDrawableObject selectedObject;
     private boolean forward, back, left, right;
     private float unitX = 1f;
     private float unitY = 1f;
     private STORIMWindow window;
 
+    public void updateExit(ExitDto exitDto) {
+        Exit exit = getExit(exitDto.getId());
+        if (exit != null) {
+            exit.setImage(ImageUtils.decode(exitDto.getImageData()));
+            exit.setScale(exitDto.getScale());
+            exit.setRotation(exitDto.getRotation());
+        }
+    }
 
 
     private class MyTimerTask extends TimerTask {
@@ -66,10 +75,10 @@ public class GameViewPanel extends JPanel implements Runnable {
         }
     }
 
-    private class DragTimerTask extends TimerTask {
+    private class DragThingTimerTask extends TimerTask {
         private Thing thing;
 
-        private DragTimerTask(Thing thing) {
+        private DragThingTimerTask(Thing thing) {
             this.thing = thing;
         }
 
@@ -79,8 +88,28 @@ public class GameViewPanel extends JPanel implements Runnable {
             thing.setX((int) p.getX());
             thing.setY((int) p.getY());
         }
+
         public Thing getThing() {
             return thing;
+        }
+    }
+
+    private class DragExitTimerTask extends TimerTask {
+        private Exit exit;
+
+        private DragExitTimerTask(Exit exit) {
+            this.exit = exit;
+        }
+
+        public void run() {
+            Point p = MouseInfo.getPointerInfo().getLocation();
+            SwingUtilities.convertPointFromScreen(p, GameViewPanel.this);
+            exit.setX((int) p.getX());
+            exit.setY((int) p.getY());
+        }
+
+        public Exit getExit() {
+            return exit;
         }
     }
 
@@ -114,15 +143,13 @@ public class GameViewPanel extends JPanel implements Runnable {
                 SwingUtilities.convertPointFromScreen(p, GameViewPanel.this);
                 selectedObject = getSelectedObject(p.x, p.y);
                 if (selectedObject != null) {
-
+                    selectedObject.setSelected(!selectedObject.isSelected()); //Flip
+                    if (selectedObject.isSelected()) {
+                        selectObject(selectedObject);
+                    }
                     if (selectedObject instanceof Exit) {
                         Exit exit = (Exit) selectedObject;
                         viewController.exitClicked(exit.getId(), exit.getName());
-                    } else {
-                        selectedObject.setSelected(!selectedObject.isSelected()); //Flip
-                        if (selectedObject.isSelected()) {
-                            selectObject(selectedObject);
-                        }
                     }
                 }
             }
@@ -139,10 +166,14 @@ public class GameViewPanel extends JPanel implements Runnable {
                         timer.scheduleAtFixedRate(task, 0, 50);
                     }
                     BasicDrawableObject b = getSelectedObject(e.getX(), e.getY());
-                    if (b != null && b instanceof Thing) {
-                        dragTimerTask = new DragTimerTask((Thing) b);
-                        timer.scheduleAtFixedRate(dragTimerTask, 0, 50);
-                    }
+                    if (b != null && e.isControlDown())
+                        if (b instanceof Thing) {
+                            dragThingTimerTask = new DragThingTimerTask((Thing) b);
+                            timer.scheduleAtFixedRate(dragThingTimerTask, 0, 50);
+                        } else if (b instanceof Exit) {
+                            dragExitTimerTask = new DragExitTimerTask((Exit) b);
+                            timer.scheduleAtFixedRate(dragExitTimerTask, 0, 50);
+                        }
                 }
             }
 
@@ -154,12 +185,20 @@ public class GameViewPanel extends JPanel implements Runnable {
                     left = false;
                     right = false;
                     if (task != null) task.cancel();
-                    if (dragTimerTask != null) {
-                        Thing thing = dragTimerTask.getThing();
-                        dragTimerTask.cancel();
+                    if (dragThingTimerTask != null) {
+                        Thing thing = dragThingTimerTask.getThing();
+                        dragThingTimerTask.cancel();
                         if (thing != null) {
                             updatePosition(thing);
                         }
+                        dragThingTimerTask = null;
+                    } else if (dragExitTimerTask != null) {
+                        Exit exit = dragExitTimerTask.getExit();
+                        dragExitTimerTask.cancel();
+                        if (exit != null) {
+                            updatePosition(exit);
+                        }
+                        dragExitTimerTask = null;
                     }
                 }
                 clearSelection();
@@ -186,10 +225,12 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
     private void selectObject(BasicDrawableObject selectedObject) {
-        if ( selectedObject instanceof  Thing ) {
-            viewController.setSelectedThing(selectedObject.getId());
+        if (selectedObject instanceof Thing) {
+            //TODO
         } else if (selectedObject instanceof Player) {
-            viewController.setSelectedPlayer(selectedObject.getId());
+            //TODO
+        } else if (selectedObject instanceof Exit) {
+            //TODO
         }
     }
 
@@ -197,6 +238,12 @@ public class GameViewPanel extends JPanel implements Runnable {
         int translatedX = (int) (thing.getX() / unitX);
         int translatedY = (int) (thing.getY() / unitY);
         viewController.updateThingLocationRequest(thing.getId(), translatedX, translatedY);
+    }
+
+    private void updatePosition(Exit exit) {
+        int translatedX = (int) (exit.getX() / unitX);
+        int translatedY = (int) (exit.getY() / unitY);
+        viewController.updateExitLocationRequest(exit.getId(), translatedX, translatedY);
     }
 
 
@@ -234,67 +281,17 @@ public class GameViewPanel extends JPanel implements Runnable {
             exits.add(exit);
             quickRef.put(exit.getId(), exit);
         }
-        positionExits();
-    }
-
-    private void positionExits() {
-        positionTopBottom(Exit.Orientation.NORTH);
-        positionTopBottom(Exit.Orientation.SOUTH);
-        positionLeftRight(Exit.Orientation.WEST);
-        positionLeftRight(Exit.Orientation.EAST);
-    }
-
-    private void positionTopBottom(Exit.Orientation o) {
-        List<Exit> exits = getExits(o);
-        int count = exits.size();
-        if ( count > 0 ) {
-            int block = getWidth() / count;
-            int locX = 0;
-            for (int i = 0; i < count; i++) {
-                locX += block;
-                Exit e = exits.get(i);
-                e.setX(locX - (block / 2));
-                int y = e.getImage().getHeight(null)/2;
-                if (o.equals( Exit.Orientation.SOUTH)) {
-                    y = getHeight() - (e.getImage().getHeight(null)/2);
-                }
-                e.setY(y);
-            }
-        }
-    }
-
-    private void positionLeftRight(Exit.Orientation o) {
-        List<Exit> exits = getExits(o);
-        int count = exits.size();
-        if ( count > 0 ) {
-            int block = getHeight() / count;
-            int locY = 0;
-            for (int i = 0; i < count; i++) {
-                locY += block;
-                Exit e = exits.get(i);
-                e.setY(locY - (block / 2));
-                int x = e.getImage().getWidth(null)/2;
-                if (o.equals(Exit.Orientation.EAST)) {
-                    x = getWidth() - (e.getImage().getWidth(null)/2);
-                }
-                e.setX(x);
-            }
-        }
-    }
-
-    private List<Exit> getExits(Exit.Orientation orientation) {
-        List<Exit> retVal = new ArrayList<>();
-        for (Exit e : exits) {
-            if (e.getOrientation().equals(orientation)) {
-                retVal.add( e );
-            }
-        }
-        return retVal;
     }
 
     public void deleteThing(Thing thing) {
         if (things.contains(thing)) {
             things.remove(thing);
+        }
+    }
+
+    public void deleteExit(Exit exit) {
+        if (exits.contains(exit)) {
+            exits.remove(exit);
         }
     }
 
@@ -307,6 +304,17 @@ public class GameViewPanel extends JPanel implements Runnable {
             }
         }
         return thing;
+    }
+
+    public Exit getExit(Long id) {
+        Exit exit = null;
+        for (Exit e : exits) {
+            if (e.getId().equals(id)) {
+                exit = e;
+                break;
+            }
+        }
+        return exit;
     }
 
     public void addPlayer(Player player) {
@@ -337,9 +345,8 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
     public void componentResized() {
-        if ( room != null ) {
+        if (room != null) {
             determineUnitXY();
-            positionExits();
         }
     }
 
@@ -435,7 +442,6 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
 
-
     private void drawControls(Graphics g) {
         g.drawImage(arrowForward, getWidth() - (2 * arrowSize), getHeight() - (3 * arrowSize), arrowSize, arrowSize, this);
         g.drawImage(arrowBack, getWidth() - (2 * arrowSize), getHeight() - (arrowSize), arrowSize, arrowSize, this);
@@ -500,7 +506,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         g2.setStroke(new BasicStroke(thickness));
         Color old = g2.getColor();
         g2.setColor(Color.BLACK);
-        g2.drawRect(half, half, getWidth() - thickness , getHeight() - thickness);
+        g2.drawRect(half, half, getWidth() - thickness, getHeight() - thickness);
         g2.setColor(old);
         g2.setStroke(oldStroke);
     }
@@ -542,9 +548,11 @@ public class GameViewPanel extends JPanel implements Runnable {
 
     private void drawExits(Graphics g) {
         for (Exit exit : exits) {
-            int w = exit.getImage().getWidth(null);
-            int h = exit.getImage().getHeight(null);
-            g.drawImage(exit.getImage(), exit.getX() - (w/2), exit.getY()-(h/2), this);
+            int middleX = exit.getImage().getWidth(null) / 2;
+            int middleY = exit.getImage().getHeight(null) / 2;
+            int x = exit.getX() - middleX;
+            int y = exit.getY() - middleY;
+            g.drawImage(exit.getImage(), x, y, this);
             if (exit.isSelected()) {
                 drawSelectionHighlight(g, exit);
             }
@@ -560,7 +568,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         g2.setStroke(new BasicStroke(thickness));
         Color old = g.getColor();
         g.setColor(Color.red);
-        g.drawRect((int)(o.getX() ) - middleX, (int)(o.getY()) - middleY, o.getImage().getWidth(null), o.getImage().getHeight(null));
+        g.drawRect((int) (o.getX()) - middleX, (int) (o.getY()) - middleY, o.getImage().getWidth(null), o.getImage().getHeight(null));
         g.setColor(old);
         g2.setStroke(oldStroke);
     }
@@ -572,7 +580,7 @@ public class GameViewPanel extends JPanel implements Runnable {
             int x = player.getX() - middleX;
             int y = player.getY() - middleY;
             Image playerAvatar = player.getImage();
-            g.drawImage(playerAvatar, x, y,  this);
+            g.drawImage(playerAvatar, x, y, this);
             Font font = new Font("Arial", Font.BOLD, 12);
             g.setFont(font);
             FontMetrics metrics = g.getFontMetrics(font);
@@ -589,7 +597,6 @@ public class GameViewPanel extends JPanel implements Runnable {
             if (player.isSelected()) {
                 drawSelectionHighlight(g, player);
             }
-
         }
     }
 
@@ -606,7 +613,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         Image image = null;
         Player player = new Player(userId);
         player.setDisplayName(name);
-        if (imageData != null ) {
+        if (imageData != null) {
             image = ImageUtils.decode(imageData);
             image = ImageUtils.resize(image, widthPerTile, widthPerTile);
         } else {
@@ -615,7 +622,6 @@ public class GameViewPanel extends JPanel implements Runnable {
         player.setImage(image);
         addPlayer(player);
     }
-
 
 
     public void addThing(ThingDto thingDto) {
@@ -627,15 +633,25 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
     public void addExit(ExitDto exitDto) {
-        Exit exit = new Exit(exitDto.getId(), exitDto.getName(), Exit.Orientation.valueOf(exitDto.getOrientation().name()));
-        Image image = exit.getImage();
+        Exit exit = new Exit(exitDto.getId(), exitDto.getName());
+        Image image = ImageUtils.decode(exitDto.getImageData());
+        exit.setImage(image);
+        exit.setScale(exitDto.getScale());
+        exit.setRotation(exitDto.getRotation());
         addExit(exit);
     }
 
     public void deleteThing(Long thingId) {
         Thing t = getThing(thingId);
-        if ( t != null ) {
+        if (t != null) {
             deleteThing(t);
+        }
+    }
+
+    public void deleteExit(Long exitID) {
+        Exit exit = getExit(exitID);
+        if (exit != null) {
+            deleteExit(exit);
         }
     }
 
@@ -653,29 +669,28 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
 
-
     public void setObjectLocation(Long objectId, int x, int y) {
         BasicDrawableObject object = quickRef.get(objectId);
-        if ( object != null ) {
+        if (object != null) {
             object.setX((int) (x * unitX));
             object.setY((int) (y * unitY));
         } else {
-           Logger.info(this, " - setLocation: object " + objectId + " not found!" );
+            Logger.info(this, " - setLocation: object " + objectId + " not found!");
         }
     }
 
 
     public void updatePlayer(UserDto user) {
         Player player = getPlayer(user.getId());
-        if (player != null ) {
+        if (player != null) {
             player.setDisplayName(user.getName());
         }
     }
 
     public void setAvatar(Long playerId, AvatarDto avatar) {
         Player player = getPlayer(playerId);
-        if (player != null ) {
-            if ( avatar != null ) {
+        if (player != null) {
+            if (avatar != null) {
                 Image image = ImageUtils.decode(avatar.getImageData());
                 int roomSize = 10;
                 int widthPerTile = getWidth() / roomSize;
@@ -687,7 +702,7 @@ public class GameViewPanel extends JPanel implements Runnable {
 
     public void updateThing(ThingDto thingDto) {
         Thing thing = getThing(thingDto.getId());
-        if ( thing != null ) {
+        if (thing != null) {
             thing.setImage(ImageUtils.decode(thingDto.getImageData()));
             thing.setScale(thingDto.getScale());
             thing.setRotation(thingDto.getRotation());

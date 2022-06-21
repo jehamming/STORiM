@@ -32,6 +32,7 @@ public class UpdateAvatarAction extends Action<UpdateAvatarRequestDto> {
         if (avatar != null) {
             avatar.setName(dto.getName());
             avatar.setImage(ImageUtils.decode(dto.getImageData()));
+            AvatarFactory.getInstance().updateAvatar(avatar);
             avatarDto = DTOFactory.getInstance().getAvatarDTO(avatar);
             success = true;
         } else {

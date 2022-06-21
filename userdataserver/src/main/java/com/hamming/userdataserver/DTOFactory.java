@@ -2,23 +2,10 @@ package com.hamming.userdataserver;
 
 
 import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.dto.protocol.serverpush.AvatarAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.UserDisconnectedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.UserEnteredRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomDeletedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomUpdatedDTO;
 import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.model.BasicObject;
-import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Location;
-import com.hamming.storim.server.common.model.Room;
 import com.hamming.userdataserver.model.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DTOFactory {
 

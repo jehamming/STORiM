@@ -5,6 +5,8 @@ import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerResponseDTO;
+import com.hamming.storim.server.common.factories.ExitFactory;
+import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.game.GameController;
 
 import java.io.IOException;
@@ -49,6 +51,8 @@ public class STORIMMicroServer extends Server {
         serverName = config.getPropertyAsString("name");
         port = config.getPropertyAsInt("serverport");
 
+        ExitFactory.getInstance(DATADIR);
+
         // Start GameController
         controller = new GameController();
         Thread controllerThread = new Thread(controller);
@@ -69,6 +73,8 @@ public class STORIMMicroServer extends Server {
             Logger.info(this, "Connected to LoginServer");
         } catch (IOException e) {
             e.printStackTrace();
+            Logger.info(this, "Fatal Error, cannot connect to Login Server!");
+            System.exit(-1);
         }
     }
 
@@ -86,6 +92,8 @@ public class STORIMMicroServer extends Server {
             Logger.info(this, "Connected to DataServer");
         } catch (IOException e) {
             e.printStackTrace();
+            Logger.info(this, "Fatal Error, cannot connect to Data Server!");
+            System.exit(-2);
         }
     }
 

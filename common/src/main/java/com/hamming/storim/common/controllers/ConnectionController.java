@@ -86,7 +86,6 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
         List<ProtocolReceiver> listReceivers = commandReceivers.get(dto.getClass());
         if (listReceivers != null) {
             for (ProtocolReceiver c : listReceivers) {
-                Logger.info(this, "Dispatch received DTO:  " + dto + " to " + c);
                 c.receiveDTO(dto);
             }
         }

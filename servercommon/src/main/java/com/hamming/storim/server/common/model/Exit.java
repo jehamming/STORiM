@@ -1,41 +1,68 @@
 package com.hamming.storim.server.common.model;
 
-public class Exit extends BasicObject   {
+import com.hamming.storim.server.common.ImageObject;
 
-    public static enum Orientation { NORTH, SOUTH, EAST, WEST };
+public class Exit extends ImageObject {
 
-    private Orientation orientation;
-    private Long roomid;
+    private Long toRoomID;
+    private String toServerID;
+    private String description = "";
+    private float scale;
+    private int rotation;
 
-    public Exit(String name, Orientation orientation, Long roomid) {
+    public Exit(String name, Long toRoomID, String toServerID) {
         setName(name);
-        this.orientation = orientation;
-        this.roomid = roomid;
+        this.toRoomID = toRoomID;
+        this.toServerID = toServerID;
     }
 
-    public Orientation getOrientation() {
-        return orientation;
+    public Long getToRoomID() {
+        return toRoomID;
     }
 
-    public void setOrientation(Orientation orientation) {
-        this.orientation = orientation;
+    public void setToRoomID(Long toRoomID) {
+        this.toRoomID = toRoomID;
     }
 
-    public Long getRoomid() {
-        return roomid;
+    public String getDescription() {
+        return description;
     }
 
-    public void setRoomid(Long roomid) {
-        this.roomid = roomid;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
+
+    public int getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(int rotation) {
+        this.rotation = rotation;
+    }
+
+    public String getToServerID() {
+        return toServerID;
+    }
+
+    public void setToServerID(String toServerID) {
+        this.toServerID = toServerID;
     }
 
     @Override
     public String toString() {
         return "Exit{" +
-                "id='" + getId() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", orientation=" + orientation +
-                ", roomid=" + roomid +
+                "id=" + getId() +
+                ", toRoomID=" + toRoomID +
+                ", toServerID=" + toServerID +
+                ", name=" + getName() +
                 '}';
     }
 }

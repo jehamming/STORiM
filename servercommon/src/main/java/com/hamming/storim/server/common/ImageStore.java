@@ -38,6 +38,9 @@ public class ImageStore {
         String objectDirectoryPath = dataDir.concat(File.separator).concat(io.getClass().getSimpleName().toLowerCase(Locale.ROOT));
         String imageFilename = objectDirectoryPath.concat(File.separator).concat(io.getId().toString());
         File imageFile = new File(imageFilename);
+        if ( imageFile.exists()) {
+            imageFile.delete();
+        }
         BufferedImage bufferedImage = ImageUtils.getBufferedImage(io.getImage());
         ImageIO.write(bufferedImage, "png", imageFile );
         Logger.info(ImageStore.class.getSimpleName() + " - wrote "+ imageFile.getAbsolutePath());

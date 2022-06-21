@@ -15,9 +15,9 @@ import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.ThingAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.ThingDeletedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.ThingUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingUpdatedDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
@@ -37,6 +37,7 @@ public class ThingPanelController implements ConnectionListener {
     private JFileChooser fileChooser;
     private BufferedImage tileImage;
     private DefaultListModel<ThingListItem> thingsModel = new DefaultListModel<>();
+
     private boolean newThing = false;
     private Image thingImage;
     private UserDto currentUser;

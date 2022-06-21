@@ -161,6 +161,7 @@ public class LoginPanelController implements ConnectionListener {
         RoomListItem roomListItem = (RoomListItem) roomsModel.getSelectedItem();
         if (serverListItem != null && roomListItem != null) {
             try {
+                connectionController.removeConnectionListener(this);
                 connectionController.disconnect();
                 String serverName = serverListItem.getServerRegistrationDTO().getServerURL();
                 int serverPort = serverListItem.getServerRegistrationDTO().getServerPort();
@@ -169,6 +170,7 @@ public class LoginPanelController implements ConnectionListener {
                 String userToken = storimWindow.getUserToken();
                 ConnectDTO connectRequestDTO = new ConnectDTO(currentUser.getId(), userToken, roomListItem.getId());
                 connectionController.send(connectRequestDTO);
+                connectionController.addConnectionListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }

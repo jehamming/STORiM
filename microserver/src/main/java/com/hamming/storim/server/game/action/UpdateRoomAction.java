@@ -3,7 +3,7 @@ package com.hamming.storim.server.game.action;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.TileDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateRoomDto;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.RoomUpdatedDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;

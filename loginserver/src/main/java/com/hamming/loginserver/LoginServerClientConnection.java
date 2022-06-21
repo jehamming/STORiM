@@ -1,6 +1,8 @@
 package com.hamming.loginserver;
 
 import com.hamming.loginserver.action.AddServerAction;
+import com.hamming.loginserver.action.GetRoomsForServerAction;
+import com.hamming.loginserver.action.GetServersAction;
 import com.hamming.loginserver.action.VerifyUserAction;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
@@ -22,6 +24,8 @@ public class LoginServerClientConnection extends ClientConnection {
         LoginServerWorker serverWorker = (LoginServerWorker) getServerWorker();
         getProtocolHandler().addAction(new AddServerAction(this, serverWorker));
         getProtocolHandler().addAction(new VerifyUserAction(serverWorker, this));
+        getProtocolHandler().addAction(new GetServersAction(serverWorker, this));
+        getProtocolHandler().addAction(new GetRoomsForServerAction(serverWorker, this));
     }
 
 

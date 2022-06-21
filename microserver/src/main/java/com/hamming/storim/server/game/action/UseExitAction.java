@@ -8,6 +8,7 @@ import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
+import com.hamming.storim.server.common.factories.ExitFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Location;
@@ -28,13 +29,13 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserDto currentUser = client.getCurrentUser();
         Location location = controller.getGameState().getUserLocation(currentUser.getId());
-        Long fromRoomId = location.getRoomId();
-        Room room = RoomFactory.getInstance().findRoomByID(location.getRoomId());
-        Exit exit = room.getExit(getDto().getExitId());
+        Room currentRoom = client.getCurrentRoom();
+        Long fromRoomId = currentRoom.getId();
+        Exit exit = ExitFactory.getInstance().findExitById(getDto().getExitId());
         if (exit != null) {
             // Stop listening to the old Room!
             controller.removeRoomListener(fromRoomId, client);
-            Room toRoom = RoomFactory.getInstance().findRoomByID(exit.getRoomid());
+            Room toRoom = RoomFactory.getInstance().findRoomByID(exit.getToRoomID());
             location.setRoomId(toRoom.getId());
             location.setX(toRoom.getSpawnPointX());
             location.setY(toRoom.getSpawnPointY());

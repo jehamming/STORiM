@@ -100,7 +100,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             try {
                 Object read = in.readObject();
                 ProtocolDTO dto = (ProtocolDTO) read;
-                //Logger.info(this, "Received:" + dto.toString());
+                Logger.info(this, "Received:" + dto.toString());
                 if (dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
                     ResponseContainer responseContainer = getResponseContainer(response.getClass());

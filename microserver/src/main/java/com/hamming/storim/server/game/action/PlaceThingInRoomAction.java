@@ -5,7 +5,7 @@ import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.PlaceThingInRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.MessageInRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.ThingInRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingInRoomDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;

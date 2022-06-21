@@ -6,6 +6,7 @@ import com.hamming.storim.common.dto.DTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.dto.protocol.serverpush.old.*;
+import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbDetailsResponseDTO;
 import com.hamming.storim.server.common.model.*;
 
@@ -40,8 +41,11 @@ public class DTOFactory {
     }
 
     public ExitDto getExitDTO(Exit e) {
-        return new ExitDto(e.getId(), e.getName(), e.getRoomid(), ExitDto.Orientation.valueOf(e.getOrientation().name()));
+        ExitDto exitDto = new ExitDto(e.getId(), e.getName(), e.getToServerID(), e.getToRoomID(), e.getDescription(), e.getScale(), e.getRotation(), ImageUtils.encode(e.getImage()));
+        fillBasicObjectInfo(exitDto, e);
+        return exitDto;
     }
+
 
     public RoomDto getRoomDto(Room b) {
         List<Long> exits = new ArrayList<>();

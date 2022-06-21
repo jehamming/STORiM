@@ -1,14 +1,15 @@
-package com.hamming.storim.common.dto.protocol.serverpush.old;
+package com.hamming.storim.common.dto.protocol.serverpush;
 
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class RoomAddedDTO implements  ResponseDTO {
+public class RoomUpdatedDTO implements  ResponseDTO {
+
 
     private RoomDto room;
 
-    public RoomAddedDTO(RoomDto room) {
+    public RoomUpdatedDTO(RoomDto room) {
         this.room = room;
     }
 
@@ -18,7 +19,7 @@ public class RoomAddedDTO implements  ResponseDTO {
 
     @Override
     public String toString() {
-        return "RoomAddedDTO{" +
+        return "RoomUpdatedDTO{" +
                 "room=" + room +
                 '}';
     }

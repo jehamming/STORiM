@@ -28,12 +28,16 @@ public class ExitFactory {
         return instance;
     }
 
+    public static ExitFactory getInstance() {
+        return instance;
+    }
+
     private void sanityCheck() {
         List<Long> exitIds = getAllExitIds();
         for (Long id : exitIds) {
             Exit exit = findExitById(id);
             if (exit == null) {
-                Logger.info(this, getClass().getName() + ": sanityCheck(), Thing  "+ id +"' has no Image, deleting Thing");
+                Logger.info(this, getClass().getName() + ": sanityCheck(), Exit  "+ id +"' has no Image, deleting Exit");
                 deleteExit(exit);
             }
         }
@@ -57,8 +61,7 @@ public class ExitFactory {
         for (Long id : images.keySet()) {
             Exit exit = findExitById(id);
             if (exit != null ) {
-                //FIXME Add images to exits!
-                // exit.setImage(images.get(id));
+                exit.setImage(images.get(id));
             } else {
                 Logger.info(this, getClass().getName() + ": sanityCheck, have Image for Exit " + id +" , but Exit not in Database.");
                 ImageStore.deleteImageFile(Exit.class, id, dataDir);
@@ -74,17 +77,26 @@ public class ExitFactory {
     }
 
 
-    public Exit createExit(Long creatorId, String name, Exit.Orientation orientation, Long toRoomId) {
+    public Exit createExit(Long creatorId, String name, Long toRoomId, String toServerID, String description, Float scale, int rotation, Image image) {
         Long id = Database.getInstance().getNextID();
-        Exit exit = new Exit(name, orientation, toRoomId);
+        Exit exit = new Exit(name, toRoomId, toServerID);
         exit.setId(id);
         exit.setCreatorId(creatorId);
         exit.setOwnerId(creatorId);
         exit.setName(name);
-        //FIXME Add images to exits!
-        // ImageStore.storeImageObject(exit, dataDir);
+        exit.setToRoomID(toRoomId);
+        exit.setToServerID(toServerID);
+        exit.setDescription(description);
+        exit.setScale(scale);
+        exit.setRotation(rotation);
+        exit.setImage(image);
+        ImageStore.storeImageObject(exit, dataDir);
         Database.getInstance().addBasicObject(exit);
         return exit;
+    }
+
+    public void updateExit(Exit exit) {
+        ImageStore.storeImageObject(exit, dataDir);
     }
 
     public List<Exit> getAllExits() {

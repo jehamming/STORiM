@@ -13,7 +13,7 @@ public class GetRoomsForServerAction extends Action<GetRoomsForServerDTO> {
 
     private LoginServerWorker serverWorker;
 
-    public GetRoomsForServerAction(LoginServerWorker serverWorker, UserClientConnection client) {
+    public GetRoomsForServerAction(LoginServerWorker serverWorker, ClientConnection client) {
         super(client);
         this.serverWorker = serverWorker;
     }

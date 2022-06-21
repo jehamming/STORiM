@@ -2,18 +2,12 @@ package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.ThingDto;
-import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
-import com.hamming.storim.common.dto.protocol.serverpush.VerbUpdatedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.ThingUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingUpdatedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
-import com.hamming.storim.server.common.ClientConnection;
-import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.game.GameController;
 import com.hamming.storim.server.game.RoomEvent;
-
-import java.awt.*;
 
 public class UpdateThingAction extends Action<UpdateThingDto> {
     private GameController gameController;

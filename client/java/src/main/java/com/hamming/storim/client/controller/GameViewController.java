@@ -6,17 +6,16 @@ import com.hamming.storim.common.CalcTools;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
-import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
+import com.hamming.storim.common.dto.protocol.request.UpdateExitLocationDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.common.dto.protocol.request.UseExitRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetExitDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetExitResponseDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetTileDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetTileResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomUpdatedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.ThingInRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.ThingUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ExitAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.RoomUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingInRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingUpdatedDTO;
 import com.hamming.storim.common.interfaces.*;
 import com.hamming.storim.common.net.ProtocolReceiver;
 import com.hamming.storim.common.util.Logger;
@@ -90,6 +89,22 @@ public class GameViewController implements ConnectionListener {
        connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto));
        connectionController.registerReceiver(ThingInRoomDTO.class, (ProtocolReceiver<ThingInRoomDTO>) dto -> addThing(dto));
        connectionController.registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> updateThing(dto.getThing()));
+       connectionController.registerReceiver(ExitAddedDTO.class, (ProtocolReceiver<ExitAddedDTO>) dto -> addExit(dto.getExitDto(), dto.getLocationDto()));
+       connectionController.registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> deleteExit(dto.getExitID()));
+       connectionController.registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> updateExit(dto.getExitDto()));
+    }
+
+    private void updateExit(ExitDto exitDto) {
+        gameView.scheduleAction(() -> gameView.updateExit(exitDto));
+    }
+
+    private void deleteExit(Long exitID) {
+        gameView.scheduleAction(() -> gameView.deleteExit(exitID));
+    }
+
+    private void addExit(ExitDto exitDto, LocationDto locationDto) {
+        gameView.scheduleAction(() -> gameView.addExit(exitDto));
+        gameView.scheduleAction(() -> gameView.setObjectLocation(exitDto.getId(), locationDto.getX(), locationDto.getY()));
     }
 
     private void updateThing(ThingDto thing) {
@@ -161,9 +176,6 @@ public class GameViewController implements ConnectionListener {
             lastReceivedLocation = location;
         }
         if (user.getCurrentAvatarID() != null) {
-            //FIXME get Avatar
-          //  byte[] imageData = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImageData();
-            //gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), imageData));
             gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), null));
         } else {
             gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), null));
@@ -208,16 +220,16 @@ public class GameViewController implements ConnectionListener {
         gameView.scheduleAction(() -> gameView.setRoom(room));
 
         // Exits
-        gameView.scheduleAction(() -> gameView.setExits(new ArrayList<>()));
-        for (Long exitId : room.getExits()) {
-            GetExitResponseDTO getExitResultDTO = connectionController.sendReceive(new GetExitDTO(room.getId(), exitId), GetExitResponseDTO.class);
-            if ( getExitResultDTO != null && getExitResultDTO.getExit() != null ) {
-                ExitDto exit = getExitResultDTO.getExit();
-                gameView.scheduleAction(() -> gameView.addExit(exit));
-            } else {
-                System.err.println(getClass().getSimpleName() +".setRoom: exit"+ exitId+" not found!" );
-            }
-        }
+//        gameView.scheduleAction(() -> gameView.setExits(new ArrayList<>()));
+//        for (Long exitId : room.getExits()) {
+//            GetExitResponseDTO getExitResultDTO = connectionController.sendReceive(new GetExitDTO(room.getId(), exitId), GetExitResponseDTO.class);
+//            if ( getExitResultDTO != null && getExitResultDTO.getExit() != null ) {
+//                ExitDto exit = getExitResultDTO.getExit();
+//                gameView.scheduleAction(() -> gameView.addExit(exit));
+//            } else {
+//                System.err.println(getClass().getSimpleName() +".setRoom: exit"+ exitId+" not found!" );
+//            }
+//        }
     }
 
     private void setRoom(RoomDto room) {
@@ -321,31 +333,15 @@ public class GameViewController implements ConnectionListener {
         connectionController.send(updateThingLocationDto);
     }
 
-    public void setSelectedThing(Long id) {
-//        ThingDto thing = controllers.getThingController().findThingById(id);
-//        for (ViewListener l : viewListeners ) {
-//            l.thingSelectedInView(thing);
-//        }
-    }
-
-    public void setSelectedExit(Long id) {
-//        ExitDto exit = controllers.getRoomController().getExit(id);
-//        for (ViewListener l : viewListeners ) {
-//            l.exitSelectedInView(exit);
-//        }
-    }
-
-    public void setSelectedPlayer(Long id) {
-//        UserDto user = controllers.getUserController().findUserById(id);
-//        for (ViewListener l : viewListeners ) {
-//            l.userSelectedInView(user);
-//        }
-    }
-
     public void exitClicked(Long id, String name) {
         int result = JOptionPane.showConfirmDialog(storimWindow,"Use exit '"+name+"'?","Use exit",JOptionPane.OK_CANCEL_OPTION);
         if ( result == JOptionPane.OK_OPTION ) {
             connectionController.send(new UseExitRequestDTO(id));
         }
+    }
+
+    public void updateExitLocationRequest(Long exitID, int x, int y) {
+        UpdateExitLocationDto updateExitLocationDto = new UpdateExitLocationDto(exitID, x, y);
+        connectionController.send(updateExitLocationDto);
     }
 }

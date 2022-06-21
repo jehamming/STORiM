@@ -12,7 +12,9 @@ public class RoomEvent {
         AVATARSET,
         THINGPLACED,
         THINGLOCATIONUPDATE,
+        EXITLOCATIONUPDATE,
         THINGUPDATED,
+        EXITUPDATED,
         ROOMUPDATED,
         MESSAGEINROOM
     }

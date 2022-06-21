@@ -1,4 +1,4 @@
-package com.hamming.storim.common.dto.protocol.serverpush.old;
+package com.hamming.storim.common.dto.protocol.serverpush;
 
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.RoomDto;

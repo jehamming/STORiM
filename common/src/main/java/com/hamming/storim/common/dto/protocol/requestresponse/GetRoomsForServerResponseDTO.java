@@ -15,4 +15,11 @@ public class GetRoomsForServerResponseDTO implements  ResponseDTO {
     public HashMap<Long, String> getRooms() {
         return rooms;
     }
+
+    @Override
+    public String toString() {
+        return "GetRoomsForServerResponseDTO{" +
+                "rooms=" + rooms +
+                '}';
+    }
 }

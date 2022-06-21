@@ -28,9 +28,9 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     private ThingPanelController thingPanelController;
     private ConnectionController connectionController;
     private ThingPanel thingPanel;
+    private ExitPanel exitPanel;
+    private ExitPanelController exitPanelController;
 
-
-    private ExitEditorPanel exitEditorPanel;
 
     private GameViewPanel gameView;
     private static String BASIC_TITLE = "STORIM Java Client";
@@ -82,13 +82,10 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         thingPanel = new ThingPanel();
         thingPanelController = new ThingPanelController(this, thingPanel, connectionController);
         tabbedPane.addTab("Things", thingPanel);
-//
-//        thingPanel = new ThingPanel(controllers);
-//        tabbedPane.add("Things", thingPanel);
-//
-//        exitEditorPanel = new ExitEditorPanel(controllers);
-//        tabbedPane.add("Exits", exitEditorPanel);
 
+        exitPanel = new ExitPanel();
+        exitPanelController = new ExitPanelController(this, exitPanel, connectionController);
+        tabbedPane.addTab("Exits", exitPanel);
     }
 
 
@@ -97,8 +94,8 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         tabbedPane = new javax.swing.JTabbedPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(1200, 570));
-        setPreferredSize(new java.awt.Dimension(1200, 570));
+        setMaximumSize(new java.awt.Dimension(1230, 570));
+        setPreferredSize(new java.awt.Dimension(1230, 570));
 
         gameView.setPreferredSize(new java.awt.Dimension(500, 500));
 

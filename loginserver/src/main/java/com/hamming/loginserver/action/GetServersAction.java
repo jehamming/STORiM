@@ -5,6 +5,7 @@ import com.hamming.loginserver.ServerRegistration;
 import com.hamming.loginserver.UserClientConnection;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsResponseDTO;
 import com.hamming.storim.common.dto.ServerRegistrationDTO;
+import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetServerRegistrationsDTO;
 
@@ -15,7 +16,7 @@ public class GetServersAction extends Action<GetServerRegistrationsDTO> {
 
     private LoginServerWorker serverWorker;
 
-    public GetServersAction(LoginServerWorker serverWorker, UserClientConnection client) {
+    public GetServersAction(LoginServerWorker serverWorker, ClientConnection client) {
         super(client);
         this.serverWorker = serverWorker;
     }

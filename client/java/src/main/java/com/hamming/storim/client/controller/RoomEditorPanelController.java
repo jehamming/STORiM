@@ -16,9 +16,9 @@ import com.hamming.storim.common.dto.protocol.request.TeleportRequestDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateRoomDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomDeletedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.old.RoomUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.RoomAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.RoomDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.RoomUpdatedDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 

@@ -96,6 +96,11 @@ public class AvatarFactory {
         return avatar;
     }
 
+    public void updateAvatar(Avatar avatar) {
+        ImageStore.storeImageObject(avatar, dataDir);
+    }
+
+
     public List<Avatar> getAllAvatars() {
         return Database.getInstance().getAll(Avatar.class);
     }
