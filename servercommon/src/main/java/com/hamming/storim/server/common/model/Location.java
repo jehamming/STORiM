@@ -55,4 +55,16 @@ public class Location extends BasicObject {
     public void setY(int y) {
         this.y = y;
     }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "id=" + getId() +
+                ", objectId=" + objectId +
+                ", serverId='" + serverId + '\'' +
+                ", roomId=" + roomId +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

@@ -13,6 +13,7 @@ public class RoomEvent {
         THINGPLACED,
         THINGLOCATIONUPDATE,
         EXITLOCATIONUPDATE,
+        EXITADDED,
         THINGUPDATED,
         EXITUPDATED,
         ROOMUPDATED,

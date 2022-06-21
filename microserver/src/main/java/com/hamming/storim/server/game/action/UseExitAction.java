@@ -27,39 +27,50 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
     @Override
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
+        Exit exit = ExitFactory.getInstance().findExitById(getDto().getExitId());
+        if (exit != null) {
+
+            if ( exit.getToServerID().equals(client.getServer().getServerName())) {
+                moveToRoomOnThisServer(exit, client);
+            } else {
+                connectToOtherServer(exit);
+            }
+        }
+    }
+
+    private void connectToOtherServer(Exit exit) {
+
+    }
+
+    private void moveToRoomOnThisServer(Exit exit, STORIMClientConnection client) {
         UserDto currentUser = client.getCurrentUser();
         Location location = controller.getGameState().getUserLocation(currentUser.getId());
         Room currentRoom = client.getCurrentRoom();
         Long fromRoomId = currentRoom.getId();
-        Exit exit = ExitFactory.getInstance().findExitById(getDto().getExitId());
-        if (exit != null) {
-            // Stop listening to the old Room!
-            controller.removeRoomListener(fromRoomId, client);
-            Room toRoom = RoomFactory.getInstance().findRoomByID(exit.getToRoomID());
-            location.setRoomId(toRoom.getId());
-            location.setX(toRoom.getSpawnPointX());
-            location.setY(toRoom.getSpawnPointY());
 
-            Long newRoomId = location.getRoomId();
-            controller.getGameState().setUserLocation(currentUser, location);
-            client.setRoom(newRoomId);
-            // Send current User info
-            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-            LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(currentUser.getId(), locationDto);
-            client.send(locationUpdateDTO);
-            // Start listening to the new Room!
-            controller.addRoomListener(newRoomId, client);
-            // Send other clients an update
-            userLeftRoom(getClient(), currentUser, fromRoomId, newRoomId);
-            //Update userdataserver
-            client.getServer().getUserDataServerProxy().setLocation(currentUser.getId(),locationDto);
-        }
+        // Stop listening to the old Room!
+        controller.removeRoomListener(fromRoomId, client);
+        Room toRoom = RoomFactory.getInstance().findRoomByID(exit.getToRoomID());
+        location.setRoomId(toRoom.getId());
+        location.setX(toRoom.getSpawnPointX());
+        location.setY(toRoom.getSpawnPointY());
+
+        Long newRoomId = location.getRoomId();
+        controller.getGameState().setUserLocation(currentUser, location);
+        client.setRoom(newRoomId);
+        // Send current User info
+        LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(currentUser.getId(), locationDto);
+        client.send(locationUpdateDTO);
+        // Start listening to the new Room!
+        controller.addRoomListener(newRoomId, client);
+        // Send other clients an update
+        controller.fireRoomEvent(client, fromRoomId, new RoomEvent(RoomEvent.Type.USERLEFTROOM, currentUser, newRoomId));
+        controller.fireRoomEvent(client, newRoomId, new RoomEvent(RoomEvent.Type.USERENTEREDROOM, currentUser, fromRoomId));
+        //Update userdataserver
+        client.getServer().getUserDataServerProxy().setLocation(currentUser.getId(),locationDto);
     }
 
-    public void userLeftRoom(ClientConnection source, UserDto user, Long fromRoomId, Long newRoomId) {
-        controller.fireRoomEvent(source, fromRoomId, new RoomEvent(RoomEvent.Type.USERLEFTROOM, user, newRoomId));
-        controller.fireRoomEvent(source, newRoomId, new RoomEvent(RoomEvent.Type.USERENTEREDROOM, user, fromRoomId));
-    }
 
 
 }

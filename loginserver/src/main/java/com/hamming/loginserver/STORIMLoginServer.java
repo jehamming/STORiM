@@ -49,6 +49,8 @@ public class STORIMLoginServer implements Runnable {
             userDataServerConnection = new UserDataServerConnection(getClass().getSimpleName(), socket, serverWorker);
         } catch (IOException e) {
             e.printStackTrace();
+            Logger.info(this, "cannot connect to dataserver - STOP");
+            System.exit(-1);
         }
         Logger.info(this, "UserDataServerConnection started");
     }

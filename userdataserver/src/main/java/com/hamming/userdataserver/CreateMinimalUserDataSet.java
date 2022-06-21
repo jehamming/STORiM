@@ -16,17 +16,17 @@ public class CreateMinimalUserDataSet {
         User rootUser = UserFactory.getInstance().addUser(null, "Root", "root", "root", "root@hamming.com");
 
 
-        // Luuk
-        User userLuuk = UserFactory.getInstance().addUser( rootUser, "Luuk Hamming", "lhhamming", "lhhamming", "luuk.hamming@gmail.com");
-        Verb cmdSayLuuk = VerbFactory.getInstance().createVerb("Say", userLuuk);
-        cmdSayLuuk.setToCaller("You say '${message}'");
-        cmdSayLuuk.setToLocation("${caller} says '${message}'");
+        // Player1
+        User playerOne = UserFactory.getInstance().addUser( rootUser, "Player One", "player1", "player1", "player1@nomail.com");
+        Verb cmdSayPlayer1 = VerbFactory.getInstance().createVerb("Say", playerOne);
+        cmdSayPlayer1.setToCaller("You say '${message}'");
+        cmdSayPlayer1.setToLocation("${caller} says '${message}'");
 
-        // Jan-Egbert
-        User userJan = UserFactory.getInstance().addUser(rootUser,"Jan-Egbert Hamming", "jehamming", "jehamming", "janneman@hotmail.com");
-        Verb cmdSayJan = VerbFactory.getInstance().createVerb("Say", userJan);
-        cmdSayJan.setToCaller("You say '${message}'");
-        cmdSayJan.setToLocation("${caller} says '${message}'");
+        // Player2
+        User player2 = UserFactory.getInstance().addUser(rootUser,"Player Two", "player2", "player2", "player2@nomail.com");
+        Verb cmdSayPlayer2 = VerbFactory.getInstance().createVerb("Say", player2);
+        cmdSayPlayer2.setToCaller("You say '${message}'");
+        cmdSayPlayer2.setToLocation("${caller} says '${message}'");
 
 
         Database.getInstance().store();

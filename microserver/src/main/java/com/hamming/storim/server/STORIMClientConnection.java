@@ -329,8 +329,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         for (Exit exit: room.getExits()) {
             ExitDto exitDto = DTOFactory.getInstance().getExitDTO(exit);
             LocationDto locationDto = getServer().getUserDataServerProxy().getLocation(exit.getId());
-            ExitAddedDTO exitAddedDTO = new ExitAddedDTO(exitDto, locationDto);
-            send(exitAddedDTO);
+            ExitInRoomDTO exitInRoomDTO = new ExitInRoomDTO(exitDto, locationDto);
+            send(exitInRoomDTO);
         }
     }
 
@@ -388,6 +388,9 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
             case EXITLOCATIONUPDATE:
                 exitLocationUpdate((LocationDto) event.getData(), (UserDto) event.getExtraData());
                 break;
+            case EXITADDED:
+                exitAdded((ExitDto) event.getData(), (LocationDto) event.getExtraData());
+                break;
             case ROOMUPDATED:
                 //TODO
                 break;
@@ -395,6 +398,11 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 messageInROom(event.getData(), (String) event.getExtraData());
                 break;
         }
+    }
+
+    private void exitAdded(ExitDto exitDto, LocationDto locationDto) {
+        ExitInRoomDTO exitInRoomDTO = new ExitInRoomDTO(exitDto, locationDto);
+        send(exitInRoomDTO);
     }
 
     private void exitUpdated(ExitDto exitDto, UserDto user) {

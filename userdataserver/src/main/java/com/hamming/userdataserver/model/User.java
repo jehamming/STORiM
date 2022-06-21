@@ -60,6 +60,8 @@ public class User extends BasicObject implements Serializable {
         return "User{" +
                 " id=" + getId() +
                 ", name='" + getName() + '\'' +
+                ", username='" + getUsername() + '\'' +
+                ", email='" + getEmail() + '\'' +
                 '}';
     }
 

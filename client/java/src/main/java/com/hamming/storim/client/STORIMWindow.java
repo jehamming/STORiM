@@ -33,15 +33,19 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
 
     private GameViewPanel gameView;
-    private static String BASIC_TITLE = "STORIM Java Client";
+    private static String BASIC_TITLE = "STORIM";
 
     private UserDto currentUser;
     private String userToken;
+    private String username;
+    private String password;
 
-    public STORIMWindow(ConnectionController connectionController) {
+    public STORIMWindow(ConnectionController connectionController, String username, String password) {
+        this.username = username;
+        this.password = password;
         this.connectionController = connectionController;
         connectionController.addConnectionListener(this);
-        setTitle(BASIC_TITLE);
+        setTitle(BASIC_TITLE + "-"+username);
         gameView = new GameViewPanel(this);
         gameView.setPreferredSize(new Dimension(1000,500));
         GameViewController viewController = new GameViewController(this, gameView, connectionController);
@@ -49,6 +53,14 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         initComponents();
         addTabs();
         setVisible(true);
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void addTabs() {

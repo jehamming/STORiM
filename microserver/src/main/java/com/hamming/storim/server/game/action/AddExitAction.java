@@ -14,6 +14,7 @@ import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.game.GameController;
+import com.hamming.storim.server.game.RoomEvent;
 
 import java.awt.*;
 
@@ -55,6 +56,8 @@ public class AddExitAction extends Action<AddExitDto> {
             ExitDto exitDto = DTOFactory.getInstance().getExitDTO(exit);
             ExitAddedDTO exitAddedDTO = new ExitAddedDTO(exitDto, locationDto);
             client.send(exitAddedDTO);
+
+            gameController.fireRoomEvent(client, currentRoom.getId(), new RoomEvent(RoomEvent.Type.EXITADDED, exitDto, locationDto));
         }
     }
 }

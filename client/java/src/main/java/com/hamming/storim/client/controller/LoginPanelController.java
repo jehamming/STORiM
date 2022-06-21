@@ -182,8 +182,8 @@ public class LoginPanelController implements ConnectionListener {
         panel.getCmbServer().setModel(serversModel);
         panel.getTxtIP().setText("127.0.0.1");
         panel.getTxtPort().setText("3401");
-        panel.getTxtUsername().setText("jehamming");
-        panel.getTxtPassword().setText("jehamming");
+        panel.getTxtUsername().setText(storimWindow.getUsername());
+        panel.getTxtPassword().setText(storimWindow.getPassword());
         panel.getTxtPassword().addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
