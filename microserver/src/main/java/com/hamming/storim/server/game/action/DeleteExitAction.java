@@ -7,6 +7,7 @@ import com.hamming.storim.common.dto.protocol.serverpush.ThingDeletedDTO;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.ExitFactory;
+import com.hamming.storim.server.common.factories.LocationFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Room;
@@ -32,6 +33,7 @@ public class DeleteExitAction extends Action<DeleteExitDTO> {
             Room room = client.getCurrentRoom();
             room.removeExit(exit);
 
+            LocationFactory.getInstance().removeLocation(exit.getId());
             ExitFactory.getInstance().deleteExit(exit);
 
             ExitDeletedDTO exitDeletedDTO = new ExitDeletedDTO(exit.getId());

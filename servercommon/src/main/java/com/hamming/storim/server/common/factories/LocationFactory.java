@@ -1,4 +1,4 @@
-package com.hamming.userdataserver.factories;
+package com.hamming.storim.server.common.factories;
 
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.server.Database;
@@ -36,6 +36,10 @@ public class LocationFactory {
 
     public void setLocation (Long objectId, Location l) {
         locations.put(objectId,l);
+    }
+
+    public void removeLocation (Long objectId) {
+        locations.remove(objectId);
     }
 
 

@@ -11,9 +11,14 @@ public class LocationUpdateDTO implements  ResponseDTO {
 
     private Long sequenceNumber;
 
-    public LocationUpdateDTO(Long objectId, LocationDto location) {
+    public enum Type {USER,THING,EXIT};
+
+    private Type type;
+
+    public LocationUpdateDTO(Type type, Long objectId, LocationDto location) {
         this.objectId = objectId;
         this.location = location;
+        this.type = type;
     }
 
     public Long getObjectId() {
@@ -32,11 +37,17 @@ public class LocationUpdateDTO implements  ResponseDTO {
         this.sequenceNumber = sequenceNumber;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return "LocationUpdateDTO{" +
                 "objectId=" + objectId +
                 ", location=" + location +
+                ", sequenceNumber=" + sequenceNumber +
+                ", type=" + type +
                 '}';
     }
 }

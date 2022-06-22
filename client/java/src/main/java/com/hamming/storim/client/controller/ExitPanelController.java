@@ -65,6 +65,7 @@ public class ExitPanelController implements ConnectionListener {
         connectionController.registerReceiver(ExitAddedDTO.class, (ProtocolReceiver<ExitAddedDTO>) dto -> exitAdded(dto.getExitDto()));
         connectionController.registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> exitDeleted(dto.getExitID()));
         connectionController.registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> exitUpdated(dto.getExitDto()));
+        connectionController.registerReceiver(ExitInRoomDTO.class, (ProtocolReceiver<ExitInRoomDTO>) dto -> exitAdded(dto.getExitDto()));
     }
 
     private void setRoom(RoomDto room) {
@@ -205,8 +206,8 @@ public class ExitPanelController implements ConnectionListener {
     private void createExit() {
         panel.setEnabled(true);
         newExit = true;
-        exitImage = defaultExitImage;
         SwingUtilities.invokeLater(() -> {
+            exitImage = defaultExitImage;
             Image iconImage = exitImage.getScaledInstance(panel.getLblImagePreview().getWidth(), panel.getLblImagePreview().getHeight(), Image.SCALE_SMOOTH);
             panel.getLblImagePreview().setIcon(new ImageIcon(iconImage));
             panel.getLblID().setText("");

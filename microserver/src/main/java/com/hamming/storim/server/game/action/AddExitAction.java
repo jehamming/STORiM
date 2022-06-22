@@ -10,6 +10,7 @@ import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ImageUtils;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.ExitFactory;
+import com.hamming.storim.server.common.factories.LocationFactory;
 import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
@@ -48,9 +49,9 @@ public class AddExitAction extends Action<AddExitDto> {
         currentRoom.addExit(exit);
         // Place in Room
         Location location = new Location(exit.getId(), serverName, currentRoom.getId(),currentRoom.getSpawnPointX(), currentRoom.getSpawnPointY());
+        LocationFactory.getInstance().setLocation(exit.getId(), location);
+
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-        //Store location at dataserver
-        client.getServer().getUserDataServerProxy().setLocation(exit.getId(), locationDto);
 
         if ( exit != null ) {
             ExitDto exitDto = DTOFactory.getInstance().getExitDTO(exit);

@@ -74,25 +74,25 @@ public class GameViewController implements ConnectionListener {
     }
 
     private void windowResized() {
-        gameView.scheduleAction( () ->  gameView.componentResized());
+        gameView.scheduleAction(() -> gameView.componentResized());
     }
 
     private void registerReceivers() {
-       connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
-       connectionController.registerReceiver(UserInRoomDTO.class, (ProtocolReceiver<UserInRoomDTO>) dto -> userInRoom(dto));
-       connectionController.registerReceiver(LocationUpdateDTO.class, (ProtocolReceiver<LocationUpdateDTO>) dto -> locationUpdate(dto));
-       connectionController.registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
-       connectionController.registerReceiver(UserLeftRoomDTO.class, (ProtocolReceiver<UserLeftRoomDTO>) dto -> userLeftRoom(dto));
-       connectionController.registerReceiver(UserEnteredRoomDTO.class, (ProtocolReceiver<UserEnteredRoomDTO>) dto -> userEnteredRoom(dto));
-       connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
-       connectionController.registerReceiver(AvatarSetDTO.class, (ProtocolReceiver<AvatarSetDTO>) dto -> setAvatar(dto));
-       connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto));
-       connectionController.registerReceiver(ThingInRoomDTO.class, (ProtocolReceiver<ThingInRoomDTO>) dto -> addThing(dto));
-       connectionController.registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> updateThing(dto.getThing()));
-       connectionController.registerReceiver(ExitAddedDTO.class, (ProtocolReceiver<ExitAddedDTO>) dto -> addExit(dto.getExitDto(), dto.getLocationDto()));
-       connectionController.registerReceiver(ExitInRoomDTO.class, (ProtocolReceiver<ExitInRoomDTO>) dto -> addExit(dto.getExitDto(), dto.getLocationDto()));
-       connectionController.registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> deleteExit(dto.getExitID()));
-       connectionController.registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> updateExit(dto.getExitDto()));
+        connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
+        connectionController.registerReceiver(UserInRoomDTO.class, (ProtocolReceiver<UserInRoomDTO>) dto -> userInRoom(dto));
+        connectionController.registerReceiver(LocationUpdateDTO.class, (ProtocolReceiver<LocationUpdateDTO>) dto -> locationUpdate(dto));
+        connectionController.registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
+        connectionController.registerReceiver(UserLeftRoomDTO.class, (ProtocolReceiver<UserLeftRoomDTO>) dto -> userLeftRoom(dto));
+        connectionController.registerReceiver(UserEnteredRoomDTO.class, (ProtocolReceiver<UserEnteredRoomDTO>) dto -> userEnteredRoom(dto));
+        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
+        connectionController.registerReceiver(AvatarSetDTO.class, (ProtocolReceiver<AvatarSetDTO>) dto -> setAvatar(dto));
+        connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto));
+        connectionController.registerReceiver(ThingInRoomDTO.class, (ProtocolReceiver<ThingInRoomDTO>) dto -> addThing(dto));
+        connectionController.registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> updateThing(dto.getThing()));
+        connectionController.registerReceiver(ExitAddedDTO.class, (ProtocolReceiver<ExitAddedDTO>) dto -> addExit(dto.getExitDto(), dto.getLocationDto()));
+        connectionController.registerReceiver(ExitInRoomDTO.class, (ProtocolReceiver<ExitInRoomDTO>) dto -> addExit(dto.getExitDto(), dto.getLocationDto()));
+        connectionController.registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> deleteExit(dto.getExitID()));
+        connectionController.registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> updateExit(dto.getExitDto()));
     }
 
     private void updateExit(ExitDto exitDto) {
@@ -105,7 +105,7 @@ public class GameViewController implements ConnectionListener {
 
     private void addExit(ExitDto exitDto, LocationDto locationDto) {
         gameView.scheduleAction(() -> gameView.addExit(exitDto));
-        gameView.scheduleAction(() -> gameView.setObjectLocation(exitDto.getId(), locationDto.getX(), locationDto.getY()));
+        gameView.scheduleAction(() -> gameView.setExitLocation(exitDto.getId(), locationDto.getX(), locationDto.getY()));
     }
 
     private void updateThing(ThingDto thing) {
@@ -117,13 +117,12 @@ public class GameViewController implements ConnectionListener {
         Long id = dto.getThing().getId();
         int x = dto.getLocation().getX();
         int y = dto.getLocation().getY();
-        gameView.scheduleAction(() -> gameView.setObjectLocation(id, x, y));
+        gameView.scheduleAction(() -> gameView.setThingLocation(id, x, y));
     }
 
 
-
     private void roomUpdated(RoomUpdatedDTO dto) {
-        if (lastReceivedLocation != null && lastReceivedLocation.getRoomId().equals( dto.getRoom().getId() ) ) {
+        if (lastReceivedLocation != null && lastReceivedLocation.getRoomId().equals(dto.getRoom().getId())) {
             updateRoom(dto.getRoom());
         }
     }
@@ -131,39 +130,50 @@ public class GameViewController implements ConnectionListener {
     private void setAvatar(AvatarSetDTO dto) {
         Long userId = dto.getUserId();
         AvatarDto avatarDto = dto.getAvatar();
-        gameView.scheduleAction( () -> gameView.setAvatar(userId, avatarDto));
-        if (currentUser != null && currentUser.getId().equals( userId )) {
+        gameView.scheduleAction(() -> gameView.setAvatar(userId, avatarDto));
+        if (currentUser != null && currentUser.getId().equals(userId)) {
             currentUserAvatar = dto.getAvatar();
         }
     }
 
 
     private void userLeftRoom(UserLeftRoomDTO dto) {
-        gameView.scheduleAction( () -> gameView.removePlayer(dto.getUserId()));
+        gameView.scheduleAction(() -> gameView.removePlayer(dto.getUserId()));
     }
 
     private void userDisconnected(UserDisconnectedDTO dto) {
-        gameView.scheduleAction( () -> gameView.removePlayer(dto.getUserID()));
+        gameView.scheduleAction(() -> gameView.removePlayer(dto.getUserID()));
     }
 
     private void locationUpdate(LocationUpdateDTO dto) {
-        if (dto.getObjectId().equals(storimWindow.getCurrentUser().getId())) {
-            moveCurrentUser(dto.getSequenceNumber(),dto.getLocation());
-        } else {
-            LocationDto l = dto.getLocation();
-            gameView.scheduleAction( () ->  gameView.setObjectLocation(dto.getObjectId(), l.getX(), l.getY()));
+        LocationDto l = dto.getLocation();
+        switch (dto.getType()) {
+            case USER:
+                if (dto.getObjectId().equals(storimWindow.getCurrentUser().getId())) {
+                    moveCurrentUser(dto.getSequenceNumber(), dto.getLocation());
+                } else {
+                    gameView.scheduleAction(() -> gameView.setPlayerLocation(dto.getObjectId(), l.getX(), l.getY()));
+                }
+                break;
+            case THING:
+                gameView.scheduleAction(() -> gameView.setThingLocation(dto.getObjectId(), l.getX(), l.getY()));
+                break;
+            case EXIT:
+                gameView.scheduleAction(() -> gameView.setExitLocation(dto.getObjectId(), l.getX(), l.getY()));
+                break;
         }
     }
+
     // The method uses client side prediction to counter lag.
     private void moveCurrentUser(Long sequenceNumber, LocationDto l) {
         UserDto currentUser = storimWindow.getCurrentUser();
-        if ( sequenceNumber == null ) {
+        if (sequenceNumber == null) {
             resetRequests();
             sequenceNumber = 0L;
             lastReceivedLocation = l;
         }
         // First : Set the location based on the server respons (server = authoritive
-        gameView.scheduleAction( () ->  gameView.setObjectLocation(currentUser.getId(), l.getX(), l.getY()));
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(currentUser.getId(), l.getX(), l.getY()));
         // Remove all the request before this sequence (if any)
         deleteRequestsUpTO(sequenceNumber);
         // Apply all the requests that server has not processed yet.
@@ -173,7 +183,7 @@ public class GameViewController implements ConnectionListener {
     private void userInRoom(UserInRoomDTO dto) {
         UserDto user = dto.getUser();
         LocationDto location = dto.getLocation();
-        if ( user.getId().equals(storimWindow.getCurrentUser().getId())) {
+        if (user.getId().equals(storimWindow.getCurrentUser().getId())) {
             lastReceivedLocation = location;
         }
         if (user.getCurrentAvatarID() != null) {
@@ -181,7 +191,7 @@ public class GameViewController implements ConnectionListener {
         } else {
             gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), null));
         }
-        gameView.scheduleAction(() -> gameView.setObjectLocation(user.getId(), location.getX(), location.getY()));
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(user.getId(), location.getX(), location.getY()));
     }
 
     private void setCurrentUser(SetCurrentUserDTO dto) {
@@ -193,7 +203,7 @@ public class GameViewController implements ConnectionListener {
         } else {
             gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), null));
         }
-        gameView.scheduleAction(() -> gameView.setObjectLocation(currentUser.getId(), location.getX(), location.getY()));
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(currentUser.getId(), location.getX(), location.getY()));
     }
 
 
@@ -208,7 +218,7 @@ public class GameViewController implements ConnectionListener {
         } else {
             gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), null));
         }
-        gameView.scheduleAction(() -> gameView.setObjectLocation(user.getId(), location.getX(), location.getY()));
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(user.getId(), location.getX(), location.getY()));
     }
 
     private void updateRoom(RoomDto room) {
@@ -220,17 +230,6 @@ public class GameViewController implements ConnectionListener {
         }
         gameView.scheduleAction(() -> gameView.setRoom(room));
 
-        // Exits
-//        gameView.scheduleAction(() -> gameView.setExits(new ArrayList<>()));
-//        for (Long exitId : room.getExits()) {
-//            GetExitResponseDTO getExitResultDTO = connectionController.sendReceive(new GetExitDTO(room.getId(), exitId), GetExitResponseDTO.class);
-//            if ( getExitResultDTO != null && getExitResultDTO.getExit() != null ) {
-//                ExitDto exit = getExitResultDTO.getExit();
-//                gameView.scheduleAction(() -> gameView.addExit(exit));
-//            } else {
-//                System.err.println(getClass().getSimpleName() +".setRoom: exit"+ exitId+" not found!" );
-//            }
-//        }
     }
 
     private void setRoom(RoomDto room) {
@@ -239,7 +238,7 @@ public class GameViewController implements ConnectionListener {
 
         updateRoom(room);
 
-        if (currentUser != null ) {
+        if (currentUser != null) {
             final byte[] imageData = currentUserAvatar != null ? currentUserAvatar.getImageData() : null;
             gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), imageData));
         }
@@ -282,7 +281,7 @@ public class GameViewController implements ConnectionListener {
 
     public LocationDto applyMoveRequest(MovementRequestDTO dto, LocationDto loc) {
         LocationDto newLocation = CalcTools.calculateNewPosition(dto, loc);
-        gameView.scheduleAction( () -> gameView.setObjectLocation(storimWindow.getCurrentUser().getId(), newLocation.getX(), newLocation.getY()));
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(storimWindow.getCurrentUser().getId(), newLocation.getX(), newLocation.getY()));
         Logger.info(this, "ScheduledMove-Sequence:" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
         return newLocation;
     }
@@ -315,7 +314,7 @@ public class GameViewController implements ConnectionListener {
 
     @Override
     public void connected() {
-        gameView.scheduleAction( () ->  gameView.resetView());
+        gameView.scheduleAction(() -> gameView.resetView());
     }
 
     @Override
@@ -335,8 +334,8 @@ public class GameViewController implements ConnectionListener {
     }
 
     public void exitClicked(Long id, String name) {
-        int result = JOptionPane.showConfirmDialog(storimWindow,"Use exit '"+name+"'?","Use exit",JOptionPane.OK_CANCEL_OPTION);
-        if ( result == JOptionPane.OK_OPTION ) {
+        int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "'?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
             connectionController.send(new UseExitRequestDTO(id));
         }
     }

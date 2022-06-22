@@ -166,7 +166,6 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
     @Override
     public void disconnected() {
-        setTitle(BASIC_TITLE);
     }
 
 
@@ -174,9 +173,9 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         return gameView;
     }
 
-    public void setRoomname(String roomName) {
+    public void setRoomname(Long roomId, String roomName) {
         //TODO - CurrentUser!
-        String text = "User: "+ currentUser.getName() + ", room :" + roomName;
+        String text = "User: "+ currentUser.getName() + ", room :("+ roomId +") " + roomName;
         SwingUtilities.invokeLater(() -> {
             lblRoomName.setText(text);
         });

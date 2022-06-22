@@ -37,7 +37,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     private List<Player> players;
     private List<Thing> things;
     private List<Exit> exits;
-    private Map<Long, BasicDrawableObject> quickRef;
+
     public RoomDto room;
     public TileDto tile;
     public Image tileImage;
@@ -121,7 +121,6 @@ public class GameViewPanel extends JPanel implements Runnable {
         players = new ArrayList<>();
         things = new ArrayList<>();
         exits = new ArrayList<>();
-        quickRef = new HashMap<>();
         try {
             defaultTileImage = ImageIO.read(new File("resources/Tile.png"));
             defaultUserImage = ImageIO.read(new File("resources/User.png"));
@@ -272,14 +271,12 @@ public class GameViewPanel extends JPanel implements Runnable {
     private void addThing(Thing thing) {
         if (!things.contains(thing)) {
             things.add(thing);
-            quickRef.put(thing.getId(), thing);
         }
     }
 
     public void addExit(Exit exit) {
         if (!exits.contains(exit)) {
             exits.add(exit);
-            quickRef.put(exit.getId(), exit);
         }
     }
 
@@ -320,7 +317,6 @@ public class GameViewPanel extends JPanel implements Runnable {
     public void addPlayer(Player player) {
         if (!players.contains(player)) {
             players.add(player);
-            quickRef.put(player.getId(), player);
         }
     }
 
@@ -358,7 +354,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         this.room = room;
         if (room != null) {
             determineUnitXY();
-            window.setRoomname(room.getName());
+            window.setRoomname(room.getId(), room.getName());
         }
 
     }
@@ -669,14 +665,24 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
 
-    public void setObjectLocation(Long objectId, int x, int y) {
-        BasicDrawableObject object = quickRef.get(objectId);
-        if (object != null) {
-            object.setX((int) (x * unitX));
-            object.setY((int) (y * unitY));
-        } else {
-            Logger.info(this, " - setLocation: object " + objectId + " not found!");
-        }
+    private void setLocation(BasicDrawableObject o, int x, int y) {
+        o.setX((int) (x * unitX));
+        o.setY((int) (y * unitY));
+    }
+
+    public void setPlayerLocation(Long id, int x, int y) {
+        Player p = getPlayer(id);
+        if ( p != null ) setLocation(p, x, y);
+    }
+
+    public void setThingLocation(Long id, int x, int y) {
+        Thing t = getThing(id);
+        if ( t != null ) setLocation(t, x, y);
+    }
+
+    public void setExitLocation(Long id, int x, int y) {
+        Exit e = getExit(id);
+        if ( e != null ) setLocation(e, x, y);
     }
 
 

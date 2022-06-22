@@ -41,7 +41,7 @@ public class UpdateThingLocationAction extends Action<UpdateThingLocationDto> {
         client.getServer().getUserDataServerProxy().setLocation(dto.getId(), dto.getX(), dto.getY());
 
         // Send updated location
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(dto.getId(), locationDTO);
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.THING, dto.getId(), locationDTO);
         client.send(locationUpdateDTO);
 
         MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(client.getCurrentUser().getId(), MessageInRoomDTO.Type.USER, "You move " + thingDto.getName());

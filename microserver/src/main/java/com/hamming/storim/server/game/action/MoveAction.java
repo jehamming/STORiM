@@ -55,7 +55,7 @@ public class MoveAction extends Action<MovementRequestDTO> {
         Location location = controller.getGameState().getUserLocation(u.getId());
         controller.fireRoomEvent(source, location.getRoomId(), new RoomEvent(RoomEvent.Type.USERLOCATIONUPDATE, u));
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(u.getId(), locationDto);
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.USER, u.getId(), locationDto);
         locationUpdateDTO.setSequenceNumber(sequence);
         getClient().send(locationUpdateDTO);
     }

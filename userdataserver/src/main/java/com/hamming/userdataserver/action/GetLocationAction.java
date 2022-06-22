@@ -8,7 +8,7 @@ import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.GetLocati
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.GetLocationResponseDto;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.userdataserver.DTOFactory;
-import com.hamming.userdataserver.factories.LocationFactory;
+import com.hamming.storim.server.common.factories.LocationFactory;
 
 public class GetLocationAction extends Action<GetLocationDto> {
     private ServerWorker serverWorker;

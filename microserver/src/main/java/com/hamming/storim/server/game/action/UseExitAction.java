@@ -60,7 +60,7 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
         client.setRoom(newRoomId);
         // Send current User info
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(currentUser.getId(), locationDto);
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.USER, currentUser.getId(), locationDto);
         client.send(locationUpdateDTO);
         // Start listening to the new Room!
         controller.addRoomListener(newRoomId, client);

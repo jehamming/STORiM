@@ -7,6 +7,7 @@ import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.factories.ExitFactory;
+import com.hamming.storim.server.common.factories.LocationFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Location;
@@ -14,6 +15,7 @@ import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.game.*;
 import com.hamming.storim.server.game.action.*;
 
+import java.awt.image.DataBuffer;
 import java.net.Socket;
 import java.util.HashMap;
 
@@ -261,7 +263,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     public void userLocationUpdate(UserDto user) {
         Location location = gameController.getGameState().getUserLocation(user.getId());
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(user.getId(), locationDto);
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.USER, user.getId(), locationDto);
         send(locationUpdateDTO);
     }
 
@@ -328,7 +330,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     private void sendExitsInRoom(Room room) {
         for (Exit exit: room.getExits()) {
             ExitDto exitDto = DTOFactory.getInstance().getExitDTO(exit);
-            LocationDto locationDto = getServer().getUserDataServerProxy().getLocation(exit.getId());
+            Location location = LocationFactory.getInstance().getLocationForObject(exit.getId());
+            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
             ExitInRoomDTO exitInRoomDTO = new ExitInRoomDTO(exitDto, locationDto);
             send(exitInRoomDTO);
         }
@@ -424,7 +427,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     private void thingLocationUpdate(LocationDto locationDto, UserDto user) {
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(locationDto.getObjectId(), locationDto);
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.THING, locationDto.getObjectId(), locationDto);
         ThingDto thingDto = getServer().getUserDataServerProxy().getThing(locationDto.getObjectId());
         send(locationUpdateDTO);
         String txt = user.getName() + " moves " + thingDto.getName();
@@ -433,7 +436,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     private void exitLocationUpdate(LocationDto locationDto, UserDto user) {
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(locationDto.getObjectId(), locationDto);
+        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.EXIT, locationDto.getObjectId(), locationDto);
         send(locationUpdateDTO);
         Exit exit = ExitFactory.getInstance().findExitById(locationDto.getObjectId());
         String txt = user.getName() + " moves exit " + exit.getName();
