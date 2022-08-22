@@ -330,9 +330,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     private void sendExitsInRoom(Room room) {
         for (Exit exit: room.getExits()) {
             ExitDto exitDto = DTOFactory.getInstance().getExitDTO(exit);
-            Location location = LocationFactory.getInstance().getLocationForObject(exit.getId());
-            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-            ExitInRoomDTO exitInRoomDTO = new ExitInRoomDTO(exitDto, locationDto);
+            ExitInRoomDTO exitInRoomDTO = new ExitInRoomDTO(exitDto);
             send(exitInRoomDTO);
         }
     }
@@ -389,10 +387,10 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 thingLocationUpdate((LocationDto) event.getData(), (UserDto) event.getExtraData());
                 break;
             case EXITLOCATIONUPDATE:
-                exitLocationUpdate((LocationDto) event.getData(), (UserDto) event.getExtraData());
+                exitLocationUpdate((ExitDto) event.getData(), (UserDto) event.getExtraData());
                 break;
             case EXITADDED:
-                exitAdded((ExitDto) event.getData(), (LocationDto) event.getExtraData());
+                exitAdded((ExitDto) event.getData());
                 break;
             case ROOMUPDATED:
                 //TODO
@@ -403,8 +401,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         }
     }
 
-    private void exitAdded(ExitDto exitDto, LocationDto locationDto) {
-        ExitInRoomDTO exitInRoomDTO = new ExitInRoomDTO(exitDto, locationDto);
+    private void exitAdded(ExitDto exitDto) {
+        ExitInRoomDTO exitInRoomDTO = new ExitInRoomDTO(exitDto);
         send(exitInRoomDTO);
     }
 
@@ -435,12 +433,12 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         send(messageInRoomDTO);
     }
 
-    private void exitLocationUpdate(LocationDto locationDto, UserDto user) {
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.EXIT, locationDto.getObjectId(), locationDto);
-        send(locationUpdateDTO);
-        Exit exit = ExitFactory.getInstance().findExitById(locationDto.getObjectId());
+    private void exitLocationUpdate(ExitDto exitDto, UserDto user) {
+        ExitLocationUpdatedDTO exitLocationUpdatedDTO = new ExitLocationUpdatedDTO(exitDto.getId(), exitDto.getX(), exitDto.getY());
+        send(exitLocationUpdatedDTO);
+        Exit exit = ExitFactory.getInstance().findExitById(exitDto.getId());
         String txt = user.getName() + " moves exit " + exit.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(locationDto.getObjectId(), MessageInRoomDTO.Type.USER, txt);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(exitDto.getId(), MessageInRoomDTO.Type.USER, txt);
         send(messageInRoomDTO);
     }
 

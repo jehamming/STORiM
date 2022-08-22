@@ -11,8 +11,9 @@ public class ExitDto extends DTO {
     private byte[] imageData;
     private float scale;
     private int rotation;
+    private int x,y;
 
-    public ExitDto(Long id, String name, String toServerID, Long toRoomId, String description, float scale, int rotation, byte[] imageData) {
+    public ExitDto(Long id, String name, String toServerID, Long toRoomId, String description, float scale, int rotation, byte[] imageData,int x, int y) {
         setId(id);
         setName(name);
         this.toRoomId = toRoomId;
@@ -21,6 +22,8 @@ public class ExitDto extends DTO {
         this.scale = scale;
         this.rotation = rotation;
         this.toServerID = toServerID;
+        this.x = x;
+        this.y = y;
     }
 
     public Long getToRoomId() {
@@ -47,16 +50,24 @@ public class ExitDto extends DTO {
         return rotation;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
     @Override
     public String toString() {
         return "ExitDto{" +
-                "id=" + getId() +
-                ", name=" + getName() +
-                ", toRoomId=" + toRoomId +
+                "toRoomId=" + toRoomId +
                 ", toServerID='" + toServerID + '\'' +
                 ", description='" + description + '\'' +
                 ", scale=" + scale +
                 ", rotation=" + rotation +
+                ", x=" + x +
+                ", y=" + y +
                 '}';
     }
 }

@@ -8,26 +8,19 @@ public class ExitInRoomDTO implements  ResponseDTO {
 
 
     private ExitDto exitDto;
-    private LocationDto locationDto;
 
-    public ExitInRoomDTO(ExitDto exitDto, LocationDto locationDto) {
+    public ExitInRoomDTO(ExitDto exitDto) {
         this.exitDto = exitDto;
-        this.locationDto = locationDto;
     }
 
     public ExitDto getExitDto() {
         return exitDto;
     }
 
-    public LocationDto getLocationDto() {
-        return locationDto;
-    }
-
     @Override
     public String toString() {
         return "ExitInRoomDTO{" +
                 "exitDto=" + exitDto +
-                ", locationDto=" + locationDto +
                 '}';
     }
 }

@@ -4,21 +4,22 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 public class UpdateExitLocationDto implements ProtocolDTO {
 
-    private Long id;
+    private Long exitId;
+    private Long roomId;
     private int x;
     private int y;
 
 
-    public UpdateExitLocationDto(Long id, int x, int y){
-        this.id = id;
+    public UpdateExitLocationDto(Long exitId, Long roomId, int x, int y){
+        this.exitId = exitId;
+        this.roomId = roomId;
         this.x = x;
         this.y = y;
     }
 
-    public Long getId() {
-        return id;
+    public Long getExitId() {
+        return exitId;
     }
-
 
     public int getX() {
         return x;
@@ -28,10 +29,15 @@ public class UpdateExitLocationDto implements ProtocolDTO {
         return y;
     }
 
+    public Long getRoomId() {
+        return roomId;
+    }
+
     @Override
     public String toString() {
         return "UpdateExitLocationDto{" +
-                "id=" + id +
+                "exitId=" + exitId +
+                ", roomId=" + roomId +
                 ", x=" + x +
                 ", y=" + y +
                 '}';

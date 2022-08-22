@@ -48,17 +48,14 @@ public class AddExitAction extends Action<AddExitDto> {
         // Add to Room
         currentRoom.addExit(exit);
         // Place in Room
-        Location location = new Location(exit.getId(), serverName, currentRoom.getId(),currentRoom.getSpawnPointX(), currentRoom.getSpawnPointY());
-        LocationFactory.getInstance().setLocation(exit.getId(), location);
-
-        LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
+        exit.setX(currentRoom.getSpawnPointX());
+        exit.setY(currentRoom.getSpawnPointY());
 
         if ( exit != null ) {
             ExitDto exitDto = DTOFactory.getInstance().getExitDTO(exit);
-            ExitAddedDTO exitAddedDTO = new ExitAddedDTO(exitDto, locationDto);
+            ExitAddedDTO exitAddedDTO = new ExitAddedDTO(exitDto);
             client.send(exitAddedDTO);
-
-            gameController.fireRoomEvent(client, currentRoom.getId(), new RoomEvent(RoomEvent.Type.EXITADDED, exitDto, locationDto));
+            gameController.fireRoomEvent(client, currentRoom.getId(), new RoomEvent(RoomEvent.Type.EXITADDED, exitDto));
         }
     }
 }

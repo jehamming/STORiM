@@ -11,7 +11,7 @@ public class LocationUpdateDTO implements  ResponseDTO {
 
     private Long sequenceNumber;
 
-    public enum Type {USER,THING,EXIT};
+    public enum Type {USER,THING};
 
     private Type type;
 

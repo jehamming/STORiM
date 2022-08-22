@@ -8,26 +8,18 @@ public class ExitAddedDTO implements  ResponseDTO {
 
 
     private ExitDto exitDto;
-    private LocationDto locationDto;
-
-    public ExitAddedDTO(ExitDto exitDto, LocationDto locationDto) {
+    public ExitAddedDTO(ExitDto exitDto) {
         this.exitDto = exitDto;
-        this.locationDto = locationDto;
     }
 
     public ExitDto getExitDto() {
         return exitDto;
     }
 
-    public LocationDto getLocationDto() {
-        return locationDto;
-    }
-
     @Override
     public String toString() {
         return "ExitAddedDTO{" +
                 "exitDto=" + exitDto +
-                ", locationDto=" + locationDto +
                 '}';
     }
 }

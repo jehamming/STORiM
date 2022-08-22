@@ -2,13 +2,13 @@ package com.hamming.storim.server;
 
 
 import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.dto.DTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.dto.protocol.serverpush.*;
-import com.hamming.storim.common.dto.protocol.serverpush.old.*;
+import com.hamming.storim.common.dto.protocol.serverpush.UserEnteredRoomDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
 import com.hamming.storim.server.common.ImageUtils;
-import com.hamming.storim.server.common.dto.protocol.dataserver.verb.GetVerbDetailsResponseDTO;
-import com.hamming.storim.server.common.model.*;
+import com.hamming.storim.server.common.model.BasicObject;
+import com.hamming.storim.server.common.model.Exit;
+import com.hamming.storim.server.common.model.Location;
+import com.hamming.storim.server.common.model.Room;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class DTOFactory {
     }
 
     public ExitDto getExitDTO(Exit e) {
-        ExitDto exitDto = new ExitDto(e.getId(), e.getName(), e.getToServerID(), e.getToRoomID(), e.getDescription(), e.getScale(), e.getRotation(), ImageUtils.encode(e.getImage()));
+        ExitDto exitDto = new ExitDto(e.getId(), e.getName(), e.getToServerID(), e.getToRoomID(), e.getDescription(), e.getScale(), e.getRotation(), ImageUtils.encode(e.getImage()), e.getX(), e.getY());
         fillBasicObjectInfo(exitDto, e);
         return exitDto;
     }
