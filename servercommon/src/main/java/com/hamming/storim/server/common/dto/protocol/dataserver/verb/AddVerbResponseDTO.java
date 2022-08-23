@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.VerbDetailsDTO;
 import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class AddVerbResponseDTO implements ResponseDTO {
+public class AddVerbResponseDTO extends ResponseDTO {
 
     private boolean success;
     private String errorMessage;

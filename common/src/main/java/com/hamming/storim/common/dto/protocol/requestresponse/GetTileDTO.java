@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.requestresponse;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class GetTileDTO implements ProtocolDTO {
+public class GetTileDTO extends ProtocolDTO {
     private Long tileId;
     public GetTileDTO(Long tileId) {
         this.tileId = tileId;

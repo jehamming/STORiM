@@ -3,7 +3,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.avatar;
 import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class UpdateAvatarResponseDTO implements ResponseDTO {
+public class UpdateAvatarResponseDTO extends ResponseDTO {
 
     private boolean success;
     private String errorMessage;

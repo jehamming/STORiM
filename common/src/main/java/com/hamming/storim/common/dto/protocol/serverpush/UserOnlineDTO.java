@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.serverpush;
 
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class UserOnlineDTO implements  ResponseDTO {
+public class UserOnlineDTO extends ResponseDTO {
 
     private Long userId;
     private String name;

@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 import java.util.Arrays;
 
-public class UpdateExitDto implements ProtocolDTO {
+public class UpdateExitDto extends ProtocolDTO {
 
     private Long id;
     private String name;

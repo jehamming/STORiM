@@ -5,7 +5,7 @@ import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class GetThingResultDTO implements  ResponseDTO {
+public class GetThingResultDTO extends ResponseDTO {
 
     private boolean success = false;
     private String errorMessage;

@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class UserConnectedDTO implements  ResponseDTO {
+public class UserConnectedDTO extends ResponseDTO {
 
     private Long userId;
     private String name;

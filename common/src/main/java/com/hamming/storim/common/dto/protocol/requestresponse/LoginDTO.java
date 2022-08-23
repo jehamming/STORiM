@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.requestresponse;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class LoginDTO implements ProtocolDTO {
+public class LoginDTO extends ProtocolDTO {
 
 
     private String username;

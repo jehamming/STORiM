@@ -2,7 +2,7 @@ package com.hamming.storim.server.common.dto.protocol.loginserver;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class VerifyUserRequestDTO implements ProtocolDTO {
+public class VerifyUserRequestDTO extends ProtocolDTO {
 
     private Long userId;
     private String token;

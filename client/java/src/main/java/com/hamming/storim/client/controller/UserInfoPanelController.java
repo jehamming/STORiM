@@ -7,6 +7,7 @@ import com.hamming.storim.client.panels.UserInfoPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.serverpush.UserDisconnectedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.UserOnlineDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
@@ -36,6 +37,11 @@ public class UserInfoPanelController implements ConnectionListener {
 
     private void registerReceivers() {
         connectionController.registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
+        connectionController.registerReceiver(UserOnlineDTO.class, (ProtocolReceiver<UserOnlineDTO>) dto -> userOnline(dto));
+    }
+
+    private void userOnline(UserOnlineDTO dto) {
+        //TODO
     }
 
 

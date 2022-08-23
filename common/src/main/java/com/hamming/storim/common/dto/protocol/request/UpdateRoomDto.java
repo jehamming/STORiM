@@ -5,7 +5,7 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 import java.util.Arrays;
 
-public class UpdateRoomDto implements ProtocolDTO {
+public class UpdateRoomDto extends ProtocolDTO {
 
     private Long roomId;
     private String name;

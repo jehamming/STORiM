@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class RoomUpdatedDTO implements  ResponseDTO {
+public class RoomUpdatedDTO extends ResponseDTO {
 
 
     private RoomDto room;

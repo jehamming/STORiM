@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class GetUserResultDTO implements  ResponseDTO {
+public class GetUserResultDTO extends ResponseDTO {
 
     private UserDto user;
 

@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 import java.util.Arrays;
 
-public class UpdateAvatarRequestDto implements ProtocolDTO {
+public class UpdateAvatarRequestDto extends ProtocolDTO {
 
     private Long avatarId;
     private String name;

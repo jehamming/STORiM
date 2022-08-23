@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.ExitDto;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class GetExitResponseDTO implements  ResponseDTO {
+public class GetExitResponseDTO extends ResponseDTO {
 
     private boolean success = false;
     private String errorMessage;

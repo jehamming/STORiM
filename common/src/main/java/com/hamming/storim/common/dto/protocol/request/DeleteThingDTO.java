@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.request;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class DeleteThingDTO implements ProtocolDTO {
+public class DeleteThingDTO extends ProtocolDTO {
 
     private Long thingId;
 

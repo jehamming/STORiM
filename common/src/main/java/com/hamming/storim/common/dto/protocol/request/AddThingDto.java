@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.request;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class AddThingDto implements ProtocolDTO {
+public class AddThingDto extends ProtocolDTO {
 
     private String name;
     private String description;

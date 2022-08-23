@@ -3,7 +3,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.user;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class GetUserRequestDTO implements ProtocolDTO {
+public class GetUserRequestDTO extends ProtocolDTO {
 
     private Long userId;
 

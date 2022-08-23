@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.request;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class ExecVerbDTO implements ProtocolDTO {
+public class ExecVerbDTO extends ProtocolDTO {
 
     private Long verbId;
     private String input;

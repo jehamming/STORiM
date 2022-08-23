@@ -3,7 +3,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.tile;
 import com.hamming.storim.common.dto.TileDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class GetTileResponseDTO implements ResponseDTO {
+public class GetTileResponseDTO extends ResponseDTO {
 
     private boolean success = false;
     private String errorMessage;

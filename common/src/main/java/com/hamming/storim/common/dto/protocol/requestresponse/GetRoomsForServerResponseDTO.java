@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 import java.util.HashMap;
 
-public class GetRoomsForServerResponseDTO implements  ResponseDTO {
+public class GetRoomsForServerResponseDTO extends ResponseDTO {
 
     private final HashMap<Long, String> rooms;
 

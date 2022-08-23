@@ -2,7 +2,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.avatar;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class AddAvatarRequestDto implements ProtocolDTO {
+public class AddAvatarRequestDto extends ProtocolDTO {
 
     private Long userId;
     private String name;

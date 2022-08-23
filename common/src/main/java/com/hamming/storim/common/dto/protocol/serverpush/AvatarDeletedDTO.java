@@ -3,7 +3,7 @@ package com.hamming.storim.common.dto.protocol.serverpush;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class AvatarDeletedDTO implements  ResponseDTO {
+public class AvatarDeletedDTO extends ResponseDTO {
 
     private Long avatarId;
 

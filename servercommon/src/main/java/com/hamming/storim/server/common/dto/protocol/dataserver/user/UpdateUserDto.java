@@ -2,7 +2,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.user;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class UpdateUserDto implements ProtocolDTO {
+public class UpdateUserDto extends ProtocolDTO {
 
     private String name;
     private Long id;

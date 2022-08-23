@@ -5,7 +5,7 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 import java.util.List;
 
-public class GetServerRegistrationsResponseDTO implements  ResponseDTO {
+public class GetServerRegistrationsResponseDTO extends ResponseDTO {
 
     private final List<ServerRegistrationDTO> servers;
 

@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.ExitDto;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class ExitInRoomDTO implements  ResponseDTO {
+public class ExitInRoomDTO extends ResponseDTO {
 
 
     private ExitDto exitDto;

@@ -6,7 +6,7 @@ import com.hamming.storim.common.dto.protocol.request.DeleteVerbDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateVerbDto;
 import com.hamming.storim.common.util.StringUtils;
 
-public class ProtocolHandler implements Protocol {
+public class ProtocolHandler {
 
     private static ProtocolHandler instance;
 

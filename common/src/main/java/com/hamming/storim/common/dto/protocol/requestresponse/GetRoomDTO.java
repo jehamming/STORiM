@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.requestresponse;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class GetRoomDTO implements ProtocolDTO {
+public class GetRoomDTO extends ProtocolDTO {
 
     private Long roomID;
 

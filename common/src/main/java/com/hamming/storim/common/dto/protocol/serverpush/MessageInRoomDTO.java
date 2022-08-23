@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class MessageInRoomDTO implements  ResponseDTO {
+public class MessageInRoomDTO extends ResponseDTO {
 
     public enum Type {USER, THING};
 

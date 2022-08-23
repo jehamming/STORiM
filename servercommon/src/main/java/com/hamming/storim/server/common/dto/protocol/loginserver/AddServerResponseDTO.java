@@ -2,7 +2,7 @@ package com.hamming.storim.server.common.dto.protocol.loginserver;
 
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class AddServerResponseDTO implements ResponseDTO {
+public class AddServerResponseDTO extends ResponseDTO {
 
     private boolean success;
     private String errorMessage;

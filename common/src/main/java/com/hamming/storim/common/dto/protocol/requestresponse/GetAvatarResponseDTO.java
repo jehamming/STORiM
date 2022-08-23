@@ -4,7 +4,7 @@ package com.hamming.storim.common.dto.protocol.requestresponse;
 import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class GetAvatarResponseDTO implements  ResponseDTO {
+public class GetAvatarResponseDTO extends ResponseDTO {
 
     private AvatarDto avatar;
 

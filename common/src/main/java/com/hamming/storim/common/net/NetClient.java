@@ -1,5 +1,8 @@
 package com.hamming.storim.common.net;
 
+import com.google.gson.*;
+import com.hamming.storim.common.dto.DTO;
+import com.hamming.storim.common.dto.protocol.Protocol;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
@@ -21,25 +24,31 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private String id;
     private Map<Class,ResponseContainer> responseContainers;
     private ConnectionListener connectionListener;
+    private Gson gson;
 
     public NetClient(String id, ConnectionListener connectionListener, ProtocolReceiver protocolReceiver, String ip, int port) {
-        this.connectionListener = connectionListener;
-        this.id = id;
-        initialize(protocolReceiver);
+        initialize(id, connectionListener, protocolReceiver);
         connect(ip, port);
     }
 
     public NetClient(String id, ConnectionListener connectionListener, ProtocolReceiver protocolReceiver, Socket s) {
         this.socket = s;
-        this.id = id;
-        this.connectionListener = connectionListener;
+        initialize(id, connectionListener, protocolReceiver);
         registerStreams();
-        initialize(protocolReceiver);
     }
 
-    private void initialize(ProtocolReceiver protocolReceiver) {
-        responseContainers = new HashMap<>();
-        dispatcher = new Dispatcher(protocolReceiver);
+    private void initialize(String id, ConnectionListener connectionListener, ProtocolReceiver protocolReceiver) {
+        this.id = id;
+        this.connectionListener = connectionListener;
+        this.responseContainers = new HashMap<>();
+
+        // JSON
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(ProtocolDTO.class, new ProtocolObjectSerializer<ProtocolDTO>());
+        builder.registerTypeAdapter(ResponseDTO.class, new ProtocolObjectSerializer<ResponseDTO>());
+        gson = builder.create();
+
+        this.dispatcher = new Dispatcher(protocolReceiver);
         Thread t = new Thread(dispatcher);
         t.start();
     }
@@ -99,8 +108,14 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         while (running) {
             try {
                 Object read = in.readObject();
-                ProtocolDTO dto = (ProtocolDTO) read;
-                Logger.info(this, "Received:" + dto.toString());
+
+                //READ JSON
+                String json = (String)read;
+                //Logger.info(this, "Received JSON:" + json);
+
+                ProtocolDTO dto = gson.fromJson(json, ProtocolDTO.class);
+
+                Logger.info(this, "Received DTO:" + dto.toString());
                 if (dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
                     ResponseContainer responseContainer = getResponseContainer(response.getClass());

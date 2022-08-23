@@ -3,7 +3,7 @@ package com.hamming.storim.common.dto.protocol.serverpush;
 import com.hamming.storim.common.dto.ExitDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class ExitLocationUpdatedDTO implements  ResponseDTO {
+public class ExitLocationUpdatedDTO extends ResponseDTO {
 
 
     private Long exitId;

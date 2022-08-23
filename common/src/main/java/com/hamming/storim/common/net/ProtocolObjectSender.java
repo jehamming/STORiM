@@ -1,5 +1,9 @@
 package com.hamming.storim.common.net;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.hamming.storim.common.dto.protocol.Protocol;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.util.Logger;
@@ -17,10 +21,15 @@ public class ProtocolObjectSender implements Runnable {
     private Queue<ProtocolDTO> itemsToSend;
     private String id;
     private static int INTERVAL = 50; // Milliseconds, 20Hz
+    private Gson gson;
 
     public ProtocolObjectSender(String id, ObjectOutputStream out) {
         this.out = out;
         this.id = id;
+
+        // Java to JSON
+        gson = new Gson();
+
         Thread t = new Thread(this);
         t.start();
     }
@@ -34,8 +43,14 @@ public class ProtocolObjectSender implements Runnable {
             while (!itemsToSend.isEmpty()) {
                 ProtocolDTO dto = itemsToSend.remove();
                 try {
-                    Logger.info(this,id, "Send:" + dto );
-                    out.writeObject(dto);
+                    //Logger.info(this,id, "Send:" + dto );
+
+                    //To JSON!
+                    String json = toJson(dto);
+
+                    Logger.info(this,id, "Send DTO as JSON:" + dto );
+
+                    out.writeObject(json);
                     out.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -51,6 +66,15 @@ public class ProtocolObjectSender implements Runnable {
                 }
             }
         }
+    }
+
+    private String toJson(ProtocolDTO dto) {
+        JsonElement element = gson.toJsonTree(dto);
+        if (element.isJsonObject()) {
+            element.getAsJsonObject().addProperty(ProtocolObjectSerializer.CLASS_PROPERTY_NAME, dto.getClass().getSimpleName());
+        }
+        String json = gson.toJson(element);
+        return json;
     }
 
     public void stopSending() {

@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.request;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class DeleteExitDTO implements ProtocolDTO {
+public class DeleteExitDTO extends ProtocolDTO {
 
     private Long exitID;
 

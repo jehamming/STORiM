@@ -6,7 +6,7 @@ import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class ThingInRoomDTO implements  ResponseDTO {
+public class ThingInRoomDTO extends ResponseDTO {
 
 
     private ThingDto thing;

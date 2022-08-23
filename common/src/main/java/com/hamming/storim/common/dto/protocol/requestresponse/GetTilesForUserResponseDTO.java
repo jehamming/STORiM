@@ -5,7 +5,7 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import java.util.List;
 import java.util.Map;
 
-public class GetTilesForUserResponseDTO implements  ResponseDTO {
+public class GetTilesForUserResponseDTO extends ResponseDTO {
 
     private final List<Long> tiles;
 

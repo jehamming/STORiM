@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class SetAvatarResponseDto implements ResponseDTO {
+public class SetAvatarResponseDto extends ResponseDTO {
 
     private boolean success;
     private String errorMessage;

@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 import java.util.List;
 
-public class GetAvatarsResponseDTO implements  ResponseDTO {
+public class GetAvatarsResponseDTO extends ResponseDTO {
 
     private final List<Long> avatars;
     private boolean success;

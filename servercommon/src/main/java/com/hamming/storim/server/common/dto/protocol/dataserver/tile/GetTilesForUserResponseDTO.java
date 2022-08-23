@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 import java.util.List;
 
-public class GetTilesForUserResponseDTO implements  ResponseDTO {
+public class GetTilesForUserResponseDTO extends ResponseDTO {
 
     private boolean success = false;
     private String errorMessage;

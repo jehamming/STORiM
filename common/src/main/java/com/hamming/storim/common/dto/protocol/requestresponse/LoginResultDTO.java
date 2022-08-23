@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class LoginResultDTO implements  ResponseDTO {
+public class LoginResultDTO extends ResponseDTO {
 
     private boolean loginSucceeded = false;
     private String errorMessage;

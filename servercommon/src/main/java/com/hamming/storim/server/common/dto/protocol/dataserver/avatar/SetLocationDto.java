@@ -3,7 +3,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.avatar;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class SetLocationDto implements ProtocolDTO {
+public class SetLocationDto extends ProtocolDTO {
 
     private Long objectId;
     private LocationDto location;

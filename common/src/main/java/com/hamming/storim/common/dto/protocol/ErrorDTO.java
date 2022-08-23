@@ -1,6 +1,6 @@
 package com.hamming.storim.common.dto.protocol;
 
-public class ErrorDTO implements ResponseDTO {
+public class ErrorDTO extends ResponseDTO {
 
     private String function;
     private String errorMessage;

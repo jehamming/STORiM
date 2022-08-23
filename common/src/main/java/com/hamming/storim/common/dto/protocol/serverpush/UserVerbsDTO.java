@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 import java.util.HashMap;
 
-public class UserVerbsDTO implements ProtocolDTO {
+public class UserVerbsDTO extends ProtocolDTO {
 
     private HashMap<Long, String> verbs;
 

@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class ThingDeletedDTO implements  ResponseDTO {
+public class ThingDeletedDTO extends ResponseDTO {
 
     private Long thingId;
 

@@ -3,7 +3,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.verb;
 import com.hamming.storim.common.dto.VerbDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class DeleteVerbResponseDTO implements ResponseDTO {
+public class DeleteVerbResponseDTO extends ResponseDTO {
 
     private boolean success;
     private String errorMessage;

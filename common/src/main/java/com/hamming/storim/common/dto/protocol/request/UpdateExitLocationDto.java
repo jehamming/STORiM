@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.request;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class UpdateExitLocationDto implements ProtocolDTO {
+public class UpdateExitLocationDto extends ProtocolDTO {
 
     private Long exitId;
     private Long roomId;

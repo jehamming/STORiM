@@ -148,7 +148,7 @@ public class ExitPanelController implements ConnectionListener {
             ServerListItem serverListItem = getServerListItem(exit.getToServerID());
             panel.getCmbServer().setSelectedItem(serverListItem);
             RoomListItem roomListItem = getRoomListItem(exit.getToRoomId());
-            panel.getCmbServer().setSelectedItem(roomListItem);
+            panel.getCmbRoom().setSelectedItem(roomListItem);
             panel.getLblID().setText(exit.getId().toString());
             panel.getTxtName().setText(exit.getName());
             panel.getTaDescription().setText(exit.getDescription());

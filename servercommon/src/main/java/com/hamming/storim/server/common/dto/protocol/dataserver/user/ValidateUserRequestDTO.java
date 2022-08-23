@@ -2,7 +2,7 @@ package com.hamming.storim.server.common.dto.protocol.dataserver.user;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
-public class ValidateUserRequestDTO implements ProtocolDTO {
+public class ValidateUserRequestDTO extends ProtocolDTO {
 
     private String username;
     private String password;

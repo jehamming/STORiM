@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 import java.util.HashMap;
 
-public class GetVerbsResponseDTO implements ResponseDTO {
+public class GetVerbsResponseDTO extends ResponseDTO {
 
     private HashMap<Long, String> verbs;
 

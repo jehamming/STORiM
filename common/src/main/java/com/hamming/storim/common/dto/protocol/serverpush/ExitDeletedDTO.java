@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto.protocol.serverpush;
 
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class ExitDeletedDTO implements  ResponseDTO {
+public class ExitDeletedDTO extends ResponseDTO {
 
     private Long exitID;
 

@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class GetLocationResponseDto implements ResponseDTO {
+public class GetLocationResponseDto extends ResponseDTO {
 
     private Long objectId;
     private LocationDto location;

@@ -1,6 +1,7 @@
 package com.hamming.storim.common.controllers;
 
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.Protocol;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
@@ -100,6 +101,7 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
         if (!listReceivers.contains(receiver)) {
             listReceivers.add(receiver);
             commandReceivers.put(c, listReceivers);
+            Protocol.getInstance().registerClass(c.getSimpleName(), c);
         }
     }
 
