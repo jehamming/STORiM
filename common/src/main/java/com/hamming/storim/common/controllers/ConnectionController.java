@@ -1,6 +1,7 @@
 package com.hamming.storim.common.controllers;
 
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.ClientIdentificationDTO;
 import com.hamming.storim.common.dto.protocol.Protocol;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
@@ -41,7 +42,9 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
         if (client != null && client.isConnected()) {
             client.dispose();
         }
-        client = new NetClient(clientName, this, this , serverip, port);
+        client = new NetClient(this, this);
+        client.setId(clientName);
+        client.connect(serverip, port);
         user = null;
         while (!client.isConnected()) {
             try {
@@ -51,7 +54,6 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
                 e.printStackTrace();
             }
         }
-
         fireConnectedEvent();
     }
 

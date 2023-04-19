@@ -22,10 +22,11 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
 
     public ClientConnection(String id, Socket s, ServerWorker serverWorker) {
         this.id = id;
-        netClient = new NetClient(id, this,this, s);
+        netClient = new NetClient(this,this);
         protocolHandler = new ProtocolHandler();
         this.serverWorker = serverWorker;
         addActions();
+        netClient.connect(s);
     }
 
     @Override
@@ -61,6 +62,6 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
     }
 
     public String getId() {
-        return id;
+        return id + "(" + netClient.getId() + ")";
     }
 }

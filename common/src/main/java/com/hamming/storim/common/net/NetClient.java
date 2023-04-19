@@ -1,8 +1,8 @@
 package com.hamming.storim.common.net;
 
-import com.google.gson.*;
-import com.hamming.storim.common.dto.DTO;
-import com.hamming.storim.common.dto.protocol.Protocol;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.hamming.storim.common.dto.protocol.ClientIdentificationDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
@@ -21,25 +21,19 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private ProtocolObjectSender protocolObjectSender;
     private Dispatcher dispatcher;
     private boolean running = false;
-    private String id;
+    private String id = "UNKNOWN";
     private Map<Class,ResponseContainer> responseContainers;
     private ConnectionListener connectionListener;
+    private ProtocolReceiver protocolReceiver;
     private Gson gson;
 
-    public NetClient(String id, ConnectionListener connectionListener, ProtocolReceiver protocolReceiver, String ip, int port) {
-        initialize(id, connectionListener, protocolReceiver);
-        connect(ip, port);
-    }
-
-    public NetClient(String id, ConnectionListener connectionListener, ProtocolReceiver protocolReceiver, Socket s) {
-        this.socket = s;
-        initialize(id, connectionListener, protocolReceiver);
-        registerStreams();
-    }
-
-    private void initialize(String id, ConnectionListener connectionListener, ProtocolReceiver protocolReceiver) {
-        this.id = id;
+    public NetClient(ConnectionListener connectionListener, ProtocolReceiver protocolReceiver) {
         this.connectionListener = connectionListener;
+        this.protocolReceiver = protocolReceiver;
+        initialize();
+    }
+
+    private void initialize() {
         this.responseContainers = new HashMap<>();
 
         // JSON
@@ -53,10 +47,28 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         t.start();
     }
 
-    public String getId() {
-        String clientId = getClass().getSimpleName() + "-" +  id;
-        return clientId;
+    public void connect(Socket s) {
+        this.socket = s;
+        registerStreams();
+        connectionListener.connected();
     }
+    public String connect(String ip, int port) {
+        String retval = null;
+        try {
+            socket = new Socket(ip, port);
+            registerStreams();
+            connectionListener.connected();
+        } catch (IOException e) {
+            Logger.error(this, "(" + id + ") ERROR:" + e.getMessage());
+            retval = e.getMessage();
+            //e.printStackTrace();
+        }
+        return retval;
+    }
+
+
+
+
 
     private void addResponseContainer(ResponseContainer responseContainer) {
         responseContainers.put(responseContainer.getResponseClass(), responseContainer);
@@ -83,23 +95,9 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             clientThread.setDaemon(true);
             clientThread.start();
         } catch (IOException e) {
-            Logger.info(this, "(" + getId() + ") ERROR:" + e.getMessage());
+            Logger.error(this, "(" + id + ") ERROR:" + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private String connect(String ip, int port) {
-        String retval = null;
-        try {
-            socket = new Socket(ip, port);
-            registerStreams();
-            connectionListener.connected();
-        } catch (IOException e) {
-            Logger.info(this, "(" + getId() + ") ERROR:" + e.getMessage());
-            retval = e.getMessage();
-            //e.printStackTrace();
-        }
-        return retval;
     }
 
     @Override
@@ -192,4 +190,11 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         return running;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

@@ -144,8 +144,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         sendVerbs(currentUser);
         // Send Avatars
         sendAvatars(currentUser);
-        // Rooms
-        sendRooms(currentUser);
         // Send Things
        // sendThings(currentUser);
         // Logged in Users;
@@ -197,13 +195,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), avatarDto);
                 send(avatarSetDTO);
             }
-        }
-    }
-
-
-    private void sendRooms(UserDto user) {
-        for (Room room : Database.getInstance().getAll(Room.class, user.getId())) {
-            sendRoom(room);
         }
     }
 
@@ -268,12 +259,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     public void sendRoom(Room room) {
-        // First send the Exits
-        for (Exit e : room.getExits()) {
-            ExitDto exitDto = DTOFactory.getInstance().getExitDTO(e);
-            GetExitResponseDTO exitResultDTO = new GetExitResponseDTO(true, null, exitDto);
-            send(exitResultDTO);
-        }
         RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room);
         GetRoomResultDTO getRoomResultDTO = new GetRoomResultDTO(roomDto);
         send(getRoomResultDTO);

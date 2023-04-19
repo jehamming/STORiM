@@ -1,3 +1,5 @@
+
+mvn clean install
 cd common/ && mvn clean install && cd ..
 cd client/java/ && mvn clean install && cd ../../
 cd servercommon/ && mvn clean install && cd ..
