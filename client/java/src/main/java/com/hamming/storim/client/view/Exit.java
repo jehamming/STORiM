@@ -13,6 +13,8 @@ public class Exit extends BasicDrawableObject {
 
     private String name;
 
+    private String toServerId;
+
 
     public Exit(Long exitId, String name) {
         setId(exitId);
@@ -50,5 +52,13 @@ public class Exit extends BasicDrawableObject {
 
     public String getName() {
         return name;
+    }
+
+    public void setToServerId(String toServerId) {
+        this.toServerId = toServerId;
+    }
+
+    public String getToServerId() {
+        return toServerId;
     }
 }

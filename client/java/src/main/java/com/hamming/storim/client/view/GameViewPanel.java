@@ -148,7 +148,7 @@ public class GameViewPanel extends JPanel implements Runnable {
                     }
                     if (selectedObject instanceof Exit) {
                         Exit exit = (Exit) selectedObject;
-                        viewController.exitClicked(exit.getId(), exit.getName());
+                        viewController.exitClicked(exit.getId(), exit.getName(), exit.getToServerId());
                     }
                 }
             }
@@ -628,8 +628,11 @@ public class GameViewPanel extends JPanel implements Runnable {
         addThing(thing);
     }
 
-    public void addExit(ExitDto exitDto) {
+    public void addExit(ExitDto exitDto, String currentServer) {
         Exit exit = new Exit(exitDto.getId(), exitDto.getName());
+        if ( ! exitDto.getToServerID().equals( currentServer) ) {
+            exit.setToServerId(exitDto.getToServerID());
+        }
         Image image = ImageUtils.decode(exitDto.getImageData());
         exit.setImage(image);
         exit.setScale(exitDto.getScale());

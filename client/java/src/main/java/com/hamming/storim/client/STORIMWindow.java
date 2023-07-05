@@ -36,6 +36,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     private static String BASIC_TITLE = "STORIM";
 
     private UserDto currentUser;
+    private String currentServerId;
     private String userToken;
     private String username;
     private String password;
@@ -195,5 +196,17 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
     public void setUserToken(String userToken) {
         this.userToken = userToken;
+    }
+
+    public String getCurrentServerId() {
+        return currentServerId;
+    }
+
+    public void setCurrentServerId(String currentServerId) {
+        this.currentServerId = currentServerId;
+    }
+
+    public void useExitToOtherServer(String toServerId, Long roomId) {
+        loginPanelController.connectToServer(toServerId, roomId);
     }
 }

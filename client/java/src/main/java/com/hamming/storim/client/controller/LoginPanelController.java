@@ -14,7 +14,6 @@ import com.hamming.storim.common.interfaces.ConnectionListener;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class LoginPanelController implements ConnectionListener {
@@ -34,7 +33,7 @@ public class LoginPanelController implements ConnectionListener {
         setup();
     }
 
-    private void disconnect() {
+    public void disconnect() {
         connectionController.disconnect();
         SwingUtilities.invokeLater(() -> {
             panel.getBtnDisconnect().setEnabled(false);
@@ -43,6 +42,7 @@ public class LoginPanelController implements ConnectionListener {
             serversModel.removeAllElements();
             roomsModel.removeAllElements();
         });
+        storimWindow.setCurrentServerId(null);
     }
 
     public void doLogin() {
@@ -160,22 +160,41 @@ public class LoginPanelController implements ConnectionListener {
         ServerListItem serverListItem = (ServerListItem) serversModel.getSelectedItem();
         RoomListItem roomListItem = (RoomListItem) roomsModel.getSelectedItem();
         if (serverListItem != null && roomListItem != null) {
-            try {
-                connectionController.removeConnectionListener(this);
-                connectionController.disconnect();
-                String serverName = serverListItem.getServerRegistrationDTO().getServerURL();
-                int serverPort = serverListItem.getServerRegistrationDTO().getServerPort();
-                connectionController.connect("STORIM_Java_Client", serverName, serverPort);
-                UserDto currentUser = storimWindow.getCurrentUser();
-                String userToken = storimWindow.getUserToken();
-                ConnectDTO connectRequestDTO = new ConnectDTO(currentUser.getId(), userToken, roomListItem.getId());
-                connectionController.send(connectRequestDTO);
-                connectionController.addConnectionListener(this);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            connectToServer(serverListItem, roomListItem.getId());
         }
     }
+
+    private void connectToServer(ServerListItem serverListItem, Long roomId) {
+        try {
+            connectionController.removeConnectionListener(this);
+            connectionController.disconnect();
+            String serverName = serverListItem.getServerRegistrationDTO().getServerURL();
+            int serverPort = serverListItem.getServerRegistrationDTO().getServerPort();
+            connectionController.connect("STORIM_Java_Client", serverName, serverPort);
+            UserDto currentUser = storimWindow.getCurrentUser();
+            String userToken = storimWindow.getUserToken();
+            ConnectDTO connectRequestDTO = new ConnectDTO(currentUser.getId(), userToken, roomId);
+            connectionController.send(connectRequestDTO);
+            connectionController.addConnectionListener(this);
+            storimWindow.setCurrentServerId(serverListItem.getServerRegistrationDTO().getServerName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void connectToServer(String serverId, Long roomId) {
+        // Find the serve and the Room
+        ServerListItem serverListItem = findServerListItem(serverId);
+
+        if ( serverListItem != null) {
+            connectToServer(serverListItem,roomId);
+
+        } else {
+            JOptionPane.showMessageDialog(panel, "Server "+ serverId + " \n(server not running?)");
+        }
+    }
+
+
 
     private void setup() {
         panel.getCmbRoom().setModel(roomsModel);

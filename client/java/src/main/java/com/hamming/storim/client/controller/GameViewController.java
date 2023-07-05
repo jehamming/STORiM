@@ -111,7 +111,7 @@ public class GameViewController implements ConnectionListener {
     }
 
     private void addExit(ExitDto exitDto) {
-        gameView.scheduleAction(() -> gameView.addExit(exitDto));
+        gameView.scheduleAction(() -> gameView.addExit(exitDto, storimWindow.getCurrentServerId()));
         gameView.scheduleAction(() -> gameView.setExitLocation(exitDto.getId(), exitDto.getX(), exitDto.getY()));
     }
 
@@ -338,10 +338,19 @@ public class GameViewController implements ConnectionListener {
         connectionController.send(updateThingLocationDto);
     }
 
-    public void exitClicked(Long id, String name) {
-        int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "'?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            connectionController.send(new UseExitRequestDTO(id));
+    public void exitClicked(Long id, String name, String toServerId) {
+        if ( toServerId == null ) {
+            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "'?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                connectionController.send(new UseExitRequestDTO(id));
+            }
+        } else {
+            // To another server
+            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "' to server "+ toServerId +", are you sure?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                storimWindow.useExitToOtherServer(toServerId, id);
+            }
+
         }
     }
 
