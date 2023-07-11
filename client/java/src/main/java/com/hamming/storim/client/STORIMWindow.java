@@ -103,7 +103,9 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
 
     private void initComponents() {
-        lblRoomName = new javax.swing.JLabel();
+        lblRoomName = new JTextField();
+        lblRoomName.setEditable(false);
+ 
         tabbedPane = new javax.swing.JTabbedPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -157,7 +159,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
     }
 
-    private javax.swing.JLabel lblRoomName;
+    private JTextField lblRoomName;
     private javax.swing.JTabbedPane tabbedPane;
 
 
@@ -174,9 +176,9 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         return gameView;
     }
 
-    public void setRoomname(Long roomId, String roomName) {
-        //TODO - CurrentUser!
-        String text = "User: "+ currentUser.getName() + ", room :("+ roomId +") " + roomName;
+    public void setRoomname(Long roomId, String roomName, String roomURI) {
+        //String text = "User: "+ currentUser.getName() + ", room :("+ roomId +") " + roomName + "\n" + roomURI;
+        String text = roomURI + " (" + roomName + ")";
         SwingUtilities.invokeLater(() -> {
             lblRoomName.setText(text);
         });
@@ -207,6 +209,6 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     }
 
     public void useExitToOtherServer(String toServerId, Long roomId) {
-        loginPanelController.connectToServer(toServerId, roomId);
+       // loginPanelController.connectToServer(toServerId, roomId);
     }
 }

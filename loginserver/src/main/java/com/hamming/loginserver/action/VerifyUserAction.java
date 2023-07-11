@@ -2,15 +2,15 @@ package com.hamming.loginserver.action;
 
 import com.hamming.loginserver.LoginServerClientConnection;
 import com.hamming.loginserver.LoginServerWorker;
-import com.hamming.loginserver.Session;
+import com.hamming.storim.server.common.Session;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserResultDTO;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenRequestDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenResponseDTO;
 
-public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
+public class VerifyUserAction extends Action<VerifyUserTokenRequestDTO> {
 
     private LoginServerWorker serverWorker;
 
@@ -46,7 +46,7 @@ public class VerifyUserAction extends Action<VerifyUserRequestDTO> {
             }
         }
 
-        VerifyUserResponseDTO responseDTO = new VerifyUserResponseDTO(success, errorMessage, userDto );
+        VerifyUserTokenResponseDTO responseDTO = new VerifyUserTokenResponseDTO(success, errorMessage, userDto );
         getClient().send(responseDTO);
 
     }

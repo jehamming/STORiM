@@ -4,10 +4,13 @@ import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
+import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenRequestDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.*;
 import com.hamming.storim.server.common.dto.protocol.dataserver.tile.*;
+import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.verb.*;
-import com.hamming.storim.server.common.model.Location;
 
 import java.util.HashMap;
 import java.util.List;
@@ -202,5 +205,29 @@ public class UserDataServerProxy {
             locationDto.setY(y);
             setLocation(id, locationDto);
         }
+    }
+
+    public UserDto validateUser(String source, String username, String password) {
+        UserDto user = null;
+        ValidateUserRequestDTO validateUserRequestDTO = new ValidateUserRequestDTO(source, username, password);
+        ValidateUserResponseDTO validateUserResponseDTO = connection.sendReceive(validateUserRequestDTO, ValidateUserResponseDTO.class);
+        if ( validateUserResponseDTO != null) {
+            user = validateUserResponseDTO.getUser();
+            String token = validateUserResponseDTO.getSessionToken();
+            connection.setSessionToken(token);
+        }
+        return user;
+    }
+
+    public UserDto verifyUserToken(String source, Long userId, String token) {
+            UserDto verifiedUser = null;
+            VerifyUserTokenRequestDTO dto = new VerifyUserTokenRequestDTO(source, userId, token);
+            VerifyUserTokenResponseDTO response = connection.sendReceive(dto, VerifyUserTokenResponseDTO.class);
+            if (response.isSuccess() ) {
+                verifiedUser = response.getUser();
+            } else {
+                Logger.info(this, " Error :" + response.getErrorMessage());
+            }
+            return verifiedUser;
     }
 }

@@ -35,7 +35,7 @@ public class AddRoomAction extends Action<AddRoomDto> {
             newRoom.setTileId(tile.getId());
         }
 
-        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(newRoom);
+        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(newRoom, client.getServer().getServerURI());
         RoomAddedDTO roomAddedDTO = new RoomAddedDTO(roomDto);
         client.send(roomAddedDTO);
     }

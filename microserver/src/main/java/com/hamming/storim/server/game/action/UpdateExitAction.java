@@ -38,7 +38,7 @@ public class UpdateExitAction extends Action<UpdateExitDto> {
             Room room = client.getCurrentRoom();
             exit.setName(dto.getName());
             exit.setDescription(dto.getDescription());
-            exit.setToServerID(dto.getToServerID());
+            exit.setToRoomURI(dto.getToRoomURI());
             exit.setToRoomID(dto.getToRoomId());
             exit.setScale(dto.getScale());
             exit.setRotation(dto.getRotation());

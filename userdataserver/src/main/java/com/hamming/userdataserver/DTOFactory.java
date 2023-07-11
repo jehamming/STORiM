@@ -3,6 +3,7 @@ package com.hamming.userdataserver;
 
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.server.common.ImageUtils;
+import com.hamming.storim.server.common.dto.protocol.dataserver.SessionDto;
 import com.hamming.storim.server.common.model.BasicObject;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.userdataserver.model.*;
@@ -73,6 +74,10 @@ public class DTOFactory {
         LocationDto dto = new LocationDto(l.getObjectId(), l.getServerId(), l.getRoomId(), l.getX(), l.getY());
         fillBasicObjectInfo(dto, l);
         return dto;
+    }
+
+    public SessionDto getSessionDTO(Session session) {
+        return new SessionDto(session.getToken(), session.getUserId());
     }
 
 

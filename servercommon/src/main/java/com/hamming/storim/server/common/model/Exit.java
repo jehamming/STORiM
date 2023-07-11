@@ -5,16 +5,16 @@ import com.hamming.storim.server.common.ImageObject;
 public class Exit extends ImageObject {
 
     private Long toRoomID;
-    private String toServerID;
+    private String toRoomURI;
     private String description = "";
     private float scale;
     private int rotation;
     private int x,y;
 
-    public Exit(String name, Long toRoomID, String toServerID) {
+    public Exit(String name, Long toRoomID, String toRoomURI) {
         setName(name);
         this.toRoomID = toRoomID;
-        this.toServerID = toServerID;
+        this.toRoomURI = toRoomURI;
     }
 
     public Long getToRoomID() {
@@ -49,12 +49,12 @@ public class Exit extends ImageObject {
         this.rotation = rotation;
     }
 
-    public String getToServerID() {
-        return toServerID;
+    public String getToRoomURI() {
+        return toRoomURI;
     }
 
-    public void setToServerID(String toServerID) {
-        this.toServerID = toServerID;
+    public void setToRoomURI(String toRoomURI) {
+        this.toRoomURI = toRoomURI;
     }
 
     public int getX() {
@@ -73,11 +73,12 @@ public class Exit extends ImageObject {
         this.y = y;
     }
 
+
     @Override
     public String toString() {
         return "Exit{" +
                 "toRoomID=" + toRoomID +
-                ", toServerID='" + toServerID + '\'' +
+                ", toRoomURI='" + toRoomURI + '\'' +
                 ", description='" + description + '\'' +
                 ", scale=" + scale +
                 ", rotation=" + rotation +

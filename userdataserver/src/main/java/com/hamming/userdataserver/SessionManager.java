@@ -1,10 +1,8 @@
-package com.hamming.loginserver;
+package com.hamming.userdataserver;
 
 import com.hamming.storim.common.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SessionManager {

@@ -38,13 +38,11 @@ public class AddExitAction extends Action<AddExitDto> {
         float scale = dto.getScale();
         int rotation = dto.getRotation();
         Long toRoomID = dto.getToRoomID();
-        String toServerID = dto.getToServerID();
+        String toRoomURI = dto.getRoomURI();
         Image image = ImageUtils.decode(dto.getImageData());
         UserDto creator = client.getCurrentUser();
         Room currentRoom = client.getCurrentRoom();
-        String serverName = client.getServer().getServerName();
-
-        Exit exit = ExitFactory.getInstance().createExit(creator.getId(), name, toRoomID, toServerID, description, scale, rotation, image );
+        Exit exit = ExitFactory.getInstance().createExit(creator.getId(), name, toRoomID, toRoomURI, description, scale, rotation, image );
         // Add to Room
         currentRoom.addExit(exit);
         // Place in Room

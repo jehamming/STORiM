@@ -16,6 +16,8 @@ import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.game.GameController;
 import com.hamming.storim.server.game.RoomEvent;
 
+import java.net.URI;
+
 public class UseExitAction extends Action<UseExitRequestDTO> {
     private GameController controller;
 
@@ -29,17 +31,18 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         Exit exit = ExitFactory.getInstance().findExitById(getDto().getExitId());
         if (exit != null) {
-
-            if ( exit.getToServerID().equals(client.getServer().getServerName())) {
-                moveToRoomOnThisServer(exit, client);
-            } else {
+            if ( exit.getToRoomURI() != null && !exit.getToRoomURI().equals("") ) {
                 connectToOtherServer(exit);
+            } else {
+                moveToRoomOnThisServer(exit, client);
             }
         }
     }
 
     private void connectToOtherServer(Exit exit) {
-
+        //TODO Decompose the URI
+        String roomURIstr = exit.getToRoomURI();
+        URI roomURI =  URI.create(roomURIstr);
     }
 
     private void moveToRoomOnThisServer(Exit exit, STORIMClientConnection client) {

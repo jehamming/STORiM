@@ -9,9 +9,11 @@ import java.net.Socket;
 
 public class UserDataClientConnection extends ClientConnection {
 
+    STORIMUserDataServer storimUserDataServer;
 
-    public UserDataClientConnection(String id, Socket s, ServerWorker serverWorker) {
+    public UserDataClientConnection(STORIMUserDataServer srv, String id, Socket s, ServerWorker serverWorker) {
         super(id, s, serverWorker);
+        this.storimUserDataServer = srv;
     }
 
     @Override
@@ -45,6 +47,10 @@ public class UserDataClientConnection extends ClientConnection {
     @Override
     public void connected() {
 
+    }
+
+    public STORIMUserDataServer getStorimUserDataServer() {
+        return storimUserDataServer;
     }
 
     @Override

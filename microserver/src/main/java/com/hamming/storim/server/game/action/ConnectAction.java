@@ -27,31 +27,11 @@ public class ConnectAction extends Action<ConnectDTO> {
     @Override
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection)  getClient();
-        UserDto verifiedUser = client.verifyUser(getDto().getUserId(), getDto().getToken());
+        UserDto verifiedUser = client.verifyUserToken(getDto().getUserId(), getDto().getToken());
         if ( verifiedUser != null ) {
-            client.setCurrentUser(verifiedUser);
-            Long roomId = getDto().getRoomId();
-            client.sendGameState();
-            client.setRoom(roomId);
-            // Send current User info
-            UserDto currentUser = client.getCurrentUser();
-            Location location = controller.getGameState().getUserLocation(currentUser.getId());
-            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-            SetCurrentUserDTO setCurrentUserDTO = new SetCurrentUserDTO(currentUser, locationDto);
-            client.send(setCurrentUserDTO);
-            if ( currentUser.getCurrentAvatarID() != null ) {
-                //Send Avatar
-                AvatarDto avatarDto = client.getServer().getUserDataServerProxy().getAvatar(currentUser.getCurrentAvatarID());
-                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(currentUser.getId(), avatarDto);
-                client.send(avatarSetDTO);
-            }
-            // Add this user as online user
-            controller.getGameState().getOnlineUsers().add(currentUser);
-            // RegisterListener for the current Room
-            controller.addRoomListener(location.getRoomId(), client);
-            // Notify the listeners
-            controller.fireServerEvent(getClient(), new ServerEvent(ServerEvent.Type.USERCONNECTED, currentUser));
-        } else {
+            client.setSessionToken(getDto().getToken());
+            client.currentUserConnected(verifiedUser);
+         } else {
             String errorMessage = "Not a valid user or valid token!";
             getClient().send(new ConnectResultDTO(false, errorMessage, null, null));
         }

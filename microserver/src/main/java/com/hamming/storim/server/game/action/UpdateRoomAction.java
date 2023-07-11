@@ -22,6 +22,7 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
 
     @Override
     public void execute() {
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
         UpdateRoomDto dto = getDto();
         Room updatedRoom = null;
         if ( dto.getImageData() != null ) {
@@ -30,7 +31,7 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
             updatedRoom = updateRoom(dto.getRoomId(), dto.getName(), dto.getWidth(), dto.getLength(), dto.getRows(), dto.getCols(), dto.getTileId());
         }
 
-        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(updatedRoom);
+        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(updatedRoom, client.getServer().getServerURI());
         RoomUpdatedDTO roomUpdatedDTO = new RoomUpdatedDTO(roomDto);
         getClient().send(roomUpdatedDTO);
         controller.fireRoomEvent(getClient(), updatedRoom.getId(), new RoomEvent(RoomEvent.Type.ROOMUPDATED, roomDto));

@@ -6,14 +6,14 @@ public class ExitDto extends DTO {
 
 
     private Long toRoomId;
-    private String toServerID;
+    private String toRoomURI;
     private String description;
     private byte[] imageData;
     private float scale;
     private int rotation;
     private int x,y;
 
-    public ExitDto(Long id, String name, String toServerID, Long toRoomId, String description, float scale, int rotation, byte[] imageData,int x, int y) {
+    public ExitDto(Long id, String name, String toRoomURI, Long toRoomId, String description, float scale, int rotation, byte[] imageData,int x, int y) {
         setId(id);
         setName(name);
         this.toRoomId = toRoomId;
@@ -21,7 +21,7 @@ public class ExitDto extends DTO {
         this.imageData = imageData;
         this.scale = scale;
         this.rotation = rotation;
-        this.toServerID = toServerID;
+        this.toRoomURI = toRoomURI;
         this.x = x;
         this.y = y;
     }
@@ -30,8 +30,8 @@ public class ExitDto extends DTO {
         return toRoomId;
     }
 
-    public String getToServerID() {
-        return toServerID;
+    public String getToRoomURI() {
+        return toRoomURI;
     }
 
     public String getDescription() {
@@ -62,7 +62,7 @@ public class ExitDto extends DTO {
     public String toString() {
         return "ExitDto{" +
                 "toRoomId=" + toRoomId +
-                ", toServerID='" + toServerID + '\'' +
+                ", toRoomURI='" + toRoomURI + '\'' +
                 ", description='" + description + '\'' +
                 ", scale=" + scale +
                 ", rotation=" + rotation +

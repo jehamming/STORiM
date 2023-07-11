@@ -13,12 +13,13 @@ public class Exit extends BasicDrawableObject {
 
     private String name;
 
-    private String toServerId;
+    private String toRoomURI;
 
 
     public Exit(Long exitId, String name) {
         setId(exitId);
         this.scaledImage = null;
+        this.toRoomURI = null;
         this.name = name;
     }
 
@@ -54,11 +55,11 @@ public class Exit extends BasicDrawableObject {
         return name;
     }
 
-    public void setToServerId(String toServerId) {
-        this.toServerId = toServerId;
+    public String getToRoomURI() {
+        return toRoomURI;
     }
 
-    public String getToServerId() {
-        return toServerId;
+    public void setToRoomURI(String toRoomURI) {
+        this.toRoomURI = toRoomURI;
     }
 }

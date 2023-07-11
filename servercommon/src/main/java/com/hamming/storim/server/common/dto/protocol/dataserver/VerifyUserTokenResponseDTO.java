@@ -1,16 +1,16 @@
-package com.hamming.storim.server.common.dto.protocol.loginserver;
+package com.hamming.storim.server.common.dto.protocol.dataserver;
 
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class VerifyUserResponseDTO extends ResponseDTO {
+public class VerifyUserTokenResponseDTO extends ResponseDTO {
 
 
     private boolean success = false;
     private String errorMessage;
     private UserDto user;
 
-    public VerifyUserResponseDTO(boolean success, String errorMessage, UserDto user) {
+    public VerifyUserTokenResponseDTO(boolean success, String errorMessage, UserDto user) {
         this.user = user;
         this.errorMessage = errorMessage;
         this.success = success;
@@ -29,7 +29,7 @@ public class VerifyUserResponseDTO extends ResponseDTO {
 
     @Override
     public String toString() {
-        return "VerifyUserResponseDTO{" +
+        return "VerifyUserTokenResponseDTO{" +
                 "success=" + success +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", user=" + user +

@@ -4,12 +4,14 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
 public class ValidateUserRequestDTO extends ProtocolDTO {
 
+    private String source;
     private String username;
     private String password;
 
-    public ValidateUserRequestDTO(String username, String password) {
+    public ValidateUserRequestDTO(String source, String username, String password) {
         this.username = username;
         this.password = password;
+        this.source = source;
     }
 
     public String getUsername() {
@@ -20,10 +22,15 @@ public class ValidateUserRequestDTO extends ProtocolDTO {
         return password;
     }
 
+    public String getSource() {
+        return source;
+    }
+
     @Override
     public String toString() {
         return "ValidateUserRequestDTO{" +
-                "username='" + username + '\'' +
+                "source='" + source + '\'' +
+                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

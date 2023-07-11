@@ -10,21 +10,20 @@ public class AddExitDto extends ProtocolDTO {
     private int rotation;
     private byte[] imageData;
     private Long toRoomID;
-    private String toServerID;
+    private String roomURI;
 
-    public AddExitDto(String name, String toServerID, Long toRoomID, String description, float scale, int rotation, byte[] imageData){
+    public AddExitDto(String name, String roomURI, Long toRoomID, String description, float scale, int rotation, byte[] imageData){
         this.name = name;
         this.imageData = imageData;
         this.description = description;
         this.scale = scale;
         this.rotation = rotation;
         this.toRoomID = toRoomID;
-        this.toServerID = toServerID;
+        this.roomURI = roomURI;
     }
 
     public String getName() {
         return name;
-
     }
 
     public String getDescription() {
@@ -47,8 +46,8 @@ public class AddExitDto extends ProtocolDTO {
         return toRoomID;
     }
 
-    public String getToServerID() {
-        return toServerID;
+    public String getRoomURI() {
+        return roomURI;
     }
 
     @Override
@@ -59,7 +58,7 @@ public class AddExitDto extends ProtocolDTO {
                 ", scale=" + scale +
                 ", rotation=" + rotation +
                 ", toRoomID=" + toRoomID +
-                ", toServerID='" + toServerID + '\'' +
+                ", roomURI='" + roomURI + '\'' +
                 '}';
     }
 }

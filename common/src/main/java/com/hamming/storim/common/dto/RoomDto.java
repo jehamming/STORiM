@@ -4,12 +4,13 @@ import java.util.List;
 
 public class RoomDto extends DTO {
 
+    private String roomURI;
     private Long tileID;
     private int width, length;
     private int rows, cols;
     private List<Long> exits;
 
-    public RoomDto(Long id, String name, int width, int length, int rows, int cols, Long tileId, List<Long> exits){
+    public RoomDto(Long id, String roomURI, String name, int width, int length, int rows, int cols, Long tileId, List<Long> exits){
         setId(id);
         setName(name);
         this.width = width;
@@ -18,6 +19,7 @@ public class RoomDto extends DTO {
         this.cols = cols;
         this.tileID = tileId;
         this.exits = exits;
+        this.roomURI = roomURI;
     }
 
     public int getWidth() {
@@ -44,12 +46,15 @@ public class RoomDto extends DTO {
         return exits;
     }
 
+    public String getRoomURI() {
+        return roomURI;
+    }
+
     @Override
     public String toString() {
         return "RoomDto{" +
-                "id=" + getId() +
-                ", name=" + getName() +
-                "  tileID=" + tileID +
+                "roomURI='" + roomURI + '\'' +
+                ", tileID=" + tileID +
                 ", width=" + width +
                 ", length=" + length +
                 ", rows=" + rows +

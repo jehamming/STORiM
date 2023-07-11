@@ -148,7 +148,7 @@ public class GameViewPanel extends JPanel implements Runnable {
                     }
                     if (selectedObject instanceof Exit) {
                         Exit exit = (Exit) selectedObject;
-                        viewController.exitClicked(exit.getId(), exit.getName(), exit.getToServerId());
+                        viewController.exitClicked(exit.getId(), exit.getName(), exit.getToRoomURI());
                     }
                 }
             }
@@ -354,7 +354,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         this.room = room;
         if (room != null) {
             determineUnitXY();
-            window.setRoomname(room.getId(), room.getName());
+            window.setRoomname(room.getId(), room.getName(), room.getRoomURI());
         }
 
     }
@@ -630,8 +630,8 @@ public class GameViewPanel extends JPanel implements Runnable {
 
     public void addExit(ExitDto exitDto, String currentServer) {
         Exit exit = new Exit(exitDto.getId(), exitDto.getName());
-        if ( ! exitDto.getToServerID().equals( currentServer) ) {
-            exit.setToServerId(exitDto.getToServerID());
+        if ( exitDto.getToRoomURI() != null && !exitDto.getToRoomURI().equals("") ) {
+            exit.setToRoomURI(exitDto.getToRoomURI());
         }
         Image image = ImageUtils.decode(exitDto.getImageData());
         exit.setImage(image);

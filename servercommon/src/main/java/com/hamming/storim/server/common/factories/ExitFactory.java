@@ -77,15 +77,15 @@ public class ExitFactory {
     }
 
 
-    public Exit createExit(Long creatorId, String name, Long toRoomId, String toServerID, String description, Float scale, int rotation, Image image) {
+    public Exit createExit(Long creatorId, String name, Long toRoomId, String toRoomURI, String description, Float scale, int rotation, Image image) {
         Long id = Database.getInstance().getNextID();
-        Exit exit = new Exit(name, toRoomId, toServerID);
+        Exit exit = new Exit(name, toRoomId, toRoomURI);
         exit.setId(id);
         exit.setCreatorId(creatorId);
         exit.setOwnerId(creatorId);
         exit.setName(name);
         exit.setToRoomID(toRoomId);
-        exit.setToServerID(toServerID);
+        exit.setToRoomURI(toRoomURI);
         exit.setDescription(description);
         exit.setScale(scale);
         exit.setRotation(rotation);

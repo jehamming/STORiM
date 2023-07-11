@@ -6,8 +6,9 @@ import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserResponseDTO;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserResponseDTO;
 import com.hamming.userdataserver.DTOFactory;
+import com.hamming.userdataserver.Session;
+import com.hamming.userdataserver.UserDataClientConnection;
 import com.hamming.userdataserver.factories.UserFactory;
 import com.hamming.userdataserver.model.User;
 
@@ -22,8 +23,10 @@ public class ValidateUserAction extends Action<ValidateUserRequestDTO> {
 
     @Override
     public void execute() {
+        UserDataClientConnection client = (UserDataClientConnection) getClient();
         String errorMessage = null;
         UserDto userDto = null;
+        String token = null;
         String username = getDto().getUsername();
         String password = getDto().getPassword();
 
@@ -31,6 +34,10 @@ public class ValidateUserAction extends Action<ValidateUserRequestDTO> {
         if (user != null ) {
             if ( user.getPassword().equals(password)) {
                 userDto = DTOFactory.getInstance().getUserDTO(user);
+                Long userId = user.getId();
+                String source = getDto().getSource();
+                Session session = client.getStorimUserDataServer().getSessionManager().createSession(userId, source);
+                token = session.getToken();
             } else {
                 errorMessage = "User " + username +", password is incorrect!";
             }
@@ -38,7 +45,7 @@ public class ValidateUserAction extends Action<ValidateUserRequestDTO> {
             errorMessage = "User " + username +" not found!";
         }
 
-        ValidateUserResponseDTO validateUserResponseDTO = new ValidateUserResponseDTO(userDto, errorMessage);
+        ValidateUserResponseDTO validateUserResponseDTO = new ValidateUserResponseDTO(userDto, errorMessage, token);
         getClient().send(validateUserResponseDTO);
     }
 }

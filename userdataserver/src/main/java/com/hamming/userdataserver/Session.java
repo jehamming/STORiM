@@ -1,4 +1,4 @@
-package com.hamming.loginserver;
+package com.hamming.userdataserver;
 
 public class Session {
 

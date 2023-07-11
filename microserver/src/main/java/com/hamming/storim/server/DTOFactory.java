@@ -41,18 +41,19 @@ public class DTOFactory {
     }
 
     public ExitDto getExitDTO(Exit e) {
-        ExitDto exitDto = new ExitDto(e.getId(), e.getName(), e.getToServerID(), e.getToRoomID(), e.getDescription(), e.getScale(), e.getRotation(), ImageUtils.encode(e.getImage()), e.getX(), e.getY());
+        ExitDto exitDto = new ExitDto(e.getId(), e.getName(), e.getToRoomURI(), e.getToRoomID(), e.getDescription(), e.getScale(), e.getRotation(), ImageUtils.encode(e.getImage()), e.getX(), e.getY());
         fillBasicObjectInfo(exitDto, e);
         return exitDto;
     }
 
 
-    public RoomDto getRoomDto(Room b) {
+    public RoomDto getRoomDto(Room b, String serverURI) {
         List<Long> exits = new ArrayList<>();
         for ( Exit e : b.getExits()) {
             exits.add(e.getId());
         }
-        RoomDto dto = new RoomDto(b.getId(), b.getName(), b.getWidth(), b.getLength(), b.getRows(), b.getCols(), b.getTileId(), exits);
+        String roomURI = serverURI +"/"+ b.getId();
+        RoomDto dto = new RoomDto(b.getId(), roomURI, b.getName(), b.getWidth(), b.getLength(), b.getRows(), b.getCols(), b.getTileId(), exits);
         fillBasicObjectInfo(dto, b);
         return dto;
     }

@@ -5,8 +5,6 @@ import com.hamming.loginserver.action.GetRoomsForServerAction;
 import com.hamming.loginserver.action.GetServersAction;
 import com.hamming.loginserver.action.VerifyUserAction;
 import com.hamming.storim.server.common.ClientConnection;
-import com.hamming.storim.server.common.dto.protocol.loginserver.AddServerRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.loginserver.VerifyUserRequestDTO;
 
 import java.net.Socket;
 

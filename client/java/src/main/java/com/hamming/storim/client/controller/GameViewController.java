@@ -338,17 +338,17 @@ public class GameViewController implements ConnectionListener {
         connectionController.send(updateThingLocationDto);
     }
 
-    public void exitClicked(Long id, String name, String toServerId) {
-        if ( toServerId == null ) {
+    public void exitClicked(Long id, String name, String roomURI) {
+        if ( roomURI == null ) {
             int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "'?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 connectionController.send(new UseExitRequestDTO(id));
             }
         } else {
             // To another server
-            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "' to server "+ toServerId +", are you sure?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + roomURI + "' are you sure?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
-                storimWindow.useExitToOtherServer(toServerId, id);
+                storimWindow.useExitToOtherServer(roomURI, id);
             }
 
         }

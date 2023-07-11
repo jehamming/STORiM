@@ -16,7 +16,6 @@ public class CreateMinimalMicroserverDataset {
         RoomFactory.getInstance().createRoom(1l, "A forest");
 
         Database.getInstance().store();
-
     }
 
 

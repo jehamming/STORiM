@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 public class ExitPanelController implements ConnectionListener {
@@ -35,7 +36,6 @@ public class ExitPanelController implements ConnectionListener {
     private BufferedImage tileImage;
     private DefaultListModel<ExitListItem> exitsModel = new DefaultListModel<>();
     private DefaultComboBoxModel<RoomListItem> roomsModel = new DefaultComboBoxModel<>();
-    private DefaultComboBoxModel<ServerListItem> serversModel = new DefaultComboBoxModel<ServerListItem>();
     private boolean newExit = false;
     private Image exitImage;
     private UserDto currentUser;
@@ -71,11 +71,12 @@ public class ExitPanelController implements ConnectionListener {
     private void setRoom(RoomDto room) {
         currentRoom = room;
         SwingUtilities.invokeLater(() -> {
-            updateServerList();
             panel.getListExits().clearSelection();
             exitsModel.removeAllElements();
+            roomsModel.removeAllElements();
             panel.getListExits().removeAll();
         });
+        fillRoomsCombobox();
     }
 
     private void setCurrentUser(SetCurrentUserDTO dto) {
@@ -85,7 +86,6 @@ public class ExitPanelController implements ConnectionListener {
     private void setup() {
         panel.getListExits().setModel(exitsModel);
         panel.getCmbRoom().setModel(roomsModel);
-        panel.getCmbServer().setModel(serversModel);
         panel.getBtnDelete().addActionListener(e -> deleteExit());
         panel.getBtnSave().addActionListener(e -> saveExit());
         panel.getBtnCreate().addActionListener(e -> createExit());
@@ -100,8 +100,25 @@ public class ExitPanelController implements ConnectionListener {
         panel.getBtnSave().setEnabled(false);
         panel.getBtnDelete().setEnabled(false);
         panel.getBtnCreate().setEnabled(false);
-        panel.getCmbServer().addActionListener(e -> serverSelected());
         panel.getCmbRoom().addActionListener(e -> roomSelected());
+    }
+
+    private void fillRoomsCombobox() {
+        GetRoomsDTO getRoomsDTO = new GetRoomsDTO();
+        GetRoomsResultDTO getRoomsResultDTO = connectionController.sendReceive(getRoomsDTO, GetRoomsResultDTO.class);
+        if ( getRoomsResultDTO != null && getRoomsResultDTO.getRooms() != null) {
+            HashMap<Long, String> rooms = getRoomsResultDTO.getRooms();
+
+            for (Long roomId : rooms.keySet() ) {
+                if ( currentRoom.getId() != roomId ) {
+                    String roomName = rooms.get(roomId);
+                    RoomListItem rli = new RoomListItem(roomId, roomName);
+                    SwingUtilities.invokeLater(() -> {
+                        roomsModel.addElement(rli);
+                    });
+                }
+            }
+        }
     }
 
     private void roomSelected() {
@@ -113,40 +130,8 @@ public class ExitPanelController implements ConnectionListener {
     }
 
 
-    private void updateServerList() {
-        GetServerRegistrationsResponseDTO getServerRegistrationsResponseDTO = connectionController.sendReceive(new GetServerRegistrationsDTO(), GetServerRegistrationsResponseDTO.class);
-        if (getServerRegistrationsResponseDTO != null) {
-            List<ServerRegistrationDTO> servers = getServerRegistrationsResponseDTO.getServers();
-            serversModel.removeAllElements();
-            if (servers != null) {
-                for (ServerRegistrationDTO server : servers) {
-                    ServerListItem item = new ServerListItem(server);
-                    serversModel.addElement(item);
-                }
-            }
-        }
-    }
-
-    private void serverSelected() {
-        ServerListItem serverListItem = (ServerListItem) serversModel.getSelectedItem();
-        if (serverListItem != null) {
-            roomsModel.removeAllElements();
-            String serverName = serverListItem.getServerRegistrationDTO().getServerName();
-            GetRoomsForServerResponseDTO getRoomsForServerResponseDTO = connectionController.sendReceive(new GetRoomsForServerDTO(serverName), GetRoomsForServerResponseDTO.class);
-            if (getRoomsForServerResponseDTO != null && getRoomsForServerResponseDTO.getRooms() != null) {
-                for (Long id : getRoomsForServerResponseDTO.getRooms().keySet()) {
-                    String roomName = getRoomsForServerResponseDTO.getRooms().get(id);
-                    RoomListItem roomListItem = new RoomListItem(id, roomName);
-                    roomsModel.addElement(roomListItem);
-                }
-            }
-        }
-    }
-
     private void exitSelected(ExitDto exit) {
         SwingUtilities.invokeLater(() -> {
-            ServerListItem serverListItem = getServerListItem(exit.getToServerID());
-            panel.getCmbServer().setSelectedItem(serverListItem);
             RoomListItem roomListItem = getRoomListItem(exit.getToRoomId());
             panel.getCmbRoom().setSelectedItem(roomListItem);
             panel.getLblID().setText(exit.getId().toString());
@@ -168,17 +153,6 @@ public class ExitPanelController implements ConnectionListener {
         for (int i = 0; i < roomsModel.getSize(); i++) {
             if ( roomsModel.getElementAt(i).getId().equals(roomID)) {
                 found = roomsModel.getElementAt(i);
-                break;
-            }
-        }
-        return found;
-    }
-
-    private ServerListItem getServerListItem(String serverName) {
-        ServerListItem found = null;
-        for (int i = 0; i < serversModel.getSize(); i++) {
-            if ( serversModel.getElementAt(i).getServerRegistrationDTO().getServerName().equals(serverName)) {
-                found = serversModel.getElementAt(i);
                 break;
             }
         }
@@ -219,6 +193,7 @@ public class ExitPanelController implements ConnectionListener {
             panel.getListExits().clearSelection();
             panel.getBtnDelete().setEnabled(false);
             panel.getLblImagePreview().setIcon(null);
+            panel.getTfRoomURI().setText("");
             setEditable(true);
         });
     }
@@ -228,11 +203,14 @@ public class ExitPanelController implements ConnectionListener {
         String exitDescription = panel.getTaDescription().getText();
         Float exitScale = (float) panel.getSlScale().getValue() / 100;
         Integer exitRotation = panel.getSlRotation().getValue();
-        String toServerID = ((ServerListItem) serversModel.getSelectedItem()).getServerRegistrationDTO().getServerName();
-        Long toRoomID = ((RoomListItem) roomsModel.getSelectedItem()).getId();
+        Long toRoomID = null ;
+        if ( roomsModel.getSelectedItem() != null ) {
+              toRoomID =((RoomListItem)roomsModel.getSelectedItem()).getId();
+        }
+        String toRoomURI = panel.getTfRoomURI().getText().trim();
         byte[] imageData = ImageUtils.encode(exitImage);
         if (newExit) {
-            AddExitDto addExitDto = new AddExitDto(exitName,toServerID, toRoomID, exitDescription, exitScale, exitRotation, imageData);
+            AddExitDto addExitDto = new AddExitDto(exitName, toRoomURI ,toRoomID, exitDescription, exitScale, exitRotation, imageData);
             connectionController.send(addExitDto);
             setEditable(false);
             empty(false);
@@ -241,7 +219,7 @@ public class ExitPanelController implements ConnectionListener {
         } else {
             // Update !
             Long thingId = Long.valueOf(panel.getLblID().getText());
-            UpdateExitDto updateExitDto = new UpdateExitDto(thingId, exitName, toRoomID, toServerID, exitDescription, exitScale, exitRotation, ImageUtils.encode(exitImage));
+            UpdateExitDto updateExitDto = new UpdateExitDto(thingId, exitName, toRoomID, toRoomURI, exitDescription, exitScale, exitRotation, ImageUtils.encode(exitImage));
             connectionController.send(updateExitDto);
         }
 
@@ -280,6 +258,7 @@ public class ExitPanelController implements ConnectionListener {
             if (fully) {
                 panel.getListExits().clearSelection();
                 exitsModel.removeAllElements();
+                roomsModel.removeAllElements();
                 panel.getListExits().removeAll();
             }
         });

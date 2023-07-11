@@ -2,26 +2,35 @@ package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomsDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomsResultDTO;
-import com.hamming.storim.server.LoginServerConnection;
+import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Room;
+import com.hamming.storim.server.game.GameController;
 
 import java.util.HashMap;
 
 public class GetRoomsAction extends Action<GetRoomsDTO> {
+    private GameController controller;
 
-    public GetRoomsAction(LoginServerConnection client) {
-            super(client);
+
+    public GetRoomsAction(GameController controller, STORIMClientConnection client) {
+        super(client);
+        this.controller = controller;
+
     }
 
     @Override
     public void execute() {
-        HashMap<Long, String> rooms = new HashMap<>();
-        for (Room room : RoomFactory.getInstance().getRooms()) {
-            rooms.put(room.getId(), room.getName());
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
+
+        HashMap<Long, String> rooms = new HashMap<Long, String>();
+        for (Room r: RoomFactory.getInstance().getRooms()) {
+            rooms.put(r.getId(), r.getName());
         }
-        getClient().send(new GetRoomsResultDTO(rooms));
+        GetRoomsResultDTO getRoomsResultDTO = new GetRoomsResultDTO(rooms);
+
+        client.send(getRoomsResultDTO);
     }
 
 }

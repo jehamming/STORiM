@@ -12,6 +12,8 @@ public class ServerConfig {
     private final static String DATADIR     = "datadir";
     private final static String SERVERPORT  = "serverport";
 
+    public final static String PROTOCOL  = "storim";
+
 
     // Properties file location
     private Properties properties;

@@ -17,6 +17,7 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
 
     private ProtocolHandler<Action> protocolHandler;
     private String id;
+    private String sessionToken;
     private ServerWorker serverWorker;
     private NetClient netClient;
 
@@ -63,5 +64,13 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
 
     public String getId() {
         return id + "(" + netClient.getId() + ")";
+    }
+
+    public String getSessionToken() {
+        return sessionToken;
+    }
+
+    public void setSessionToken(String sessionToken) {
+        this.sessionToken = sessionToken;
     }
 }
