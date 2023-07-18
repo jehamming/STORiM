@@ -66,6 +66,19 @@ public class ExitPanelController implements ConnectionListener {
         connectionController.registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> exitDeleted(dto.getExitID()));
         connectionController.registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> exitUpdated(dto.getExitDto()));
         connectionController.registerReceiver(ExitInRoomDTO.class, (ProtocolReceiver<ExitInRoomDTO>) dto -> exitAdded(dto.getExitDto()));
+        connectionController.registerReceiver(RoomAddedDTO.class, (ProtocolReceiver<RoomAddedDTO>) dto -> roomAdded(dto.getRoom()));
+    }
+
+    private void roomAdded(RoomDto room) {
+        SwingUtilities.invokeLater(() -> {
+            String roomName = room.getName();
+            RoomListItem rli = new RoomListItem(room.getId(), roomName);
+            SwingUtilities.invokeLater(() -> {
+                roomsModel.addElement(rli);
+            });
+        });
+
+
     }
 
     private void setRoom(RoomDto room) {
