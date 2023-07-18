@@ -1,5 +1,6 @@
 package com.hamming.storim.common;
 
+import com.hamming.storim.common.dto.protocol.requestresponse.ConnectDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginDTO;
 import com.hamming.storim.common.dto.protocol.request.AddVerbDto;
 import com.hamming.storim.common.dto.protocol.request.DeleteVerbDTO;
@@ -21,9 +22,9 @@ public class ProtocolHandler {
     }
 
 
-    public LoginDTO getLoginDTO(String username, String password) {
+    public LoginDTO getLoginDTO(String username, String password, Long roomID) {
         String hashedPassword = StringUtils.hashPassword(password);
-        LoginDTO dto = new LoginDTO(username, hashedPassword);
+        LoginDTO dto = new LoginDTO(username, hashedPassword, roomID);
         return dto;
     }
 
@@ -40,4 +41,7 @@ public class ProtocolHandler {
     }
 
 
+    public ConnectDTO getConnectDTO(Long userID, String token, Long roomId) {
+        return new ConnectDTO(userID, token, roomId);
+    }
 }

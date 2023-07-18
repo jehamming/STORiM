@@ -207,14 +207,14 @@ public class UserDataServerProxy {
         }
     }
 
-    public UserDto validateUser(String source, String username, String password) {
+    public UserDto validateUser(ClientConnection sourceClientConnection, String username, String password) {
         UserDto user = null;
-        ValidateUserRequestDTO validateUserRequestDTO = new ValidateUserRequestDTO(source, username, password);
+        ValidateUserRequestDTO validateUserRequestDTO = new ValidateUserRequestDTO(sourceClientConnection.getId(), username, password);
         ValidateUserResponseDTO validateUserResponseDTO = connection.sendReceive(validateUserRequestDTO, ValidateUserResponseDTO.class);
         if ( validateUserResponseDTO != null) {
             user = validateUserResponseDTO.getUser();
             String token = validateUserResponseDTO.getSessionToken();
-            connection.setSessionToken(token);
+            sourceClientConnection.setSessionToken(token);
         }
         return user;
     }

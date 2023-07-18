@@ -36,12 +36,9 @@ public class VerifyUserTokenAction extends Action<VerifyUserTokenRequestDTO> {
         } else {
             Session session = client.getStorimUserDataServer().getSessionManager().getSession(userId);
             if (session != null && session.getToken().equals(token)) {
-                if (session.getSource().equals(getDto().getSource())) {
-                    success = true;
-                    userDto = DTOFactory.getInstance().getUserDTO(user);
-                } else {
-                    errorMessage = "Session source does not match '" + getDto().getSource() + "'";
-                }
+                success = true;
+                userDto = DTOFactory.getInstance().getUserDTO(user);
+
             } else {
                 errorMessage = "No valid session found for UserId '" + userId + "'";
             }

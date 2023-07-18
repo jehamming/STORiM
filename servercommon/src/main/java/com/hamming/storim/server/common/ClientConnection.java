@@ -17,9 +17,10 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
 
     private ProtocolHandler<Action> protocolHandler;
     private String id;
-    private String sessionToken;
     private ServerWorker serverWorker;
     private NetClient netClient;
+
+    private String sessionToken;
 
     public ClientConnection(String id, Socket s, ServerWorker serverWorker) {
         this.id = id;

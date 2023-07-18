@@ -348,7 +348,7 @@ public class GameViewController implements ConnectionListener {
             // To another server
             int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + roomURI + "' are you sure?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
-                storimWindow.useExitToOtherServer(roomURI, id);
+                storimWindow.useExitToOtherServer(roomURI);
             }
 
         }

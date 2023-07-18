@@ -176,9 +176,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         return gameView;
     }
 
-    public void setRoomname(Long roomId, String roomName, String roomURI) {
-        //String text = "User: "+ currentUser.getName() + ", room :("+ roomId +") " + roomName + "\n" + roomURI;
-        String text = roomURI + " (" + roomName + ")";
+    public void setRoomname(String text) {
         SwingUtilities.invokeLater(() -> {
             lblRoomName.setText(text);
         });
@@ -208,7 +206,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         this.currentServerId = currentServerId;
     }
 
-    public void useExitToOtherServer(String toServerId, Long roomId) {
-       // loginPanelController.connectToServer(toServerId, roomId);
+    public void useExitToOtherServer(String serverURI) {
+       loginPanelController.connectToServer(currentUser.getId(), userToken, serverURI  );
     }
 }

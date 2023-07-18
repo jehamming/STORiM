@@ -354,7 +354,8 @@ public class GameViewPanel extends JPanel implements Runnable {
         this.room = room;
         if (room != null) {
             determineUnitXY();
-            window.setRoomname(room.getId(), room.getName(), room.getRoomURI());
+            String text = room.getRoomURI() + " (" + room.getName() + ")";
+            window.setRoomname(text);
         }
 
     }
@@ -660,6 +661,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
     public void resetView() {
+        window.setRoomname("");
         setTile(null);
         setRoom(null);
         setPlayers(new ArrayList<>());

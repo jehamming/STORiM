@@ -26,15 +26,18 @@ public class ConnectAction extends Action<ConnectDTO> {
 
     @Override
     public void execute() {
+        boolean connectSucceeded = false;
+        String errorMessage = null;
         STORIMClientConnection client = (STORIMClientConnection)  getClient();
         UserDto verifiedUser = client.verifyUserToken(getDto().getUserId(), getDto().getToken());
         if ( verifiedUser != null ) {
             client.setSessionToken(getDto().getToken());
-            client.currentUserConnected(verifiedUser);
+            client.currentUserConnected(verifiedUser, getDto().getRoomId());
+            connectSucceeded = true;
          } else {
-            String errorMessage = "Not a valid user or valid token!";
-            getClient().send(new ConnectResultDTO(false, errorMessage, null, null));
+            errorMessage = "Not a valid user or valid token!";
         }
+        getClient().send(new ConnectResultDTO(connectSucceeded, errorMessage));
     }
 
 

@@ -5,6 +5,7 @@ import com.hamming.storim.client.listitem.ServerListItem;
 import com.hamming.storim.client.panels.LoginPanel;
 import com.hamming.storim.client.listitem.RoomListItem;
 import com.hamming.storim.common.ProtocolHandler;
+import com.hamming.storim.common.StorimURI;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
@@ -51,15 +52,13 @@ public class LoginPanelController implements ConnectionListener {
 
         try {
 
-            URI serverURL = new URI(serverURLTxt);
-            String serverip = serverURL.getHost();
-            int port = serverURL.getPort();
+            StorimURI serverURI = new StorimURI(serverURLTxt);
 
             // Connect
-            connectionController.connect("STORIM_Java_Client", serverip, port);
+            connectionController.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
 
             // Do login request
-            LoginDTO dto = ProtocolHandler.getInstance().getLoginDTO(username, password);
+            LoginDTO dto = ProtocolHandler.getInstance().getLoginDTO(username, password, serverURI.getRoomId());
             LoginResultDTO loginResult = connectionController.sendReceive(dto, LoginResultDTO.class);
 
             if (loginResult.isLoginSucceeded()) {
@@ -70,18 +69,38 @@ public class LoginPanelController implements ConnectionListener {
             } else {
                 JOptionPane.showMessageDialog(panel, loginResult.getErrorMessage());
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(panel, e.getMessage());
+            JOptionPane.showMessageDialog(panel, e);
         }
     }
 
 
+    public void connectToServer(Long userID, String token, String serverURItxt) {
+        disconnect();
+        try {
+            StorimURI serverURI = new StorimURI(serverURItxt);
 
+            // Connect
+            connectionController.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
 
+            // Do connect request
+            ConnectDTO connectDTO = ProtocolHandler.getInstance().getConnectDTO(userID, token, serverURI.getRoomId());
+            ConnectResultDTO connectResultDTO = connectionController.sendReceive(connectDTO, ConnectResultDTO.class);
 
+            if (connectResultDTO.isConnectSucceeded()) {
+                SwingUtilities.invokeLater(() -> {
+                    panel.getBtnConnect().setEnabled(false);
+                    panel.getBtnDisconnect().setEnabled(true);
+                });
+            } else {
+                JOptionPane.showMessageDialog(panel, connectResultDTO.getErrorMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(panel, e);
+        }
+    }
 
     private void setup() {
         panel.getTxtServerURL().setText("storim://127.0.1.1:3334");

@@ -8,9 +8,12 @@ public class LoginDTO extends ProtocolDTO {
     private String username;
     private String password;
 
-    public LoginDTO(String username, String password){
+    private Long roomID;
+
+    public LoginDTO(String username, String password, Long roomID){
         this.username = username;
         this.password = password;
+        this.roomID = roomID;
     }
 
     public String getUsername() {
@@ -21,11 +24,16 @@ public class LoginDTO extends ProtocolDTO {
         return password;
     }
 
+    public Long getRoomID() {
+        return roomID;
+    }
+
     @Override
     public String toString() {
         return "LoginDTO{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", roomID=" + roomID +
                 '}';
     }
 }

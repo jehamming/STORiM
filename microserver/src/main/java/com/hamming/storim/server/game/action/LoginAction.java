@@ -33,18 +33,20 @@ public class LoginAction extends Action<LoginDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         String username = getDto().getUsername();
         String password = getDto().getPassword();
+        Long roomId = getDto().getRoomID();
         // Verify User with UserDataServer
 
-        user = client.getServer().getUserDataServerProxy().validateUser(client.getId(), username, password);
-        ;
+        user = client.getServer().getUserDataServerProxy().validateUser(client, username, password);
+
         if (user != null) {
-            client.currentUserConnected(user);
-            loginSucceeded = true;
+            LoginResultDTO loginResultDTO = new LoginResultDTO(true, client.getSessionToken(), errorMessage, user, locationDto);
+            getClient().send(loginResultDTO);
+            // Send the details
+            client.currentUserConnected(user, roomId);
+
         }
 
-        LoginResultDTO loginResultDTO = new LoginResultDTO(loginSucceeded, client.getSessionToken(), errorMessage, user, locationDto);
 
-        getClient().send(loginResultDTO);
     }
 
 }

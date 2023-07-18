@@ -23,8 +23,6 @@ import java.util.HashMap;
 public class STORIMClientConnection extends ClientConnection implements RoomListener, ServerListener {
 
     private UserDto currentUser;
-    private String sessionToken;
-
     private Room currentRoom;
     private STORIMMicroServer server;
     private GameController gameController;
@@ -138,10 +136,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
     public void setCurrentUser(UserDto currentUser) {
         this.currentUser = currentUser;
-    }
-
-    public void setSessionToken(String sessionToken) {
-        this.sessionToken = sessionToken;
     }
 
     public void sendGameState() {
@@ -342,26 +336,45 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
     }
 
-    public void currentUserConnected(UserDto currentUser) {
+    public void currentUserConnected(UserDto currentUser, Long roomId) {
         setCurrentUser(currentUser);
         sendGameState();
         Room room = null;
         Location location = null;
-        LocationDto locationDto = getServer().getUserDataServerProxy().getLocation(currentUser.getId());
-        if (locationDto != null) {
-            room = RoomFactory.getInstance().findRoomByID(locationDto.getRoomId());
+        LocationDto locationDto = null;
+
+
+        if ( roomId != null ) {
+            // Connect to a specific room given by StorimURI
+            room = RoomFactory.getInstance().findRoomByID(roomId);
             if (room != null) {
+                int x = room.getSpawnPointX();
+                int y = room.getSpawnPointY();
+                locationDto = new LocationDto(-1l, getServer().getServerURI(), room.getId(), x, y);
                 location = LocationFactory.getInstance().createLocation(currentUser.getId(), locationDto);
             }
+        } else {
+            // Check for a location stored in dataserver
+            locationDto = getServer().getUserDataServerProxy().getLocation(currentUser.getId());
+            if (locationDto != null) {
+                room = RoomFactory.getInstance().findRoomByID(locationDto.getRoomId());
+                if (room != null) {
+                    location = LocationFactory.getInstance().createLocation(currentUser.getId(), locationDto);
+                }
+            }
         }
+
+
+
         if (location == null) {
-            Logger.info(this, "User '" + currentUser.getId() + "' location not found or corrupt, using Room #0");
+            Logger.info(this, "User '" + currentUser.getId() + "' location not found or corrupt, using default Room (1)");
             room = RoomFactory.getInstance().findRoomByID(1L);
             int x = room.getSpawnPointX();
             int y = room.getSpawnPointY();
             locationDto = new LocationDto(-1l, getServer().getServerURI(), room.getId(), x, y);
             location = LocationFactory.getInstance().createLocation(currentUser.getId(), locationDto);
         }
+
         getServer().getUserDataServerProxy().setLocation(currentUser.getId(), locationDto);
         gameController.getGameState().setUserLocation(currentUser, location);
 
