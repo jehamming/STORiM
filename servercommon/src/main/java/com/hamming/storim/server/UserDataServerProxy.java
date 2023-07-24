@@ -2,6 +2,10 @@ package com.hamming.storim.server;
 
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetUsersRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetUsersResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.VerifyAdminRequestDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.VerifyAdminResponseDTO;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenRequestDTO;
@@ -229,5 +233,18 @@ public class UserDataServerProxy {
                 Logger.info(this, " Error :" + response.getErrorMessage());
             }
             return verifiedUser;
+    }
+
+    public String verifyAdmin(String adminPassword) {
+        UserDto verifiedUser = null;
+        VerifyAdminRequestDTO dto = new VerifyAdminRequestDTO(adminPassword);
+        VerifyAdminResponseDTO response = connection.sendReceive(dto, VerifyAdminResponseDTO.class);
+        return response.getErrorMessage();
+    }
+
+    public HashMap<Long, String> getAllUsers() {
+        GetUsersRequestDTO requestDTO = new GetUsersRequestDTO();
+        GetUsersResultDTO resultDTO = connection.sendReceive(requestDTO, GetUsersResultDTO.class);
+        return resultDTO.getUsers();
     }
 }

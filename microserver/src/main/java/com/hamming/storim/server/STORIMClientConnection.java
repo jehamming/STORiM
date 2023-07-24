@@ -26,11 +26,13 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     private Room currentRoom;
     private STORIMMicroServer server;
     private GameController gameController;
+    private boolean admin;
 
     public STORIMClientConnection(STORIMMicroServer server, String id, Socket s, GameController controller) {
         super(id, s, controller);
         this.server = server;
         controller.addServerListener(this);
+        admin = false;
     }
 
     @Override
@@ -75,6 +77,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(new UpdateExitAction(gameController, this));
         getProtocolHandler().addAction(new UpdateExitLocationAction(gameController, this));
         getProtocolHandler().addAction(new LoginAction(gameController, this));
+        getProtocolHandler().addAction(new VerifyAdminAction(gameController, this));
+        getProtocolHandler().addAction(new GetUsersAction(gameController, this));
     }
 
 
@@ -508,4 +512,11 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         }
     }
 
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
 }

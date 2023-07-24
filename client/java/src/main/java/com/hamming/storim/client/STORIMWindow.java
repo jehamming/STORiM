@@ -30,6 +30,8 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
     private ThingPanel thingPanel;
     private ExitPanel exitPanel;
     private ExitPanelController exitPanelController;
+    private AdminPanel adminPanel;
+    private AdminPanelController adminPanelController;
 
 
     private GameViewPanel gameView;
@@ -99,6 +101,10 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         exitPanel = new ExitPanel();
         exitPanelController = new ExitPanelController(this, exitPanel, connectionController);
         tabbedPane.addTab("Exits", exitPanel);
+
+        adminPanel = new AdminPanel();
+        adminPanelController = new AdminPanelController(this, adminPanel, connectionController);
+        tabbedPane.addTab("Admin", adminPanel);
     }
 
 

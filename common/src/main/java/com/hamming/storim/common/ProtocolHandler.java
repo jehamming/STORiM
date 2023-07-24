@@ -5,6 +5,7 @@ import com.hamming.storim.common.dto.protocol.requestresponse.LoginDTO;
 import com.hamming.storim.common.dto.protocol.request.AddVerbDto;
 import com.hamming.storim.common.dto.protocol.request.DeleteVerbDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateVerbDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.VerifyAdminRequestDTO;
 import com.hamming.storim.common.util.StringUtils;
 
 public class ProtocolHandler {
@@ -43,5 +44,9 @@ public class ProtocolHandler {
 
     public ConnectDTO getConnectDTO(Long userID, String token, Long roomId) {
         return new ConnectDTO(userID, token, roomId);
+    }
+
+    public VerifyAdminRequestDTO getVerifyAdminRequestDTO(String adminpassWord) {
+        return  new VerifyAdminRequestDTO(adminpassWord);
     }
 }

@@ -26,8 +26,13 @@ public class STORIMUserDataServer extends Server {
     private SessionManager sessionManager;
 
     private final static String PROPFILE = "userdataserver.properties";
+    private final static String PROP_DATADIR= "datadir";
+    private final static String PROP_SERVERPORT= "serverport";
+    private final static String PROP_ADMINPASSWORD= "adminpassword";
     public final static String DBFILE = "userdata.db";
     public static String DATADIR = "data";
+
+    private String adminPassword = null;
 
     public STORIMUserDataServer() {
         super("STORIM User Data Server");
@@ -37,7 +42,12 @@ public class STORIMUserDataServer extends Server {
         // Load Config
         ServerConfig config = ServerConfig.getInstance(PROPFILE);
         // Set datadir var
-        DATADIR = config.getPropertyAsString("datadir");
+        DATADIR = config.getPropertyAsString(PROP_DATADIR);
+        // Admin password
+        adminPassword = config.getPropertyAsString(PROP_ADMINPASSWORD);
+        if ( adminPassword == null ) {
+            Logger.info(this, "No ADMIN PASSWORD found in property file. No ADMIN available");
+        }
         // Load Data
         Database.getInstance(DBFILE);
         //Force Avatar Loading
@@ -47,7 +57,7 @@ public class STORIMUserDataServer extends Server {
         //Force Tile loading
         TileFactory.getInstance(DATADIR);
 
-        port = config.getPropertyAsInt("serverport");
+        port = config.getPropertyAsInt(PROP_SERVERPORT);
 
         sessionManager = new SessionManager();
 
@@ -96,6 +106,10 @@ public class STORIMUserDataServer extends Server {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+    }
+
+    public String getAdminPassword() {
+        return adminPassword;
     }
 
     public static void main(String[] args) {

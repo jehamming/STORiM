@@ -105,7 +105,6 @@ public class ThingPanelController implements ConnectionListener {
     }
 
     private void placeThingInRoom() {
-        //TODO PLace THing
         Long thingID = Long.valueOf(panel.getLblID().getText().trim());
         PlaceThingInRoomDTO placeThingInRoomDTO = new PlaceThingInRoomDTO(thingID, currentRoom.getId());
         connectionController.send(placeThingInRoomDTO);
