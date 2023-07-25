@@ -22,6 +22,8 @@ public class ProtocolObjectSerializer<T> implements JsonDeserializer<T> {
         Class<?> clazz = Protocol.getInstance().getClass(className);
 
         if (clazz == null) {
+            Logger.error(this, "Exception : Did you add an [Action] to deal with " + className + "?");
+            Logger.error(this, "Or did you mistake 'send()' and 'sendReceive()'?");
             throw new JsonParseException("Could not find a suitable class for :" + className);
         }
 

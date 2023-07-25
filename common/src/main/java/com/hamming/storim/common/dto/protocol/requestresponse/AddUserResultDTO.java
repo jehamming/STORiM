@@ -1,27 +1,27 @@
 package com.hamming.storim.common.dto.protocol.requestresponse;
 
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
-public class GetUserResultDTO extends ResponseDTO {
+public class AddUserResultDTO extends ResponseDTO {
 
     private boolean success = false;
     private String errorMessage;
-    private UserDto user;
+    private UserDto userDto;
 
-    public GetUserResultDTO(boolean success, UserDto user, String errorMessage) {
-        this.user = user;
+    public AddUserResultDTO(boolean success, String errorMessage, UserDto userDto) {
         this.success = success;
         this.errorMessage = errorMessage;
+        this.userDto = userDto;
     }
 
-    public UserDto getUser() {
-        return user;
-    }
 
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public UserDto getUserDto() {
+        return userDto;
     }
 
     public boolean isSuccess() {
@@ -30,11 +30,10 @@ public class GetUserResultDTO extends ResponseDTO {
 
     @Override
     public String toString() {
-        return "GetUserResultDTO{" +
+        return "AddUserResultDTO{" +
                 "success=" + success +
                 ", errorMessage='" + errorMessage + '\'' +
-                ", user=" + user +
+                ", userDto=" + userDto +
                 '}';
     }
 }
-                                                                                                                                          

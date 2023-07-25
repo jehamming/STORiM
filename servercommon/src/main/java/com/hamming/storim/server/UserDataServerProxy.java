@@ -2,15 +2,18 @@ package com.hamming.storim.server;
 
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetUsersRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetUsersResultDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.VerifyAdminRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.VerifyAdminResponseDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.AddUserDto;
+import com.hamming.storim.common.dto.protocol.request.DeleteUserDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenResponseDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.GetAvatarResponseDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.GetAvatarsResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.*;
+import com.hamming.storim.server.common.dto.protocol.dataserver.tile.GetThingsForUserResponseDTO;
+import com.hamming.storim.server.common.dto.protocol.dataserver.tile.GetTilesForUserResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.tile.*;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserResponseDTO;
@@ -211,16 +214,11 @@ public class UserDataServerProxy {
         }
     }
 
-    public UserDto validateUser(ClientConnection sourceClientConnection, String username, String password) {
+    public ValidateUserResponseDTO validateUser(ClientConnection sourceClientConnection, String username, String password) {
         UserDto user = null;
         ValidateUserRequestDTO validateUserRequestDTO = new ValidateUserRequestDTO(sourceClientConnection.getId(), username, password);
         ValidateUserResponseDTO validateUserResponseDTO = connection.sendReceive(validateUserRequestDTO, ValidateUserResponseDTO.class);
-        if ( validateUserResponseDTO != null) {
-            user = validateUserResponseDTO.getUser();
-            String token = validateUserResponseDTO.getSessionToken();
-            sourceClientConnection.setSessionToken(token);
-        }
-        return user;
+        return validateUserResponseDTO;
     }
 
     public UserDto verifyUserToken(String source, Long userId, String token) {
@@ -246,5 +244,36 @@ public class UserDataServerProxy {
         GetUsersRequestDTO requestDTO = new GetUsersRequestDTO();
         GetUsersResultDTO resultDTO = connection.sendReceive(requestDTO, GetUsersResultDTO.class);
         return resultDTO.getUsers();
+    }
+
+    public UserDto getUser(Long userID) {
+        UserDto userDto = null;
+        GetUserDTO getUserDTO = new GetUserDTO(userID);
+        GetUserResultDTO resultDTO = connection.sendReceive(getUserDTO, GetUserResultDTO.class);
+        if ( resultDTO.isSuccess() && resultDTO.getUser() != null ) {
+            userDto = resultDTO.getUser();
+        }
+        return userDto;
+    }
+
+    public UserDto updateUser(Long id, String username, String password, String name, String email, Long avatarId) {
+        UpdateUserDto request = new UpdateUserDto(id, username, password, name, email, avatarId);
+        UpdateUserResultDTO resultDTO = connection.sendReceive(request, UpdateUserResultDTO.class);
+        return resultDTO.getUser();
+    }
+
+    public UpdateUserResultDTO updateUser(UpdateUserDto updateUserDto) {
+        UpdateUserResultDTO result = connection.sendReceive(updateUserDto,UpdateUserResultDTO.class );
+        return  result;
+    }
+
+
+    public void deleteUser(DeleteUserDto deleteUserDto) {
+        connection.send(deleteUserDto);
+    }
+
+    public AddUserResultDTO addUser(AddUserDto addUserDto) {
+        AddUserResultDTO resultDTO = connection.sendReceive(addUserDto, AddUserResultDTO.class);
+        return resultDTO;
     }
 }

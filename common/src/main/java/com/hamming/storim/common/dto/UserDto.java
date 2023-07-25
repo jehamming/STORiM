@@ -6,12 +6,14 @@ public class UserDto extends DTO {
 
     private Long currentAvatarID;
     private String email;
+    private String username;
 
-    public UserDto(Long id, String name, String email, Long currentAvatarID){
+    public UserDto(Long id, String name, String username, String email, Long currentAvatarID){
         setId(id);
         setName(name);
         this.email = email;
         this.currentAvatarID = currentAvatarID;
+        this.username = username;
     }
 
     public String getEmail() {
@@ -26,13 +28,16 @@ public class UserDto extends DTO {
         this.currentAvatarID = currentAvatarID;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     @Override
     public String toString() {
         return "UserDto{" +
-                "id=" + getId() +
-                ", name=" + getName() +
-                ", currentAvatarID=" + currentAvatarID +
+                "currentAvatarID=" + currentAvatarID +
                 ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
                 '}';
     }
 

@@ -68,6 +68,7 @@ public class LoginPanelController implements ConnectionListener {
                 panel.getBtnDisconnect().setEnabled(true);
             } else {
                 JOptionPane.showMessageDialog(panel, loginResult.getErrorMessage());
+                disconnect();
             }
         } catch (Exception e) {
             e.printStackTrace();

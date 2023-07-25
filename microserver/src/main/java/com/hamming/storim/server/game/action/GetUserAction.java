@@ -18,8 +18,19 @@ public class GetUserAction extends Action<GetUserDTO> {
 
     @Override
     public void execute() {
-        UserDto user = controller.getGameState().findUserById(getDto().getUserID());
-        GetUserResultDTO getUserResultDTO = new GetUserResultDTO(user);
-        getClient().send(getUserResultDTO);
+        boolean success = false;
+        String errorMessage = null;
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
+        UserDto user = client.getServer().getUserDataServerProxy().getUser(getDto().getUserID());
+
+        if ( user != null ) {
+            success = true;
+        } else {
+            errorMessage = "Got not User from the server with id:" + getDto().getUserID();
+        }
+
+        GetUserResultDTO resultDTO = new GetUserResultDTO(success, user, errorMessage);
+
+        getClient().send(resultDTO);
     }
 }

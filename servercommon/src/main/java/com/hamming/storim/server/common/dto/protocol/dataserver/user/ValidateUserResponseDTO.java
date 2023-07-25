@@ -7,14 +7,16 @@ import com.hamming.storim.server.common.dto.protocol.dataserver.SessionDto;
 public class ValidateUserResponseDTO extends ResponseDTO {
 
     private UserDto user;
+    private boolean success;
     private String errorMessage;
 
     private String sessionToken;
 
-    public ValidateUserResponseDTO(UserDto user, String errorMessage, String token) {
+    public ValidateUserResponseDTO(boolean success, UserDto user, String errorMessage, String token) {
         this.user = user;
         this.errorMessage = errorMessage;
         this.sessionToken = token;
+        this.success = success;
     }
 
     public UserDto getUser() {
@@ -28,10 +30,15 @@ public class ValidateUserResponseDTO extends ResponseDTO {
         return sessionToken;
     }
 
+    public boolean isSuccess() {
+        return success;
+    }
+
     @Override
     public String toString() {
         return "ValidateUserResponseDTO{" +
                 "user=" + user +
+                ", success=" + success +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", sessionToken='" + sessionToken + '\'' +
                 '}';

@@ -1,4 +1,4 @@
-package com.hamming.storim.server.common.dto.protocol.dataserver.user;
+package com.hamming.storim.common.dto.protocol.requestresponse;
 
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;

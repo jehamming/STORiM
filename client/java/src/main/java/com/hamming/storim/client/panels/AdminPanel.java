@@ -37,7 +37,6 @@ public class AdminPanel extends javax.swing.JPanel {
         txtEmail = new javax.swing.JTextField();
         btnSaveUser = new javax.swing.JButton();
         btnNewUser = new javax.swing.JButton();
-        btnSetPassword = new javax.swing.JButton();
         txtPassword = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         btnDeleteUser = new javax.swing.JButton();
@@ -78,9 +77,7 @@ public class AdminPanel extends javax.swing.JPanel {
 
         btnNewUser.setText("New");
 
-        btnSetPassword.setText("Set");
-
-        jLabel5.setText("Set password");
+        jLabel5.setText("Password :");
 
         btnDeleteUser.setText("Delete User");
 
@@ -103,20 +100,17 @@ public class AdminPanel extends javax.swing.JPanel {
                                         .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(pnlUsersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(pnlUsersLayout.createSequentialGroup()
-                                                .addComponent(txtPassword)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(btnSetPassword))
                                         .addComponent(txtUsername)
                                         .addComponent(txtUserDisplayname)
                                         .addComponent(txtEmail)
                                         .addComponent(lblUserID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(btnDeleteUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(pnlUsersLayout.createSequentialGroup()
-                                                .addGap(0, 39, Short.MAX_VALUE)
+                                                .addGap(0, 53, Short.MAX_VALUE)
                                                 .addComponent(btnNewUser)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(btnSaveUser)))
+                                                .addComponent(btnSaveUser))
+                                        .addComponent(txtPassword))
                                 .addContainerGap())
         );
         pnlUsersLayout.setVerticalGroup(
@@ -144,7 +138,6 @@ public class AdminPanel extends javax.swing.JPanel {
                                                         .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addGroup(pnlUsersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(btnSetPassword)
                                                         .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addComponent(jLabel5))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -301,7 +294,6 @@ public class AdminPanel extends javax.swing.JPanel {
     private javax.swing.JButton btnSaveTile;
     private javax.swing.JButton btnSaveUser;
     private javax.swing.JButton btnSaveVerb;
-    private javax.swing.JButton btnSetPassword;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -361,10 +353,6 @@ public class AdminPanel extends javax.swing.JPanel {
 
     public JButton getBtnSaveVerb() {
         return btnSaveVerb;
-    }
-
-    public JButton getBtnSetPassword() {
-        return btnSetPassword;
     }
 
     public JLabel getLblTileID() {

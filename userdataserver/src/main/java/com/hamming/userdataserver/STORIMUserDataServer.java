@@ -10,6 +10,7 @@ import com.hamming.storim.server.common.NetUtils;
 import com.hamming.userdataserver.factories.AvatarFactory;
 import com.hamming.userdataserver.factories.ThingFactory;
 import com.hamming.userdataserver.factories.TileFactory;
+import com.hamming.userdataserver.factories.UserFactory;
 
 import java.net.Inet4Address;
 import java.net.Socket;
@@ -50,6 +51,7 @@ public class STORIMUserDataServer extends Server {
         }
         // Load Data
         Database.getInstance(DBFILE);
+        checkDatabase();
         //Force Avatar Loading
         AvatarFactory.getInstance(DATADIR);
         //Force Thing Loading
@@ -69,6 +71,11 @@ public class STORIMUserDataServer extends Server {
         controllerThread.start();
         Logger.info(this, "UserData Server Worker started");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Database.getInstance().store()) {});
+    }
+
+    private void checkDatabase() {
+        UserFactory.getInstance().getRootUser();
+        Database.getInstance().store();
     }
 
     public SessionManager getSessionManager() {

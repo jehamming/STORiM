@@ -75,6 +75,8 @@ public class AdminPanelController implements ConnectionListener {
     }
 
     private void enableAdmin() {
+        if ( !connectionController.isConnected()) return;
+
         String adminpassWord = panel.getTxtAdminpassword().getText().trim();
         if ( adminpassWord != null && !adminpassWord.equals("")) {
             VerifyAdminRequestDTO requestDTO = ProtocolHandler.getInstance().getVerifyAdminRequestDTO(adminpassWord);

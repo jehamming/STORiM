@@ -10,14 +10,29 @@ import java.util.List;
 public class UserFactory {
     private static UserFactory instance;
 
+    private static User ROOT_USER;
+    private static String ROOT_USERNAME = "root";
+
     private UserFactory() {
-    };
+        setRootUser();
+    }
+
+    private void setRootUser() {
+        ROOT_USER = findUserByUsername(ROOT_USERNAME);
+        if ( ROOT_USER == null ) {
+            ROOT_USER = addUser(ROOT_USERNAME, ROOT_USERNAME, StringUtils.hashPassword(ROOT_USERNAME));
+        }
+    }
 
     public static UserFactory getInstance() {
         if ( instance == null ) {
             instance = new UserFactory();
         }
         return instance;
+    }
+
+    public User getRootUser() {
+        return ROOT_USER;
     }
 
     public List<User> getUsers() {
@@ -41,7 +56,7 @@ public class UserFactory {
         u.setId(id);
         u.setName(name);
         u.setUsername(username);
-        u.setPassword(StringUtils.hashPassword(password));
+        u.setPassword(password);
         Database.getInstance().addBasicObject(u);
         return u;
     }

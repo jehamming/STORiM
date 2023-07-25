@@ -1,24 +1,25 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.request.DeleteUserDto;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.game.GameController;
-import com.hamming.storim.common.dto.protocol.requestresponse.UpdateUserDto;
 
-public class UpdateUserAction extends Action<UpdateUserDto> {
+public class DeleteUserAction extends Action<DeleteUserDto> {
     private GameController controller;
 
-    public UpdateUserAction(GameController controller, STORIMClientConnection client) {
+
+    public DeleteUserAction(GameController controller, STORIMClientConnection client) {
         super(client);
         this.controller = controller;
+
     }
 
     @Override
     public void execute() {
-        UpdateUserDto dto = getDto();
+        Long userId = getDto().getId();
         STORIMClientConnection client = (STORIMClientConnection) getClient();
-        client.getServer().getUserDataServerProxy().updateUser(getDto());
+        client.getServer().getUserDataServerProxy().deleteUser(getDto());
     }
 
 }

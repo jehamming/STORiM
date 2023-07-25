@@ -27,6 +27,7 @@ public class ValidateUserAction extends Action<ValidateUserRequestDTO> {
         String errorMessage = null;
         UserDto userDto = null;
         String token = null;
+        boolean success = false;
         String username = getDto().getUsername();
         String password = getDto().getPassword();
 
@@ -38,6 +39,7 @@ public class ValidateUserAction extends Action<ValidateUserRequestDTO> {
                 String source = getDto().getSource();
                 Session session = client.getStorimUserDataServer().getSessionManager().createSession(userId, source);
                 token = session.getToken();
+                success = true;
             } else {
                 errorMessage = "User " + username +", password is incorrect!";
             }
@@ -45,7 +47,7 @@ public class ValidateUserAction extends Action<ValidateUserRequestDTO> {
             errorMessage = "User " + username +" not found!";
         }
 
-        ValidateUserResponseDTO validateUserResponseDTO = new ValidateUserResponseDTO(userDto, errorMessage, token);
+        ValidateUserResponseDTO validateUserResponseDTO = new ValidateUserResponseDTO(success, userDto, errorMessage, token);
         getClient().send(validateUserResponseDTO);
     }
 }

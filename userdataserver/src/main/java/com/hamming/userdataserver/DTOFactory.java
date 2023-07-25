@@ -34,7 +34,7 @@ public class DTOFactory {
         if (u.getCurrentAvatar() != null ) {
             avatarId  = u.getCurrentAvatar().getId();
         }
-        UserDto dto = new UserDto(u.getId(), u.getName(), u.getEmail(), avatarId);
+        UserDto dto = new UserDto(u.getId(), u.getName(), u.getUsername(), u.getEmail(), avatarId);
         fillBasicObjectInfo(dto, u);
         return dto;
     }

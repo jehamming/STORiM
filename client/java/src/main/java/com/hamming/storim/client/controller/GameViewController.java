@@ -330,7 +330,9 @@ public class GameViewController implements ConnectionListener {
         currentUser = null;
         currentRoom = null;
         resetRequests();
-        gameView.scheduleAction(() -> gameView.removePlayer(storimWindow.getCurrentUser().getId()));
+        if ( storimWindow.getCurrentUser() != null ) {
+            gameView.scheduleAction(() -> gameView.removePlayer(storimWindow.getCurrentUser().getId()));
+        }
     }
 
     public void updateThingLocationRequest(Long thingId, int x, int y) {

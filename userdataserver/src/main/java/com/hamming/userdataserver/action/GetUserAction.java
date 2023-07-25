@@ -1,16 +1,16 @@
 package com.hamming.userdataserver.action;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetUserDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetUserResultDTO;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
-import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserRequestDTO;
-import com.hamming.storim.server.common.dto.protocol.dataserver.user.GetUserResultDTO;
 import com.hamming.userdataserver.DTOFactory;
 import com.hamming.userdataserver.factories.UserFactory;
 import com.hamming.userdataserver.model.User;
 
-public class GetUserAction extends Action<GetUserRequestDTO> {
+public class GetUserAction extends Action<GetUserDTO> {
 
     private ServerWorker serverWorker;
 
@@ -22,15 +22,17 @@ public class GetUserAction extends Action<GetUserRequestDTO> {
     @Override
     public void execute() {
         User user = null;
-        if ( getDto().getUserId() != null ) {
-            user = UserFactory.getInstance().findUserById(getDto().getUserId());
+        String errorMessage = null;
+        if ( getDto().getUserID() != null ) {
+            user = UserFactory.getInstance().findUserById(getDto().getUserID());
         }
 
         ProtocolDTO result;
         if ( user != null ) {
-            result = new GetUserResultDTO(true, null, DTOFactory.getInstance().getUserDTO(user));
+            result = new GetUserResultDTO(true, DTOFactory.getInstance().getUserDTO(user),errorMessage);
         } else {
-            result = new GetUserResultDTO(false, "User "+getDto().getUserId()+" not found!", null);
+            errorMessage = "User "+getDto().getUserID()+" not found!";
+            result = new GetUserResultDTO(false,null, errorMessage);
         }
         getClient().send(result);
     }

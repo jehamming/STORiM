@@ -28,7 +28,9 @@ public class GetUsersAction extends Action<GetUsersRequestDTO> {
     public void execute() {
         HashMap<Long, String> users = new HashMap<>();
         for (User user: UserFactory.getInstance().getUsers()) {
-            users.put(user.getId(), user.getName());
+            if ( !user.equals( UserFactory.getInstance().getRootUser())) {
+                users.put(user.getId(), user.getName());
+            }
         }
 
         GetUsersResultDTO resultDTO = new GetUsersResultDTO(users, null);
