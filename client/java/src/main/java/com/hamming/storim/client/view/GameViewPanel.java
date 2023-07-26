@@ -62,6 +62,8 @@ public class GameViewPanel extends JPanel implements Runnable {
     public void updateExit(ExitDto exitDto) {
         Exit exit = getExit(exitDto.getId());
         if (exit != null) {
+            exit.setName(exitDto.getName());
+            exit.setToRoomURI(exit.getToRoomURI());
             exit.setImage(ImageUtils.decode(exitDto.getImageData()));
             exit.setScale(exitDto.getScale());
             exit.setRotation(exitDto.getRotation());

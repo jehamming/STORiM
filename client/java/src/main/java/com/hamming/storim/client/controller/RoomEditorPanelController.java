@@ -15,10 +15,7 @@ import com.hamming.storim.common.dto.protocol.request.DeleteRoomDTO;
 import com.hamming.storim.common.dto.protocol.request.TeleportRequestDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateRoomDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.RoomAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.RoomDeletedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.RoomUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
@@ -61,6 +58,13 @@ public class RoomEditorPanelController implements ConnectionListener {
         connectionController.registerReceiver(RoomAddedDTO.class, (ProtocolReceiver<RoomAddedDTO>) dto -> roomAdded(dto.getRoom()));
         connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto.getRoom()));
         connectionController.registerReceiver(RoomDeletedDTO.class, (ProtocolReceiver<RoomDeletedDTO>) dto -> roomDeleted(dto.getRoomId()));
+        connectionController.registerReceiver(TileAddedDTO.class, (ProtocolReceiver<TileAddedDTO>) dto -> tileAdded(dto.getTile()));
+    }
+
+    private void tileAdded(TileDto tile) {
+        SwingUtilities.invokeLater(() -> {
+            tilesModel.addElement(tile);
+        });
     }
 
     private void setup() {
@@ -279,7 +283,6 @@ public class RoomEditorPanelController implements ConnectionListener {
             panel.getBtnSave().setEnabled(true);
             panel.getListRooms().clearSelection();
             panel.getBtnDelete().setEnabled(false);
-            tilesModel.removeAllElements();
             panel.getLblImagePreview().setIcon(null);
             tileImage = null;
             panel.getTxtRoomName().setEnabled(true);
@@ -347,7 +350,7 @@ public class RoomEditorPanelController implements ConnectionListener {
             if (room.getTileID() == null) {
                 panel.getListTiles().clearSelection();
             } else {
-                int index =  findIndex(room.getTileID());
+                int index = findIndex(room.getTileID());
                 panel.getListTiles().setSelectedIndex(index);
                 panel.getListTiles().ensureIndexIsVisible(index);
             }

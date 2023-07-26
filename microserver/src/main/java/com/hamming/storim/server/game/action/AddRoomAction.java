@@ -4,6 +4,7 @@ import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.TileDto;
 import com.hamming.storim.common.dto.protocol.request.AddRoomDto;
 import com.hamming.storim.common.dto.protocol.serverpush.RoomAddedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.TileAddedDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.action.Action;
@@ -28,9 +29,13 @@ public class AddRoomAction extends Action<AddRoomDto> {
 
         Room newRoom = addRoom(creator, dto.getName());
         if (dto.getImageData() != null ) {
+            // New Tile
             TileDto tile = client.getServer().getUserDataServerProxy().addTile(creator, dto.getImageData());
             newRoom.setTileId(tile.getId());
+            TileAddedDTO tileAddedDTO = new TileAddedDTO(tile);
+            client.send(tileAddedDTO);
         } else if (dto.getTileId() != null ) {
+            // Existing Tile!
             TileDto tile = client.getServer().getUserDataServerProxy().getTile(dto.getTileId());
             newRoom.setTileId(tile.getId());
         }

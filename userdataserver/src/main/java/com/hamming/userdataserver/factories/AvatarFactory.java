@@ -37,9 +37,14 @@ public class AvatarFactory {
         List<Long> avatarIDs = getAllAvatarIds();
         for (Long id : avatarIDs) {
             Avatar avatar = findAvatarById(id);
-            if (avatar == null) {
+            if (avatar.getImage() == null) {
                 Logger.info(this, getClass().getName() + ": sanityCheck(), Avatar  "+ id +"' has no Image, deleting Avatar");
                 deleteAvatar(avatar);
+            } else {
+                if (UserFactory.getInstance().findUserById(avatar.getOwnerId()) == null ) {
+                    Logger.info(this, getClass().getName() + ": sanityCheck(), Avatar  "+ id +"' owner does not exist, deleting Avatar");
+                    deleteAvatar(avatar);
+                }
             }
         }
     }

@@ -38,9 +38,14 @@ public class TileFactory {
         List<Long> tileIDs = getAllTileIds();
         for (Long id : tileIDs) {
             Tile tile = findTileById(id);
-            if (tile == null) {
+            if (tile.getImage() == null) {
                 Logger.info(this, getClass().getName() + ": sanityCheck(), Tile  "+ id +"' has no Image, deleting Tile");
                 deleteTile(tile);
+            } else {
+                if (UserFactory.getInstance().findUserById(tile.getOwnerId()) == null ) {
+                    Logger.info(this, getClass().getName() + ": sanityCheck(), Tile  "+ id +"' owner does not exist, deleting");
+                    deleteTile(tile);
+                }
             }
         }
     }

@@ -51,11 +51,7 @@ public class ExitPanelController implements ConnectionListener {
         registerReceivers();
         setup();
         empty(true);
-        try {
-            defaultExitImage = ImageIO.read(new File("resources/Exit.png"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
 
@@ -97,6 +93,11 @@ public class ExitPanelController implements ConnectionListener {
     }
 
     private void setup() {
+        try {
+            defaultExitImage = ImageIO.read(new File("resources/Exit.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         panel.getListExits().setModel(exitsModel);
         panel.getCmbRoom().setModel(roomsModel);
         panel.getBtnDelete().addActionListener(e -> deleteExit());
@@ -205,7 +206,6 @@ public class ExitPanelController implements ConnectionListener {
             panel.getBtnSave().setEnabled(true);
             panel.getListExits().clearSelection();
             panel.getBtnDelete().setEnabled(false);
-            panel.getLblImagePreview().setIcon(null);
             panel.getTfRoomURI().setText("");
             setEditable(true);
         });

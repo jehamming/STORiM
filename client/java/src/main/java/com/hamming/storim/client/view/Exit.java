@@ -55,6 +55,10 @@ public class Exit extends BasicDrawableObject {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getToRoomURI() {
         return toRoomURI;
     }

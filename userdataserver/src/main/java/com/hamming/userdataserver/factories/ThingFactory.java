@@ -5,6 +5,7 @@ import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
 import com.hamming.storim.server.common.ImageStore;
 import com.hamming.userdataserver.model.Thing;
+import com.hamming.userdataserver.model.User;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -36,9 +37,14 @@ public class ThingFactory {
         List<Long> thingIDs = getAllThingIds();
         for (Long id : thingIDs) {
             Thing thing = findThingById(id);
-            if (thing == null) {
-                Logger.info(this, getClass().getName() + ": sanityCheck(), Thing  "+ id +"' has no Image, deleting Thing");
+            if (thing.getImage() == null) {
+                Logger.info(this, getClass().getName() + ": sanityCheck(), Thing  "+ id +"' has no Image, deleting");
                 deleteThing(thing);
+            } else {
+                if (UserFactory.getInstance().findUserById(thing.getOwnerId()) == null) {
+                    Logger.info(this, getClass().getName() + ": sanityCheck(), Thing  " + id + "' owner does not exist, deleting");
+                    deleteThing(thing);
+                }
             }
         }
     }
