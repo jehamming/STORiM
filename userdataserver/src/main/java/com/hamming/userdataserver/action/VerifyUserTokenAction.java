@@ -38,9 +38,8 @@ public class VerifyUserTokenAction extends Action<VerifyUserTokenRequestDTO> {
             if (session != null && session.getToken().equals(token)) {
                 success = true;
                 userDto = DTOFactory.getInstance().getUserDTO(user);
-
             } else {
-                errorMessage = "No valid session found for UserId '" + userId + "'";
+                errorMessage = "No valid session found for UserId '" + userId + "' token '" +  session.getToken() + "'";
             }
 
         }

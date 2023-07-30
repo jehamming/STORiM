@@ -28,6 +28,7 @@ public class LoginAction extends Action<LoginDTO> {
     public void execute() {
         UserDto userDto = null;
         STORIMClientConnection client = (STORIMClientConnection) getClient();
+        client.setSessionToken(null);
         String username = getDto().getUsername();
         String password = getDto().getPassword();
         Long roomId = getDto().getRoomID();
@@ -36,6 +37,7 @@ public class LoginAction extends Action<LoginDTO> {
         ValidateUserResponseDTO responseDTO = client.getServer().getUserDataServerProxy().validateUser(client, username, password);
 
         if (responseDTO.isSuccess() ) {
+            client.setSessionToken(responseDTO.getSessionToken());
             userDto = responseDTO.getUser();
             LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null);
             getClient().send(loginResultDTO);
