@@ -37,7 +37,7 @@ public class RoomEditorPanelController implements ConnectionListener {
     private DefaultListModel<TileDto> tilesModel = new DefaultListModel<>();
     boolean newRoom = false;
     private JFileChooser fileChooser;
-    private BufferedImage tileImage;
+    private Image tileImage;
     private TileDto chosenTile;
     private UserDto currentUser;
 
@@ -246,7 +246,9 @@ public class RoomEditorPanelController implements ConnectionListener {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fileChooser.getSelectedFile();
-                tileImage = ImageIO.read(file);
+                BufferedImage rawImage = ImageIO.read(file);
+                //ResizeIfNeeded
+                tileImage = resizeImage(rawImage);
                 chosenTile = null;
                 SwingUtilities.invokeLater(() -> {
                     Image iconImage = tileImage.getScaledInstance(panel.getLblImagePreview().getWidth(), panel.getLblImagePreview().getHeight(), Image.SCALE_SMOOTH);
@@ -257,6 +259,27 @@ public class RoomEditorPanelController implements ConnectionListener {
                 e.printStackTrace();
             }
         }
+    }
+
+    private Image resizeImage(BufferedImage rawImage) {
+        int imageWidth = rawImage.getWidth();
+        int imageHeight = rawImage.getHeight();
+        int newWidth = rawImage.getWidth();
+        int newHeight = rawImage.getHeight();
+        int roomWidth = Integer.valueOf(panel.getTxtWidth().getText());
+        int roomHeight = Integer.valueOf(panel.getTxtLength().getText());
+        float factor = 0;
+        if ( imageWidth > imageHeight ) {
+            // Width = greater
+            factor = (float) roomWidth / imageWidth;
+        } else {
+            // Height = greater
+            factor = (float) roomHeight / imageHeight;
+        }
+        newHeight = (int)( imageHeight * factor );
+        newWidth = (int) (imageWidth * factor );
+        Image returnValue = rawImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        return returnValue;
     }
 
     private void teleport() {

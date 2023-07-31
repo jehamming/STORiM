@@ -24,6 +24,7 @@ import com.hamming.storim.common.net.ProtocolReceiver;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -150,7 +151,8 @@ public class AvatarPanelController implements ConnectionListener {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fileChooser.getSelectedFile();
-                avatarImage = ImageIO.read(file);
+                BufferedImage rawFile = ImageIO.read(file);
+                avatarImage = resizeImage(rawFile);
                 SwingUtilities.invokeLater(() -> {
                     Image iconImage = avatarImage.getScaledInstance(panel.getLblImagePreview().getWidth(), panel.getLblImagePreview().getHeight(), Image.SCALE_SMOOTH);
                     panel.getLblImagePreview().setIcon(new ImageIcon(iconImage));
@@ -160,6 +162,26 @@ public class AvatarPanelController implements ConnectionListener {
                 e.printStackTrace();
             }
         }
+    }
+
+    private Image resizeImage(BufferedImage rawImage) {
+        int imageWidth = rawImage.getWidth();
+        int imageHeight = rawImage.getHeight();
+        int newWidth = rawImage.getWidth();
+        int newHeight = rawImage.getHeight();
+        int width = 200;
+        float factor = 0;
+        if ( imageWidth > imageHeight ) {
+            // Width = greater
+            factor = (float) width / imageWidth;
+        } else {
+            // Height = greater
+            factor = (float) width / imageHeight;
+        }
+        newHeight = (int)( imageHeight * factor );
+        newWidth = (int) (imageWidth * factor );
+        Image returnValue = rawImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        return returnValue;
     }
 
     private void createAvatar() {
