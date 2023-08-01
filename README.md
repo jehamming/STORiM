@@ -14,7 +14,6 @@ result>You explain, "You can create your own verbs!"
 # The Server Architecture is designed to be scalable: 
 There are multiple servers : 
 - UserDataServer - This stores all the userdata : Users/Verbs/Tiles/Things 
-- LoginServer - Clients connect to this Server. The Server knows which microservers are running where
 - MicroServer - This Server servers a number of Rooms connected to eachother using Exits. Exits can also lead to a Room on another server. Multiple MicroServers together can server a whole world of interconnected Rooms in a scalable fashion. 
 
 See also https://github.com/jehamming/STORiM/blob/develop/STORIM-Architecture.jpg 
