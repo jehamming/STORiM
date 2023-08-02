@@ -5,12 +5,12 @@
   <parent>
     <groupId>com.hamming.storim</groupId>
     <artifactId>storim</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
   </parent>
 
   <groupId>com.hamming.storim</groupId>
   <artifactId>common</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
 
   <dependencies>
 

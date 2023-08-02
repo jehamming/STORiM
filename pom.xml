@@ -4,8 +4,16 @@
 
     <groupId>com.hamming.storim</groupId>
     <artifactId>storim</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <modules>
+        <module>common</module>
+        <module>servercommon</module>
+        <module>userdataserver</module>
+        <module>microserver</module>
+        <module>client/java/</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
