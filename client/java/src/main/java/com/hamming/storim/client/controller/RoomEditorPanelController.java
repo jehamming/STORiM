@@ -92,6 +92,8 @@ public class RoomEditorPanelController implements ConnectionListener {
             tileSelected();
         });
         panel.getListTiles().setVisibleRowCount(3);
+        panel.getTxtWidth().setEnabled(false);
+        panel.getTxtLength().setEnabled(false);
 
     }
 
@@ -183,8 +185,6 @@ public class RoomEditorPanelController implements ConnectionListener {
     private void setEditable(boolean editable) {
         SwingUtilities.invokeLater(() -> {
             panel.getTxtRoomName().setEnabled(editable);
-            panel.getTxtWidth().setEnabled(editable);
-            panel.getTxtLength().setEnabled(editable);
             panel.getTxtRows().setEnabled(editable);
             panel.getTxtCols().setEnabled(editable);
             panel.getBtnChooseFile().setEnabled(editable);
@@ -309,8 +309,6 @@ public class RoomEditorPanelController implements ConnectionListener {
             panel.getLblImagePreview().setIcon(null);
             tileImage = null;
             panel.getTxtRoomName().setEnabled(true);
-            panel.getTxtWidth().setEnabled(false);
-            panel.getTxtLength().setEnabled(false);
             panel.getTxtRows().setEnabled(false);
             panel.getTxtCols().setEnabled(false);
             panel.getBtnChooseFile().setEnabled(true);

@@ -407,13 +407,15 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     @Override
     public void disconnected() {
         gameController.removeServerListener(this);
-        Location location = gameController.getGameState().getUserLocation(currentUser.getId());
-        gameController.removeRoomListener(location.getRoomId(), this);
-        LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
-        server.getUserDataServerProxy().setLocation(currentUser.getId(), locationDto);
-        UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
-        gameController.addAction(action);
-        currentUser = null;
+        if ( currentUser != null ) {
+            Location location = gameController.getGameState().getUserLocation(currentUser.getId());
+            gameController.removeRoomListener(location.getRoomId(), this);
+            LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
+            server.getUserDataServerProxy().setLocation(currentUser.getId(), locationDto);
+            UserDisconnectedAction action = new UserDisconnectedAction(gameController, this, currentUser);
+            gameController.addAction(action);
+            currentUser = null;
+        }
     }
 
     @Override

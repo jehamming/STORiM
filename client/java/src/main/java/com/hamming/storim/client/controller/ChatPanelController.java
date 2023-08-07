@@ -97,6 +97,11 @@ public class ChatPanelController implements ConnectionListener {
             String txt = panel.getTfInput().getText().trim();
             VerbListItem item = (VerbListItem) panel.getCmbVerbs().getSelectedItem();
             connectionController.send(new ExecVerbDTO(item.getId(), txt));
+            SwingUtilities.invokeLater(() -> {
+                panel.getTfInput().setSelectionStart(0);
+                int end = panel.getTfInput().getText().length();
+                panel.getTfInput().setSelectionEnd(end);
+            });
         }
     }
 

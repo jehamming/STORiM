@@ -1,3 +1,4 @@
+#!/bin/sh
 cd common/ && mvn clean && cd ..
 cd client/java/ && mvn clean && cd ../../
 cd servercommon/ && mvn clean && cd ..

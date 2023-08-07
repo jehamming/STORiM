@@ -72,7 +72,7 @@ public class LoginPanelController implements ConnectionListener {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(panel, e);
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
     }
 
@@ -104,7 +104,7 @@ public class LoginPanelController implements ConnectionListener {
     }
 
     private void setup() {
-        panel.getTxtServerURL().setText("storim://127.0.1.1:3334");
+        panel.getTxtServerURL().setText("storim://127.0.0.1:3334");
         panel.getTxtUsername().setText(storimWindow.getUsername());
         panel.getTxtPassword().setText(storimWindow.getPassword());
         panel.getTxtPassword().addKeyListener(new KeyListener() {

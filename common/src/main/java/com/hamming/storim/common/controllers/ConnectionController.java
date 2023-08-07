@@ -21,6 +21,7 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
     private String clientID;
     private UserDto user;
     private List<ConnectionListener> connectionListeners;
+    private static int CONNECTION_TIMEOUT = 4000;
 
     private Map<Class, List<ProtocolReceiver>> commandReceivers;
 
@@ -39,22 +40,35 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
     }
 
     public void connect(String clientName, String serverip, int port) throws Exception {
+        int millisecs = 0;
+        boolean timeout = false;
         if (client != null && client.isConnected()) {
             client.dispose();
         }
         client = new NetClient(this, this);
         client.setId(clientName);
-        client.connect(serverip, port);
-        user = null;
-        while (!client.isConnected()) {
-            try {
-                Thread.sleep(100);
-                //TODO timeout ???
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        String errorMessage = client.connect(serverip, port);
+        if ( errorMessage == null ) {
+            user = null;
+            while (!client.isConnected() && !timeout) {
+                try {
+                    Thread.sleep(100);
+                    Logger.info("Trying to connect to " + serverip);
+                    millisecs += 100;
+                    if (millisecs > CONNECTION_TIMEOUT) {
+                        errorMessage = "Timeout waiting for server (slow network?)";
+                        timeout = true;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+            fireConnectedEvent();
         }
-        fireConnectedEvent();
+
+        if ( errorMessage != null ) {
+            throw new Exception (errorMessage);
+        }
     }
 
     public void fireConnectedEvent() {

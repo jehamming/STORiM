@@ -11,6 +11,7 @@ import com.hamming.storim.common.util.Logger;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +56,8 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     public String connect(String ip, int port) {
         String retval = null;
         try {
-            socket = new Socket(ip, port);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(ip, port), 1000);
             registerStreams();
             connectionListener.connected();
         } catch (IOException e) {

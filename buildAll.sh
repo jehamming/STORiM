@@ -1,3 +1,4 @@
+#!/bin/sh
 
 mvn clean install
 cd common/ && mvn clean install && cd ..

@@ -28,7 +28,6 @@ public class CreateMinimalUserDataSet {
         cmdSayPlayer2.setToCaller("You say '${message}'");
         cmdSayPlayer2.setToLocation("${caller} says '${message}'");
 
-
         Database.getInstance().store();
 
     }

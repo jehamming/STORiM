@@ -37,6 +37,10 @@ public class AddUserAction extends Action<AddUserDto> {
             User root = UserFactory.getInstance().getRootUser();
             user = UserFactory.getInstance().addUser(root, dto.getName(), dto.getUsername(), dto.getPassword(), dto.getEmail());
             userDto = DTOFactory.getInstance().getUserDTO(user);
+            //Create a default verb
+            Verb cmdSayPlayer1 = VerbFactory.getInstance().createVerb("Say", user);
+            cmdSayPlayer1.setToCaller("You say '${message}'");
+            cmdSayPlayer1.setToLocation("${caller} says '${message}'");
             success = true;
         }
         AddUserResultDTO addUserResultDTO = new AddUserResultDTO(success, errorMessage, userDto);
