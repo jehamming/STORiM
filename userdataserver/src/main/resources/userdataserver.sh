@@ -1,2 +1,2 @@
 #!/bin/sh
-java -cp .:lib/* com.hamming.userdataserver.STORIMUserDataServer
+exec java -cp .:lib/* com.hamming.userdataserver.STORIMUserDataServer
