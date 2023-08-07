@@ -1,6 +1,8 @@
 # STORiM
 STOry based Instant Messaging
 
+STORIM is Inspired by LambdaMOO (rooms, things, verbs) and Whatsapp
+
 A server architecture (and client(s)!) for a new way of cross platform communication: Whatsapp-like chat features combined with MOO features. 
 With STORIM you can connect to a Server, walk through rooms (by text or visually (2D)) and chat with others using VERBS.
 
@@ -25,7 +27,15 @@ Note: My core hobby is the Infrastructure, I suck at GUIs ;-)
 # Screenshots
 See https://github.com/jehamming/STORiM/blob/develop/screenshots/Screen002.png 
 
+# Getting started for Development
+STORIM is build in Linux, in the language Java with Maven. 
 
-STORIM is Inspired by LambdaMOO (rooms, things, verbs) and Whatsapp
+Checkout the top folder and import the pom.xml in your editor. I use IntelliJ. 
+If you do a 'mvn clean install' in the top folder, the complete STORIM will be build. 
+Checkout the target folders of the different modules, for the userdataserver/microserver and client/java they should contain a subfolder with the deployable software. 
+
+
+
+
 
 
