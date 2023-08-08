@@ -32,8 +32,29 @@ Checkout the top folder and import the pom.xml in your editor. I use IntelliJ.
 If you do a 'mvn clean install' in the top folder, the complete STORIM will be build. 
 Checkout the target folders of the different modules, for the userdataserver/microserver and client/java they should contain a subfolder with the deployable software. 
 
+# Getting started to run STORIM
+Either download a release or build a SNAPSHOT yourself
 
+Using a Release
+* Download the release
+* Step 1 : UserDataServer 
+- Check the userdataserver.propertes file
+- Run the userdataserver by running the shellscript or bat file
+* Step 2 : MicroServer
+- Check the server.properties file: Change the dataserver details (ip + port) according to the output of the dataserver
+- Run the microserver by running the shellscript or bat file
+* Step 3 : The Client
+- Run the client by executing the client shell script or bat file
+- Enter the url of the Microserver
+- Default there is only one user: root, password root 
+- Go to the admin panel and enter the admin password : admin
+- Now you can add/remove users 
 
+Using a SNAPSHOT:
+* checkout a SNAPSHOT. 
+* run "mvn clean install" in the root of Storim, all artifacts will be build
+* In the target folder of the userdataserver,microserver and client/java folders the runnable/deployable artifacts can be found. 
+* Use the steps of Running a Release 
 
 
 
