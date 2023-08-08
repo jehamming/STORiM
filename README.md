@@ -23,7 +23,7 @@ Currently only a Java Based Client exist. I plan to make multiple clients: Andro
 Note: My core hobby is the Infrastructure, I suck at GUIs ;-) 
 
 # Screenshots
-See https://github.com/jehamming/STORiM/blob/develop/screenshots/Screen002.png 
+See https://github.com/jehamming/STORiM/tree/develop/screenshots
 
 # Getting started for Development
 STORIM is build in Linux, in the language Java with Maven. 
