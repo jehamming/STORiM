@@ -18,8 +18,6 @@ There are multiple servers :
 - UserDataServer - This stores all the userdata : Users/Verbs/Tiles/Things 
 - MicroServer - This Server servers a number of Rooms connected to eachother using Exits. Exits can also lead to a Room on another server. Multiple MicroServers together can server a whole world of interconnected Rooms in a scalable fashion. 
 
-See also https://github.com/jehamming/STORiM/blob/develop/STORIM-Architecture.jpg 
-
 # Clients
 Currently only a Java Based Client exist. I plan to make multiple clients: Android/Web (maybe even IOS?). 
 Note: My core hobby is the Infrastructure, I suck at GUIs ;-) 
