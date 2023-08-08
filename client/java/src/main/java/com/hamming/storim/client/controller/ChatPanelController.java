@@ -54,6 +54,11 @@ public class ChatPanelController implements ConnectionListener {
 
     private void messageInRoom(MessageInRoomDTO dto) {
         addText(dto.getMessage());
+        if ( !dto.getSourceID().equals(storimWindow.getCurrentUser().getId()) ) {
+            storimWindow.setTitle(dto.getMessage());
+        } else {
+            storimWindow.setTitle(storimWindow.getCurrentUser().getName());
+        }
     }
 
     private void setVerbs(UserVerbsDTO dto) {

@@ -5,29 +5,29 @@
   <parent>
     <groupId>com.hamming.storim</groupId>
     <artifactId>storim</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
   </parent>
 
   <groupId>com.hamming.storim</groupId>
   <artifactId>microserver</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
 
 
   <dependencies>
     <dependency>
       <groupId>com.hamming.storim</groupId>
       <artifactId>common</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.hamming.storim</groupId>
       <artifactId>servercommon</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.hamming.storim</groupId>
       <artifactId>servercommon</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
       <scope>compile</scope>
     </dependency>
 

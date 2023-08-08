@@ -342,13 +342,13 @@ public class GameViewController implements ConnectionListener {
 
     public void exitClicked(Long id, String name, String roomURI) {
         if ( roomURI == null ) {
-            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "'?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "'?", "Use exit " + name, JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 connectionController.send(new UseExitRequestDTO(id));
             }
         } else {
             // To another server
-            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + roomURI + "' are you sure?", "Use exit", JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + roomURI + "' to another server, are you sure?", "Use exit " + roomURI, JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 storimWindow.useExitToOtherServer(roomURI);
             }

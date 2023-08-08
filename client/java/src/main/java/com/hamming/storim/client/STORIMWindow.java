@@ -5,7 +5,10 @@ import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
+import com.hamming.storim.common.net.ProtocolReceiver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,14 +51,19 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
         this.password = password;
         this.connectionController = connectionController;
         connectionController.addConnectionListener(this);
-        setTitle(BASIC_TITLE + "-"+username);
+        setTitle(BASIC_TITLE);
         gameView = new GameViewPanel(this);
         gameView.setPreferredSize(new Dimension(1000,500));
         GameViewController viewController = new GameViewController(this, gameView, connectionController);
         gameView.setViewController(viewController);
         initComponents();
         addTabs();
+        registerReceivers();
         setVisible(true);
+    }
+
+    private void registerReceivers() {
+        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto.getUser()));
     }
 
     public String getUsername() {
@@ -175,6 +183,7 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
     @Override
     public void disconnected() {
+        setTitle(BASIC_TITLE);
     }
 
 
@@ -194,6 +203,9 @@ public class STORIMWindow extends JFrame implements ConnectionListener {
 
     public void setCurrentUser(UserDto currentUser) {
         this.currentUser = currentUser;
+        if ( currentUser != null ) {
+            setTitle(currentUser.getName());
+        }
     }
 
     public String getUserToken() {
