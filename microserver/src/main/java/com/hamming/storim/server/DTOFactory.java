@@ -5,10 +5,7 @@ import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.serverpush.UserEnteredRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.UserInRoomDTO;
 import com.hamming.storim.server.common.ImageUtils;
-import com.hamming.storim.server.common.model.BasicObject;
-import com.hamming.storim.server.common.model.Exit;
-import com.hamming.storim.server.common.model.Location;
-import com.hamming.storim.server.common.model.Room;
+import com.hamming.storim.server.common.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +50,7 @@ public class DTOFactory {
             exits.add(e.getId());
         }
         String roomURI = serverURI +"/"+ b.getId();
-        RoomDto dto = new RoomDto(b.getId(), roomURI, b.getName(), b.getWidth(), b.getLength(), b.getRows(), b.getCols(), b.getTileId(), exits);
+        RoomDto dto = new RoomDto(b.getId(), roomURI, b.getName(), b.getRows(), b.getCols(), b.getTileSetId(), b.getTileMap(), exits);
         fillBasicObjectInfo(dto, b);
         return dto;
     }
@@ -68,6 +65,11 @@ public class DTOFactory {
         return new UserEnteredRoomDTO(userDto, locationDto, oldRoomId, oldRoomName);
     }
 
+    public TileSetDto getTileSetDTO(TileSet s) {
+        byte[] imagedata = ImageUtils.encode(s.getImage());
+        TileSetDto dto = new TileSetDto(s.getId(), s.getName(), imagedata, s.getTileWidth(), s.getTileHeight() );
+        return dto;
+    }
 }
 
 

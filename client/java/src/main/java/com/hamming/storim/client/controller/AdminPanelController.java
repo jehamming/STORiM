@@ -1,41 +1,27 @@
 package com.hamming.storim.client.controller;
 
-import com.hamming.storim.client.ImageUtils;
-import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.controller.admin.AdminUserController;
-import com.hamming.storim.client.listitem.ThingListItem;
-import com.hamming.storim.client.listitem.UserListItem;
-import com.hamming.storim.client.listitem.VerbListItem;
 import com.hamming.storim.client.panels.AdminPanel;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.controllers.ConnectionController;
-import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.request.AddThingDto;
-import com.hamming.storim.common.dto.protocol.request.DeleteThingDTO;
-import com.hamming.storim.common.dto.protocol.request.PlaceThingInRoomDTO;
-import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.LoginDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.VerifyAdminRequestDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.VerifyAdminResponseDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
 
 public class AdminPanelController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private AdminPanel panel;
-    private STORIMWindow storimWindow;
+    private STORIMWindowController windowController;
 
     private UserDto currentUser;
 
@@ -45,9 +31,9 @@ public class AdminPanelController implements ConnectionListener {
 
 
 
-    public AdminPanelController(STORIMWindow storimWindow, AdminPanel panel, ConnectionController connectionController) {
+    public AdminPanelController(STORIMWindowController windowController, AdminPanel panel, ConnectionController connectionController) {
         this.panel = panel;
-        this.storimWindow = storimWindow;
+        this.windowController = windowController;
         this.connectionController = connectionController;
         adminUserController = new AdminUserController(this, panel);
         connectionController.addConnectionListener(this);

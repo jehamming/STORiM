@@ -28,18 +28,6 @@ public class AddRoomAction extends Action<AddRoomDto> {
         Long creator = client.getCurrentUser().getId();
 
         Room newRoom = addRoom(creator, dto.getName());
-        if (dto.getImageData() != null ) {
-            // New Tile
-            TileDto tile = client.getServer().getUserDataServerProxy().addTile(creator, dto.getImageData());
-            newRoom.setTileId(tile.getId());
-            TileAddedDTO tileAddedDTO = new TileAddedDTO(tile);
-            client.send(tileAddedDTO);
-        } else if (dto.getTileId() != null ) {
-            // Existing Tile!
-            TileDto tile = client.getServer().getUserDataServerProxy().getTile(dto.getTileId());
-            newRoom.setTileId(tile.getId());
-        }
-
         RoomDto roomDto = DTOFactory.getInstance().getRoomDto(newRoom, client.getServer().getServerURI());
         RoomAddedDTO roomAddedDTO = new RoomAddedDTO(roomDto);
         client.send(roomAddedDTO);

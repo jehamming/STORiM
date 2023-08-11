@@ -6,6 +6,7 @@ import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.NetUtils;
 import com.hamming.storim.server.common.factories.ExitFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
+import com.hamming.storim.server.common.factories.TileSetFactory;
 import com.hamming.storim.server.game.GameController;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class STORIMMicroServer extends Server {
         port = config.getPropertyAsInt("serverport");
 
         ExitFactory.getInstance(DATADIR);
+        TileSetFactory.getInstance(DATADIR);
 
         checkRooms();
 

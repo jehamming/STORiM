@@ -8,21 +8,19 @@ import java.util.Arrays;
 public class UpdateRoomDto extends ProtocolDTO {
 
     private Long roomId;
+    private Long tileSetId;
     private String name;
-    private int width, length;
-    private int rows, cols;
-    private Long tileId;
-    private byte[] imageData;
+    private int rows= -1;
+    private int cols= -1;
 
-    public UpdateRoomDto(Long id, String name, int width, int length, int rows, int cols, Long tileId, byte[] imageData){
+    private int[][] tileMap;
+    public UpdateRoomDto(Long id, String name, int rows, int cols, Long tileSetId, int[][] tileMap){
         this.name = name;
-        this.width = width;
-        this.length = length;
+        this.tileSetId = tileSetId;
         this.rows = rows;
         this.cols = cols;
         this.roomId = id;
-        this.tileId = tileId;
-        this.imageData = imageData;
+        this.tileMap = tileMap;
     }
 
 
@@ -35,14 +33,6 @@ public class UpdateRoomDto extends ProtocolDTO {
         return roomId;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
     public int getRows() {
         return rows;
     }
@@ -51,24 +41,23 @@ public class UpdateRoomDto extends ProtocolDTO {
         return cols;
     }
 
-    public Long getTileId() {
-        return tileId;
+    public int[][] getTileMap() {
+        return tileMap;
     }
 
-    public byte[] getImageData() {
-        return imageData;
+    public Long getTileSetId() {
+        return tileSetId;
     }
 
     @Override
     public String toString() {
         return "UpdateRoomDto{" +
                 "roomId=" + roomId +
+                ", tileSetId=" + tileSetId +
                 ", name='" + name + '\'' +
-                ", width=" + width +
-                ", length=" + length +
                 ", rows=" + rows +
                 ", cols=" + cols +
-                ", tileId=" + tileId +
+                ", tileMap=" + Arrays.toString(tileMap) +
                 '}';
     }
 }

@@ -1,230 +1,240 @@
 package com.hamming.storim.client;
 
-import com.hamming.storim.client.controller.*;
-import com.hamming.storim.client.panels.*;
-import com.hamming.storim.client.view.GameViewPanel;
-import com.hamming.storim.common.controllers.ConnectionController;
-import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
-import com.hamming.storim.common.interfaces.ConnectionListener;
-import com.hamming.storim.common.net.ProtocolReceiver;
+
+import com.hamming.storim.client.panels.ChatPanel;
 
 import javax.swing.*;
-import java.awt.*;
 
-public class STORIMWindow extends JFrame implements ConnectionListener {
+/**
+ *
+ * @author jehamming
+ */
+public class STORIMWindow extends javax.swing.JFrame {
 
-
-    private LoginPanel loginPanel;
-    private LoginPanelController loginPanelController;
-    private ChatPanel chatPanel;
-    private ChatPanelController chatPanelController;
-    private VerbEditorPanel verbEditorPanel;
-    private VerbEditorPanelController verbEditorPanelController;
-    private UserInfoPanel userInfoPanel;
-    private UserInfoPanelController userInfoPanelController;
-    private AvatarPanel avatarPanel;
-    private AvatarPanelController avatarPanelController;
-    private RoomEditorPanel roomEditorPanel;
-    private RoomEditorPanelController roomEditorPanelController;
-    private ThingPanelController thingPanelController;
-    private ConnectionController connectionController;
-    private ThingPanel thingPanel;
-    private ExitPanel exitPanel;
-    private ExitPanelController exitPanelController;
-    private AdminPanel adminPanel;
-    private AdminPanelController adminPanelController;
-
-
-    private GameViewPanel gameView;
-    private static String BASIC_TITLE = "STORIM";
-
-    private UserDto currentUser;
-    private String currentServerId;
-    private String userToken;
-    private String username;
-    private String password;
-
-    public STORIMWindow(ConnectionController connectionController, String username, String password) {
-        this.username = username;
-        this.password = password;
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
-        setTitle(BASIC_TITLE);
-        gameView = new GameViewPanel(this);
-        gameView.setPreferredSize(new Dimension(1000,500));
-        GameViewController viewController = new GameViewController(this, gameView, connectionController);
-        gameView.setViewController(viewController);
-        initComponents();
-        addTabs();
-        registerReceivers();
-        setVisible(true);
+    /**
+     * Creates new form STORIMWindow
+     */
+    public STORIMWindow() {
     }
 
-    private void registerReceivers() {
-        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto.getUser()));
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void addTabs() {
-        loginPanel = new LoginPanel();
-        loginPanelController = new LoginPanelController(this, loginPanel, connectionController);
-        tabbedPane.addTab("Connect/Disconnect", loginPanel);
-
-        chatPanel = new ChatPanel();
-        chatPanelController = new ChatPanelController(this , chatPanel, connectionController);
-        tabbedPane.addTab("Chat", chatPanel);
-
-        verbEditorPanel = new VerbEditorPanel();
-        verbEditorPanelController = new VerbEditorPanelController(this , verbEditorPanel, connectionController);
-        tabbedPane.addTab("Verbs", verbEditorPanel);
-
-
-        userInfoPanel = new UserInfoPanel();
-        userInfoPanelController = new UserInfoPanelController(this, userInfoPanel, connectionController);
-        tabbedPane.addTab("Users", userInfoPanel);
-
-        avatarPanel = new AvatarPanel();
-        avatarPanelController = new AvatarPanelController(this, avatarPanel, connectionController);
-        tabbedPane.add("Avatars", avatarPanel);
-
-
-        roomEditorPanel = new RoomEditorPanel();
-        roomEditorPanelController = new RoomEditorPanelController(this, roomEditorPanel, connectionController);
-        tabbedPane.addTab("Rooms", roomEditorPanel);
-
-
-        thingPanel = new ThingPanel();
-        thingPanelController = new ThingPanelController(this, thingPanel, connectionController);
-        tabbedPane.addTab("Things", thingPanel);
-
-        exitPanel = new ExitPanel();
-        exitPanelController = new ExitPanelController(this, exitPanel, connectionController);
-        tabbedPane.addTab("Exits", exitPanel);
-
-        adminPanel = new AdminPanel();
-        adminPanelController = new AdminPanelController(this, adminPanel, connectionController);
-        tabbedPane.addTab("Admin", adminPanel);
-    }
-
-
-    private void initComponents() {
-        lblRoomName = new JTextField();
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
+    public void initComponents() {
+        lblRoomName = new javax.swing.JTextField();
         lblRoomName.setEditable(false);
- 
-        tabbedPane = new javax.swing.JTabbedPane();
+        lblRoomName.setBorder(null);
+        jSplitPane2 = new javax.swing.JSplitPane();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        menuFile = new javax.swing.JMenu();
+        menuConnect = new javax.swing.JMenuItem();
+        menuDisconnect = new javax.swing.JMenuItem();
+        menuEdit = new javax.swing.JMenu();
+        menuVerbs = new javax.swing.JMenuItem();
+        menuAvatars = new javax.swing.JMenuItem();
+        menuRooms = new javax.swing.JMenuItem();
+        menuRoomTiles = new javax.swing.JMenuItem();
+        menuItems = new javax.swing.JMenuItem();
+        menuExits = new javax.swing.JMenuItem();
+        menuAdmin = new javax.swing.JMenu();
+        menuAdminPassword = new javax.swing.JMenuItem();
+        menuAdminEditUsers = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(1230, 570));
-        setPreferredSize(new java.awt.Dimension(1230, 570));
+        setPreferredSize(new java.awt.Dimension(407, 600));
 
-        gameView.setPreferredSize(new java.awt.Dimension(500, 500));
+        jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        javax.swing.GroupLayout gameViewLayout = new javax.swing.GroupLayout(gameView);
-        gameView.setLayout(gameViewLayout);
-        gameViewLayout.setHorizontalGroup(
-                gameViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 500, Short.MAX_VALUE)
+        pnlGameView.setMinimumSize(new java.awt.Dimension(300, 300));
+
+        javax.swing.GroupLayout pnlGameViewLayout = new javax.swing.GroupLayout(pnlGameView);
+        pnlGameView.setLayout(pnlGameViewLayout);
+        pnlGameViewLayout.setHorizontalGroup(
+                pnlGameViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 483, Short.MAX_VALUE)
         );
-        gameViewLayout.setVerticalGroup(
-                gameViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 500, Short.MAX_VALUE)
+        pnlGameViewLayout.setVerticalGroup(
+                pnlGameViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        tabbedPane.setPreferredSize(new java.awt.Dimension(700, 500));
+        jSplitPane2.setTopComponent(pnlGameView);
+
+        chatPanel1.setMinimumSize(new java.awt.Dimension(242, 200));
+        jSplitPane2.setRightComponent(chatPanel1);
+
+        menuFile.setText("File");
+
+        menuConnect.setText("Connect");
+        menuConnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuConnectActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuConnect);
+
+        menuDisconnect.setText("Disconnect");
+        menuFile.add(menuDisconnect);
+
+        jMenuBar1.add(menuFile);
+
+        menuEdit.setText("Edit");
+
+        menuVerbs.setText("Verbs");
+        menuEdit.add(menuVerbs);
+
+        menuAvatars.setText("Avatars");
+        menuEdit.add(menuAvatars);
+
+        menuRooms.setText("Rooms");
+        menuEdit.add(menuRooms);
+
+        menuRoomTiles.setText("Room Tiles");
+        menuEdit.add(menuRoomTiles);
+
+        menuItems.setText("Items");
+        menuEdit.add(menuItems);
+
+        menuExits.setText("Exits");
+        menuEdit.add(menuExits);
+
+        jMenuBar1.add(menuEdit);
+
+        menuAdmin.setText("Admin");
+
+        menuAdminPassword.setText("Admin Password");
+        menuAdmin.add(menuAdminPassword);
+
+        menuAdminEditUsers.setText("Edit Users");
+        menuAdmin.add(menuAdminEditUsers);
+
+        jMenuBar1.add(menuAdmin);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGap(0, 0, Short.MAX_VALUE)
-                                                .addComponent(gameView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(lblRoomName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 680, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
+                        .addComponent(lblRoomName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(gameView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addComponent(lblRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE))
         );
 
-        getAccessibleContext().setAccessibleDescription("");
-
         pack();
+    }// </editor-fold>
 
+    private void menuConnectActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
     }
 
-    private JTextField lblRoomName;
-    private javax.swing.JTabbedPane tabbedPane;
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(STORIMWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(STORIMWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(STORIMWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(STORIMWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
 
-
-    @Override
-    public void connected() {
-    }
-
-    @Override
-    public void disconnected() {
-        setTitle(BASIC_TITLE);
-    }
-
-
-    public GameViewPanel getGameView() {
-        return gameView;
-    }
-
-    public void setRoomname(String text) {
-        SwingUtilities.invokeLater(() -> {
-            lblRoomName.setText(text);
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new STORIMWindow().setVisible(true);
+            }
         });
     }
 
-    public UserDto getCurrentUser() {
-        return currentUser;
+    // Variables declaration - do not modify
+    private ChatPanel chatPanel1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JSplitPane jSplitPane2;
+    private javax.swing.JTextField lblRoomName;
+    private javax.swing.JMenu menuAdmin;
+    private javax.swing.JMenuItem menuAdminEditUsers;
+    private javax.swing.JMenuItem menuAdminPassword;
+    private javax.swing.JMenuItem menuAvatars;
+    private javax.swing.JMenuItem menuConnect;
+    private javax.swing.JMenuItem menuDisconnect;
+    private javax.swing.JMenu menuEdit;
+    private javax.swing.JMenuItem menuExits;
+    private javax.swing.JMenu menuFile;
+    private javax.swing.JMenuItem menuItems;
+    private javax.swing.JMenuItem menuRoomTiles;
+    private javax.swing.JMenuItem menuRooms;
+    private javax.swing.JMenuItem menuVerbs;
+    private javax.swing.JPanel pnlGameView;
+    // End of variables declaration
+
+    public JMenuItem getMenuAdminEditUsers() {
+        return menuAdminEditUsers;
     }
 
-    public void setCurrentUser(UserDto currentUser) {
-        this.currentUser = currentUser;
-        if ( currentUser != null ) {
-            setTitle(currentUser.getName());
-        }
+    public JMenuItem getMenuAdminPassword() {
+        return menuAdminPassword;
     }
 
-    public String getUserToken() {
-        return userToken;
+    public JMenuItem getMenuAvatars() {
+        return menuAvatars;
     }
 
-    public void setUserToken(String userToken) {
-        this.userToken = userToken;
+    public JMenuItem getMenuConnect() {
+        return menuConnect;
     }
 
-    public String getCurrentServerId() {
-        return currentServerId;
+    public JMenuItem getMenuDisconnect() {
+        return menuDisconnect;
     }
 
-    public void setCurrentServerId(String currentServerId) {
-        this.currentServerId = currentServerId;
+    public JMenuItem getMenuExits() {
+        return menuExits;
     }
 
-    public void useExitToOtherServer(String serverURI) {
-       loginPanelController.connectToServer(currentUser.getId(), userToken, serverURI  );
+    public JMenuItem getMenuRoomTiles() {
+        return menuRoomTiles;
+    }
+
+    public JMenuItem getMenuRooms() {
+        return menuRooms;
+    }
+
+    public JMenuItem getMenuVerbs() {
+        return menuVerbs;
+    }
+
+    public JTextField getLblRoomName() {
+        return lblRoomName;
+    }
+
+
+    public void setPnlGameView(JPanel pnlGameView) {
+        this.pnlGameView = pnlGameView;
+    }
+
+    public void setChatPanel(ChatPanel chatPanel1) {
+        this.chatPanel1 = chatPanel1;
     }
 }
+

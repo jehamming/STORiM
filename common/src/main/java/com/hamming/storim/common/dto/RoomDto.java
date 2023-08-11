@@ -1,33 +1,25 @@
 package com.hamming.storim.common.dto;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class RoomDto extends DTO {
 
     private String roomURI;
-    private Long tileID;
-    private int width, length;
+    private Long tileSetId;
     private int rows, cols;
     private List<Long> exits;
+    private int[][] tileMap;
 
-    public RoomDto(Long id, String roomURI, String name, int width, int length, int rows, int cols, Long tileId, List<Long> exits){
+    public RoomDto(Long id, String roomURI, String name, int rows, int cols, Long tileSetId, int[][] tileMap, List<Long> exits){
         setId(id);
         setName(name);
-        this.width = width;
-        this.length = length;
         this.rows = rows;
         this.cols = cols;
-        this.tileID = tileId;
         this.exits = exits;
         this.roomURI = roomURI;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getLength() {
-        return length;
+        this.tileMap = tileMap;
+        this.tileSetId = tileSetId;
     }
 
     public int getRows() {
@@ -38,8 +30,12 @@ public class RoomDto extends DTO {
         return cols;
     }
 
-    public Long getTileID() {
-        return tileID;
+    public Long getTileSetId() {
+        return tileSetId;
+    }
+
+    public int[][] getTileMap() {
+        return tileMap;
     }
 
     public List<Long> getExits() {
@@ -53,13 +49,14 @@ public class RoomDto extends DTO {
     @Override
     public String toString() {
         return "RoomDto{" +
-                "roomURI='" + roomURI + '\'' +
-                ", tileID=" + tileID +
-                ", width=" + width +
-                ", length=" + length +
+                "id='" + getId() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", roomURI='" + roomURI + '\'' +
+                ", tileSetId=" + tileSetId +
                 ", rows=" + rows +
                 ", cols=" + cols +
                 ", exits=" + exits +
+                ", tileMap=" + Arrays.toString(tileMap) +
                 '}';
     }
 }

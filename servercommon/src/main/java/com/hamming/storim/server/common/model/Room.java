@@ -3,30 +3,38 @@ package com.hamming.storim.server.common.model;
 import com.hamming.storim.common.dto.ThingDto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Room extends BasicObject   {
 
     private int rows, cols;
-    private int length, width;
+    private Long tileSetId;
+    private int[][] tileMap;
     private int spawnPointX;
     private int spawnPointY;
-    private Long tileId;
-
     private List<Exit> exits;
     private List<Long> objectsInRoom;
 
     public Room() {
         spawnPointX = 100;
         spawnPointY = 100;
-        tileId = null;
+        tileSetId = null;
         setName("A basic room");
         rows = 10;
         cols = 10;
-        length = 200;
-        width = 200;
+        createTileMap();
         exits = new ArrayList<>();
         objectsInRoom = new ArrayList<>();
+    }
+
+    private void createTileMap() {
+        tileMap = new int[cols][rows];
+        for (int c = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
+                tileMap[c][r] = -1;
+            }
+        }
     }
 
     public int getSpawnPointX() {
@@ -45,45 +53,26 @@ public class Room extends BasicObject   {
         this.spawnPointY = spawnPointY;
     }
 
-    public Long getTileId() {
-        return tileId;
+    public void setTileSetId(Long tileSetId) {
+        this.tileSetId = tileSetId;
     }
 
-    public void setTileId(Long tileId) {
-        this.tileId = tileId;
+    public Long getTileSetId() {
+        return tileSetId;
+    }
+
+    public int[][] getTileMap() {
+        return tileMap;
     }
 
     public int getRows() {
         return rows;
     }
 
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
-
     public int getCols() {
         return cols;
     }
 
-    public void setCols(int cols) {
-        this.cols = cols;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
 
     public void addExit(Exit exit) {
         exits.add(exit);
@@ -97,18 +86,21 @@ public class Room extends BasicObject   {
         return exits;
     }
 
+    public void setTileMap(int[][] tileMap) {
+        this.tileMap = tileMap;
+    }
+
     @Override
     public String toString() {
         return "Room{" +
-                "id=" + getId() +
-                ", rows=" + rows +
+                "rows=" + rows +
                 ", cols=" + cols +
-                ", length=" + length +
-                ", width=" + width +
-                ", name='" + getName() + '\'' +
+                ", tileSetId=" + tileSetId +
+                ", tileMap=" + Arrays.toString(tileMap) +
                 ", spawnPointX=" + spawnPointX +
                 ", spawnPointY=" + spawnPointY +
-                ", tileId=" + tileId +
+                ", exits=" + exits +
+                ", objectsInRoom=" + objectsInRoom +
                 '}';
     }
 
@@ -132,6 +124,12 @@ public class Room extends BasicObject   {
     }
     public void removeObjectFromRoom(Long objectId) {
         objectsInRoom.remove(objectId);
+    }
+
+    public void setSize(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
+        createTileMap();
     }
 
 }

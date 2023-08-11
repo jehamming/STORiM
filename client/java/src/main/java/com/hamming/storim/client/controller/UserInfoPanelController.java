@@ -1,6 +1,7 @@
 package com.hamming.storim.client.controller;
 
-import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.UserListItem;
 import com.hamming.storim.client.listitem.VerbListItem;
 import com.hamming.storim.client.panels.UserInfoPanel;
@@ -22,13 +23,13 @@ public class UserInfoPanelController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private UserInfoPanel panel;
-    private STORIMWindow storimWindow;
+    private STORIMWindowController windowController;
     private DefaultListModel<UserListItem> onlineUsersListmodel;
     private DefaultListModel<VerbListItem> verbsListmodel;
 
-    public UserInfoPanelController(STORIMWindow storimWindow, UserInfoPanel panel, ConnectionController connectionController) {
+    public UserInfoPanelController(STORIMWindowController windowController, UserInfoPanel panel, ConnectionController connectionController) {
         this.panel = panel;
-        this.storimWindow = storimWindow;
+        this.windowController = windowController;
         this.connectionController = connectionController;
         connectionController.addConnectionListener(this);
         registerReceivers();

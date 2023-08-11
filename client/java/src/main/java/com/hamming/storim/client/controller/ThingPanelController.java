@@ -1,7 +1,8 @@
 package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.ImageUtils;
-import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.ThingListItem;
 import com.hamming.storim.client.panels.ThingPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
@@ -32,7 +33,7 @@ public class ThingPanelController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private ThingPanel panel;
-    private STORIMWindow storimWindow;
+    private STORIMWindowController windowController;
 
     private JFileChooser fileChooser;
     private BufferedImage tileImage;
@@ -44,9 +45,9 @@ public class ThingPanelController implements ConnectionListener {
     private RoomDto currentRoom;
 
 
-    public ThingPanelController(STORIMWindow storimWindow, ThingPanel panel, ConnectionController connectionController) {
+    public ThingPanelController(STORIMWindowController windowController, ThingPanel panel, ConnectionController connectionController) {
         this.panel = panel;
-        this.storimWindow = storimWindow;
+        this.windowController = windowController;
         this.connectionController = connectionController;
         this.fileChooser = new JFileChooser();
         connectionController.addConnectionListener(this);

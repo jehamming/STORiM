@@ -1,11 +1,10 @@
 package com.hamming.storim.client.controller;
 
-import com.hamming.storim.client.ImageUtils;
-import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.AvatarListItem;
 import com.hamming.storim.client.listitem.RoomDetailsListItem;
 import com.hamming.storim.client.panels.RoomEditorPanel;
-import com.hamming.storim.client.panels.TileRenderer;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.TileDto;
@@ -19,34 +18,25 @@ import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public class RoomEditorPanelController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private RoomEditorPanel panel;
-    private STORIMWindow storimWindow;
+    private STORIMWindowController windowController;
     private DefaultListModel<AvatarListItem> avatarModel = new DefaultListModel<>();
     private DefaultListModel<RoomDetailsListItem> roomsModel = new DefaultListModel<>();
     private DefaultListModel<TileDto> tilesModel = new DefaultListModel<>();
     boolean newRoom = false;
-    private JFileChooser fileChooser;
-    private Image tileImage;
-    private TileDto chosenTile;
     private UserDto currentUser;
 
 
-    public RoomEditorPanelController(STORIMWindow storimWindow, RoomEditorPanel panel, ConnectionController connectionController) {
+    public RoomEditorPanelController(STORIMWindowController windowController, RoomEditorPanel panel, ConnectionController connectionController) {
         this.panel = panel;
-        this.storimWindow = storimWindow;
+        this.windowController = windowController;
         this.connectionController = connectionController;
-        this.fileChooser = new JFileChooser();
         connectionController.addConnectionListener(this);
         registerReceivers();
         setup();
@@ -68,7 +58,6 @@ public class RoomEditorPanelController implements ConnectionListener {
     }
 
     private void setup() {
-        panel.getListTiles().setModel(tilesModel);
         panel.getListRooms().setModel(roomsModel);
         panel.getListRooms().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) { //Else this is called twice!
@@ -86,15 +75,6 @@ public class RoomEditorPanelController implements ConnectionListener {
         panel.getBtnSave().setEnabled(false);
         panel.getBtnDelete().setEnabled(false);
         panel.getBtnCreate().setEnabled(false);
-        panel.getBtnChooseFile().addActionListener(e -> chooseFile());
-        panel.getListTiles().setCellRenderer(new TileRenderer());
-        panel.getListTiles().addListSelectionListener(e -> {
-            tileSelected();
-        });
-        panel.getListTiles().setVisibleRowCount(3);
-        panel.getTxtWidth().setEnabled(false);
-        panel.getTxtLength().setEnabled(false);
-
     }
 
 
@@ -150,19 +130,13 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private void empty(boolean thorough) {
         newRoom = false;
-        tileImage = null;
         SwingUtilities.invokeLater(() -> {
-            panel.getLblRoomID().setText("");
-            panel.getTxtRoomName().setText("");
-            panel.getLblImagePreview().setText("");
-            panel.getLblImagePreview().setIcon(null);
-            panel.getTxtWidth().setText("100");
-            panel.getTxtLength().setText("100");
+            panel.getLblId().setText("");
+            panel.getTfRoomName().setText("");
             panel.getTxtRows().setText("10");
             panel.getTxtCols().setText("10");
             panel.getBtnSave().setEnabled(false);
             panel.getBtnDelete().setEnabled(false);
-            panel.getBtnChooseFile().setEnabled(false);
             if (thorough) {
                 roomsModel.removeAllElements();
                 panel.getBtnTeleport().setEnabled(false);
@@ -184,10 +158,9 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private void setEditable(boolean editable) {
         SwingUtilities.invokeLater(() -> {
-            panel.getTxtRoomName().setEnabled(editable);
+            panel.getTfRoomName().setEnabled(editable);
             panel.getTxtRows().setEnabled(editable);
             panel.getTxtCols().setEnabled(editable);
-            panel.getBtnChooseFile().setEnabled(editable);
         });
     }
 
@@ -224,64 +197,6 @@ public class RoomEditorPanelController implements ConnectionListener {
         });
     }
 
-
-    private void tileSelected() {
-        chosenTile = panel.getListTiles().getSelectedValue();
-        tileImage = null;
-        SwingUtilities.invokeLater(() -> {
-            if (chosenTile != null) {
-                Image image = ImageUtils.decode(chosenTile.getImageData());
-                tileImage = (BufferedImage) image;
-                Image iconImage = image.getScaledInstance(panel.getLblImagePreview().getWidth(), panel.getLblImagePreview().getHeight(), Image.SCALE_SMOOTH);
-                panel.getLblImagePreview().setIcon(new ImageIcon(iconImage));
-            } else {
-                panel.getLblImagePreview().setIcon(null);
-            }
-        });
-    }
-
-    private void chooseFile() {
-        int returnVal = fileChooser.showOpenDialog(panel);
-
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            try {
-                File file = fileChooser.getSelectedFile();
-                BufferedImage rawImage = ImageIO.read(file);
-                //ResizeIfNeeded
-                tileImage = resizeImage(rawImage);
-                chosenTile = null;
-                SwingUtilities.invokeLater(() -> {
-                    Image iconImage = tileImage.getScaledInstance(panel.getLblImagePreview().getWidth(), panel.getLblImagePreview().getHeight(), Image.SCALE_SMOOTH);
-                    panel.getLblImagePreview().setIcon(new ImageIcon(iconImage));
-                });
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private Image resizeImage(BufferedImage rawImage) {
-        int imageWidth = rawImage.getWidth();
-        int imageHeight = rawImage.getHeight();
-        int newWidth = rawImage.getWidth();
-        int newHeight = rawImage.getHeight();
-        int roomWidth = Integer.valueOf(panel.getTxtWidth().getText());
-        int roomHeight = Integer.valueOf(panel.getTxtLength().getText());
-        float factor = 0;
-        if ( imageWidth > imageHeight ) {
-            // Width = greater
-            factor = (float) roomWidth / imageWidth;
-        } else {
-            // Height = greater
-            factor = (float) roomHeight / imageHeight;
-        }
-        newHeight = (int)( imageHeight * factor );
-        newWidth = (int) (imageWidth * factor );
-        Image returnValue = rawImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-        return returnValue;
-    }
-
     private void teleport() {
         RoomDetailsListItem item = panel.getListRooms().getSelectedValue();
         Long roomId = item.getRoomDto().getId();
@@ -290,7 +205,7 @@ public class RoomEditorPanelController implements ConnectionListener {
     }
 
     private void deleteRoom() {
-        Long roomId = Long.valueOf(panel.getLblRoomID().getText());
+        Long roomId = Long.valueOf(panel.getLblId().getText());
         DeleteRoomDTO deleteRoomDTO = new DeleteRoomDTO(roomId);
         connectionController.send(deleteRoomDTO);
         //FIXME Delete Room
@@ -299,50 +214,33 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private void createRoom() {
         newRoom = true;
-        chosenTile = null;
         SwingUtilities.invokeLater(() -> {
-            panel.getLblRoomID().setText("");
-            panel.getTxtRoomName().setText("New ROOM Name");
+            panel.getLblId().setText("");
+            panel.getTfRoomName().setText("New ROOM Name");
             panel.getBtnSave().setEnabled(true);
             panel.getListRooms().clearSelection();
             panel.getBtnDelete().setEnabled(false);
-            panel.getLblImagePreview().setIcon(null);
-            tileImage = null;
-            panel.getTxtRoomName().setEnabled(true);
-            panel.getTxtRows().setEnabled(false);
-            panel.getTxtCols().setEnabled(false);
-            panel.getBtnChooseFile().setEnabled(true);
+            panel.getTfRoomName().setEnabled(true);
+            panel.getTxtRows().setEnabled(true);
+            panel.getTxtCols().setEnabled(true);
         });
     }
 
     private void saveRoom() {
-        String roomName = panel.getTxtRoomName().getText().trim();
-        int width = Integer.valueOf(panel.getTxtWidth().getText());
-        int length = Integer.valueOf(panel.getTxtLength().getText());
+        String roomName = panel.getTfRoomName().getText().trim();
         int rows = Integer.valueOf(panel.getTxtRows().getText());
         int cols = Integer.valueOf(panel.getTxtCols().getText());
-        Long tileID = null;
-        if (chosenTile != null) {
-            tileID = chosenTile.getId();
-        }
+
         if (newRoom) {
-            if (tileImage != null) {
-                AddRoomDto addRoomDto = new AddRoomDto(roomName, width, length, rows, cols, null, ImageUtils.encode(tileImage));
-                connectionController.send(addRoomDto);
-            } else {
-                AddRoomDto addRoomDto = new AddRoomDto(roomName, width, length, rows, cols, tileID, null);
-                connectionController.send(addRoomDto);
-            }
+            AddRoomDto addRoomDto = new AddRoomDto(roomName, rows, cols);
+            connectionController.send(addRoomDto);
         } else {
             // Update room!
-            Long roomId = Long.valueOf(panel.getLblRoomID().getText());
-            if (tileImage != null) {
-                UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, width, length, rows, cols, null, ImageUtils.encode(tileImage));
-                connectionController.send(updateRoomDto);
-            } else {
-                UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, width, length, rows, cols, tileID, null);
-                connectionController.send(updateRoomDto);
-            }
+            Long roomId = Long.valueOf(panel.getLblId().getText());
+
+            UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, rows, cols, null, null);
+            connectionController.send(updateRoomDto);
+
         }
 
 
@@ -355,26 +253,14 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private void roomSelected(RoomDto room) {
         SwingUtilities.invokeLater(() -> {
-            panel.getLblRoomID().setText(room.getId().toString());
-            panel.getTxtRoomName().setText(room.getName());
-            panel.getTxtLength().setText("" + room.getLength());
-            panel.getTxtWidth().setText("" + room.getWidth());
+            panel.getLblId().setText(room.getId().toString());
+            panel.getTfRoomName().setText(room.getName());
             panel.getTxtCols().setText("" + room.getCols());
             panel.getTxtRows().setText("" + room.getRows());
             panel.getBtnSave().setEnabled(true);
             panel.getBtnDelete().setEnabled(true);
             panel.getBtnTeleport().setEnabled(true);
-            panel.getListTiles().setEnabled(true);
             setEditable(true);
-            panel.getLblImagePreview().setIcon(null);
-
-            if (room.getTileID() == null) {
-                panel.getListTiles().clearSelection();
-            } else {
-                int index = findIndex(room.getTileID());
-                panel.getListTiles().setSelectedIndex(index);
-                panel.getListTiles().ensureIndexIsVisible(index);
-            }
         });
     }
 

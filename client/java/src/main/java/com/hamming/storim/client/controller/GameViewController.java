@@ -1,6 +1,7 @@
 package com.hamming.storim.client.controller;
 
-import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.common.CalcTools;
 import com.hamming.storim.common.controllers.ConnectionController;
@@ -11,6 +12,8 @@ import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.common.dto.protocol.request.UseExitRequestDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetTileDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetTileResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.dto.protocol.serverpush.ExitAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.RoomUpdatedDTO;
@@ -35,49 +38,23 @@ public class GameViewController implements ConnectionListener {
     private List<MovementRequestDTO> movementRequests;
     private LocationDto lastReceivedLocation;
     private List<ViewListener> viewListeners;
-    private STORIMWindow storimWindow;
+    private STORIMWindowController windowController;
     private UserDto currentUser;
 
     private RoomDto currentRoom;
     private AvatarDto currentUserAvatar;
 
-    public GameViewController(STORIMWindow storimWindow, GameViewPanel gameView, ConnectionController connectionController) {
-        this.storimWindow = storimWindow;
+    public GameViewController(STORIMWindowController windowController, GameViewPanel gameView, ConnectionController connectionController) {
+        this.windowController = windowController;
         this.connectionController = connectionController;
         this.gameView = gameView;
         connectionController.addConnectionListener(this);
         sequenceNumber = 0;
         movementRequests = new ArrayList<>();
         viewListeners = new ArrayList<>();
-
-        storimWindow.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                windowResized();
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-
-            }
-        });
-
         registerReceivers();
     }
 
-    private void windowResized() {
-        gameView.scheduleAction(() -> gameView.componentResized());
-    }
 
     private void registerReceivers() {
         connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
@@ -111,7 +88,7 @@ public class GameViewController implements ConnectionListener {
     }
 
     private void addExit(ExitDto exitDto) {
-        gameView.scheduleAction(() -> gameView.addExit(exitDto, storimWindow.getCurrentServerId()));
+        gameView.scheduleAction(() -> gameView.addExit(exitDto, windowController.getCurrentServerId()));
         gameView.scheduleAction(() -> gameView.setExitLocation(exitDto.getId(), exitDto.getX(), exitDto.getY()));
     }
 
@@ -156,7 +133,7 @@ public class GameViewController implements ConnectionListener {
         LocationDto l = dto.getLocation();
         switch (dto.getType()) {
             case USER:
-                if (dto.getObjectId().equals(storimWindow.getCurrentUser().getId())) {
+                if (dto.getObjectId().equals(windowController.getCurrentUser().getId())) {
                     moveCurrentUser(dto.getSequenceNumber(), dto.getLocation());
                 } else {
                     gameView.scheduleAction(() -> gameView.setPlayerLocation(dto.getObjectId(), l.getX(), l.getY()));
@@ -186,7 +163,7 @@ public class GameViewController implements ConnectionListener {
     private void userInRoom(UserInRoomDTO dto) {
         UserDto user = dto.getUser();
         LocationDto location = dto.getLocation();
-        if (user.getId().equals(storimWindow.getCurrentUser().getId())) {
+        if (user.getId().equals(windowController.getCurrentUser().getId())) {
             lastReceivedLocation = location;
         }
         if (user.getCurrentAvatarID() != null) {
@@ -225,10 +202,12 @@ public class GameViewController implements ConnectionListener {
     }
 
     private void updateRoom(RoomDto room) {
-        if (room.getTileID() != null) {
-            TileDto tile = getTile(room.getTileID());
-            if (tile != null) {
-                gameView.scheduleAction(() -> gameView.setTile(tile));
+        Long tileSetId = room.getTileSetId();
+        if ( tileSetId != null ) {
+            GetTileSetResultDTO response = connectionController.sendReceive(new GetTileSetDTO(tileSetId), GetTileSetResultDTO.class);
+            TileSetDto tileSetDto = response.getTileSetDto();
+            if ( tileSetDto != null ) {
+                gameView.scheduleAction(() -> gameView.setTileSet(tileSetDto));
             }
         }
         gameView.scheduleAction(() -> gameView.setRoom(room));
@@ -285,7 +264,7 @@ public class GameViewController implements ConnectionListener {
 
     public LocationDto applyMoveRequest(MovementRequestDTO dto, LocationDto loc) {
         LocationDto newLocation = CalcTools.calculateNewPosition(dto, loc);
-        gameView.scheduleAction(() -> gameView.setPlayerLocation(storimWindow.getCurrentUser().getId(), newLocation.getX(), newLocation.getY()));
+        gameView.scheduleAction(() -> gameView.setPlayerLocation(windowController.getCurrentUser().getId(), newLocation.getX(), newLocation.getY()));
         Logger.info(this, "ScheduledMove-Sequence:" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
         return newLocation;
     }
@@ -330,8 +309,8 @@ public class GameViewController implements ConnectionListener {
         currentUser = null;
         currentRoom = null;
         resetRequests();
-        if ( storimWindow.getCurrentUser() != null ) {
-            gameView.scheduleAction(() -> gameView.removePlayer(storimWindow.getCurrentUser().getId()));
+        if ( windowController.getCurrentUser() != null ) {
+            gameView.scheduleAction(() -> gameView.removePlayer(windowController.getCurrentUser().getId()));
         }
     }
 
@@ -342,15 +321,15 @@ public class GameViewController implements ConnectionListener {
 
     public void exitClicked(Long id, String name, String roomURI) {
         if ( roomURI == null ) {
-            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + name + "'?", "Use exit " + name, JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(windowController.getWindow(), "Use exit '" + name + "'?", "Use exit " + name, JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 connectionController.send(new UseExitRequestDTO(id));
             }
         } else {
             // To another server
-            int result = JOptionPane.showConfirmDialog(storimWindow, "Use exit '" + roomURI + "' to another server, are you sure?", "Use exit " + roomURI, JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(windowController.getWindow(), "Use exit '" + roomURI + "' to another server, are you sure?", "Use exit " + roomURI, JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
-                storimWindow.useExitToOtherServer(roomURI);
+                windowController.useExitToOtherServer(roomURI);
             }
 
         }

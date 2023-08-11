@@ -62,14 +62,20 @@ public class MoveAction extends Action<MovementRequestDTO> {
 
     private void checkRoomBounds(Location l) {
         Room r = RoomFactory.getInstance().findRoomByID(l.getRoomId());
-        if ( l.getX() > r.getWidth()) {
-            l.setX(r.getWidth());
+        //TODO Fix this, calculate from TileSet
+        int DEFAULTTILEWIDTH = 30;
+        int DEFAULTTILEHEIGHT = 30;
+        int width = r.getCols() * DEFAULTTILEWIDTH;
+        int heigth = r.getRows() * DEFAULTTILEHEIGHT;
+
+        if ( l.getX() > width) {
+            l.setX(width);
         }
         if ( l.getX() < 0 ) {
             l.setX(0);
         }
-        if ( l.getY() > r.getLength()) {
-            l.setY(r.getLength());
+        if ( l.getY() > heigth) {
+            l.setY(heigth);
         }
         if ( l.getY() < 0 ) {
             l.setY(0);

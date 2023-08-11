@@ -3,9 +3,10 @@ package com.hamming.storim.client.view;
 
 import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.controller.GameViewController;
 import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.common.view.Action;
 
 import javax.imageio.ImageIO;
@@ -40,7 +41,8 @@ public class GameViewPanel extends JPanel implements Runnable {
 
     public RoomDto room;
     public TileDto tile;
-    public Image tileImage;
+    private int[][] tileMap;
+    public TileSet tileSet;
     private GameViewController viewController;
 
     private Image defaultTileImage;
@@ -57,7 +59,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     private boolean forward, back, left, right;
     private float unitX = 1f;
     private float unitY = 1f;
-    private STORIMWindow window;
+    private STORIMWindowController windowController;
 
     public void updateExit(ExitDto exitDto) {
         Exit exit = getExit(exitDto.getId());
@@ -117,8 +119,8 @@ public class GameViewPanel extends JPanel implements Runnable {
 
 
     //Class constructor
-    public GameViewPanel(STORIMWindow window) {
-        this.window = window;
+    public GameViewPanel(STORIMWindowController windowController) {
+        this.windowController = windowController;
         actions = Collections.synchronizedList(new LinkedList<Action>());
         players = new ArrayList<>();
         things = new ArrayList<>();
@@ -337,17 +339,6 @@ public class GameViewPanel extends JPanel implements Runnable {
         return room;
     }
 
-    private void determineUnitXY() {
-        unitX = (float) getWidth() / (float) room.getWidth();
-        unitY = (float) getHeight() / (float) room.getLength();
-    }
-
-    public void componentResized() {
-        if (room != null) {
-            determineUnitXY();
-        }
-    }
-
     public void setTile(TileDto tile) {
         this.tile = tile;
     }
@@ -355,9 +346,9 @@ public class GameViewPanel extends JPanel implements Runnable {
     public void setRoom(RoomDto room) {
         this.room = room;
         if (room != null) {
-            determineUnitXY();
+            tileMap = room.getTileMap();
             String text = room.getRoomURI() + " (" + room.getName() + ")";
-            window.setRoomname(text);
+            windowController.setRoomname(text);
         }
 
     }
@@ -511,22 +502,34 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
     void drawRoom(Graphics g) {
-        tileImage = defaultTileImage;
         if (room != null) {
-            if (tile != null) {
-                tileImage = ImageUtils.decode(tile.getImageData());
-            }
             //Draw Tiles
             int rows = room.getRows();
             int cols = room.getCols();
 
             int widthPerTile = getWidth() / cols;
             int heightPerTile = getHeight() / rows;
-            for (int i = 0; i < cols; i++) {
-                for (int j = 0; j < rows; j++) {
-                    int x = i * widthPerTile;
-                    int y = j * heightPerTile;
-                    g.drawImage(tileImage, x, y, widthPerTile, heightPerTile, this);
+            for (int c = 0; c < cols; c++) {
+                for (int r = 0; r < rows; r++) {
+                    int x = c * widthPerTile;
+                    int y = r * heightPerTile;
+                    int width = widthPerTile;
+                    int height = heightPerTile;
+                    //Check last tiles (row/col)
+                    if (c == cols) {
+                        width = getWidth() - x;
+                    }
+                    if ( r == rows ) {
+                        height = getHeight() - y;
+                    }
+                    if ( tileSet != null &&  tileMap[c][r] >= 0 ) {
+                        Image tileImage = tileSet.getTile(tileMap[c][r]);
+                        if ( tileImage == null ) tileImage = defaultTileImage;
+                        g.drawImage(tileImage, x, y, width, height, this);
+                    } else {
+                        Image tileImage = defaultTileImage;
+                        g.drawImage(tileImage, x, y, width, height, this);
+                    }
                 }
             }
         }
@@ -663,7 +666,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     }
 
     public void resetView() {
-        window.setRoomname("");
+        windowController.setRoomname("");
         setTile(null);
         setRoom(null);
         setPlayers(new ArrayList<>());
@@ -675,6 +678,10 @@ public class GameViewPanel extends JPanel implements Runnable {
     private void setLocation(BasicDrawableObject o, int x, int y) {
         o.setX((int) (x * unitX));
         o.setY((int) (y * unitY));
+    }
+
+    public void setTileSet(TileSetDto tileSetDto) {
+        this.tileSet = new TileSet(tileSetDto);
     }
 
     public void setPlayerLocation(Long id, int x, int y) {

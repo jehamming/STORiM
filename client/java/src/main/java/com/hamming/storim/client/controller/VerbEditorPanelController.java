@@ -1,6 +1,7 @@
 package com.hamming.storim.client.controller;
 
-import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.VerbDetailListItem;
 import com.hamming.storim.client.panels.VerbEditorPanel;
 import com.hamming.storim.common.ProtocolHandler;
@@ -24,13 +25,13 @@ public class VerbEditorPanelController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private VerbEditorPanel panel;
-    private STORIMWindow storimWindow;
+    private STORIMWindowController windowController;
     private DefaultComboBoxModel<VerbDetailListItem> verbsModel = new DefaultComboBoxModel<>();
     private boolean newVerb = false;
 
-    public VerbEditorPanelController(STORIMWindow storimWindow, VerbEditorPanel panel, ConnectionController connectionController) {
+    public VerbEditorPanelController(STORIMWindowController windowController, VerbEditorPanel panel, ConnectionController connectionController) {
         this.panel = panel;
-        this.storimWindow = storimWindow;
+        this.windowController = windowController;
         this.connectionController = connectionController;
         connectionController.addConnectionListener(this);
         registerReceivers();

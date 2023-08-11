@@ -16,85 +16,64 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
     }
 
 
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
-        jLabel3 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jLabel1 = new javax.swing.JLabel();
+        scrollPaneRooms = new javax.swing.JScrollPane();
         listRooms = new javax.swing.JList<>();
-        btnTeleport = new javax.swing.JButton();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        btnCreate = new javax.swing.JButton();
-        btnDelete = new javax.swing.JButton();
-        lblRoomID = new javax.swing.JLabel();
-        txtRoomName = new javax.swing.JTextField();
-        btnSave = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        btnChooseFile = new javax.swing.JButton();
-        lblImagePreview = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        listTiles = new javax.swing.JList<>();
+        jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        txtWidth = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        txtLength = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
+        btnTeleport = new javax.swing.JButton();
+        btnCreate = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnSave = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        taRoomDescription = new javax.swing.JTextArea();
+        tfRoomName = new javax.swing.JTextField();
+        lblId = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         txtRows = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
         txtCols = new javax.swing.JTextField();
 
-        jLabel3.setText("Rooms");
+        jLabel1.setText("Rooms");
 
-        jScrollPane1.setViewportView(listRooms);
+        scrollPaneRooms.setViewportView(listRooms);
+
+        jLabel2.setText("Room ID:");
+
+        jLabel3.setText("Room Name");
+
+        jLabel4.setText("Room Description");
+
+        jLabel5.setText("Room Size :");
 
         btnTeleport.setText("Teleport");
-
-        jLabel7.setText("Room ID");
-
-        jLabel8.setText("Room Name");
-
-        jLabel9.setText("Room Size ");
 
         btnCreate.setText("Create");
 
         btnDelete.setText("Delete");
 
-        lblRoomID.setText("jLabel1");
-
-        txtRoomName.setText("jTextField1");
-
         btnSave.setText("Save");
 
-        jLabel2.setText("Room Tile");
+        taRoomDescription.setColumns(20);
+        taRoomDescription.setRows(5);
+        jScrollPane1.setViewportView(taRoomDescription);
 
-        btnChooseFile.setText("Create new");
+        tfRoomName.setText("Name");
 
-        lblImagePreview.setText("No Label Chosen");
+        lblId.setText("-1");
 
-        jScrollPane2.setViewportView(listTiles);
+        jLabel6.setText("Rows");
 
-        jLabel4.setText("Choose below or :");
-
-        jLabel5.setText("Width:");
-
-        txtWidth.setText("100");
-
-        jLabel1.setText("Length:");
-
-        txtLength.setText("100");
-
-        jLabel10.setText("Room Tiles ");
-
-        jLabel6.setText("Rows:");
+        jLabel7.setText("Cols");
 
         txtRows.setText("10");
 
-        jLabel11.setText("Cols");
-
-        txtCols.setText("100");
+        txtCols.setText("10");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -102,147 +81,111 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
+                                .addComponent(jLabel1)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(btnTeleport, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                        .addComponent(scrollPaneRooms, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel3)
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
-                                                                                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                                        .addComponent(jLabel2)
-                                                                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE))
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                                .addComponent(lblImagePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                                        .addComponent(lblRoomID, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
-                                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                                                .addComponent(jLabel5)
-                                                                                                                .addGap(3, 3, 3)
-                                                                                                                .addComponent(txtWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                                                .addComponent(jLabel6)
-                                                                                                                .addGap(8, 8, 8)
-                                                                                                                .addComponent(txtRows, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                                                                .addGap(4, 4, 4)
-                                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                                                        .addComponent(jLabel11)
-                                                                                                        .addComponent(jLabel1))))
-                                                                                .addGap(3, 3, 3)
-                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                                        .addComponent(txtLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                        .addComponent(btnChooseFile, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                        .addComponent(txtCols, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                                                .addGap(9, 9, 9)))))
-                                                .addContainerGap(42, Short.MAX_VALUE))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(btnTeleport, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(btnCreate)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addComponent(btnDelete)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
                                                 .addComponent(btnSave)
-                                                .addGap(111, 111, 111))))
+                                                .addContainerGap())
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(jLabel2)
+                                                        .addComponent(jLabel3)
+                                                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(jLabel7)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(txtCols)
+                                                                .addContainerGap())
+                                                        .addComponent(tfRoomName)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addComponent(jLabel6)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addComponent(txtRows))
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addComponent(lblId)
+                                                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                                                .addGap(6, 6, 6))))))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jLabel3)
+                                .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(jLabel7)
-                                                        .addComponent(lblRoomID))
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(jLabel8)
-                                                        .addComponent(txtRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(jLabel9)
-                                                        .addComponent(jLabel5)
-                                                        .addComponent(txtWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jLabel1)
-                                                        .addComponent(txtLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(jLabel10)
-                                                        .addComponent(jLabel6)
-                                                        .addComponent(txtRows, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jLabel11)
-                                                        .addComponent(txtCols, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(scrollPaneRooms)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                                        .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel2)
-                                                        .addComponent(btnChooseFile)
-                                                        .addComponent(jLabel4))
+                                                        .addComponent(lblId))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabel3)
+                                                        .addComponent(tfRoomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(lblImagePreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addGap(0, 0, Short.MAX_VALUE)
-                                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                        .addComponent(jLabel4)
+                                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabel5)
+                                                        .addComponent(jLabel6)
+                                                        .addComponent(txtRows, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabel7)
+                                                        .addComponent(txtCols, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGap(15, 36, Short.MAX_VALUE)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(btnTeleport)
                                         .addComponent(btnCreate)
                                         .addComponent(btnDelete)
-                                        .addComponent(btnSave))
-                                .addGap(32, 32, 32))
+                                        .addComponent(btnSave)))
         );
-    }
+    }// </editor-fold>
 
 
     // Variables declaration - do not modify
-    private javax.swing.JButton btnChooseFile;
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnTeleport;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel lblImagePreview;
-    private javax.swing.JLabel lblRoomID;
-    private javax.swing.JTextField txtCols;
-    private javax.swing.JTextField txtLength;
-    private javax.swing.JTextField txtRoomName;
-    private javax.swing.JTextField txtRows;
-    private javax.swing.JTextField txtWidth;
+    private javax.swing.JLabel lblId;
     private javax.swing.JList<RoomDetailsListItem> listRooms;
-    private javax.swing.JList<TileDto> listTiles;
+    private javax.swing.JScrollPane scrollPaneRooms;
+    private javax.swing.JTextArea taRoomDescription;
+    private javax.swing.JTextField tfRoomName;
+    private javax.swing.JTextField txtCols;
+    private javax.swing.JTextField txtRows;
     // End of variables declaration
 
 
-    public JButton getBtnChooseFile() {
-        return btnChooseFile;
-    }
 
     public JButton getBtnCreate() {
         return btnCreate;
@@ -260,39 +203,27 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
         return btnTeleport;
     }
 
-    public JLabel getLblImagePreview() {
-        return lblImagePreview;
-    }
-
-    public JLabel getLblRoomID() {
-        return lblRoomID;
-    }
-
     public JTextField getTxtCols() {
         return txtCols;
-    }
-
-    public JTextField getTxtLength() {
-        return txtLength;
-    }
-
-    public JTextField getTxtRoomName() {
-        return txtRoomName;
     }
 
     public JTextField getTxtRows() {
         return txtRows;
     }
 
-    public JTextField getTxtWidth() {
-        return txtWidth;
-    }
-
     public JList<RoomDetailsListItem> getListRooms() {
         return listRooms;
     }
 
-    public JList<TileDto> getListTiles() {
-        return listTiles;
+    public JTextArea getTaRoomDescription() {
+        return taRoomDescription;
+    }
+
+    public JTextField getTfRoomName() {
+        return tfRoomName;
+    }
+
+    public JLabel getLblId() {
+        return lblId;
     }
 }

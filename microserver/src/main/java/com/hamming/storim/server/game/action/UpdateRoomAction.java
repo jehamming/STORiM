@@ -25,10 +25,17 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UpdateRoomDto dto = getDto();
         Room updatedRoom = null;
-        if ( dto.getImageData() != null ) {
-            updatedRoom = updateRoom(dto.getRoomId(), dto.getName(), dto.getWidth(), dto.getLength(), dto.getRows(), dto.getCols(), dto.getImageData());
-        } else {
-            updatedRoom = updateRoom(dto.getRoomId(), dto.getName(), dto.getWidth(), dto.getLength(), dto.getRows(), dto.getCols(), dto.getTileId());
+
+        if ( dto.getName() != null ) {
+            updatedRoom = updateRoomName(dto.getRoomId(), dto.getName());
+        }
+
+        if ( dto.getRows() > 0 && dto.getCols() > 0  ) {
+            updatedRoom = updateRoomSize(dto.getRoomId(), dto.getRows(), dto.getCols());
+        }
+
+        if ( dto.getTileSetId() != null && dto.getTileMap() != null  ) {
+            updatedRoom = updateRoomTileSet(dto.getRoomId(), dto.getTileSetId(), dto.getTileMap());
         }
 
         RoomDto roomDto = DTOFactory.getInstance().getRoomDto(updatedRoom, client.getServer().getServerURI());
@@ -38,18 +45,18 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
     }
 
 
-    public  Room updateRoom(Long roomId, String name, int width, int length, int rows, int cols, Long tileId) {
-        Room room = RoomFactory.getInstance().updateRoom(roomId, name, width, length, rows, cols);
-        room.setTileId(tileId);
+    public  Room updateRoomName(Long roomId, String name) {
+        Room room = RoomFactory.getInstance().updateRoomName(roomId, name);
         return room;
     }
 
-    public Room updateRoom(Long roomId, String name, int width, int length, int rows, int cols, byte[] imageData) {
-        Room room = RoomFactory.getInstance().updateRoom(roomId, name, width, length, rows, cols);
-        STORIMClientConnection client = (STORIMClientConnection) getClient();
-        Long creator = client.getCurrentUser().getId();
-        TileDto tile = client.getServer().getUserDataServerProxy().addTile(creator, imageData);
-        room.setTileId(tile.getId());
+    public Room updateRoomSize(Long roomId, int rows, int cols) {
+        Room room = RoomFactory.getInstance().updateRoomSize(roomId, rows, cols);
+        return room;
+    }
+
+    public Room updateRoomTileSet(Long roomId, Long tileSetId, int[][] tileMap) {
+        Room room = RoomFactory.getInstance().updateRoomTileSet(roomId, tileSetId, tileMap);
         return room;
     }
 

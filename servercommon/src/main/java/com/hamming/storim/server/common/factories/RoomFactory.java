@@ -27,12 +27,9 @@ public class RoomFactory {
     }
 
 
-    public Room createRoom(Long creatorId, String name, int width, int length, int rows, int cols) {
+    public Room createRoom(Long creatorId, String name, int rows, int cols) {
         Room room = createRoom(creatorId, name);
-        room.setRows(rows);
-        room.setCols(cols);
-        room.setLength(length);
-        room.setWidth(width);
+        room.setSize(rows, cols);
         Database.getInstance().addBasicObject(room);
         return room;
     }
@@ -48,13 +45,22 @@ public class RoomFactory {
         return room;
     }
 
-    public Room updateRoom(Long roomId, String name, int width, int length, int rows, int cols) {
+    public Room updateRoomName(Long roomId, String name) {
         Room room = findRoomByID(roomId);
         room.setName(name);
-        room.setRows(rows);
-        room.setCols(cols);
-        room.setLength(length);
-        room.setWidth(width);
+        return room;
+    }
+
+    public Room updateRoomSize(Long roomId, int rows, int cols) {
+        Room room = findRoomByID(roomId);
+        room.setSize(rows, cols);
+        return room;
+    }
+
+    public Room updateRoomTileSet(Long roomId, Long tileSetId, int[][] tileMap) {
+        Room room = findRoomByID(roomId);
+        room.setTileSetId(tileSetId);
+        room.setTileMap(tileMap);
         return room;
     }
 

@@ -1,11 +1,10 @@
 package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.ImageUtils;
-import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.ExitListItem;
 import com.hamming.storim.client.listitem.RoomListItem;
-import com.hamming.storim.client.listitem.ServerListItem;
-import com.hamming.storim.client.listitem.ThingListItem;
 import com.hamming.storim.client.panels.ExitPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.*;
@@ -18,19 +17,16 @@ import com.hamming.storim.common.net.ProtocolReceiver;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 public class ExitPanelController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private ExitPanel panel;
-    private STORIMWindow storimWindow;
+    private STORIMWindowController windowController;
 
     private JFileChooser fileChooser;
     private BufferedImage tileImage;
@@ -42,9 +38,9 @@ public class ExitPanelController implements ConnectionListener {
     private RoomDto currentRoom;
     private Image defaultExitImage;
 
-    public ExitPanelController(STORIMWindow storimWindow, ExitPanel panel, ConnectionController connectionController) {
+    public ExitPanelController(STORIMWindowController windowController, ExitPanel panel, ConnectionController connectionController) {
         this.panel = panel;
-        this.storimWindow = storimWindow;
+        this.windowController = windowController;
         this.connectionController = connectionController;
         this.fileChooser = new JFileChooser();
         connectionController.addConnectionListener(this);

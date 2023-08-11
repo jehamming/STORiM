@@ -10,9 +10,11 @@ import com.hamming.storim.server.common.dto.protocol.dataserver.SessionDto;
 import com.hamming.storim.server.common.factories.ExitFactory;
 import com.hamming.storim.server.common.factories.LocationFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
+import com.hamming.storim.server.common.factories.TileSetFactory;
 import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
+import com.hamming.storim.server.common.model.TileSet;
 import com.hamming.storim.server.game.*;
 import com.hamming.storim.server.game.action.*;
 
@@ -82,6 +84,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(new UpdateUserAction(gameController, this));
         getProtocolHandler().addAction(new AddUserAction(gameController, this));
         getProtocolHandler().addAction(new DeleteUserAction(gameController, this));
+        getProtocolHandler().addAction(new GetTileSetAction(this));
     }
 
 
@@ -346,6 +349,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     public void currentUserConnected(UserDto currentUser, Long roomId) {
         setCurrentUser(currentUser);
         sendGameState();
+        sendTileSets();
         Room room = null;
         Location location = null;
         LocationDto locationDto = null;
@@ -402,6 +406,14 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         // Notify the listeners
         gameController.fireServerEvent(this, new ServerEvent(ServerEvent.Type.USERCONNECTED, currentUser));
 
+    }
+
+    private void sendTileSets() {
+        for (TileSet set : TileSetFactory.getInstance().getAllTileSets()) {
+            TileSetDto tileSetDto = DTOFactory.getInstance().getTileSetDTO(set);
+            TileSetAddedDTO tileSetAddedDTO = new TileSetAddedDTO(tileSetDto);
+            send(tileSetAddedDTO);
+        }
     }
 
     @Override

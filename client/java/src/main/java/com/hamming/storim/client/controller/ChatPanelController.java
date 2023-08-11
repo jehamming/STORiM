@@ -1,6 +1,7 @@
 package com.hamming.storim.client.controller;
 
-import com.hamming.storim.client.STORIMWindow;
+import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.VerbListItem;
 import com.hamming.storim.client.panels.ChatPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
@@ -11,6 +12,10 @@ import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -18,12 +23,13 @@ public class ChatPanelController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private ChatPanel panel;
-    private STORIMWindow storimWindow;
+    private STORIMWindowController windowController;
     private DefaultComboBoxModel<VerbListItem> verbsModel = new DefaultComboBoxModel<>();
+    private SimpleAttributeSet attributeSet;
 
-    public ChatPanelController(STORIMWindow storimWindow, ChatPanel panel, ConnectionController connectionController) {
+    public ChatPanelController(STORIMWindowController windowController, ChatPanel panel, ConnectionController connectionController) {
         this.panel = panel;
-        this.storimWindow = storimWindow;
+        this.windowController = windowController;
         this.connectionController = connectionController;
         connectionController.addConnectionListener(this);
         registerReceivers();
@@ -54,10 +60,10 @@ public class ChatPanelController implements ConnectionListener {
 
     private void messageInRoom(MessageInRoomDTO dto) {
         addText(dto.getMessage());
-        if ( !dto.getSourceID().equals(storimWindow.getCurrentUser().getId()) ) {
-            storimWindow.setTitle(dto.getMessage());
+        if ( !dto.getSourceID().equals(windowController.getCurrentUser().getId()) ) {
+            windowController.getWindow().setTitle(dto.getMessage());
         } else {
-            storimWindow.setTitle(storimWindow.getCurrentUser().getName());
+            windowController.getWindow().setTitle(windowController.getCurrentUser().getName());
         }
     }
 
@@ -95,6 +101,12 @@ public class ChatPanelController implements ConnectionListener {
 
             }
         });
+
+        attributeSet = new SimpleAttributeSet();
+        StyleConstants.setBold(attributeSet, false);
+
+        // Set the attributes before adding text
+        panel.getTextPaneChatOutput().setCharacterAttributes(attributeSet, true);
     }
 
     private void send() {
@@ -130,7 +142,14 @@ public class ChatPanelController implements ConnectionListener {
 
 
     public void addText(String txt) {
-        SwingUtilities.invokeLater(() -> panel.getChatOutput().append(txt + "\n"));
+        SwingUtilities.invokeLater(() -> {
+            Document doc = panel.getTextPaneChatOutput().getDocument();
+            try {
+                doc.insertString(doc.getLength(), txt + "\n", attributeSet);
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 
@@ -169,6 +188,9 @@ public class ChatPanelController implements ConnectionListener {
 
     @Override
     public void disconnected() {
-        panel.empty();
+        SwingUtilities.invokeLater(() -> {
+            panel.getCmbVerbs().removeAllItems();
+            panel.getTextPaneChatOutput().setText("");
+        });
     }
 }
