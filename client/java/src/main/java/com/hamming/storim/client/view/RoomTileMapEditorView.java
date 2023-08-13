@@ -54,7 +54,7 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
                 SwingUtilities.convertPointFromScreen(p, RoomTileMapEditorView.this);
                 int row = getRow(p.y);
                 int col = getCol(p.x);
-                controller.setRowCol(row,col);
+                controller.applyTile(row, col);
             }
 
             @Override
@@ -80,7 +80,6 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
         while (drawing) {
             time = System.currentTimeMillis();
             handleActions();
-            draw();
             waitIfNeeded();
         }
     }
@@ -96,6 +95,7 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
         synchronized (actions) {
             for (Action action : actions) {
                 action.execute();
+                repaint();
             }
             actions.removeAll(actions);
         }
@@ -118,10 +118,13 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
 
     public void setRoom(RoomDto room) {
         this.room = room;
-        resetTileMap();
-        if (room != null) {
+        if ( room != null ) {
+            setTileMap(room.getTileMap());
             determineUnitXY();
+        } else {
+            resetTileMap();
         }
+        repaint();
     }
 
 
@@ -147,11 +150,10 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
         drawThread.start();
     }
 
-    public void draw() {
-
+    @Override
+    public void paint(Graphics g) {
         if ( room != null ) {
             backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics g = getGraphics();
             Graphics bbg = backBuffer.getGraphics();
 
             bbg.setColor(Color.black);
@@ -163,6 +165,12 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
             }
 
             g.drawImage(backBuffer, 0, 0, this);
+        } else {
+            backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics bbg = backBuffer.getGraphics();
+
+            bbg.setColor(Color.black);
+            bbg.fillRect(0, 0, getWidth(), getHeight());
         }
 
     }
@@ -246,7 +254,7 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
 
     public void setTileSet(TileSet tileSet) {
         this.tileSet = tileSet;
-        resetTileMap();
+        repaint();
     }
 
     private void resetTileMap() {
@@ -273,6 +281,7 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
 
     public void setGrid(boolean selected) {
         drawGrid= selected;
+        repaint();
     }
 
 

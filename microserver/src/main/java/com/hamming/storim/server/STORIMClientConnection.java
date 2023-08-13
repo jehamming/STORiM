@@ -85,6 +85,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(new AddUserAction(gameController, this));
         getProtocolHandler().addAction(new DeleteUserAction(gameController, this));
         getProtocolHandler().addAction(new GetTileSetAction(this));
+        getProtocolHandler().addAction(new GetTileSetsAction(this));
     }
 
 
@@ -151,10 +152,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     public void sendGameState() {
         // Send Verbs
         sendVerbs(currentUser);
-        // Send Avatars
-        //sendAvatars(currentUser); Niet doen. Client vraagt
-        // Send Things
-        // sendThings(currentUser);
         // Logged in Users;
         for (UserDto u : gameController.getGameState().getOnlineUsers()) {
             if (!u.getId().equals(currentUser.getId())) {
@@ -164,18 +161,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         }
     }
 
-    private void sendAvatars(UserDto user) {
-        for (Long avatarId : server.getUserDataServerProxy().getAvatars(user.getId())) {
-            sendAvatar(avatarId);
-        }
-    }
-
-    private void sendAvatar(Long avatarId) {
-        AvatarDto avatar = server.getUserDataServerProxy().getAvatar(avatarId);
-        if (avatar != null) {
-            sendAvatar(avatar);
-        }
-    }
 
     public void sendThingsInRoom(Room room) {
         for (Long thingId : room.getObjectsInRoom()) {
@@ -349,7 +334,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     public void currentUserConnected(UserDto currentUser, Long roomId) {
         setCurrentUser(currentUser);
         sendGameState();
-        sendTileSets();
         Room room = null;
         Location location = null;
         LocationDto locationDto = null;
@@ -406,14 +390,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         // Notify the listeners
         gameController.fireServerEvent(this, new ServerEvent(ServerEvent.Type.USERCONNECTED, currentUser));
 
-    }
-
-    private void sendTileSets() {
-        for (TileSet set : TileSetFactory.getInstance().getAllTileSets()) {
-            TileSetDto tileSetDto = DTOFactory.getInstance().getTileSetDTO(set);
-            TileSetAddedDTO tileSetAddedDTO = new TileSetAddedDTO(tileSetDto);
-            send(tileSetAddedDTO);
-        }
     }
 
     @Override

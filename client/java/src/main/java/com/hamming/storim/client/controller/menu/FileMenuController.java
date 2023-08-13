@@ -65,7 +65,6 @@ public class FileMenuController implements ConnectionListener {
     }
 
     public void disconnect() {
-        connectionController.disconnect();
         SwingUtilities.invokeLater(() -> {
             window.getMenuConnect().setEnabled(true);;
             window.getMenuDisconnect().setEnabled(false);;

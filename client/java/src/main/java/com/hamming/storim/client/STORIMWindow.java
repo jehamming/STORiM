@@ -236,5 +236,10 @@ public class STORIMWindow extends javax.swing.JFrame {
     public void setChatPanel(ChatPanel chatPanel1) {
         this.chatPanel1 = chatPanel1;
     }
+
+    public JMenuItem getMenuItems() {
+        return menuItems;
+    }
+
 }
 

@@ -91,6 +91,7 @@ public class GameViewPanel extends JPanel implements Runnable {
             SwingUtilities.convertPointFromScreen(p, GameViewPanel.this);
             thing.setX((int) p.getX());
             thing.setY((int) p.getY());
+            repaint();
         }
 
         public Thing getThing() {
@@ -110,6 +111,7 @@ public class GameViewPanel extends JPanel implements Runnable {
             SwingUtilities.convertPointFromScreen(p, GameViewPanel.this);
             exit.setX((int) p.getX());
             exit.setY((int) p.getY());
+            repaint();
         }
 
         public Exit getExit() {
@@ -241,12 +243,14 @@ public class GameViewPanel extends JPanel implements Runnable {
         int translatedX = (int) (thing.getX() / unitX);
         int translatedY = (int) (thing.getY() / unitY);
         viewController.updateThingLocationRequest(thing.getId(), translatedX, translatedY);
+        repaint();
     }
 
     private void updatePosition(Exit exit) {
         int translatedX = (int) (exit.getX() / unitX);
         int translatedY = (int) (exit.getY() / unitY);
         viewController.updateExitLocationRequest(exit.getId(), translatedX, translatedY);
+        repaint();
     }
 
 
@@ -257,7 +261,6 @@ public class GameViewPanel extends JPanel implements Runnable {
         while (playing) {
             time = System.currentTimeMillis();
             handleActions();
-            draw();
             waitIfNeeded();
         }
     }
@@ -267,6 +270,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         synchronized (actions) {
             for (Action action : actions) {
                 action.execute();
+                repaint();
             }
             actions.removeAll(actions);
         }
@@ -471,9 +475,9 @@ public class GameViewPanel extends JPanel implements Runnable {
         return (x > startX) && (x < endX) && (y > startY) && (y < endY);
     }
 
-    public void draw() {
+    @Override
+    public void paint(Graphics g) {
         backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics g = getGraphics();
         Graphics bbg = backBuffer.getGraphics();
 
         bbg.setColor(Color.black);

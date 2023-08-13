@@ -1,6 +1,7 @@
 package com.hamming.storim.client;
 
 import com.hamming.storim.client.controller.*;
+import com.hamming.storim.client.controller.menu.EditMenuController;
 import com.hamming.storim.client.controller.menu.FileMenuController;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.GameViewPanel;
@@ -18,26 +19,14 @@ public class STORIMWindowController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private FileMenuController fileMenuController;
+    private EditMenuController editMenuController;
 
     private ChatPanel chatPanel;
     private ChatPanelController chatPanelController;
-    private VerbEditorPanel verbEditorPanel;
-    private VerbEditorPanelController verbEditorPanelController;
-    private UserInfoPanel userInfoPanel;
-    private UserInfoPanelController userInfoPanelController;
-    private AvatarPanel avatarPanel;
-    private AvatarPanelController avatarPanelController;
-    private RoomEditorPanel roomEditorPanel;
-    private RoomEditorPanelController roomEditorPanelController;
-    private ThingPanelController thingPanelController;
-    private ThingPanel thingPanel;
-    private ExitPanel exitPanel;
-    private ExitPanelController exitPanelController;
+
     private AdminPanel adminPanel;
     private AdminPanelController adminPanelController;
-    private RoomTileEditorPanel roomTileEditorPanel;
-    private RoomTileMapEditorPanelController roomTileMapEditorPanelController;
-    private RoomTileMapEditorView tileMapEditorView;
+
     private GameViewPanel gameView;
     private static String BASIC_TITLE = "STORIM";
     private UserDto currentUser;
@@ -65,7 +54,6 @@ public class STORIMWindowController implements ConnectionListener {
         gameView.setViewController(viewController);
         initComponents();
         initControllers();
-        addActionlisteners();
         registerReceivers();
         window.setVisible(true);
         gameView.start();
@@ -73,10 +61,7 @@ public class STORIMWindowController implements ConnectionListener {
 
     private void initControllers() {
         fileMenuController = new FileMenuController(window, this, connectionController);
-    }
-
-    private void addActionlisteners() {
-
+        editMenuController = new EditMenuController(window, this, connectionController);
     }
 
 
@@ -86,41 +71,8 @@ public class STORIMWindowController implements ConnectionListener {
         chatPanel = new ChatPanel();
         chatPanelController = new ChatPanelController(this , chatPanel, connectionController);
 
-        verbEditorPanel = new VerbEditorPanel();
-        verbEditorPanelController = new VerbEditorPanelController(this , verbEditorPanel, connectionController);
-
-
-        userInfoPanel = new UserInfoPanel();
-        userInfoPanelController = new UserInfoPanelController(this, userInfoPanel, connectionController);
-
-        avatarPanel = new AvatarPanel();
-        avatarPanelController = new AvatarPanelController(this, avatarPanel, connectionController);
-
-
-        roomEditorPanel = new RoomEditorPanel();
-        roomEditorPanelController = new RoomEditorPanelController(this, roomEditorPanel, connectionController);
-
-
-        thingPanel = new ThingPanel();
-        thingPanelController = new ThingPanelController(this, thingPanel, connectionController);
-
-        exitPanel = new ExitPanel();
-        exitPanelController = new ExitPanelController(this, exitPanel, connectionController);
-
         adminPanel = new AdminPanel();
         adminPanelController = new AdminPanelController(this, adminPanel, connectionController);
-
-        //RoomTileMapEditor
-        // Controller
-        roomTileMapEditorPanelController = new RoomTileMapEditorPanelController(connectionController );
-        // View
-        tileMapEditorView = new RoomTileMapEditorView(roomTileMapEditorPanelController);
-        roomTileMapEditorPanelController.setRoomTileMapEditorView(tileMapEditorView);
-        tileMapEditorView.setPreferredSize(new Dimension(500, 500));
-        // Panel
-        roomTileEditorPanel = new RoomTileEditorPanel(tileMapEditorView);
-        roomTileMapEditorPanelController.setPanel(roomTileEditorPanel);
-        roomTileMapEditorPanelController.setup();
 
         window.setPnlGameView(gameView);
         window.setChatPanel(chatPanel);

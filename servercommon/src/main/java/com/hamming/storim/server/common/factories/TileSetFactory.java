@@ -1,8 +1,9 @@
 package com.hamming.storim.server.common.factories;
 
-import com.hamming.storim.common.dto.TileSetDto;
+import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
-import com.hamming.storim.server.common.ImageUtils;
+import com.hamming.storim.server.common.ImageStore;
 import com.hamming.storim.server.common.model.TileSet;
 
 import javax.imageio.ImageIO;
@@ -11,18 +12,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TileSetFactory {
     private static TileSetFactory instance;
     private String dataDir;
-    private List<TileSet> tileSets;
 
 
     private TileSetFactory(String dataDir) {
         this.dataDir = dataDir;
-        tileSets = new ArrayList<>();
         readAllTileSets();
-        //   sanityCheck();
+        sanityCheck();
     }
 
 
@@ -38,113 +38,78 @@ public class TileSetFactory {
     }
 
 
-//    private void sanityCheck() {
-//        List<Long> tileIDs = getAllTileIds();
-//        for (Long id : tileIDs) {
-//            Tile tile = findTileById(id);
-//            if (tile.getImage() == null) {
-//                Logger.info(this, getClass().getName() + ": sanityCheck(), Tile  "+ id +"' has no Image, deleting Tile");
-//                deleteTile(tile);
-//            } else {
-//                if (UserFactory.getInstance().findUserById(tile.getOwnerId()) == null ) {
-//                    Logger.info(this, getClass().getName() + ": sanityCheck(), Tile  "+ id +"' owner does not exist, deleting");
-//                    deleteTile(tile);
-//                }
-//            }
-//        }
-//    }
-
-//    private List<Long> getAllTileIds() {
-//        List<Long> tileIDs = new ArrayList<>();
-//        for (Tile tile : getAllTiles() ) {
-//            tileIDs.add(tile.getId());
-//        }
-//        return tileIDs;
-//    }
-
-//    private void deleteTile(Tile tile) {
-//        ImageStore.deleteImageFile(Tile.class, tile.getId(), dataDir);
-//        Database.getInstance().removeBasicObject(Tile.class, tile);
-//    }
-
-    private void readAllTileSets() {
-//        Map<Long, Image> images = ImageStore.readAllImages(Tile.class,dataDir);
-//        for (Long id : images.keySet()) {
-//            Tile tile = findTileById(id);
-//            if (tile != null ) {
-//                tile.setImage(images.get(id));
-//            } else {
-//                Logger.info(this, getClass().getName() + ": sanityCheck, have Image for tile " + id +" , but Tile not in Database.");
-//                ImageStore.deleteImageFile(Tile.class, id, dataDir);
-//            }
-//        }
-
-        //TODO For now, read 2 TileSets
-        try {
-            // Load default Tileset
-            Image image = ImageIO.read(new File(dataDir + "/tileset/default_tileset1.png"));
-            Long id = Database.getInstance().getNextID();
-            TileSet set1 = new TileSet(id, "Default_Set1", image, 32, 32);
-            tileSets.add(set1);
-
-            image = ImageIO.read(new File(dataDir + "/tileset/default_tileset2.png"));
-            id = Database.getInstance().getNextID();
-            TileSet set2 = new TileSet(id, "Default_Set2", image, 48, 48);
-            tileSets.add(set2);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    //    public Tile findTileById( Long id ) {
-//        return Database.getInstance().findById(Tile.class, id);
-//    }
-//
-//    public Tile createTile(Long creatorId, Image image) {
-//        Long id = Database.getInstance().getNextID();
-//        return createTile(id, creatorId, image);
-//    }
-//
-//    private Tile createTile(Long id, Long creatorId, Image image) {
-//        Tile tile = new Tile();
-//        tile.setId(id);
-//        tile.setImage(image);
-//        tile.setCreatorId(creatorId);
-//        tile.setOwnerId(creatorId);
-//        ImageStore.storeImageObject(tile, dataDir);
-//        Database.getInstance().addBasicObject(tile);
-//        return tile;
-//    }
-//
-//    public List<Tile> getAllTiles() {
-//        return Database.getInstance().getAll(Tile.class);
-//    }
-    public List<TileSet> getAllTileSets() {
-        return tileSets;
-    }
-
-    public TileSet getTileSet(Long tileId) {
-        TileSet found = null;
-        for (TileSet set : tileSets) {
-            if ( set.getId().equals(tileId)) {
-                found = set;
-                break;
+    private void sanityCheck() {
+        List<Long> tileSetIds = getAllTileSetIds();
+        for (Long id : tileSetIds) {
+            TileSet tile = findTileSetById(id);
+            if (tile.getImage() == null) {
+                Logger.info(this, getClass().getName() + ": sanityCheck(), TileSet  "+ id +"' has no Image, deleting TileSet");
+                deleteTileSet(tile);
             }
         }
-        return found;
     }
-//
-//
-//    public List<Tile> geTiles(User user) {
-//        List<Tile> list = new ArrayList<>();
-//        for (Tile t : getAllTiles()) {
-//            if (t.getOwnerId().equals( user.getId())) {
-//                list.add(t);
-//            }
-//        }
-//        return list;
-//    }
+
+    private List<Long> getAllTileSetIds() {
+        List<Long> tileSetIds = new ArrayList<>();
+        for (TileSet tileSet : getAllTileSets() ) {
+            tileSetIds.add(tileSet.getId());
+        }
+        return tileSetIds;
+    }
+
+    private void deleteTileSet(TileSet tileSet) {
+        ImageStore.deleteImageFile(TileSet.class, tileSet.getId(), dataDir);
+        Database.getInstance().removeBasicObject(TileSet.class, tileSet);
+    }
+
+    private void readAllTileSets() {
+        Map<Long, Image> images = ImageStore.readAllImages(TileSet.class,dataDir);
+        for (Long id : images.keySet()) {
+            TileSet tileSet = findTileSetById(id);
+            if (tileSet != null ) {
+                tileSet.setImage(images.get(id));
+            } else {
+                Logger.info(this, getClass().getName() + ": sanityCheck, have Image for tileSet " + id +" , but TileSet not in Database.");
+                ImageStore.deleteImageFile(TileSet.class, id, dataDir);
+            }
+        }
+
+    }
+
+    public TileSet findTileSetById( Long id ) {
+        return Database.getInstance().findById(TileSet.class, id);
+    }
+
+    public TileSet createTileSet(String name, Long creatorId, Image image, int tileWidth, int tileHeight) {
+        Long id = Database.getInstance().getNextID();
+        return createTileSet(id, name, creatorId, image, tileWidth, tileHeight);
+    }
+
+    private TileSet createTileSet(Long id, String name, Long creatorId, Image image, int tileWidth, int tileHeight) {
+        TileSet tile = new TileSet(id, name, image, tileWidth, tileHeight);
+        tile.setId(id);
+        tile.setImage(image);
+        tile.setCreatorId(creatorId);
+        tile.setOwnerId(creatorId);
+        ImageStore.storeImageObject(tile, dataDir);
+        Database.getInstance().addBasicObject(tile);
+        return tile;
+    }
+
+    public List<TileSet> getAllTileSets() {
+        return Database.getInstance().getAll(TileSet.class);
+    }
+
+
+
+
+    public List<TileSet> geTileSets(UserDto user) {
+        List<TileSet> list = new ArrayList<>();
+        for (TileSet t : getAllTileSets()) {
+            if (t.getOwnerId().equals( user.getId())) {
+                list.add(t);
+            }
+        }
+        return list;
+    }
 }

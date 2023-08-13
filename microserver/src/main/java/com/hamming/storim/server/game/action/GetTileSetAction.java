@@ -25,7 +25,7 @@ public class GetTileSetAction extends Action<GetTileSetDTO> {
         Long tileId = getDto().getTileSetId();
 
         STORIMClientConnection client = (STORIMClientConnection) getClient();
-        TileSet set = TileSetFactory.getInstance().getTileSet(tileId);
+        TileSet set = TileSetFactory.getInstance().findTileSetById(tileId);
         TileSetDto tileSetDto = null;
         if ( set != null ) {
             tileSetDto = DTOFactory.getInstance().getTileSetDTO(set);

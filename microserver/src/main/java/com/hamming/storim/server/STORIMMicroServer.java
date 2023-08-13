@@ -7,8 +7,12 @@ import com.hamming.storim.server.common.NetUtils;
 import com.hamming.storim.server.common.factories.ExitFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.factories.TileSetFactory;
+import com.hamming.storim.server.common.model.TileSet;
 import com.hamming.storim.server.game.GameController;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Socket;
@@ -44,7 +48,7 @@ public class STORIMMicroServer extends Server {
         return serverURI;
     }
 
-    public void initialize() {
+    public void initialize() throws IOException {
         // Load Data
         Database.getInstance(DBFILE);
         // Load Config
@@ -58,6 +62,7 @@ public class STORIMMicroServer extends Server {
         TileSetFactory.getInstance(DATADIR);
 
         checkRooms();
+        checkTileSets();
 
         // Start GameController
         controller = new GameController();
@@ -72,20 +77,23 @@ public class STORIMMicroServer extends Server {
     private void checkRooms() {
         if ( RoomFactory.getInstance().getRooms().size() == 0 ) {
             //No rooms ? Create a default room!
-            createMinimalWorld();
+            RoomFactory.getInstance().createRoom(1l, "Main square");
+            Database.getInstance().store();
             Logger.info(this, "No Rooms found, created default room");
         }
     }
 
-    private void createMinimalWorld()  {
-        //Make sure that there is a clean, empty database
-        Database.getInstance(STORIMMicroServer.DBFILE).clearDatabase();
-
-        RoomFactory.getInstance().createRoom(1l, "Main square");
-        //RoomFactory.getInstance().createRoom(1l, "A meadow");
-        //RoomFactory.getInstance().createRoom(1l, "A forest");
-
-        Database.getInstance().store();
+    private void checkTileSets() throws IOException {
+        if ( TileSetFactory.getInstance().getAllTileSets().size() == 0 ) {
+            Long creatorId = 1L; //TODO Replace 1L with ROOT user..
+            // Default set 1
+            Image image = ImageIO.read(new File("default_tileset1.png"));
+            TileSetFactory.getInstance().createTileSet("Default_Set1", creatorId, image, 32, 32);
+            // Default set 2
+            Image image2 = ImageIO.read(new File("default_tileset2.png"));
+            TileSetFactory.getInstance().createTileSet("Default_Set2", creatorId, image2, 16, 16);
+            Logger.info(this, "No TileSets found, created 2 Default tilesets");
+        }
     }
 
 
@@ -133,7 +141,7 @@ public class STORIMMicroServer extends Server {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         STORIMMicroServer server = new STORIMMicroServer();
         server.initialize();
         server.startServer();
