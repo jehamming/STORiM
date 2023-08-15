@@ -12,6 +12,8 @@ import com.hamming.storim.common.view.Action;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -218,6 +220,28 @@ public class GameViewPanel extends JPanel implements Runnable {
 
             @Override
             public void mouseExited(MouseEvent e) {
+
+            }
+        });
+
+        addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if ( room != null && backgroundTileSet != null ) determineUnitXY();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
 
             }
         });
@@ -723,6 +747,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     public void setBackground(TileSet tileSet, int[][] tileMap) {
         this.backgroundTileSet = tileSet;
         this.backgroundTileMap = tileMap;
+        if ( tileSet != null) determineUnitXY();
         repaint();
     }
 
@@ -740,6 +765,21 @@ public class GameViewPanel extends JPanel implements Runnable {
     public void setForegroundTileSet(TileSet foregroundTileSet) {
         this.foregroundTileSet = foregroundTileSet;
         repaint();
+    }
+
+    private void determineUnitXY() {
+        int roomWidth = room.getCols() * backgroundTileSet.getTileWidth();
+        int roomHeight = room.getRows() * backgroundTileSet.getTileHeight();
+        unitX = (float) getWidth() / (float) roomWidth;
+        unitY = (float) getHeight() / (float) roomHeight;
+    }
+
+    public float getUnitX() {
+        return unitX;
+    }
+
+    public float getUnitY() {
+        return unitY;
     }
 }
 

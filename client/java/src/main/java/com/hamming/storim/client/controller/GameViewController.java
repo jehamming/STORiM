@@ -151,8 +151,8 @@ public class GameViewController implements ConnectionListener {
         if (sequenceNumber == null) {
             resetRequests();
             sequenceNumber = 0L;
-            lastReceivedLocation = l;
         }
+        lastReceivedLocation = l;
         // First : Set the location based on the server respons (server = authoritive
         gameView.scheduleAction(() -> gameView.setPlayerLocation(currentUser.getId(), l.getX(), l.getY()));
         // Remove all the request before this sequence (if any)
@@ -192,9 +192,6 @@ public class GameViewController implements ConnectionListener {
         UserDto user = dto.getUser();
         LocationDto location = dto.getLocation();
         if (user.getCurrentAvatarID() != null) {
-            //FIXME get Avatar
-            //  byte[] imageData = controllers.getUserController().getAvatar(user.getCurrentAvatarID()).getImageData();
-            //gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), imageData));
             gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), null));
         } else {
             gameView.scheduleAction(() -> gameView.addPlayer(user.getId(), user.getName(), null));
@@ -247,11 +244,6 @@ public class GameViewController implements ConnectionListener {
 
     }
 
-    private TileDto getTile(Long tileId) {
-        GetTileResultDTO response = connectionController.sendReceive(new GetTileDTO(tileId), GetTileResultDTO.class);
-        return response.getTile();
-    }
-
     private void resetRequests() {
         sequenceNumber = 0;
         synchronized (movementRequests) {
@@ -266,7 +258,6 @@ public class GameViewController implements ConnectionListener {
                 if (request.getSequence() <= sequence) {
                     removeCollection.add(request);
                 }
-
             }
             movementRequests.removeAll(removeCollection);
         }
@@ -283,9 +274,23 @@ public class GameViewController implements ConnectionListener {
 
     public LocationDto applyMoveRequest(MovementRequestDTO dto, LocationDto loc) {
         LocationDto newLocation = CalcTools.calculateNewPosition(dto, loc);
+        checkBoundaries( newLocation );
         gameView.scheduleAction(() -> gameView.setPlayerLocation(windowController.getCurrentUser().getId(), newLocation.getX(), newLocation.getY()));
         Logger.info(this, "ScheduledMove-Sequence:" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
         return newLocation;
+    }
+
+    private void checkBoundaries(LocationDto loc) {
+        int maxWidth = (int) (gameView.getUnitX() * gameView.getWidth());
+        int maxHeight = (int) (gameView.getUnitY() * gameView.getHeight());
+        if ( loc.getX() > maxWidth) loc.setX( maxWidth);
+        if ( loc.getX() < 0 ) loc.setX(0);
+        if ( loc.getY() > maxHeight) {
+            loc.setY(maxHeight);
+        }
+        if ( loc.getY() < 0 ) {
+            loc.setY(0);
+        }
     }
 
 

@@ -15,7 +15,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -37,6 +36,8 @@ public class STORIMMicroServer extends Server {
     private String serverName = "servername";
     private String serverURI;
     public static String DEFAULT_MAINROOM_NAME = "Main Square";
+    public static String DEFAULT_SERVERCONFIG_NAME = "ServerConfig";
+    private ServerConfiguration serverConfiguration;
 
     public STORIMMicroServer() {
         super("STORIM Micro Server");
@@ -62,6 +63,8 @@ public class STORIMMicroServer extends Server {
 
         ExitFactory.getInstance(DATADIR);
         TileSetFactory.getInstance(DATADIR);
+        // Load the ServeConfig
+        getServerConfigFromDatabase();
 
         checkTileSets();
         checkRooms();
@@ -78,10 +81,23 @@ public class STORIMMicroServer extends Server {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Database.getInstance().store()));
     }
 
+    private void getServerConfigFromDatabase() {
+        serverConfiguration = Database.getInstance().findByName(ServerConfiguration.class, DEFAULT_SERVERCONFIG_NAME );
+        if ( serverConfiguration == null ) {
+            // Not present, create one
+            Long id = Database.getInstance().getNextID();
+            serverConfiguration = new ServerConfiguration();
+            serverConfiguration.setId(id);
+            serverConfiguration.setName(DEFAULT_SERVERCONFIG_NAME);
+            Database.getInstance().addBasicObject(serverConfiguration);
+        }
+    }
+
     private void checkRooms() {
         if ( RoomFactory.getInstance().getRooms().size() == 0 ) {
             //No rooms ? Create a default room!
             Room mainRoom = addRoom(1L, DEFAULT_MAINROOM_NAME);
+            serverConfiguration.setDefaultRoom(mainRoom);
             Database.getInstance().store();
             Logger.info(this, "No Rooms found, created default room:" + mainRoom.getName()+ "("+ mainRoom.getId() +")");
         }
@@ -91,10 +107,12 @@ public class STORIMMicroServer extends Server {
         if ( TileSetFactory.getInstance().getAllTileSets().size() == 0 ) {
             Long creatorId = 1L; //TODO Replace 1L with ROOT user..
             Image defaultTileSetImage = ImageIO.read(new File("DEFAULT_TILESET.png"));
-            TileSetFactory.getInstance().createTileSet(TileSetFactory.DEFAULT_TILESET_NAME, creatorId, defaultTileSetImage, 32, 32);
+            TileSet defaultTileSet = TileSetFactory.getInstance().createTileSet(TileSetFactory.DEFAULT_TILESET_NAME, creatorId, defaultTileSetImage, 32, 32);
+            serverConfiguration.setDefaultTileSet(defaultTileSet);
+            serverConfiguration.setDefaultTile(0);
             // Default set 1
-            Image image = ImageIO.read(new File("default_tileset1.png"));
-            TileSetFactory.getInstance().createTileSet("Default_Set1", creatorId, image, 32, 32);
+            Image image = ImageIO.read(new File("Interiors_free_48x48.png"));
+            TileSetFactory.getInstance().createTileSet("Default_Set1", creatorId, image, 48, 48);
             // Default set 2
             Image image2 = ImageIO.read(new File("default_tileset2.png"));
             TileSetFactory.getInstance().createTileSet("Default_Set2", creatorId, image2, 16, 16);
@@ -155,9 +173,10 @@ public class STORIMMicroServer extends Server {
 
     public Room addRoom(Long creatorId, String name) {
         Room room = RoomFactory.getInstance().createRoom(creatorId, name);
-        TileSet tileSet = TileSetFactory.getInstance().findTileSetByName(TileSetFactory.DEFAULT_TILESET_NAME);
+        TileSet tileSet = serverConfiguration.getDefaultTileSet();
+        int tileId = serverConfiguration.getDefaultTile();
         room.setBackTileSetId(tileSet.getId());
-        room.setBackTileMap(fillTileMap(room.getRows(), room.getCols(), 0));
+        room.setBackTileMap(fillTileMap(room.getRows(), room.getCols(), tileId));
         room.setOwnerId(creatorId);
         return room;
     }

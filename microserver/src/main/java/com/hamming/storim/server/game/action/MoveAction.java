@@ -9,8 +9,10 @@ import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
+import com.hamming.storim.server.common.factories.TileSetFactory;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
+import com.hamming.storim.server.common.model.TileSet;
 import com.hamming.storim.server.game.GameConstants;
 import com.hamming.storim.server.game.GameController;
 import com.hamming.storim.server.game.RoomEvent;
@@ -62,11 +64,12 @@ public class MoveAction extends Action<MovementRequestDTO> {
 
     private void checkRoomBounds(Location l) {
         Room r = RoomFactory.getInstance().findRoomByID(l.getRoomId());
-        //TODO Fix this, calculate from TileSet
-        int DEFAULTTILEWIDTH = 30;
-        int DEFAULTTILEHEIGHT = 30;
-        int width = r.getCols() * DEFAULTTILEWIDTH;
-        int heigth = r.getRows() * DEFAULTTILEHEIGHT;
+        Long tileSetId = r.getBackTileSetId();
+        TileSet tileSet = TileSetFactory.getInstance().findTileSetById(tileSetId);
+        int tileWidth = tileSet.getTileWidth();
+        int tileHeight = tileSet.getTileHeight();
+        int width = r.getCols() * tileWidth;
+        int heigth = r.getRows() * tileHeight;
 
         if ( l.getX() > width) {
             l.setX(width);
