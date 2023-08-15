@@ -3,6 +3,7 @@ package com.hamming.storim.server;
 
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.model.BasicObject;
+import com.hamming.storim.server.common.model.TileSet;
 
 import java.io.*;
 import java.util.*;
@@ -73,6 +74,22 @@ public class Database {
         }
         return found;
     }
+
+    public <T extends BasicObject> T findByName(Class<T> c, String name) {
+        T found = null;
+        List<BasicObject> listOfObjects = data.get(c);
+        if (listOfObjects != null) {
+            for (BasicObject anObject : listOfObjects) {
+                if (anObject.getName().equals(name)) {
+                    found = (T) anObject;
+                    break;
+                }
+            }
+        }
+        return found;
+    }
+
+
 
     public <T extends BasicObject> List<T> getAll(Class<T> c) {
         List<T> listOfObjects = ( List<T> ) data.get(c);
@@ -169,6 +186,7 @@ public class Database {
     public Set<Class> getClassTypes() {
         return data.keySet();
     }
+
 
 
 }

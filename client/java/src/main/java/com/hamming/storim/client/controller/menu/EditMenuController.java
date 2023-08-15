@@ -94,7 +94,10 @@ public class EditMenuController implements ConnectionListener {
         roomTileEditorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         roomTileEditorFrame.getContentPane().add(roomTileEditorPanel);
         roomTileEditorFrame.pack();
-        window.getMenuRoomTiles().addActionListener(e -> roomTileEditorFrame.setVisible(true));
+        window.getMenuRoomTiles().addActionListener(e -> {
+                roomTileMapEditorPanelController.reset();
+                roomTileEditorFrame.setVisible(true);
+                });
         tileMapEditorView.start();
     }
 

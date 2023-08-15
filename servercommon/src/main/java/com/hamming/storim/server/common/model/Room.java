@@ -9,8 +9,10 @@ import java.util.List;
 public class Room extends BasicObject   {
 
     private int rows, cols;
-    private Long tileSetId;
-    private int[][] tileMap;
+    private Long backTileSetId;
+    private Long frontTileSetId;
+    private int[][] backTileMap;
+    private int[][] frontTileMap;
     private int spawnPointX;
     private int spawnPointY;
     private List<Exit> exits;
@@ -19,22 +21,29 @@ public class Room extends BasicObject   {
     public Room() {
         spawnPointX = 100;
         spawnPointY = 100;
-        tileSetId = null;
+        backTileSetId = null;
+        frontTileSetId = null;
         setName("A basic room");
         rows = 10;
         cols = 10;
-        createTileMap();
+        createTileMaps();
         exits = new ArrayList<>();
         objectsInRoom = new ArrayList<>();
     }
 
-    private void createTileMap() {
-        tileMap = new int[cols][rows];
+    private void createTileMaps() {
+        backTileMap = createEmptyTileMap();
+        frontTileMap = createEmptyTileMap();
+    }
+
+    private int[][] createEmptyTileMap() {
+        int [][] tileMap = new int[cols][rows];
         for (int c = 0; c < cols; c++) {
             for (int r = 0; r < rows; r++) {
                 tileMap[c][r] = -1;
             }
         }
+        return tileMap;
     }
 
     public int getSpawnPointX() {
@@ -53,17 +62,6 @@ public class Room extends BasicObject   {
         this.spawnPointY = spawnPointY;
     }
 
-    public void setTileSetId(Long tileSetId) {
-        this.tileSetId = tileSetId;
-    }
-
-    public Long getTileSetId() {
-        return tileSetId;
-    }
-
-    public int[][] getTileMap() {
-        return tileMap;
-    }
 
     public int getRows() {
         return rows;
@@ -86,8 +84,36 @@ public class Room extends BasicObject   {
         return exits;
     }
 
-    public void setTileMap(int[][] tileMap) {
-        this.tileMap = tileMap;
+    public Long getBackTileSetId() {
+        return backTileSetId;
+    }
+
+    public void setBackTileSetId(Long backTileSetId) {
+        this.backTileSetId = backTileSetId;
+    }
+
+    public Long getFrontTileSetId() {
+        return frontTileSetId;
+    }
+
+    public void setFrontTileSetId(Long frontTileSetId) {
+        this.frontTileSetId = frontTileSetId;
+    }
+
+    public int[][] getBackTileMap() {
+        return backTileMap;
+    }
+
+    public void setBackTileMap(int[][] backTileMap) {
+        this.backTileMap = backTileMap;
+    }
+
+    public int[][] getFrontTileMap() {
+        return frontTileMap;
+    }
+
+    public void setFrontTileMap(int[][] frontTileMap) {
+        this.frontTileMap = frontTileMap;
     }
 
     @Override
@@ -95,8 +121,10 @@ public class Room extends BasicObject   {
         return "Room{" +
                 "rows=" + rows +
                 ", cols=" + cols +
-                ", tileSetId=" + tileSetId +
-                ", tileMap=" + Arrays.toString(tileMap) +
+                ", backTileSetId=" + backTileSetId +
+                ", frontTileSetId=" + frontTileSetId +
+                ", backTileMap=" + Arrays.toString(backTileMap) +
+                ", fronTileMap=" + Arrays.toString(frontTileMap) +
                 ", spawnPointX=" + spawnPointX +
                 ", spawnPointY=" + spawnPointY +
                 ", exits=" + exits +
@@ -129,7 +157,7 @@ public class Room extends BasicObject   {
     public void setSize(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
-        createTileMap();
+        createTileMaps();
     }
 
 }

@@ -18,6 +18,8 @@ public class TileSetFactory {
     private static TileSetFactory instance;
     private String dataDir;
 
+    public static String DEFAULT_TILESET_NAME = "Default";
+
 
     private TileSetFactory(String dataDir) {
         this.dataDir = dataDir;
@@ -79,6 +81,12 @@ public class TileSetFactory {
     public TileSet findTileSetById( Long id ) {
         return Database.getInstance().findById(TileSet.class, id);
     }
+
+
+    public TileSet findTileSetByName( String name ) {
+        return Database.getInstance().findByName(TileSet.class, name);
+    }
+
 
     public TileSet createTileSet(String name, Long creatorId, Image image, int tileWidth, int tileHeight) {
         Long id = Database.getInstance().getNextID();

@@ -3,6 +3,7 @@ package com.hamming.storim.client.panels;
 import com.hamming.storim.client.listitem.TileSetListItem;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  *
@@ -27,68 +28,109 @@ public class RoomTileEditorPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
         ControlsPanel = new javax.swing.JPanel();
-        cmbTileset = new javax.swing.JComboBox<>();
-        cmbTiles = new javax.swing.JComboBox<>();
+        cmbBackgroundTileset = new javax.swing.JComboBox<>();
+        cmbBackgroundTiles = new javax.swing.JComboBox<>();
         btnApplyAll = new javax.swing.JButton();
         cbGrid = new javax.swing.JCheckBox();
-        btnRevert = new javax.swing.JButton();
         btnSaveToServer = new javax.swing.JButton();
-        btnUndo = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        cmbForegroundTileset = new javax.swing.JComboBox<>();
+        cmbForegroundTiles = new javax.swing.JComboBox<>();
+        jSeparator2 = new javax.swing.JSeparator();
+        chkForeground = new javax.swing.JCheckBox();
+        chkBackground = new javax.swing.JCheckBox();
+        radioBG = new javax.swing.JRadioButton();
+        radioFG = new javax.swing.JRadioButton();
+        jLabel1 = new javax.swing.JLabel();
 
         javax.swing.GroupLayout ViewPanelLayout = new javax.swing.GroupLayout(ViewPanel);
         ViewPanel.setLayout(ViewPanelLayout);
         ViewPanelLayout.setHorizontalGroup(
                 ViewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 548, Short.MAX_VALUE)
+                        .addGap(0, 602, Short.MAX_VALUE)
         );
         ViewPanelLayout.setVerticalGroup(
                 ViewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 313, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
 
         btnApplyAll.setText("Apply to All");
 
-        cbGrid.setText("Grid");
-
-        btnRevert.setText("Revert all Changes");
+        cbGrid.setText("Show Grid");
 
         btnSaveToServer.setText("Save to Server");
 
-        btnUndo.setText("Undo");
+        chkForeground.setText("Foreground");
+
+        chkBackground.setText("Background");
+
+        radioBG.setText("Draw background");
+
+        radioFG.setText("Draw Foreground");
+
+        jLabel1.setText("Hold CTRL to delete!");
 
         javax.swing.GroupLayout ControlsPanelLayout = new javax.swing.GroupLayout(ControlsPanel);
         ControlsPanel.setLayout(ControlsPanelLayout);
         ControlsPanelLayout.setHorizontalGroup(
                 ControlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(ControlsPanelLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(ControlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(btnApplyAll, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(cmbTiles, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(cmbTileset, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(cbGrid)
-                                        .addComponent(btnRevert, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btnSaveToServer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btnUndo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(ControlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jSeparator2)
+                                        .addGroup(ControlsPanelLayout.createSequentialGroup()
+                                                .addComponent(chkBackground)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGroup(ControlsPanelLayout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addGroup(ControlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(cmbForegroundTileset, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(cmbForegroundTiles, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addGroup(ControlsPanelLayout.createSequentialGroup()
+                                                                .addGroup(ControlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                        .addComponent(btnApplyAll, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(cmbBackgroundTiles, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(cmbBackgroundTileset, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(cbGrid)
+                                                                        .addComponent(btnSaveToServer, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+                                                                        .addComponent(jSeparator1)
+                                                                        .addComponent(chkForeground)
+                                                                        .addComponent(radioBG)
+                                                                        .addComponent(radioFG)
+                                                                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addContainerGap())
         );
         ControlsPanelLayout.setVerticalGroup(
                 ControlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(ControlsPanelLayout.createSequentialGroup()
-                                .addComponent(cmbTileset, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap()
+                                .addComponent(chkBackground)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmbTiles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cmbBackgroundTileset, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbBackgroundTiles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnApplyAll)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(2, 2, 2)
+                                .addComponent(chkForeground)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbForegroundTileset, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbForegroundTiles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(radioBG)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(radioFG)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cbGrid)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnUndo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnRevert)
-                                .addGap(20, 20, 20)
-                                .addComponent(btnSaveToServer)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addGap(35, 35, 35)
+                                .addComponent(btnSaveToServer))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -103,10 +145,11 @@ public class RoomTileEditorPanel extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(ControlsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(ViewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(ControlsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(ViewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
         );
     }// </editor-fold>
 
@@ -115,37 +158,63 @@ public class RoomTileEditorPanel extends javax.swing.JPanel {
     private javax.swing.JPanel ControlsPanel;
     private javax.swing.JPanel ViewPanel;
     private javax.swing.JButton btnApplyAll;
-    private javax.swing.JButton btnRevert;
     private javax.swing.JButton btnSaveToServer;
-    private javax.swing.JButton btnUndo;
     private javax.swing.JCheckBox cbGrid;
-    private javax.swing.JComboBox<ImageIcon> cmbTiles;
-    private javax.swing.JComboBox<TileSetListItem> cmbTileset;
+    private javax.swing.JCheckBox chkBackground;
+    private javax.swing.JCheckBox chkForeground;
+    private javax.swing.JComboBox<ImageIcon> cmbBackgroundTiles;
+    private javax.swing.JComboBox<TileSetListItem> cmbBackgroundTileset;
+    private javax.swing.JComboBox<ImageIcon> cmbForegroundTiles;
+    private javax.swing.JComboBox<TileSetListItem> cmbForegroundTileset;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JRadioButton radioBG;
+    private javax.swing.JRadioButton radioFG;
     // End of variables declaration
-
 
     public JButton getBtnApplyAll() {
         return btnApplyAll;
-    }
-
-
-    public JComboBox<ImageIcon> getCmbTiles() {
-        return cmbTiles;
-    }
-
-    public JComboBox<TileSetListItem> getCmbTileset() {
-        return cmbTileset;
     }
 
     public JCheckBox getCbGrid() {
         return cbGrid;
     }
 
-    public JButton getBtnRevert() {
-        return btnRevert;
-    }
-
     public JButton getBtnSaveToServer() {
         return btnSaveToServer;
     }
+
+    public JCheckBox getChkBackground() {
+        return chkBackground;
+    }
+
+    public JCheckBox getChkForeground() {
+        return chkForeground;
+    }
+
+    public JComboBox<ImageIcon> getCmbBackgroundTiles() {
+        return cmbBackgroundTiles;
+    }
+
+    public JComboBox<TileSetListItem> getCmbBackgroundTileset() {
+        return cmbBackgroundTileset;
+    }
+
+    public JComboBox<ImageIcon> getCmbForegroundTiles() {
+        return cmbForegroundTiles;
+    }
+
+    public JComboBox<TileSetListItem> getCmbForegroundTileset() {
+        return cmbForegroundTileset;
+    }
+
+    public JRadioButton getRadioBG() {
+        return radioBG;
+    }
+
+    public JRadioButton getRadioFG() {
+        return radioFG;
+    }
 }
+

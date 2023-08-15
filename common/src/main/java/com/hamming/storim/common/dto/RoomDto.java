@@ -6,20 +6,25 @@ import java.util.List;
 public class RoomDto extends DTO {
 
     private String roomURI;
-    private Long tileSetId;
     private int rows, cols;
     private List<Long> exits;
-    private int[][] tileMap;
+    private Long backTileSetId;
+    private Long frontTileSetId;
+    private int[][] backTileMap;
+    private int[][] frontTileMap;
 
-    public RoomDto(Long id, String roomURI, String name, int rows, int cols, Long tileSetId, int[][] tileMap, List<Long> exits){
+
+    public RoomDto(Long id, String roomURI, String name, int rows, int cols, Long backTileSetId, int[][] backTileMap, Long frontTileSetId, int[][] frontTileMap, List<Long> exits){
         setId(id);
         setName(name);
         this.rows = rows;
         this.cols = cols;
         this.exits = exits;
         this.roomURI = roomURI;
-        this.tileMap = tileMap;
-        this.tileSetId = tileSetId;
+        this.frontTileMap = frontTileMap;
+        this.frontTileSetId = frontTileSetId;
+        this.backTileMap = backTileMap;
+        this.backTileSetId = backTileSetId;
     }
 
     public int getRows() {
@@ -30,14 +35,6 @@ public class RoomDto extends DTO {
         return cols;
     }
 
-    public Long getTileSetId() {
-        return tileSetId;
-    }
-
-    public int[][] getTileMap() {
-        return tileMap;
-    }
-
     public List<Long> getExits() {
         return exits;
     }
@@ -46,17 +43,33 @@ public class RoomDto extends DTO {
         return roomURI;
     }
 
+    public Long getBackTileSetId() {
+        return backTileSetId;
+    }
+
+    public Long getFrontTileSetId() {
+        return frontTileSetId;
+    }
+
+    public int[][] getBackTileMap() {
+        return backTileMap;
+    }
+
+    public int[][] getFrontTileMap() {
+        return frontTileMap;
+    }
+
     @Override
     public String toString() {
         return "RoomDto{" +
-                "id='" + getId() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", roomURI='" + roomURI + '\'' +
-                ", tileSetId=" + tileSetId +
+                "roomURI='" + roomURI + '\'' +
                 ", rows=" + rows +
                 ", cols=" + cols +
                 ", exits=" + exits +
-                ", tileMap=" + Arrays.toString(tileMap) +
+                ", backTileSetId=" + backTileSetId +
+                ", frontTileSetId=" + frontTileSetId +
+                ", backTileMap=" + Arrays.toString(backTileMap) +
+                ", frontTileMap=" + Arrays.toString(frontTileMap) +
                 '}';
     }
 }

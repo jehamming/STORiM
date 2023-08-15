@@ -7,6 +7,7 @@ import com.hamming.storim.server.common.NetUtils;
 import com.hamming.storim.server.common.factories.ExitFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.factories.TileSetFactory;
+import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.common.model.TileSet;
 import com.hamming.storim.server.game.GameController;
 
@@ -35,6 +36,7 @@ public class STORIMMicroServer extends Server {
     public static String DATADIR = "serverdata";
     private String serverName = "servername";
     private String serverURI;
+    public static String DEFAULT_MAINROOM_NAME = "Main Square";
 
     public STORIMMicroServer() {
         super("STORIM Micro Server");
@@ -61,8 +63,10 @@ public class STORIMMicroServer extends Server {
         ExitFactory.getInstance(DATADIR);
         TileSetFactory.getInstance(DATADIR);
 
-        checkRooms();
         checkTileSets();
+        checkRooms();
+
+
 
         // Start GameController
         controller = new GameController();
@@ -77,22 +81,24 @@ public class STORIMMicroServer extends Server {
     private void checkRooms() {
         if ( RoomFactory.getInstance().getRooms().size() == 0 ) {
             //No rooms ? Create a default room!
-            RoomFactory.getInstance().createRoom(1l, "Main square");
+            Room mainRoom = addRoom(1L, DEFAULT_MAINROOM_NAME);
             Database.getInstance().store();
-            Logger.info(this, "No Rooms found, created default room");
+            Logger.info(this, "No Rooms found, created default room:" + mainRoom.getName()+ "("+ mainRoom.getId() +")");
         }
     }
 
     private void checkTileSets() throws IOException {
         if ( TileSetFactory.getInstance().getAllTileSets().size() == 0 ) {
             Long creatorId = 1L; //TODO Replace 1L with ROOT user..
+            Image defaultTileSetImage = ImageIO.read(new File("DEFAULT_TILESET.png"));
+            TileSetFactory.getInstance().createTileSet(TileSetFactory.DEFAULT_TILESET_NAME, creatorId, defaultTileSetImage, 32, 32);
             // Default set 1
             Image image = ImageIO.read(new File("default_tileset1.png"));
             TileSetFactory.getInstance().createTileSet("Default_Set1", creatorId, image, 32, 32);
             // Default set 2
             Image image2 = ImageIO.read(new File("default_tileset2.png"));
             TileSetFactory.getInstance().createTileSet("Default_Set2", creatorId, image2, 16, 16);
-            Logger.info(this, "No TileSets found, created 2 Default tilesets");
+            Logger.info(this, "No TileSets found, created 3 tilesets");
         }
     }
 
@@ -145,5 +151,24 @@ public class STORIMMicroServer extends Server {
         STORIMMicroServer server = new STORIMMicroServer();
         server.initialize();
         server.startServer();
+    }
+
+    public Room addRoom(Long creatorId, String name) {
+        Room room = RoomFactory.getInstance().createRoom(creatorId, name);
+        TileSet tileSet = TileSetFactory.getInstance().findTileSetByName(TileSetFactory.DEFAULT_TILESET_NAME);
+        room.setBackTileSetId(tileSet.getId());
+        room.setBackTileMap(fillTileMap(room.getRows(), room.getCols(), 0));
+        room.setOwnerId(creatorId);
+        return room;
+    }
+
+    private int[][] fillTileMap(int rows, int cols, int value) {
+        int[][] newTileMap = new int[cols][rows];
+        for (int c = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
+                newTileMap[c][r] = value;
+            }
+        }
+        return newTileMap;
     }
 }

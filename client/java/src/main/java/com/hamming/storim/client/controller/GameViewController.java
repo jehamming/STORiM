@@ -3,6 +3,7 @@ package com.hamming.storim.client.controller;
 import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.view.GameViewPanel;
+import com.hamming.storim.client.view.TileSet;
 import com.hamming.storim.common.CalcTools;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.*;
@@ -202,16 +203,34 @@ public class GameViewController implements ConnectionListener {
     }
 
     private void updateRoom(RoomDto room) {
-        Long tileSetId = room.getTileSetId();
+        gameView.scheduleAction(() -> gameView.setRoom(room));
+        setBackground(room);
+        setForeground(room);
+    }
+
+    private void setBackground(RoomDto room) {
+        Long tileSetId = room.getBackTileSetId();
         if ( tileSetId != null ) {
             GetTileSetResultDTO response = connectionController.sendReceive(new GetTileSetDTO(tileSetId), GetTileSetResultDTO.class);
             TileSetDto tileSetDto = response.getTileSetDto();
             if ( tileSetDto != null ) {
-                gameView.scheduleAction(() -> gameView.setTileSet(tileSetDto));
+                TileSet tileSet = new TileSet(tileSetDto);
+                gameView.scheduleAction(() -> gameView.setBackground(tileSet, room.getBackTileMap()));
             }
         }
-        gameView.scheduleAction(() -> gameView.setRoom(room));
+    }
 
+
+    private void setForeground(RoomDto room) {
+        Long tileSetId = room.getFrontTileSetId();
+        if ( tileSetId != null ) {
+            GetTileSetResultDTO response = connectionController.sendReceive(new GetTileSetDTO(tileSetId), GetTileSetResultDTO.class);
+            TileSetDto tileSetDto = response.getTileSetDto();
+            if ( tileSetDto != null ) {
+                TileSet tileSet = new TileSet(tileSetDto);
+                gameView.scheduleAction(() -> gameView.setForeground(tileSet, room.getFrontTileMap()));
+            }
+        }
     }
 
     private void setRoom(RoomDto room) {

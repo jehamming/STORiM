@@ -20,17 +20,22 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
     private int fps = 30;
     private long time;
     private BufferedImage backBuffer;
-    private boolean drawing;
-    private int[][] tileMap;
+    private boolean handlingActions;
     boolean drawGrid = true;
+    boolean drawFG = true;
+    boolean drawBG = true;
+    private int[][] backgroundTileMap;
+    private int[][] foregroundTileMap;
+
+    private TileSet backgroundTileSet;
+    private TileSet foregroundTileSet;
 
     //the game thread
-    private Thread drawThread = null;
+    private Thread actionHandlerThread = null;
 
     private List<Action> actions;
 
     public RoomDto room;
-    public TileSet tileSet;
 
     //
     // TODO RoomEditorController
@@ -54,7 +59,8 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
                 SwingUtilities.convertPointFromScreen(p, RoomTileMapEditorView.this);
                 int row = getRow(p.y);
                 int col = getCol(p.x);
-                controller.applyTile(row, col);
+                boolean deleteTile = e.isControlDown();
+                controller.applyTile(deleteTile, row, col);
             }
 
             @Override
@@ -77,7 +83,7 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        while (drawing) {
+        while (handlingActions) {
             time = System.currentTimeMillis();
             handleActions();
             waitIfNeeded();
@@ -119,10 +125,12 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
     public void setRoom(RoomDto room) {
         this.room = room;
         if ( room != null ) {
-            setTileMap(room.getTileMap());
+            backgroundTileMap = room.getBackTileMap();
+            foregroundTileMap = room.getFrontTileMap();
             determineUnitXY();
         } else {
-            resetTileMap();
+            foregroundTileMap = null;
+            backgroundTileMap = null;
         }
         repaint();
     }
@@ -137,7 +145,7 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
             }
         }
         try {
-            drawThread.sleep(17);
+            actionHandlerThread.sleep(17);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -145,9 +153,9 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
 
 
     public void start() {
-        drawing = true;
-        drawThread = new Thread(this);
-        drawThread.start();
+        handlingActions = true;
+        actionHandlerThread = new Thread(this);
+        actionHandlerThread.start();
     }
 
     @Override
@@ -158,11 +166,14 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
 
             bbg.setColor(Color.black);
             bbg.fillRect(0, 0, getWidth(), getHeight());
-            drawTiles(bbg);
-
-            if ( drawGrid ) {
-                drawGrid(bbg);
+            if (drawBG & backgroundTileSet != null & backgroundTileMap != null ) {
+                drawTiles(bbg, backgroundTileSet, backgroundTileMap);
             }
+            if (drawFG & foregroundTileSet != null & foregroundTileMap != null ) {
+                drawTiles(bbg, foregroundTileSet, foregroundTileMap);
+            }
+
+            if ( drawGrid ) drawGrid(bbg);
 
             g.drawImage(backBuffer, 0, 0, this);
         } else {
@@ -178,7 +189,7 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
     private void drawGrid(Graphics g) {
         Color oldColor = g.getColor();
         g.setColor(Color.DARK_GRAY);
-        if (room != null && tileSet != null) {
+        if (room != null) {
             int rows = room.getRows();
             int cols = room.getCols();
 
@@ -198,7 +209,7 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
     }
 
 
-    private void drawTiles(Graphics g) {
+    private void drawTiles(Graphics g, TileSet tileSet, int[][] tileMap) {
         //Draw Tiles
         int rows = room.getRows();
         int cols = room.getCols();
@@ -252,29 +263,51 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
         setRoom(null);
     }
 
-    public void setTileSet(TileSet tileSet) {
-        this.tileSet = tileSet;
+    public void setBackgroundTileSet(TileSet tileSet) {
+        this.backgroundTileSet = tileSet;
+        if (room != null ) resetBackgroundTileMap();
         repaint();
     }
 
-    private void resetTileMap() {
-        if ( room != null ) {
-            tileMap = new int[room.getCols()][room.getRows()];
-            for (int c = 0; c < room.getCols(); c++) {
-                for (int r = 0; r < room.getRows(); r++) {
-                    tileMap[c][r] = -1;
-                }
+    public void setForegroundTileSet(TileSet tileSet) {
+        this.foregroundTileSet = tileSet;
+        if (room != null ) resetForegroundTileMap();
+        repaint();
+    }
+    private void resetBackgroundTileMap() {
+        backgroundTileMap = new int[room.getCols()][room.getRows()];
+        fillTileMap(backgroundTileMap, -1);
+        repaint();
+    }
+
+    private void resetForegroundTileMap() {
+        foregroundTileMap = new int[room.getCols()][room.getRows()];
+        fillTileMap(foregroundTileMap, -1);
+        repaint();
+    }
+
+
+    private void fillTileMap(int[][] newTileMap, int value) {
+        for (int c = 0; c < room.getCols(); c++) {
+            for (int r = 0; r < room.getRows(); r++) {
+                newTileMap[c][r] = value;
             }
         }
     }
 
-    public void applyTile(int tileIndex, int row, int col) {
-        tileMap[col-1][row-1] = tileIndex;
+
+    public void applyBackgroundTile(int tileIndex, int row, int col) {
+        backgroundTileMap[col-1][row-1] = tileIndex;
     }
-    public void applyToAll(int tileIndex) {
+
+    public void applyForegroundTile(int tileIndex, int row, int col) {
+        foregroundTileMap[col-1][row-1] = tileIndex;
+    }
+
+    public void applyTileToAllBackground(int tileIndex) {
         for (int c = 0; c < room.getCols(); c++) {
             for (int r = 0; r < room.getRows(); r++) {
-                tileMap[c][r] = tileIndex;
+                backgroundTileMap[c][r] = tileIndex;
             }
         }
     }
@@ -284,13 +317,20 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
         repaint();
     }
 
-
-    public void setTileMap(int[][] newTileMap) {
-        tileMap = newTileMap;
+    public int[][] getBackgroundTileMap() {
+        return backgroundTileMap;
     }
 
-    public int[][] getTileMap() {
-        return tileMap;
+    public int[][] getForegroundTileMap() {
+        return foregroundTileMap;
+    }
+
+    public void setDrawForeGround(boolean isSelected) {
+        drawFG = isSelected;
+    }
+
+    public void setDrawBackground(boolean isSelected) {
+        drawBG = isSelected;
     }
 }
 

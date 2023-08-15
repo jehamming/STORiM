@@ -34,9 +34,14 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
             updatedRoom = updateRoomSize(dto.getRoomId(), dto.getRows(), dto.getCols());
         }
 
-        if ( dto.getTileSetId() != null && dto.getTileMap() != null  ) {
-            updatedRoom = updateRoomTileSet(dto.getRoomId(), dto.getTileSetId(), dto.getTileMap());
+        if ( dto.getFrontTileSetId() != null && dto.getFrontTileMap() != null  ) {
+            updatedRoom = updateRoomFrontTileSet(dto.getRoomId(), dto.getFrontTileSetId(), dto.getFrontTileMap());
         }
+
+        if ( dto.getBackTileSetId() != null && dto.getBackTileMap() != null  ) {
+            updatedRoom = updateRoomBackTileSet(dto.getRoomId(), dto.getBackTileSetId(), dto.getBackTileMap());
+        }
+
 
         RoomDto roomDto = DTOFactory.getInstance().getRoomDto(updatedRoom, client.getServer().getServerURI());
         RoomUpdatedDTO roomUpdatedDTO = new RoomUpdatedDTO(roomDto);
@@ -55,8 +60,13 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
         return room;
     }
 
-    public Room updateRoomTileSet(Long roomId, Long tileSetId, int[][] tileMap) {
-        Room room = RoomFactory.getInstance().updateRoomTileSet(roomId, tileSetId, tileMap);
+    public Room updateRoomFrontTileSet(Long roomId, Long tileSetId, int[][] tileMap) {
+        Room room = RoomFactory.getInstance().updateRoomFrontTileSet(roomId, tileSetId, tileMap);
+        return room;
+    }
+
+    public Room updateRoomBackTileSet(Long roomId, Long tileSetId, int[][] tileMap) {
+        Room room = RoomFactory.getInstance().updateRoomBackTileSet(roomId, tileSetId, tileMap);
         return room;
     }
 

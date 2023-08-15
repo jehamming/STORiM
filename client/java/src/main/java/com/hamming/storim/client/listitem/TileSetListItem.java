@@ -1,22 +1,23 @@
 package com.hamming.storim.client.listitem;
 
+import com.hamming.storim.client.view.TileSet;
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.TileSetDto;
 
 public class TileSetListItem {
 
 
-    private TileSetDto tileSet;
+    private TileSet tileSet;
 
-    public TileSetListItem(TileSetDto tileSet) {
+    public TileSetListItem(TileSet tileSet) {
         this.tileSet = tileSet;
     }
 
-    public TileSetDto getTileSet() {
+    public TileSet getTileSet() {
         return tileSet;
     }
 
-    public void setTileSet(TileSetDto tileSet) {
+    public void setTileSet(TileSet tileSet) {
         this.tileSet = tileSet;
     }
 

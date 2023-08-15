@@ -238,7 +238,7 @@ public class RoomEditorPanelController implements ConnectionListener {
             // Update room!
             Long roomId = Long.valueOf(panel.getLblId().getText());
 
-            UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, rows, cols, null, null);
+            UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, rows, cols, null, null, null, null);
             connectionController.send(updateRoomDto);
 
         }

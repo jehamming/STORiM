@@ -40,9 +40,11 @@ public class GameViewPanel extends JPanel implements Runnable {
     private List<Exit> exits;
 
     public RoomDto room;
-    public TileDto tile;
-    private int[][] tileMap;
-    public TileSet tileSet;
+    private int[][] backgroundTileMap;
+    private int[][] foregroundTileMap;
+
+    private TileSet backgroundTileSet;
+    private TileSet foregroundTileSet;
     private GameViewController viewController;
 
     private Image defaultTileImage;
@@ -343,14 +345,9 @@ public class GameViewPanel extends JPanel implements Runnable {
         return room;
     }
 
-    public void setTile(TileDto tile) {
-        this.tile = tile;
-    }
-
     public void setRoom(RoomDto room) {
         this.room = room;
         if (room != null) {
-            tileMap = room.getTileMap();
             String text = room.getRoomURI() + " (" + room.getName() + ")";
             windowController.setRoomname(text);
         }
@@ -484,7 +481,6 @@ public class GameViewPanel extends JPanel implements Runnable {
         bbg.fillRect(0, 0, getWidth(), getHeight());
         drawRoom(bbg);
         drawThings(bbg);
-        drawBorder(bbg);
         drawExits(bbg);
         drawUsers(bbg);
         drawControls(bbg);
@@ -492,48 +488,40 @@ public class GameViewPanel extends JPanel implements Runnable {
         g.drawImage(backBuffer, 0, 0, this);
     }
 
-    private void drawBorder(Graphics g) {
-        int thickness = 15;
-        int half = thickness / 2;
-        Graphics2D g2 = (Graphics2D) g;
-        Stroke oldStroke = g2.getStroke();
-        g2.setStroke(new BasicStroke(thickness));
-        Color old = g2.getColor();
-        g2.setColor(Color.BLACK);
-        g2.drawRect(half, half, getWidth() - thickness, getHeight() - thickness);
-        g2.setColor(old);
-        g2.setStroke(oldStroke);
-    }
-
     void drawRoom(Graphics g) {
         if (room != null) {
-            //Draw Tiles
-            int rows = room.getRows();
-            int cols = room.getCols();
+            if ( backgroundTileSet != null && backgroundTileMap != null ) {
+                drawTiles(g, backgroundTileSet, backgroundTileMap);
+            }
+            if ( foregroundTileSet != null && foregroundTileMap != null ) {
+                drawTiles(g, foregroundTileSet, foregroundTileMap);
+            }
+        }
+    }
 
-            int widthPerTile = getWidth() / cols;
-            int heightPerTile = getHeight() / rows;
-            for (int c = 0; c < cols; c++) {
-                for (int r = 0; r < rows; r++) {
-                    int x = c * widthPerTile;
-                    int y = r * heightPerTile;
-                    int width = widthPerTile;
-                    int height = heightPerTile;
-                    //Check last tiles (row/col)
-                    if (c == cols) {
-                        width = getWidth() - x;
-                    }
-                    if ( r == rows ) {
-                        height = getHeight() - y;
-                    }
-                    if ( tileSet != null &&  tileMap[c][r] >= 0 ) {
-                        Image tileImage = tileSet.getTile(tileMap[c][r]);
-                        if ( tileImage == null ) tileImage = defaultTileImage;
-                        g.drawImage(tileImage, x, y, width, height, this);
-                    } else {
-                        Image tileImage = defaultTileImage;
-                        g.drawImage(tileImage, x, y, width, height, this);
-                    }
+    private void drawTiles(Graphics g, TileSet tileSet, int[][] tileMap) {
+        //Draw Tiles
+        int rows = room.getRows();
+        int cols = room.getCols();
+
+        int widthPerTile = getWidth() / cols;
+        int heightPerTile = getHeight() / rows;
+        for (int c = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
+                int x = c * widthPerTile;
+                int y = r * heightPerTile;
+                int width = widthPerTile;
+                int height = heightPerTile;
+                //Check last tiles (row/col)
+                if (c == cols) {
+                    width = getWidth() - x;
+                }
+                if ( r == rows ) {
+                    height = getHeight() - y;
+                }
+                if ( tileMap[c][r] >= 0 ) {
+                    Image tileImage = tileSet.getTile(tileMap[c][r]);
+                    g.drawImage(tileImage, x, y, width, height, this);
                 }
             }
         }
@@ -671,7 +659,10 @@ public class GameViewPanel extends JPanel implements Runnable {
 
     public void resetView() {
         windowController.setRoomname("");
-        setTile(null);
+        setForeground(null,null);
+        setBackground(null,null);
+        setForegroundTileSet(null);
+        setBackgroundTileSet(null);
         setRoom(null);
         setPlayers(new ArrayList<>());
         setThings(new ArrayList<>());
@@ -682,10 +673,6 @@ public class GameViewPanel extends JPanel implements Runnable {
     private void setLocation(BasicDrawableObject o, int x, int y) {
         o.setX((int) (x * unitX));
         o.setY((int) (y * unitY));
-    }
-
-    public void setTileSet(TileSetDto tileSetDto) {
-        this.tileSet = new TileSet(tileSetDto);
     }
 
     public void setPlayerLocation(Long id, int x, int y) {
@@ -731,6 +718,28 @@ public class GameViewPanel extends JPanel implements Runnable {
             thing.setScale(thingDto.getScale());
             thing.setRotation(thingDto.getRotation());
         }
+    }
+
+    public void setBackground(TileSet tileSet, int[][] tileMap) {
+        this.backgroundTileSet = tileSet;
+        this.backgroundTileMap = tileMap;
+        repaint();
+    }
+
+    public void setForeground(TileSet tileSet, int[][] tileMap) {
+        this.foregroundTileSet = tileSet;
+        this.foregroundTileMap = tileMap;
+        repaint();
+    }
+
+    public void setBackgroundTileSet(TileSet backgroundTileSet) {
+        this.backgroundTileSet = backgroundTileSet;
+        repaint();
+    }
+
+    public void setForegroundTileSet(TileSet foregroundTileSet) {
+        this.foregroundTileSet = foregroundTileSet;
+        repaint();
     }
 }
 

@@ -50,7 +50,7 @@ public class DTOFactory {
             exits.add(e.getId());
         }
         String roomURI = serverURI +"/"+ b.getId();
-        RoomDto dto = new RoomDto(b.getId(), roomURI, b.getName(), b.getRows(), b.getCols(), b.getTileSetId(), b.getTileMap(), exits);
+        RoomDto dto = new RoomDto(b.getId(), roomURI, b.getName(), b.getRows(), b.getCols(), b.getBackTileSetId(), b.getBackTileMap(), b.getFrontTileSetId(), b.getFrontTileMap(), exits);
         fillBasicObjectInfo(dto, b);
         return dto;
     }

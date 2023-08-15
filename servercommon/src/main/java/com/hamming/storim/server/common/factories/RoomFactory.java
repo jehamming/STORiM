@@ -21,6 +21,9 @@ public class RoomFactory {
     public Room findRoomByID(Long id ) {
         return Database.getInstance().findById(Room.class, id);
     }
+    public Room findRoomByName(String name ) {
+        return Database.getInstance().findByName(Room.class, name);
+    }
 
     public List<Room> getRooms() {
         return Database.getInstance().getAll(Room.class);
@@ -57,12 +60,20 @@ public class RoomFactory {
         return room;
     }
 
-    public Room updateRoomTileSet(Long roomId, Long tileSetId, int[][] tileMap) {
+    public Room updateRoomFrontTileSet(Long roomId, Long frontTileSetId, int[][] frontTileMap) {
         Room room = findRoomByID(roomId);
-        room.setTileSetId(tileSetId);
-        room.setTileMap(tileMap);
+        room.setFrontTileSetId(frontTileSetId);
+        room.setFrontTileMap(frontTileMap);
         return room;
     }
+
+    public Room updateRoomBackTileSet(Long roomId, Long backTileSetId, int[][] backTileMap) {
+        Room room = findRoomByID(roomId);
+        room.setBackTileSetId(backTileSetId);
+        room.setBackTileMap(backTileMap);
+        return room;
+    }
+
 
     public boolean deleteRoom(Long roomId) {
         boolean success = false;

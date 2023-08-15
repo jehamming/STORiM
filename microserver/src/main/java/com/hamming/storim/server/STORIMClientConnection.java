@@ -363,7 +363,9 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
         if (location == null) {
             Logger.info(this, "User '" + currentUser.getId() + "' location not found or corrupt, using default Room (1)");
-            room = RoomFactory.getInstance().findRoomByID(1L);
+
+            room = RoomFactory.getInstance().findRoomByName(server.DEFAULT_MAINROOM_NAME);
+
             int x = room.getSpawnPointX();
             int y = room.getSpawnPointY();
             locationDto = new LocationDto(-1l, getServer().getServerURI(), room.getId(), x, y);

@@ -20,10 +20,6 @@ public class TileSet {
         createTileList();
     }
 
-    public Long getTileSetId() {
-        return tileSetDto.getId();
-    }
-
     private void createTileList() {
         Image img = ImageUtils.decode(tileSetDto.getImageData());
         bufferedImage = ImageUtils.getBufferedImage(img);
@@ -62,5 +58,13 @@ public class TileSet {
 
     public int getTileWidth() {
         return tileSetDto.getTileWidth();
+    }
+
+    public String getName() {
+        return tileSetDto.getName();
+    }
+
+    public Long getId() {
+        return tileSetDto.getId();
     }
 }
