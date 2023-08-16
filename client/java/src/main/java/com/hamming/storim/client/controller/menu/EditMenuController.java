@@ -36,6 +36,9 @@ public class EditMenuController implements ConnectionListener {
     private RoomTileMapEditorPanelController roomTileMapEditorPanelController;
     private RoomTileMapEditorView tileMapEditorView;
 
+    private TileSetEditorPanel tileSetEditorPanel;
+    private TileSetEditorPanelController tileSetEditorPanelController;
+
     private JFrame verbsFrame;
     private JFrame avatarsFrame;
     private JFrame exitsFrame;
@@ -43,7 +46,7 @@ public class EditMenuController implements ConnectionListener {
     private JFrame roomEditorFrame;
     private JFrame thingFrame;
     private JFrame roomTileEditorFrame;
-
+    private JFrame tileSetEditorFrame;
 
     public EditMenuController(STORIMWindow storimWindow, STORIMWindowController windowController, ConnectionController connectionController) {
         this.window = storimWindow;
@@ -70,11 +73,23 @@ public class EditMenuController implements ConnectionListener {
         setupThingEditor();
         setupExitEditor();
         setupRoomTileEditor();
+        setupTileSetEditor();
 
         window.getMenuDisconnect().addActionListener(e -> disconnect());
 
         enableMenus(false);
 
+    }
+
+    private void setupTileSetEditor() {
+        tileSetEditorPanel = new TileSetEditorPanel();
+        tileSetEditorPanelController = new TileSetEditorPanelController(windowController, tileSetEditorPanel, connectionController);
+        //Prepare Frame
+        tileSetEditorFrame = new JFrame("TileSets Editor");
+        tileSetEditorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        tileSetEditorFrame.getContentPane().add(tileSetEditorPanel);
+        tileSetEditorFrame.pack();
+        window.getMenuEditTileSets().addActionListener(e -> tileSetEditorFrame.setVisible(true));
     }
 
     private void setupRoomTileEditor() {
@@ -202,5 +217,6 @@ public class EditMenuController implements ConnectionListener {
         window.getMenuRooms().setEnabled(enable);
         window.getMenuRoomTiles().setEnabled(enable);
         window.getMenuItems().setEnabled(enable);
+        window.getMenuEditTileSets().setEnabled(enable);
     }
 }

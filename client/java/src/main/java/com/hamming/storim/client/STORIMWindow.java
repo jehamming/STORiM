@@ -34,6 +34,7 @@ public class STORIMWindow extends javax.swing.JFrame {
         menuRoomTiles = new javax.swing.JMenuItem();
         menuItems = new javax.swing.JMenuItem();
         menuExits = new javax.swing.JMenuItem();
+        menuEditTileSets = new javax.swing.JMenuItem();
         menuAdmin = new javax.swing.JMenu();
         menuAdminPassword = new javax.swing.JMenuItem();
         menuAdminEditUsers = new javax.swing.JMenuItem();
@@ -98,6 +99,9 @@ public class STORIMWindow extends javax.swing.JFrame {
 
         menuExits.setText("Exits");
         menuEdit.add(menuExits);
+
+        menuEditTileSets.setText("TileSets");
+        menuEdit.add(menuEditTileSets);
 
         jMenuBar1.add(menuEdit);
 
@@ -182,6 +186,7 @@ public class STORIMWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuConnect;
     private javax.swing.JMenuItem menuDisconnect;
     private javax.swing.JMenu menuEdit;
+    private javax.swing.JMenuItem menuEditTileSets;
     private javax.swing.JMenuItem menuExits;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuItem menuItems;
@@ -267,6 +272,10 @@ public class STORIMWindow extends javax.swing.JFrame {
 
     public JMenuItem getMenuItems() {
         return menuItems;
+    }
+
+    public JMenuItem getMenuEditTileSets() {
+        return menuEditTileSets;
     }
 }
 
