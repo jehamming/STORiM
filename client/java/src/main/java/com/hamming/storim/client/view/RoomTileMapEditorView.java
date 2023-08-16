@@ -3,6 +3,7 @@ package com.hamming.storim.client.view;
 
 import com.hamming.storim.client.controller.RoomTileMapEditorPanelController;
 import com.hamming.storim.common.dto.*;
+import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.common.view.Action;
 
 import javax.swing.*;
@@ -57,10 +58,12 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
             public void mouseClicked(MouseEvent e) {
                 Point p = MouseInfo.getPointerInfo().getLocation();
                 SwingUtilities.convertPointFromScreen(p, RoomTileMapEditorView.this);
-                int row = getRow(p.y);
-                int col = getCol(p.x);
-                boolean deleteTile = e.isControlDown();
-                controller.applyTile(deleteTile, row, col);
+                if ( room != null ) {
+                    int row = getRow(p.y);
+                    int col = getCol(p.x);
+                    boolean deleteTile = e.isControlDown();
+                    controller.applyTile(deleteTile, row, col);
+                }
             }
 
             @Override
@@ -111,23 +114,11 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
         return room;
     }
 
-    private void determineUnitXY() {
-//        unitX = (float) getWidth() / (float) room.getWidth();
-//        unitY = (float) getHeight() / (float) room.getLength();
-    }
-
-    public void componentResized() {
-        if (room != null) {
-            determineUnitXY();
-        }
-    }
-
     public void setRoom(RoomDto room) {
         this.room = room;
         if ( room != null ) {
             backgroundTileMap = room.getBackTileMap();
             foregroundTileMap = room.getFrontTileMap();
-            determineUnitXY();
         } else {
             foregroundTileMap = null;
             backgroundTileMap = null;
@@ -160,12 +151,13 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
 
     @Override
     public void paint(Graphics g) {
-        if ( room != null ) {
-            backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics bbg = backBuffer.getGraphics();
+        Logger.info("Painting");
+        backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics bbg = backBuffer.getGraphics();
 
-            bbg.setColor(Color.black);
-            bbg.fillRect(0, 0, getWidth(), getHeight());
+        bbg.setColor(Color.black);
+        bbg.fillRect(0, 0, getWidth(), getHeight());
+        if ( room != null ) {
             if (drawBG & backgroundTileSet != null & backgroundTileMap != null ) {
                 drawTiles(bbg, backgroundTileSet, backgroundTileMap);
             }
@@ -174,16 +166,8 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
             }
 
             if ( drawGrid ) drawGrid(bbg);
-
-            g.drawImage(backBuffer, 0, 0, this);
-        } else {
-            backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics bbg = backBuffer.getGraphics();
-
-            bbg.setColor(Color.black);
-            bbg.fillRect(0, 0, getWidth(), getHeight());
         }
-
+        g.drawImage(backBuffer, 0, 0, this);
     }
 
     private void drawGrid(Graphics g) {

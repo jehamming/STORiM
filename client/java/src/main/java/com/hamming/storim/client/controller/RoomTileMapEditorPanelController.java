@@ -272,8 +272,6 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
             roomTileMapEditorView.setForegroundTileSet(fgTileSet);
             roomTileMapEditorView.setRoom(roomDto);
         });
-
-
     }
 
     private TileSet getTileSetFromCombobox(JComboBox<TileSetListItem> cmb, Long tileSetId) {
@@ -301,25 +299,23 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
 
     @Override
     public void connected() {
-        empty(true);
+        empty();
     }
 
     @Override
     public void disconnected() {
-        empty(true);
+        empty();
         setEditable(false);
     }
 
 
-    private void empty(boolean thorough) {
+    private void empty() {
         SwingUtilities.invokeLater(() -> {
             panel.getCmbBackgroundTiles().removeAllItems();
             panel.getCmbBackgroundTileset().removeAllItems();
             panel.getCmbForegroundTiles().removeAllItems();
             panel.getCmbForegroundTileset().removeAllItems();
             setRoom(null);
-            fgTileSet = null;
-            bgTileSet = null;
         });
     }
 
