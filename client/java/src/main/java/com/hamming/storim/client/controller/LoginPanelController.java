@@ -36,9 +36,11 @@ public class LoginPanelController implements ConnectionListener {
 
         String username = panel.getTxtUsername().getText().trim();
         String password = String.valueOf(panel.getTxtPassword().getPassword());
-
         String serverURLTxt = panel.getTxtServerURL().getText().trim();
+        connectToServer(serverURLTxt, username, password);
+    }
 
+    public void connectToServer(String serverURLTxt, String username,String password ) {
         try {
 
             StorimURI serverURI = new StorimURI(serverURLTxt);

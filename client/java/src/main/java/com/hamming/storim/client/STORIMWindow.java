@@ -19,13 +19,13 @@ public class STORIMWindow extends javax.swing.JFrame {
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     public void initComponents() {
-        lblRoomName = new javax.swing.JTextField();
-        lblRoomName.setEditable(false);
-        lblRoomName.setBorder(null);
+
+        lblRoomName = new javax.swing.JLabel();
         jSplitPane2 = new javax.swing.JSplitPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuConnect = new javax.swing.JMenuItem();
+        menuRecent = new javax.swing.JMenu();
         menuDisconnect = new javax.swing.JMenuItem();
         menuEdit = new javax.swing.JMenu();
         menuVerbs = new javax.swing.JMenuItem();
@@ -58,8 +58,8 @@ public class STORIMWindow extends javax.swing.JFrame {
 
         jSplitPane2.setTopComponent(pnlGameView);
 
-        chatPanel1.setMinimumSize(new java.awt.Dimension(242, 200));
-        jSplitPane2.setRightComponent(chatPanel1);
+        chatPanel.setMinimumSize(new java.awt.Dimension(242, 200));
+        jSplitPane2.setRightComponent(chatPanel);
 
         menuFile.setText("File");
 
@@ -70,6 +70,9 @@ public class STORIMWindow extends javax.swing.JFrame {
             }
         });
         menuFile.add(menuConnect);
+
+        menuRecent.setText("Recent");
+        menuFile.add(menuRecent);
 
         menuDisconnect.setText("Disconnect");
         menuFile.add(menuDisconnect);
@@ -115,7 +118,7 @@ public class STORIMWindow extends javax.swing.JFrame {
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(lblRoomName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
+                        .addComponent(jSplitPane2)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -168,10 +171,10 @@ public class STORIMWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify
-    private ChatPanel chatPanel1;
+    private ChatPanel chatPanel;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JSplitPane jSplitPane2;
-    private javax.swing.JTextField lblRoomName;
+    private javax.swing.JLabel lblRoomName;
     private javax.swing.JMenu menuAdmin;
     private javax.swing.JMenuItem menuAdminEditUsers;
     private javax.swing.JMenuItem menuAdminPassword;
@@ -182,11 +185,25 @@ public class STORIMWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuExits;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuItem menuItems;
+    private javax.swing.JMenu menuRecent;
     private javax.swing.JMenuItem menuRoomTiles;
     private javax.swing.JMenuItem menuRooms;
     private javax.swing.JMenuItem menuVerbs;
     private javax.swing.JPanel pnlGameView;
     // End of variables declaration
+
+
+    public ChatPanel getChatPanel() {
+        return chatPanel;
+    }
+
+    public JLabel getLblRoomName() {
+        return lblRoomName;
+    }
+
+    public JMenu getMenuAdmin() {
+        return menuAdmin;
+    }
 
     public JMenuItem getMenuAdminEditUsers() {
         return menuAdminEditUsers;
@@ -208,8 +225,20 @@ public class STORIMWindow extends javax.swing.JFrame {
         return menuDisconnect;
     }
 
+    public JMenu getMenuEdit() {
+        return menuEdit;
+    }
+
     public JMenuItem getMenuExits() {
         return menuExits;
+    }
+
+    public JMenu getMenuFile() {
+        return menuFile;
+    }
+
+    public JMenu getMenuRecent() {
+        return menuRecent;
     }
 
     public JMenuItem getMenuRoomTiles() {
@@ -224,22 +253,20 @@ public class STORIMWindow extends javax.swing.JFrame {
         return menuVerbs;
     }
 
-    public JTextField getLblRoomName() {
-        return lblRoomName;
+    public JPanel getPnlGameView() {
+        return pnlGameView;
     }
-
 
     public void setPnlGameView(JPanel pnlGameView) {
         this.pnlGameView = pnlGameView;
     }
 
-    public void setChatPanel(ChatPanel chatPanel1) {
-        this.chatPanel1 = chatPanel1;
+    public void setChatPanel(ChatPanel chatPanel) {
+        this.chatPanel = chatPanel;
     }
 
     public JMenuItem getMenuItems() {
         return menuItems;
     }
-
 }
 

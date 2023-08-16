@@ -16,6 +16,8 @@ import com.hamming.storim.common.net.ProtocolReceiver;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class STORIMWindowController implements ConnectionListener {
 
@@ -74,6 +76,43 @@ public class STORIMWindowController implements ConnectionListener {
         window.setChatPanel(chatPanel);
 
         window.initComponents();
+
+        window.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                fileMenuController.storeRecents();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
 
     }
 
