@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto;
 
 import com.hamming.storim.common.dto.DTO;
 
-public class ServerRegistrationDTO extends DTO {
+public class ServerRegistrationDTO extends BasicObjectDTO {
 
         private final String serverName;
         private final String serverURL;

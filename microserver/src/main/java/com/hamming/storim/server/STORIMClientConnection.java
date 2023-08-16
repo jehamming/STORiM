@@ -94,13 +94,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         send(avatarSetDTO);
     }
 
-    private void messageInROom(DTO source, String message) {
-        MessageInRoomDTO messageInRoomDTO = null;
-        if (source instanceof UserDto) {
-            messageInRoomDTO = new MessageInRoomDTO(source.getId(), MessageInRoomDTO.Type.USER, message);
-        } else if (source instanceof ThingDto) {
-            messageInRoomDTO = new MessageInRoomDTO(source.getId(), MessageInRoomDTO.Type.THING, message);
-        }
+    private void messageInROom(MessageInRoomDTO dto, String message) {
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(dto.getSourceID(), dto.getSourceType(), message, dto.getMessageType());
         send(messageInRoomDTO);
     }
 
@@ -274,7 +269,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thing, locationDto);
         send(thingInRoomDTO);
         String toLocation = user.getName() + " places " + thing.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(user.getId(), MessageInRoomDTO.Type.USER, toLocation);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(user.getId(), MessageInRoomDTO.sType.USER, toLocation, MessageInRoomDTO.mType.MOVE);
         send(messageInRoomDTO);
     }
 
@@ -448,7 +443,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 //TODO
                 break;
             case MESSAGEINROOM:
-                messageInROom(event.getData(), (String) event.getExtraData());
+                MessageInRoomDTO messageInRoomDTO = (MessageInRoomDTO) event.getData();
+                messageInROom(messageInRoomDTO, (String) event.getExtraData());
                 break;
         }
     }
@@ -463,7 +459,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         send(exitUpdatedDTO);
 
         String txt = user.getName() + " changes exit " + exitDto.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(exitDto.getId(), MessageInRoomDTO.Type.USER, txt);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(exitDto.getId(), MessageInRoomDTO.sType.USER, txt, MessageInRoomDTO.mType.UPDATE);
         send(messageInRoomDTO);
     }
 
@@ -472,7 +468,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         send(thingUpdatedDTO);
 
         String txt = user.getName() + " changes " + thing.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(thing.getId(), MessageInRoomDTO.Type.USER, txt);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(thing.getId(), MessageInRoomDTO.sType.USER, txt, MessageInRoomDTO.mType.UPDATE);
         send(messageInRoomDTO);
     }
 
@@ -481,7 +477,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         ThingDto thingDto = getServer().getUserDataServerProxy().getThing(locationDto.getObjectId());
         send(locationUpdateDTO);
         String txt = user.getName() + " moves " + thingDto.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(locationDto.getObjectId(), MessageInRoomDTO.Type.USER, txt);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(locationDto.getObjectId(), MessageInRoomDTO.sType.USER, txt, MessageInRoomDTO.mType.MOVE);
         send(messageInRoomDTO);
     }
 
@@ -490,7 +486,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         send(exitLocationUpdatedDTO);
         Exit exit = ExitFactory.getInstance().findExitById(exitDto.getId());
         String txt = user.getName() + " moves exit " + exit.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(exitDto.getId(), MessageInRoomDTO.Type.USER, txt);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(exitDto.getId(), MessageInRoomDTO.sType.USER, txt, MessageInRoomDTO.mType.MOVE);
         send(messageInRoomDTO);
     }
 

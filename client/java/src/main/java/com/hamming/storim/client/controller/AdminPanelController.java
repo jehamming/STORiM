@@ -1,7 +1,6 @@
 package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.controller.admin.AdminUserController;
 import com.hamming.storim.client.panels.AdminPanel;
 import com.hamming.storim.common.ProtocolHandler;
@@ -97,7 +96,6 @@ public class AdminPanelController implements ConnectionListener {
     }
 
     private void enableTabs(boolean enabled) {
-        panel.getTabPaneAdmin().setVisible(enabled);
         panel.getTabPaneAdmin().setEnabled(enabled);
     }
 

@@ -50,7 +50,7 @@ public class UpdateExitAction extends Action<UpdateExitDto> {
             client.send(exitUpdatedDTO);
 
             String txt = " You change exit " + exitDto.getName();
-            MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(exitDto.getId(), MessageInRoomDTO.Type.USER, txt);
+            MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(exitDto.getId(), MessageInRoomDTO.sType.USER, txt, MessageInRoomDTO.mType.UPDATE);
             client.send(messageInRoomDTO);
 
             gameController.fireRoomEvent(client, room.getId(), new RoomEvent(RoomEvent.Type.EXITUPDATED, exitDto, client.getCurrentUser()));

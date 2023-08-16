@@ -1,7 +1,6 @@
 package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.AvatarListItem;
 import com.hamming.storim.client.listitem.RoomDetailsListItem;
 import com.hamming.storim.client.panels.RoomEditorPanel;

@@ -3,6 +3,7 @@ package com.hamming.storim.client.view;
 public class Player extends BasicDrawableObject {
 
     private String displayName;
+    private boolean talking = false;
 
     public Player(Long userId) {
         setId(userId);
@@ -16,4 +17,11 @@ public class Player extends BasicDrawableObject {
         this.displayName = displayName;
     }
 
+    public boolean isTalking() {
+        return talking;
+    }
+
+    public void setTalking(boolean talking) {
+        this.talking = talking;
+    }
 }

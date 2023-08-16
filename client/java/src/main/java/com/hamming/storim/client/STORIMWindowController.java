@@ -1,6 +1,7 @@
 package com.hamming.storim.client;
 
 import com.hamming.storim.client.controller.*;
+import com.hamming.storim.client.controller.menu.AdminMenuController;
 import com.hamming.storim.client.controller.menu.EditMenuController;
 import com.hamming.storim.client.controller.menu.FileMenuController;
 import com.hamming.storim.client.panels.*;
@@ -20,12 +21,10 @@ public class STORIMWindowController implements ConnectionListener {
     private ConnectionController connectionController;
     private FileMenuController fileMenuController;
     private EditMenuController editMenuController;
+    private AdminMenuController adminMenuController;
 
     private ChatPanel chatPanel;
     private ChatPanelController chatPanelController;
-
-    private AdminPanel adminPanel;
-    private AdminPanelController adminPanelController;
 
     private GameViewPanel gameView;
     private static String BASIC_TITLE = "STORIM";
@@ -62,17 +61,13 @@ public class STORIMWindowController implements ConnectionListener {
     private void initControllers() {
         fileMenuController = new FileMenuController(window, this, connectionController);
         editMenuController = new EditMenuController(window, this, connectionController);
+        adminMenuController = new AdminMenuController(window, this, connectionController);
     }
-
-
 
     private void initComponents() {
 
         chatPanel = new ChatPanel();
         chatPanelController = new ChatPanelController(this , chatPanel, connectionController);
-
-        adminPanel = new AdminPanel();
-        adminPanelController = new AdminPanelController(this, adminPanel, connectionController);
 
         window.setPnlGameView(gameView);
         window.setChatPanel(chatPanel);

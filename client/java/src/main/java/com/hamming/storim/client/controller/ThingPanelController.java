@@ -2,7 +2,6 @@ package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.ThingListItem;
 import com.hamming.storim.client.panels.ThingPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
@@ -13,12 +12,11 @@ import com.hamming.storim.common.dto.protocol.request.AddThingDto;
 import com.hamming.storim.common.dto.protocol.request.DeleteThingDTO;
 import com.hamming.storim.common.dto.protocol.request.PlaceThingInRoomDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateThingDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.ThingAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.ThingDeletedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.ThingUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetThingDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetThingResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetThingsForUserDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetThingsForUserResponseDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 

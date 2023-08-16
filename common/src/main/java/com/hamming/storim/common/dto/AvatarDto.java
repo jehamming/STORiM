@@ -1,6 +1,6 @@
 package com.hamming.storim.common.dto;
 
-public class AvatarDto extends DTO {
+public class AvatarDto extends BasicObjectDTO {
 
     private byte[] imageData;
 

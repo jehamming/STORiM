@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto;
 
 import java.util.Objects;
 
-public class UserDto extends DTO {
+public class UserDto extends BasicObjectDTO {
 
     private Long currentAvatarID;
     private String email;

@@ -39,7 +39,7 @@ public class UpdateExitLocationAction extends Action<UpdateExitLocationDto> {
         ExitLocationUpdatedDTO exitLocationUpdatedDTO = new ExitLocationUpdatedDTO(exit.getId(), exit.getX(), exit.getY());
         client.send(exitLocationUpdatedDTO);
 
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(client.getCurrentUser().getId(), MessageInRoomDTO.Type.USER, "You move exit " + exit.getName());
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(client.getCurrentUser().getId(), MessageInRoomDTO.sType.USER, "You move exit " + exit.getName(), MessageInRoomDTO.mType.MOVE);
         client.send(messageInRoomDTO);
 
         ExitDto exitDto = DTOFactory.getInstance().getExitDTO(exit);

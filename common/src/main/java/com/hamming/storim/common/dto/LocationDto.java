@@ -1,6 +1,6 @@
 package com.hamming.storim.common.dto;
 
-public class LocationDto extends DTO {
+public class LocationDto extends BasicObjectDTO {
     // ID of Object that this location belongs to
     private Long objectId;
     // Which server the object is

@@ -48,8 +48,8 @@ public class ExecVerbAction extends Action<ExecVerbDTO> {
 
         String toCaller = StringUtils.replace(verb.getToCaller(), replacements);
         String toLocation = StringUtils.replace(verb.getToLocation(), replacements);
-        controller.fireRoomEvent(source, location.getRoomId(), new RoomEvent(RoomEvent.Type.MESSAGEINROOM, u, toLocation));
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(u.getId(), MessageInRoomDTO.Type.USER, toCaller);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(u.getId(), MessageInRoomDTO.sType.USER, toCaller, MessageInRoomDTO.mType.VERB );
+        controller.fireRoomEvent(source, location.getRoomId(), new RoomEvent(RoomEvent.Type.MESSAGEINROOM, messageInRoomDTO, toLocation));
         return messageInRoomDTO;
     }
 

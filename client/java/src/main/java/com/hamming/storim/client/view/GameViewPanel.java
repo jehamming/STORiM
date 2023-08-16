@@ -2,9 +2,7 @@ package com.hamming.storim.client.view;
 
 
 import com.hamming.storim.client.ImageUtils;
-import com.hamming.storim.client.STORIMWindow;
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.controller.GameViewController;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.view.Action;
@@ -55,6 +53,8 @@ public class GameViewPanel extends JPanel implements Runnable {
     private Image arrowBack;
     private Image arrowLeft;
     private Image arrowRight;
+    private BufferedImage speechBalloon;
+    private static int SPEECH_BALLOON_TIME = 2000;
     Timer timer;
     TimerTask task;
     DragThingTimerTask dragThingTimerTask;
@@ -74,6 +74,21 @@ public class GameViewPanel extends JPanel implements Runnable {
             exit.setScale(exitDto.getScale());
             exit.setRotation(exitDto.getRotation());
         }
+    }
+
+    public void addSpeechBalloon(Long sourceID) {
+        Player p = getPlayer(sourceID);
+        if ( p != null ) {
+            p.setTalking(true);
+        }
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                p.setTalking(false);
+                repaint();
+            }
+        }, SPEECH_BALLOON_TIME);
+        repaint();
     }
 
 
@@ -138,6 +153,7 @@ public class GameViewPanel extends JPanel implements Runnable {
             arrowBack = ImageIO.read(new File("resources/arrowBack.png"));
             arrowLeft = ImageIO.read(new File("resources/arrowLeft.png"));
             arrowRight = ImageIO.read(new File("resources/arrowRight.png"));
+            speechBalloon = ImageIO.read(new File("resources/speechballoon.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -506,7 +522,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         drawRoom(bbg);
         drawThings(bbg);
         drawExits(bbg);
-        drawUsers(bbg);
+        drawPlayers(bbg);
         drawControls(bbg);
 
         g.drawImage(backBuffer, 0, 0, this);
@@ -577,6 +593,15 @@ public class GameViewPanel extends JPanel implements Runnable {
         }
     }
 
+    private void drawSpeechBalloon(Graphics g, Player p) {
+        int middleX = p.getImage().getWidth(null) / 2;
+        int middleY = p.getImage().getHeight(null) / 2;
+        float speechBalloonScale = (float) middleX / speechBalloon.getWidth(null) ;
+        Image scaledSpeechBalloon = ImageUtils.scaleImage(speechBalloon,speechBalloonScale );
+        Graphics2D g2 = (Graphics2D) g;
+        g.drawImage( scaledSpeechBalloon, (int) (p.getX()) - middleX, (int) (p.getY()) - middleY, null);
+    }
+
     private void drawSelectionHighlight(Graphics g, BasicDrawableObject o) {
         int middleX = o.getImage().getWidth(null) / 2;
         int middleY = o.getImage().getHeight(null) / 2;
@@ -591,7 +616,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         g2.setStroke(oldStroke);
     }
 
-    private void drawUsers(Graphics g) {
+    private void drawPlayers(Graphics g) {
         for (Player player : players) {
             int middleX = player.getImage().getWidth(null) / 2;
             int middleY = player.getImage().getHeight(null) / 2;
@@ -614,6 +639,9 @@ public class GameViewPanel extends JPanel implements Runnable {
             }
             if (player.isSelected()) {
                 drawSelectionHighlight(g, player);
+            }
+            if (player.isTalking()) {
+                drawSpeechBalloon(g, player);
             }
         }
     }

@@ -2,7 +2,7 @@ package com.hamming.storim.common.dto;
 
 import java.util.Arrays;
 
-public class ExitDto extends DTO {
+public class ExitDto extends BasicObjectDTO {
 
 
     private Long toRoomId;

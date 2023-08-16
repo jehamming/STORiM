@@ -1,7 +1,6 @@
 package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.VerbDetailListItem;
 import com.hamming.storim.client.panels.VerbEditorPanel;
 import com.hamming.storim.common.ProtocolHandler;
@@ -12,8 +11,10 @@ import com.hamming.storim.common.dto.protocol.request.DeleteVerbDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateVerbDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetVerbResponseDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.*;
+import com.hamming.storim.common.dto.protocol.serverpush.UserVerbsDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.VerbAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.VerbDeletedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.VerbUpdatedDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 

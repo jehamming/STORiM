@@ -1,7 +1,6 @@
 package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.client.view.TileSet;
 import com.hamming.storim.common.CalcTools;
@@ -11,23 +10,16 @@ import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateExitLocationDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateThingLocationDto;
 import com.hamming.storim.common.dto.protocol.request.UseExitRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetTileDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetTileResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
-import com.hamming.storim.common.dto.protocol.serverpush.ExitAddedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.RoomUpdatedDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.ThingInRoomDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.ThingUpdatedDTO;
-import com.hamming.storim.common.interfaces.*;
+import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 import com.hamming.storim.common.util.Logger;
+import com.hamming.storim.common.view.Action;
 import com.hamming.storim.common.view.ViewListener;
 
 import javax.swing.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +66,15 @@ public class GameViewController implements ConnectionListener {
         connectionController.registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> deleteExit(dto.getExitID()));
         connectionController.registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> updateExit(dto.getExitDto()));
         connectionController.registerReceiver(ExitLocationUpdatedDTO.class, (ProtocolReceiver<ExitLocationUpdatedDTO>) dto -> updateExitLocation(dto.getExitId(), dto.getX(), dto.getY()));
+        connectionController.registerReceiver(MessageInRoomDTO.class, (ProtocolReceiver<MessageInRoomDTO>) dto -> messageInRoom(dto));
+    }
+
+    private void messageInRoom(MessageInRoomDTO dto) {
+        if (dto.getMessageType().equals(MessageInRoomDTO.mType.VERB)) {
+            gameView.scheduleAction(() -> {
+                gameView.addSpeechBalloon(dto.getSourceID());
+            });
+        }
     }
 
     private void updateExitLocation(Long exitId, int x, int y) {

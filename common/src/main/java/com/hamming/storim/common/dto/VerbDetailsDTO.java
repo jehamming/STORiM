@@ -1,6 +1,6 @@
 package com.hamming.storim.common.dto;
 
-public class VerbDetailsDTO extends DTO {
+public class VerbDetailsDTO extends BasicObjectDTO {
 
     private String toCaller;
     private String toLocation;

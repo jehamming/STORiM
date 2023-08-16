@@ -44,7 +44,7 @@ public class UpdateThingLocationAction extends Action<UpdateThingLocationDto> {
         LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.THING, dto.getId(), locationDTO);
         client.send(locationUpdateDTO);
 
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(client.getCurrentUser().getId(), MessageInRoomDTO.Type.USER, "You move " + thingDto.getName());
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(client.getCurrentUser().getId(), MessageInRoomDTO.sType.USER, "You move " + thingDto.getName(), MessageInRoomDTO.mType.MOVE);
         client.send(messageInRoomDTO);
 
         gameController.fireRoomEvent(client, locationDTO.getRoomId(), new RoomEvent(RoomEvent.Type.THINGLOCATIONUPDATE, locationDTO, client.getCurrentUser()));

@@ -1,13 +1,14 @@
 package com.hamming.storim.client.controller;
 
-import com.hamming.storim.client.STORIMWindow;
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.panels.LoginPanel;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.StorimURI;
 import com.hamming.storim.common.controllers.ConnectionController;
-import com.hamming.storim.common.dto.protocol.requestresponse.*;
+import com.hamming.storim.common.dto.protocol.requestresponse.ConnectDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.ConnectResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 
 import javax.swing.*;

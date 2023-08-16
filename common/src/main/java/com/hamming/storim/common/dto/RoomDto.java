@@ -3,7 +3,7 @@ package com.hamming.storim.common.dto;
 import java.util.Arrays;
 import java.util.List;
 
-public class RoomDto extends DTO {
+public class RoomDto extends BasicObjectDTO {
 
     private String roomURI;
     private int rows, cols;

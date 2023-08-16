@@ -1,7 +1,6 @@
 package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.UserListItem;
 import com.hamming.storim.client.listitem.VerbListItem;
 import com.hamming.storim.client.panels.UserInfoPanel;

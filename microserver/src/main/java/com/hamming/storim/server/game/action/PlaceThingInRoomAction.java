@@ -54,7 +54,7 @@ public class PlaceThingInRoomAction extends Action<PlaceThingInRoomDTO> {
         client.send(thingInRoomDTO);
 
         String toCaller = "You place " + thing.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(user.getId(), MessageInRoomDTO.Type.USER, toCaller);
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(user.getId(), MessageInRoomDTO.sType.USER, toCaller, MessageInRoomDTO.mType.MOVE);
         client.send(messageInRoomDTO);
 
         controller.fireRoomEvent(source, room.getId(), new RoomEvent(RoomEvent.Type.THINGPLACED, thing, user));

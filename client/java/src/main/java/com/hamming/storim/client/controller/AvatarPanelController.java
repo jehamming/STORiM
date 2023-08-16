@@ -2,7 +2,6 @@ package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.STORIMWindowOld;
 import com.hamming.storim.client.listitem.AvatarListItem;
 import com.hamming.storim.client.panels.AvatarPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
@@ -15,10 +14,10 @@ import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarResponseDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarsDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarsResponseDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.AvatarAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.AvatarDeletedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.AvatarUpdatedDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 

@@ -1,6 +1,6 @@
 package com.hamming.storim.common.dto;
 
-public class VerbDto extends DTO {
+public class VerbDto extends BasicObjectDTO {
 
 
     public VerbDto(Long id, String name){

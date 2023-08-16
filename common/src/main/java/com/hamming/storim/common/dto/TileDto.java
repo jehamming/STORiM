@@ -1,6 +1,6 @@
 package com.hamming.storim.common.dto;
 
-public class TileDto extends DTO {
+public class TileDto extends BasicObjectDTO {
 
     private byte[] imageData;
 

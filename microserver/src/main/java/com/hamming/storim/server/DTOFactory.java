@@ -24,7 +24,7 @@ public class DTOFactory {
         return instance;
     }
 
-    private DTO fillBasicObjectInfo(DTO dto, BasicObject basicObject) {
+    private BasicObjectDTO fillBasicObjectInfo(BasicObjectDTO dto, BasicObject basicObject) {
         dto.setCreatorID(basicObject.getCreatorId());
         dto.setName(basicObject.getName());
         dto.setOwnerID(basicObject.getOwnerId());
