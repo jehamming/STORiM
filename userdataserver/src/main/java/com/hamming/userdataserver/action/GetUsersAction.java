@@ -33,7 +33,7 @@ public class GetUsersAction extends Action<GetUsersRequestDTO> {
             }
         }
 
-        GetUsersResultDTO resultDTO = new GetUsersResultDTO(users, null);
+        GetUsersResultDTO resultDTO = new GetUsersResultDTO(true, users, null);
         getClient().send(resultDTO);
     }
 }

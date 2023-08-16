@@ -5,22 +5,11 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class UpdateUserResultDTO extends ResponseDTO {
 
-    private boolean success = false;
-    private String errorMessage;
     private UserDto user;
 
     public UpdateUserResultDTO(boolean success, String errorMessage, UserDto user) {
-        this.success =success;
-        this.errorMessage = errorMessage;
+        super(success, errorMessage);
         this.user = user;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public UserDto getUser() {
@@ -30,8 +19,8 @@ public class UpdateUserResultDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "UpdateUserResultDTO{" +
-                "success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 ", user=" + user +
                 '}';
     }

@@ -50,7 +50,7 @@ public class LoginPanelController implements ConnectionListener {
             LoginDTO dto = ProtocolHandler.getInstance().getLoginDTO(username, password, serverURI.getRoomId());
             LoginResultDTO loginResult = connectionController.sendReceive(dto, LoginResultDTO.class);
 
-            if (loginResult.isLoginSucceeded()) {
+            if (loginResult.isSuccess()) {
                 windowController.setCurrentUser(loginResult.getUser());
                 windowController.setUserToken(loginResult.getToken());
                 panel.getBtnConnect().setEnabled(false);
@@ -77,7 +77,7 @@ public class LoginPanelController implements ConnectionListener {
             ConnectDTO connectDTO = ProtocolHandler.getInstance().getConnectDTO(userID, token, serverURI.getRoomId());
             ConnectResultDTO connectResultDTO = connectionController.sendReceive(connectDTO, ConnectResultDTO.class);
 
-            if (connectResultDTO.isConnectSucceeded()) {
+            if (connectResultDTO.isSuccess()) {
                 SwingUtilities.invokeLater(() -> {
                     panel.getBtnConnect().setEnabled(false);
                 });

@@ -10,6 +10,7 @@ public class ExitUpdatedDTO extends ResponseDTO {
     private ExitDto exitDto;
 
     public ExitUpdatedDTO(ExitDto exitDto) {
+        super(true, null);
         this.exitDto = exitDto;
     }
 

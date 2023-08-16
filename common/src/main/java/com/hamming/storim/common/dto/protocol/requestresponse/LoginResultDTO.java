@@ -5,27 +5,15 @@ import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class LoginResultDTO extends ResponseDTO {
-
-    private boolean loginSucceeded = false;
-    private String errorMessage;
     private UserDto user;
     private String token;
     private LocationDto location;
 
     public LoginResultDTO(boolean success, String token, String errorMessage, UserDto user, LocationDto location) {
-        this.loginSucceeded = success;
-        this.errorMessage = errorMessage;
+        super(success, errorMessage);
         this.user = user;
         this.location = location;
         this.token = token;
-    }
-
-    public boolean isLoginSucceeded() {
-        return loginSucceeded;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public UserDto getUser() {
@@ -43,8 +31,8 @@ public class LoginResultDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "LoginResultDTO{" +
-                "loginSucceeded=" + loginSucceeded +
-                ", errorMessage='" + errorMessage + '\'' +
+                "loginSucceeded=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 ", user=" + user +
                 ", token='" + token + '\'' +
                 ", location=" + location +

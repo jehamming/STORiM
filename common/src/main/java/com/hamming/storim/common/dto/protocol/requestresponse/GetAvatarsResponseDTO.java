@@ -9,7 +9,8 @@ public class GetAvatarsResponseDTO extends ResponseDTO {
 
     private final List<Long> avatars;
 
-    public GetAvatarsResponseDTO(List<Long> avatars) {
+    public GetAvatarsResponseDTO(boolean success, List<Long> avatars, String errorMessage) {
+        super(success, errorMessage);
         this.avatars = avatars;
     }
 
@@ -21,7 +22,9 @@ public class GetAvatarsResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetAvatarsResponseDTO{" +
-                "avatars=" + avatars +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", avatars=" + avatars +
                 '}';
     }
 }

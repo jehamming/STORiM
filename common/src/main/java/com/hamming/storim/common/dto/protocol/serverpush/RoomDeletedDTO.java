@@ -8,6 +8,7 @@ public class RoomDeletedDTO extends ResponseDTO {
     private Long roomId;
 
     public RoomDeletedDTO(Long roomId) {
+        super(true, null);
         this.roomId = roomId;
     }
 

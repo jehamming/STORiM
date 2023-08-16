@@ -23,14 +23,19 @@ public class GetTileSetAction extends Action<GetTileSetDTO> {
     @Override
     public void execute() {
         Long tileId = getDto().getTileSetId();
+        boolean success = false;
+        String errorMessage = null;
 
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         TileSet set = TileSetFactory.getInstance().findTileSetById(tileId);
         TileSetDto tileSetDto = null;
         if ( set != null ) {
             tileSetDto = DTOFactory.getInstance().getTileSetDTO(set);
+            success = true;
+        } else {
+            errorMessage = "No Tileset found with tileId " + tileId;
         }
-        GetTileSetResultDTO getTileSetResultDTO = new GetTileSetResultDTO(tileSetDto);
+        GetTileSetResultDTO getTileSetResultDTO = new GetTileSetResultDTO(success, tileSetDto, errorMessage);
         getClient().send(getTileSetResultDTO);
     }
 

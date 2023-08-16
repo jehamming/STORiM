@@ -28,7 +28,7 @@ public class GetRoomsAction extends Action<GetRoomsDTO> {
         for (Room r: RoomFactory.getInstance().getRooms()) {
             rooms.put(r.getId(), r.getName());
         }
-        GetRoomsResultDTO getRoomsResultDTO = new GetRoomsResultDTO(rooms);
+        GetRoomsResultDTO getRoomsResultDTO = new GetRoomsResultDTO(true, rooms, null);
 
         client.send(getRoomsResultDTO);
     }

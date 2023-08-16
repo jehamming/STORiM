@@ -6,6 +6,7 @@ import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.request.SetAvatarDto;
 import com.hamming.storim.common.dto.protocol.serverpush.AvatarSetDTO;
 import com.hamming.storim.server.STORIMClientConnection;
+import com.hamming.storim.server.STORIMException;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.SetAvatarResponseDto;
@@ -27,13 +28,17 @@ public class SetAvatarAction extends Action<SetAvatarDto> {
         SetAvatarDto dto = getDto();
         UserDto currentUser = client.getCurrentUser();
 
-        AvatarDto avatarDto = client.getServer().getUserDataServerProxy().setAvatar(dto.getAvatarId(), currentUser.getId());
-
-        if (avatarDto != null) {
-            currentUser.setCurrentAvatarID(avatarDto.getId());
-            AvatarSetDTO avatarSetDTO = new AvatarSetDTO(currentUser.getId(), avatarDto);
-            getClient().send(avatarSetDTO);
-            avatarSet(client, currentUser,avatarDto );
+        try {
+            AvatarDto avatarDto = client.getServer().getUserDataServerProxy().setAvatar(dto.getAvatarId(), currentUser.getId());
+            if (avatarDto != null) {
+                currentUser.setCurrentAvatarID(avatarDto.getId());
+                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(currentUser.getId(), avatarDto);
+                getClient().send(avatarSetDTO);
+                avatarSet(client, currentUser, avatarDto);
+            }
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), e.getMessage());
+            client.send(errorDTO);
         }
     }
 

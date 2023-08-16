@@ -9,7 +9,8 @@ public class GetTilesForUserResponseDTO extends ResponseDTO {
 
     private final List<Long> tiles;
 
-    public GetTilesForUserResponseDTO(List<Long> tiles) {
+    public GetTilesForUserResponseDTO(boolean success, List<Long> tiles, String errorMessage) {
+        super(success, errorMessage);
         this.tiles = tiles;
     }
 
@@ -20,7 +21,9 @@ public class GetTilesForUserResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetTilesForUserResponseDTO{" +
-                "tiles=" + tiles +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", tiles=" + tiles +
                 '}';
     }
 }

@@ -11,6 +11,7 @@ public class ExitLocationUpdatedDTO extends ResponseDTO {
     private int y;
 
     public ExitLocationUpdatedDTO(Long exitId, int x, int y) {
+        super(true, null);
         this.exitId = exitId;
         this.x = x;
         this.y =y;

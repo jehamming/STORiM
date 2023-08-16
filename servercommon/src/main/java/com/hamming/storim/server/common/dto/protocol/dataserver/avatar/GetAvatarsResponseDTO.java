@@ -7,12 +7,9 @@ import java.util.List;
 public class GetAvatarsResponseDTO extends ResponseDTO {
 
     private final List<Long> avatars;
-    private boolean success;
-    private String errorMessage;
 
     public GetAvatarsResponseDTO(boolean success, String errorMessage, List<Long> avatars) {
-        this.success = success;
-        this.errorMessage = errorMessage;
+        super(success, errorMessage);
         this.avatars = avatars;
     }
 
@@ -20,20 +17,12 @@ public class GetAvatarsResponseDTO extends ResponseDTO {
         return avatars;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
     @Override
     public String toString() {
         return "GetAvatarsResponseDTO{" +
                 "avatars=" + avatars +
-                ", success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                ", success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 '}';
     }
 }

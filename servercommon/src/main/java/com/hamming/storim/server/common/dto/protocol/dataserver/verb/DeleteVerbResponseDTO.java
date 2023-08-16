@@ -5,27 +5,17 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class DeleteVerbResponseDTO extends ResponseDTO {
 
-    private boolean success;
-    private String errorMessage;
 
     public DeleteVerbResponseDTO(boolean success, String errorMessage) {
-        this.success = success;
-        this.errorMessage = errorMessage;
+        super(success, errorMessage);
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
 
     @Override
     public String toString() {
         return "DeleteVerbResponseDTO{" +
-                "success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 '}';
     }
 }

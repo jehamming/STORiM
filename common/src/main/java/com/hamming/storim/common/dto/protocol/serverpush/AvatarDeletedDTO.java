@@ -8,6 +8,7 @@ public class AvatarDeletedDTO extends ResponseDTO {
     private Long avatarId;
 
     public AvatarDeletedDTO(Long avatarId) {
+        super(true, null);
         this.avatarId = avatarId;
     }
 

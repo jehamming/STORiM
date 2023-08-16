@@ -33,7 +33,7 @@ public class VerifyAdminPasswordAction extends Action<VerifyAdminRequestDTO> {
         if ( client.getStorimUserDataServer().getAdminPassword().equals(adminPassword)) {
             success = true;
         } else {
-            errorMessage = "Adminpassword is not correct";
+            errorMessage = "Password is incorrect";
         }
 
         VerifyAdminResponseDTO responseDTO = new VerifyAdminResponseDTO(success, errorMessage);

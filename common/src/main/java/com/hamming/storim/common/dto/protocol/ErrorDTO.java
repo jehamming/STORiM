@@ -3,15 +3,10 @@ package com.hamming.storim.common.dto.protocol;
 public class ErrorDTO extends ResponseDTO {
 
     private String function;
-    private String errorMessage;
 
     public ErrorDTO(String function, String errorMessage) {
+        super(false, errorMessage);
         this.function = function;
-        this.errorMessage = errorMessage;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public String getFunction() {
@@ -22,7 +17,7 @@ public class ErrorDTO extends ResponseDTO {
     public String toString() {
         return "ErrorDTO{" +
                 "function='" + function + '\'' +
-                ", errorMessage='" + errorMessage + '\'' +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 '}';
     }
 }

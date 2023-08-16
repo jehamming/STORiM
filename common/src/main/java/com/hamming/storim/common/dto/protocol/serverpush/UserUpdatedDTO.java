@@ -9,6 +9,7 @@ public class UserUpdatedDTO extends ResponseDTO {
     private UserDto user;
 
     public UserUpdatedDTO( UserDto user) {
+        super(true, null);
         this.user = user;
     }
 

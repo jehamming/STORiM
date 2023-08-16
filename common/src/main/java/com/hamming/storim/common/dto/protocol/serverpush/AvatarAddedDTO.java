@@ -10,6 +10,7 @@ public class AvatarAddedDTO extends ResponseDTO {
     private AvatarDto avatar;
 
     public AvatarAddedDTO(AvatarDto avatar) {
+        super(true, null);
         this.avatar = avatar;
     }
 

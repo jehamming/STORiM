@@ -10,6 +10,7 @@ public class TileSetAddedDTO extends ResponseDTO {
     private TileSetDto tileSetDto;
 
     public TileSetAddedDTO(TileSetDto tileSetDto) {
+        super(true, null);
         this.tileSetDto = tileSetDto;
     }
 

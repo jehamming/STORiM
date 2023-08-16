@@ -9,7 +9,8 @@ public class GetRoomsForUserResponseDTO extends ResponseDTO {
 
     private final Map<Long, String> rooms;
 
-    public GetRoomsForUserResponseDTO(Map<Long, String> rooms) {
+    public GetRoomsForUserResponseDTO(boolean success, Map<Long, String> rooms, String errorMessage) {
+        super(success, errorMessage);
         this.rooms = rooms;
     }
 
@@ -20,7 +21,9 @@ public class GetRoomsForUserResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetRoomsForUserResponseDTO{" +
-                "rooms=" + rooms +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", rooms=" + rooms +
                 '}';
     }
 }

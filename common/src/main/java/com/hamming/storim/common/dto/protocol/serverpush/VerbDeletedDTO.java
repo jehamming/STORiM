@@ -8,6 +8,7 @@ public class VerbDeletedDTO extends ResponseDTO {
     private Long verbID;
 
     public VerbDeletedDTO(Long verbID) {
+        super(true, null);
         this.verbID = verbID;
     }
 

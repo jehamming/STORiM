@@ -14,6 +14,7 @@ public class UserLeftRoomDTO extends ResponseDTO {
 
 
     public UserLeftRoomDTO(Long userId, String userName, Long newRoomId, String newRoomName) {
+        super(true, null);
         this.userId = userId;
         this.newRoomId = newRoomId;
         this.newRoomName = newRoomName;

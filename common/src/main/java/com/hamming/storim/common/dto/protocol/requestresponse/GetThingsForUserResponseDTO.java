@@ -8,7 +8,8 @@ public class GetThingsForUserResponseDTO extends ResponseDTO {
 
     private final List<Long> things;
 
-    public GetThingsForUserResponseDTO(List<Long> things) {
+    public GetThingsForUserResponseDTO(boolean succes, List<Long> things, String errorMessage) {
+        super(succes, errorMessage);
         this.things = things;
     }
 
@@ -20,7 +21,9 @@ public class GetThingsForUserResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetThingsForUserResponseDTO{" +
-                "things=" + things +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", things=" + things +
                 '}';
     }
 }

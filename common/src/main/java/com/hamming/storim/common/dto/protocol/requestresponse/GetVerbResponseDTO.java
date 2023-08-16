@@ -7,7 +7,8 @@ public class GetVerbResponseDTO extends ResponseDTO {
 
     private VerbDetailsDTO verb;
 
-    public GetVerbResponseDTO(VerbDetailsDTO verb) {
+    public GetVerbResponseDTO(boolean success, String errormessage, VerbDetailsDTO verb) {
+        super(success, errormessage);
         this.verb = verb;
     }
 
@@ -18,7 +19,9 @@ public class GetVerbResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetVerbResponseDTO{" +
-                "verb=" + verb +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", verb=" + verb +
                 '}';
     }
 }

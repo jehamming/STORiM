@@ -8,7 +8,8 @@ public class GetRoomsForServerResponseDTO extends ResponseDTO {
 
     private final HashMap<Long, String> rooms;
 
-    public GetRoomsForServerResponseDTO(HashMap<Long, String> rooms) {
+    public GetRoomsForServerResponseDTO(boolean success, HashMap<Long, String> rooms, String errorMessage) {
+        super(success, errorMessage);
         this.rooms = rooms;
     }
 
@@ -19,7 +20,9 @@ public class GetRoomsForServerResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetRoomsForServerResponseDTO{" +
-                "rooms=" + rooms +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", rooms=" + rooms +
                 '}';
     }
 }

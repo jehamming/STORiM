@@ -55,7 +55,7 @@ public class EditMenuController implements ConnectionListener {
     }
 
     private void registerReceivers() {
-        connectionController.registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isLoginSucceeded()));
+        connectionController.registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
     }
 
 

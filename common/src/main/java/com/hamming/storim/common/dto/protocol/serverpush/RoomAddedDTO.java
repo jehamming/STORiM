@@ -9,6 +9,7 @@ public class RoomAddedDTO extends ResponseDTO {
     private RoomDto room;
 
     public RoomAddedDTO(RoomDto room) {
+        super(true, null);
         this.room = room;
     }
 

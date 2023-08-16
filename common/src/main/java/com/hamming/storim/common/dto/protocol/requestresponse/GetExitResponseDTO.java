@@ -6,22 +6,11 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class GetExitResponseDTO extends ResponseDTO {
 
-    private boolean success = false;
-    private String errorMessage;
     private ExitDto exit;
 
     public GetExitResponseDTO(boolean success, String errorMessage, ExitDto exit) {
-        this.success = success;
-        this.errorMessage = errorMessage;
+        super(success, errorMessage);
         this.exit = exit;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public ExitDto getExit() {
@@ -32,8 +21,8 @@ public class GetExitResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetExitResultDTO{" +
-                "success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 ", exit=" + exit +
                 '}';
     }

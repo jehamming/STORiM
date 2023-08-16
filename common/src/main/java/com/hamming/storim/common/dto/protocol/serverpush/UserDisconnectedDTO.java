@@ -8,6 +8,7 @@ public class UserDisconnectedDTO extends ResponseDTO {
     private String userName;
 
     public UserDisconnectedDTO(Long userID, String userName) {
+        super(true, null);
         this.userID = userID;
         this.userName = userName;
     }

@@ -16,6 +16,7 @@ public class LocationUpdateDTO extends ResponseDTO {
     private Type type;
 
     public LocationUpdateDTO(Type type, Long objectId, LocationDto location) {
+        super(true, null);
         this.objectId = objectId;
         this.location = location;
         this.type = type;

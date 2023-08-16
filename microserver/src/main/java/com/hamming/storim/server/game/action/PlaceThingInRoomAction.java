@@ -3,11 +3,13 @@ package com.hamming.storim.server.game.action;
 import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.ThingDto;
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.request.PlaceThingInRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.MessageInRoomDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.ThingInRoomDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
+import com.hamming.storim.server.STORIMException;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
@@ -31,11 +33,16 @@ public class PlaceThingInRoomAction extends Action<PlaceThingInRoomDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserDto user = client.getCurrentUser();
         PlaceThingInRoomDTO dto = getDto();
+        try {
 
-        ThingDto thing = client.getServer().getUserDataServerProxy().getThing(dto.getThingId());
-        Room room = RoomFactory.getInstance().findRoomByID(dto.getRoomId());
-        if ( thing != null ) {
-            placeThingInRoom(getClient(), user,thing, room);
+            ThingDto thing = client.getServer().getUserDataServerProxy().getThing(dto.getThingId());
+            Room room = RoomFactory.getInstance().findRoomByID(dto.getRoomId());
+            if (thing != null) {
+                placeThingInRoom(getClient(), user, thing, room);
+            }
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), e.getMessage());
+            client.send(errorDTO);
         }
     }
 
@@ -43,14 +50,14 @@ public class PlaceThingInRoomAction extends Action<PlaceThingInRoomDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         String serverName = client.getServer().getServerName();
 
-        Location location = new Location(thing.getId(), serverName, room.getId(),room.getSpawnPointX(), room.getSpawnPointY());
+        Location location = new Location(thing.getId(), serverName, room.getId(), room.getSpawnPointX(), room.getSpawnPointY());
 
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
         //Store location at dataserver
         client.getServer().getUserDataServerProxy().setLocation(thing.getId(), locationDto);
         room.addObjectInRoom(thing.getId());
 
-        ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thing, locationDto );
+        ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thing, locationDto);
         client.send(thingInRoomDTO);
 
         String toCaller = "You place " + thing.getName();

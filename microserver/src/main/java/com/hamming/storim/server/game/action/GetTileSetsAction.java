@@ -26,7 +26,7 @@ public class GetTileSetsAction extends Action<GetTileSetsDTO> {
         for (TileSet tileSet :tileSets) {
             tileSetIds.add(tileSet.getId());
         }
-        getClient().send(new GetTileSetsResponseDTO(tileSetIds));
+        getClient().send(new GetTileSetsResponseDTO(true, tileSetIds, null));
     }
 
 }

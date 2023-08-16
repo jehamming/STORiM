@@ -10,6 +10,7 @@ public class ThingAddedDTO extends ResponseDTO {
     private ThingDto thing;
 
     public ThingAddedDTO(ThingDto thing) {
+        super(true, null);
         this.thing = thing;
     }
 

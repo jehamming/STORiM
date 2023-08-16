@@ -15,6 +15,7 @@ public class MessageInRoomDTO extends ResponseDTO {
     private mType messageType;
 
     public MessageInRoomDTO(Long sourceID, sType sourceType, String message, mType messageType) {
+        super(true, null);
         this.sourceID = sourceID;
         this.sourceType = sourceType;
         this.message = message;

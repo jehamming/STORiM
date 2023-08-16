@@ -9,6 +9,7 @@ public class ThingDeletedDTO extends ResponseDTO {
     private Long thingId;
 
     public ThingDeletedDTO(Long thingId) {
+        super(true, null);
         this.thingId = thingId;
     }
 

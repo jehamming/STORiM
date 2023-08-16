@@ -10,6 +10,7 @@ public class AvatarSetDTO extends ResponseDTO {
     private Long userId;
 
     public AvatarSetDTO(Long userId, AvatarDto avatar) {
+        super(true, null);
         this.avatar = avatar;
         this.userId = userId;
     }

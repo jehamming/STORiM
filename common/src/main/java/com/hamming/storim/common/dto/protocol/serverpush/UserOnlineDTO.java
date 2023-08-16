@@ -8,6 +8,7 @@ public class UserOnlineDTO extends ResponseDTO {
     private String name;
 
     public UserOnlineDTO(Long userId, String name) {
+        super(true, null);
         this.userId = userId;
         this.name = name;
     }

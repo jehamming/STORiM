@@ -23,7 +23,7 @@ public class GetRoomsForUserAction extends Action<GetRoomsForUserDTO> {
                 rooms.put(room.getId(), room.getName());
             }
         }
-        getClient().send(new GetRoomsForUserResponseDTO(rooms));
+        getClient().send(new GetRoomsForUserResponseDTO(true, rooms, null));
     }
 
 }

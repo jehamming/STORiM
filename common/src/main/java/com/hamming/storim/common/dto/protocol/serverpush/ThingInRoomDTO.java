@@ -14,6 +14,7 @@ public class ThingInRoomDTO extends ResponseDTO {
     private LocationDto location;
 
     public ThingInRoomDTO(ThingDto thing, LocationDto location) {
+        super(true, null);
         this.thing = thing;
         this.location = location;
     }

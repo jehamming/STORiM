@@ -8,7 +8,8 @@ public class GetTileSetsResponseDTO extends ResponseDTO {
 
     private final List<Long> tileSets;
 
-    public GetTileSetsResponseDTO(List<Long> tileSets) {
+    public GetTileSetsResponseDTO(boolean succes, List<Long> tileSets, String errorMessage) {
+        super(succes, errorMessage);
         this.tileSets = tileSets;
     }
 
@@ -19,7 +20,9 @@ public class GetTileSetsResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetTileSetsResponseDTO{" +
-                "tileSets=" + tileSets +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", tileSets=" + tileSets +
                 '}';
     }
 }

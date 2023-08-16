@@ -8,6 +8,7 @@ public class VerbUpdatedDTO extends ResponseDTO {
     private VerbDto verb;
 
     public VerbUpdatedDTO(VerbDto verb) {
+        super(true, null);
         this.verb = verb;
     }
 

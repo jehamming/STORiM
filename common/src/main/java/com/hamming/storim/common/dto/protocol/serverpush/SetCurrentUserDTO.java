@@ -10,6 +10,7 @@ public class SetCurrentUserDTO extends ResponseDTO {
     private LocationDto location;
 
     public SetCurrentUserDTO(UserDto user, LocationDto location) {
+        super(true, null);
         this.user = user;
         this.location = location;
     }

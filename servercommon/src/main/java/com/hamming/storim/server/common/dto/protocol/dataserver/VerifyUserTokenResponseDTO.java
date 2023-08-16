@@ -5,33 +5,22 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class VerifyUserTokenResponseDTO extends ResponseDTO {
 
-
-    private boolean success = false;
-    private String errorMessage;
     private UserDto user;
 
     public VerifyUserTokenResponseDTO(boolean success, String errorMessage, UserDto user) {
+        super(success, errorMessage);
         this.user = user;
-        this.errorMessage = errorMessage;
-        this.success = success;
     }
 
     public UserDto getUser() {
         return user;
     }
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
 
     @Override
     public String toString() {
         return "VerifyUserTokenResponseDTO{" +
-                "success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 ", user=" + user +
                 '}';
     }

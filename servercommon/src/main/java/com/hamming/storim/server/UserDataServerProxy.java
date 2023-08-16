@@ -29,126 +29,133 @@ public class UserDataServerProxy {
         this.connection = connection;
     }
 
-    public TileDto addTile(Long userId, byte[] imageData) {
+    public TileDto addTile(Long userId, byte[] imageData) throws STORIMException {
         AddTileRequestDto addTileRequestDto = new AddTileRequestDto(userId, imageData);
         AddTileResponseDTO response = connection.sendReceive(addTileRequestDto, AddTileResponseDTO.class );
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getTile();
     }
 
-    public TileDto getTile(Long tileId) {
+    public TileDto getTile(Long tileId) throws STORIMException {
         GetTileRequestDTO getTileRequestDto = new GetTileRequestDTO(tileId);
         GetTileResponseDTO response = connection.sendReceive(getTileRequestDto, GetTileResponseDTO.class );
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getTile();
     }
 
-    public List<Long> getTilesForUser(Long userId) {
+    public List<Long> getTilesForUser(Long userId) throws STORIMException {
         GetTilesForUserRequestDTO getTilesForUserRequestDto = new GetTilesForUserRequestDTO(userId);
         GetTilesForUserResponseDTO response = connection.sendReceive(getTilesForUserRequestDto, GetTilesForUserResponseDTO.class );
+        if (!response.isSuccess()) {
+            throw new STORIMException(response.getErrorMessage());
+        }
         return response.getTiles();
     }
 
-    public List<Long> getThingsForUser(Long userId) {
+    public List<Long> getThingsForUser(Long userId) throws STORIMException {
         GetThingsForUserRequestDTO  getThingsForUserRequestDTO = new GetThingsForUserRequestDTO(userId);
         GetThingsForUserResponseDTO response = connection.sendReceive(getThingsForUserRequestDTO, GetThingsForUserResponseDTO.class );
+        if ( !response.isSuccess() ) {
+            throw new STORIMException(response.getErrorMessage());
+        }
         return response.getThings();
     }
 
-    public HashMap<Long, String> getVerbs(Long userId) {
+    public HashMap<Long, String> getVerbs(Long userId) throws STORIMException {
         GetVerbsResponseDTO getVerbsResponseDTO = connection.sendReceive(new GetVerbsRequestDTO(userId), GetVerbsResponseDTO.class );
+        if ( !getVerbsResponseDTO.isSuccess()) {
+            throw new STORIMException(getVerbsResponseDTO.getErrorMessage());
+        }
         return getVerbsResponseDTO.getVerbs();
     }
 
-    public VerbDetailsDTO getVerb(Long verbId) {
+    public VerbDetailsDTO getVerb(Long verbId) throws STORIMException {
         GetVerbDetailsResponseDTO getVerbsResponseDTO = connection.sendReceive(new GetVerbDetailsRequestDTO(verbId), GetVerbDetailsResponseDTO.class );
         if (!getVerbsResponseDTO.isSuccess()) {
-            Logger.info(this, " Error :" + getVerbsResponseDTO.getErrorMessage());
+            throw new STORIMException(getVerbsResponseDTO.getErrorMessage());
         }
         return getVerbsResponseDTO.getVerb();
     }
 
-    public VerbDto addVerb(UserDto creator, String name, String toCaller, String toLocation) {
+    public VerbDto addVerb(UserDto creator, String name, String toCaller, String toLocation) throws STORIMException {
         AddVerbRequestDto addVerbRequestDto = new AddVerbRequestDto(creator.getId(),name, toCaller, toLocation);
         AddVerbResponseDTO addVerbResponseDTO = connection.sendReceive(addVerbRequestDto, AddVerbResponseDTO.class );
         if (!addVerbResponseDTO.isSuccess()) {
-            Logger.info(this, " Error :" + addVerbResponseDTO.getErrorMessage());
+            throw new STORIMException(addVerbResponseDTO.getErrorMessage());
         }
         return addVerbResponseDTO.getVerb();
     }
-    public boolean deleteVerb(Long verbID) {
+    public void deleteVerb(Long verbID) throws STORIMException {
         DeleteVerbRequestDto deleteVerbRequestDto = new DeleteVerbRequestDto(verbID);
         DeleteVerbResponseDTO deleteVerbResponseDTO = connection.sendReceive(deleteVerbRequestDto, DeleteVerbResponseDTO.class);
         if (!deleteVerbResponseDTO.isSuccess()) {
-            Logger.info(this, " Error :" + deleteVerbResponseDTO.getErrorMessage());
+            throw new STORIMException(deleteVerbResponseDTO.getErrorMessage());
         }
-        return deleteVerbResponseDTO.isSuccess();
     }
 
-    public VerbDto updateVerb(Long verbId, String name, String toCaller, String toLocation) {
+    public VerbDto updateVerb(Long verbId, String name, String toCaller, String toLocation) throws STORIMException {
         UpdateVerbRequestDto updateVerbRequestDto = new UpdateVerbRequestDto(verbId,name, toCaller, toLocation);
         UpdateVerbResponseDTO updateVerbResponseDTO = connection.sendReceive(updateVerbRequestDto, UpdateVerbResponseDTO.class );
         if (!updateVerbResponseDTO.isSuccess()) {
-            Logger.info(this, " Error :" + updateVerbResponseDTO.getErrorMessage());
+            throw new STORIMException(updateVerbResponseDTO.getErrorMessage());
         }
         return updateVerbResponseDTO.getVerb();
     }
 
-    public List<Long> getAvatars(Long userId) {
+    public List<Long> getAvatars(Long userId) throws STORIMException {
         GetAvatarsRequestDTO getAvatarsRequestDTO = new GetAvatarsRequestDTO(userId);
         GetAvatarsResponseDTO response = connection.sendReceive(getAvatarsRequestDTO, GetAvatarsResponseDTO.class);
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getAvatars();
     }
 
-    public AvatarDto addAvatar(UserDto creator, String name, byte[] imageData) {
+    public AvatarDto addAvatar(UserDto creator, String name, byte[] imageData) throws STORIMException {
         AddAvatarRequestDto addAvatarRequestDto = new AddAvatarRequestDto(creator.getId(), name, imageData);
         AddAvatarResponseDTO response = connection.sendReceive(addAvatarRequestDto, AddAvatarResponseDTO.class);
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
 
         return response.getAvatar();
     }
 
-    public AvatarDto getAvatar(Long avatarId) {
+    public AvatarDto getAvatar(Long avatarId) throws STORIMException {
         GetAvatarRequestDTO getAvatarRequestDTO = new GetAvatarRequestDTO(avatarId);
         GetAvatarResponseDTO response = connection.sendReceive(getAvatarRequestDTO, GetAvatarResponseDTO.class);
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getAvatar();
     }
 
-    public boolean deleteAvatar(Long avatarID) {
+    public void deleteAvatar(Long avatarID) throws STORIMException {
         DeleteAvatarRequestDTO deleteAvatarRequestDTO = new DeleteAvatarRequestDTO(avatarID);
         DeleteAvatarResponseDTO response = connection.sendReceive(deleteAvatarRequestDTO, DeleteAvatarResponseDTO.class);
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
-        return response.isSuccess();
     }
 
-    public AvatarDto updateAvatar(Long avatarId, String name, byte[] imageData) {
+    public AvatarDto updateAvatar(Long avatarId, String name, byte[] imageData) throws STORIMException {
         UpdateAvatarRequestDto updateAvatarRequestDto = new UpdateAvatarRequestDto(avatarId, name, imageData);
         UpdateAvatarResponseDTO response = connection.sendReceive(updateAvatarRequestDto, UpdateAvatarResponseDTO.class);
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getAvatar();
     }
 
-    public AvatarDto setAvatar(Long avatarId, Long userId) {
+    public AvatarDto setAvatar(Long avatarId, Long userId) throws STORIMException {
         SetAvatarRequestDto setAvatarRequestDto = new SetAvatarRequestDto(avatarId, userId);
         SetAvatarResponseDto response = connection.sendReceive(setAvatarRequestDto, SetAvatarResponseDto.class);
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getAvatar();
     }
@@ -157,46 +164,48 @@ public class UserDataServerProxy {
         connection.send(dto);
     }
 
-    public ThingDto addThing(UserDto creator, String name, String description, float scale, int rotation, byte[] imageData) {
+    public ThingDto addThing(UserDto creator, String name, String description, float scale, int rotation, byte[] imageData) throws STORIMException {
         AddThingRequestDto addThingRequestDto = new AddThingRequestDto(creator.getId(), name, description, scale, rotation, imageData);
         AddThingResponseDTO response = connection.sendReceive(addThingRequestDto, AddThingResponseDTO.class);
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getThing();
 
     }
 
-    public ThingDto getThing(Long thingID) {
+    public ThingDto getThing(Long thingID) throws STORIMException {
         GetThingRequestDTO getThingRequestDTO = new GetThingRequestDTO(thingID);
         GetThingResponseDTO response = connection.sendReceive(getThingRequestDTO, GetThingResponseDTO.class );
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getThing();
     }
 
-    public boolean deleteThing(Long thingId) {
+    public void deleteThing(Long thingId) throws STORIMException {
         DeleteThingRequestDto deleteThingRequestDto = new DeleteThingRequestDto(thingId);
         DeleteThingResponseDTO deleteThingResponseDTO = connection.sendReceive(deleteThingRequestDto, DeleteThingResponseDTO.class);
         if (!deleteThingResponseDTO.isSuccess()) {
-            Logger.info(this, " Error :" + deleteThingResponseDTO.getErrorMessage());
+            throw new STORIMException(deleteThingResponseDTO.getErrorMessage());
         }
-        return deleteThingResponseDTO.isSuccess();
     }
 
-    public ThingDto updateThing(Long id, String name, String description, float scale, int rotation, byte[] imageData) {
+    public ThingDto updateThing(Long id, String name, String description, float scale, int rotation, byte[] imageData) throws STORIMException {
         UpdateThingRequestDto updateThingRequestDto = new UpdateThingRequestDto(id, name, description,scale, rotation, imageData);
         UpdateThingResponseDTO response = connection.sendReceive(updateThingRequestDto, UpdateThingResponseDTO.class);
         if (!response.isSuccess()) {
-            Logger.info(this, " Error :" + response.getErrorMessage());
+            throw new STORIMException(response.getErrorMessage());
         }
         return response.getThing();
     }
 
-    public LocationDto getLocation(Long objectId) {
+    public LocationDto getLocation(Long objectId) throws STORIMException {
         GetLocationDto getLocationDto = new GetLocationDto(objectId);
         GetLocationResponseDto response = connection.sendReceive(getLocationDto, GetLocationResponseDto.class);
+        if (!response.isSuccess()) {
+            throw new STORIMException(response.getErrorMessage());
+        }
         return response.getLocation();
     }
 
@@ -205,7 +214,7 @@ public class UserDataServerProxy {
         connection.send(setLocationDto);
     }
 
-    public void setLocation(Long id, int x, int y) {
+    public void setLocation(Long id, int x, int y) throws STORIMException {
         LocationDto locationDto = getLocation(id);
         if ( locationDto != null ) {
             locationDto.setX(x);
@@ -214,57 +223,78 @@ public class UserDataServerProxy {
         }
     }
 
-    public ValidateUserResponseDTO validateUser(ClientConnection sourceClientConnection, String username, String password) {
+    public ValidateUserResponseDTO validateUser(ClientConnection sourceClientConnection, String username, String password) throws STORIMException {
         UserDto user = null;
         ValidateUserRequestDTO validateUserRequestDTO = new ValidateUserRequestDTO(sourceClientConnection.getId(), username, password);
         ValidateUserResponseDTO validateUserResponseDTO = connection.sendReceive(validateUserRequestDTO, ValidateUserResponseDTO.class);
+        if (!validateUserResponseDTO.isSuccess())  {
+            throw new STORIMException(validateUserResponseDTO.getErrorMessage());
+        }
         return validateUserResponseDTO;
     }
 
-    public UserDto verifyUserToken(String source, Long userId, String token) {
+    public UserDto verifyUserToken(String source, Long userId, String token) throws STORIMException {
             UserDto verifiedUser = null;
             VerifyUserTokenRequestDTO dto = new VerifyUserTokenRequestDTO(source, userId, token);
             VerifyUserTokenResponseDTO response = connection.sendReceive(dto, VerifyUserTokenResponseDTO.class);
             if (response.isSuccess() ) {
                 verifiedUser = response.getUser();
             } else {
-                Logger.info(this, " Error :" + response.getErrorMessage());
+                throw new STORIMException(response.getErrorMessage());
             }
             return verifiedUser;
     }
 
-    public String verifyAdmin(String adminPassword) {
-        UserDto verifiedUser = null;
+    public boolean verifyAdmin(String adminPassword) throws STORIMException {
         VerifyAdminRequestDTO dto = new VerifyAdminRequestDTO(adminPassword);
         VerifyAdminResponseDTO response = connection.sendReceive(dto, VerifyAdminResponseDTO.class);
-        return response.getErrorMessage();
+        if ( !response.isSuccess() ) {
+            throw new STORIMException(response.getErrorMessage());
+        }
+        return response.isSuccess();
     }
 
-    public HashMap<Long, String> getAllUsers() {
+    public HashMap<Long, String> getAllUsers() throws STORIMException {
         GetUsersRequestDTO requestDTO = new GetUsersRequestDTO();
         GetUsersResultDTO resultDTO = connection.sendReceive(requestDTO, GetUsersResultDTO.class);
+        if (!resultDTO.isSuccess()) {
+            throw new STORIMException(resultDTO.getErrorMessage());
+        }
         return resultDTO.getUsers();
     }
 
-    public UserDto getUser(Long userID) {
+    public UserDto getUser(Long userID) throws STORIMException {
         UserDto userDto = null;
         GetUserDTO getUserDTO = new GetUserDTO(userID);
         GetUserResultDTO resultDTO = connection.sendReceive(getUserDTO, GetUserResultDTO.class);
         if ( resultDTO.isSuccess() && resultDTO.getUser() != null ) {
             userDto = resultDTO.getUser();
+        } else {
+            if (!resultDTO.isSuccess()) {
+                throw new STORIMException(resultDTO.getErrorMessage());
+            }
+            if ( resultDTO.getUser() == null ) {
+                throw new STORIMException("No User found");
+            }
         }
         return userDto;
     }
 
-    public UserDto updateUser(Long id, String username, String password, String name, String email, Long avatarId) {
+    public UserDto updateUser(Long id, String username, String password, String name, String email, Long avatarId) throws STORIMException {
         UpdateUserDto request = new UpdateUserDto(id, username, password, name, email, avatarId);
         UpdateUserResultDTO resultDTO = connection.sendReceive(request, UpdateUserResultDTO.class);
+        if ( !resultDTO.isSuccess() ) {
+            throw new STORIMException(resultDTO.getErrorMessage());
+        }
         return resultDTO.getUser();
     }
 
-    public UpdateUserResultDTO updateUser(UpdateUserDto updateUserDto) {
+    public UserDto updateUser(UpdateUserDto updateUserDto) throws STORIMException {
         UpdateUserResultDTO result = connection.sendReceive(updateUserDto,UpdateUserResultDTO.class );
-        return  result;
+        if ( !result.isSuccess() ) {
+            throw new STORIMException(result.getErrorMessage());
+        }
+        return result.getUser();
     }
 
 
@@ -272,8 +302,11 @@ public class UserDataServerProxy {
         connection.send(deleteUserDto);
     }
 
-    public AddUserResultDTO addUser(AddUserDto addUserDto) {
+    public UserDto addUser(AddUserDto addUserDto) throws STORIMException {
         AddUserResultDTO resultDTO = connection.sendReceive(addUserDto, AddUserResultDTO.class);
-        return resultDTO;
+        if (!resultDTO.isSuccess()) {
+            throw new STORIMException(resultDTO.getErrorMessage());
+        }
+        return resultDTO.getUserDto();
     }
 }

@@ -8,8 +8,8 @@ public class GetRoomResultDTO extends ResponseDTO {
 
     private RoomDto room;
 
-    public GetRoomResultDTO( RoomDto room) {
-
+    public GetRoomResultDTO( boolean success, RoomDto room, String errorMessage) {
+        super(success, errorMessage);
         this.room = room;
     }
 
@@ -20,7 +20,9 @@ public class GetRoomResultDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetRoomResultDTO{" +
-                "room=" + room +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", room=" + room +
                 '}';
     }
 }

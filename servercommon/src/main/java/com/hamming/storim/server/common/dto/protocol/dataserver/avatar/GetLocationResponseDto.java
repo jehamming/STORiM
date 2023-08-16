@@ -10,6 +10,7 @@ public class GetLocationResponseDto extends ResponseDTO {
     private LocationDto location;
 
     public GetLocationResponseDto(Long objectId, LocationDto location) {
+        super(true, null);
         this.location = location;
         this.objectId = objectId;
     }

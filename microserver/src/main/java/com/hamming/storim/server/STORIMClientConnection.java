@@ -2,6 +2,7 @@ package com.hamming.storim.server;
 
 
 import com.hamming.storim.common.dto.*;
+import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.util.Logger;
@@ -158,38 +159,53 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
 
     public void sendThingsInRoom(Room room) {
-        for (Long thingId : room.getObjectsInRoom()) {
-            ThingDto thing = server.getUserDataServerProxy().getThing(thingId);
-            LocationDto locationDto = server.getUserDataServerProxy().getLocation(thingId);
-            if (thing != null) {
-                ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thing, locationDto);
-                send(thingInRoomDTO);
-            } else {
-                Logger.info(this, "Cannot get Thing:" + thingId);
+        try {
+            for (Long thingId : room.getObjectsInRoom()) {
+                ThingDto thing = server.getUserDataServerProxy().getThing(thingId);
+                LocationDto locationDto = server.getUserDataServerProxy().getLocation(thingId);
+                if (thing != null) {
+                    ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thing, locationDto);
+                    send(thingInRoomDTO);
+                } else {
+                    Logger.info(this, "Cannot get Thing:" + thingId);
+                }
             }
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".sendThingsInRoom", e.getMessage());
+            send(errorDTO);
         }
     }
 
 
     public void sendAvatar(AvatarDto avatar) {
-        GetAvatarResponseDTO getAvatarResultDTO = new GetAvatarResponseDTO(avatar);
+        GetAvatarResponseDTO getAvatarResultDTO = new GetAvatarResponseDTO(true, avatar, null);
         send(getAvatarResultDTO);
     }
 
     public void sendAvatar(UserDto user) {
-        if (user.getCurrentAvatarID() != null) {
-            AvatarDto avatarDto = server.getUserDataServerProxy().getAvatar(user.getCurrentAvatarID());
-            if (avatarDto != null) {
-                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), avatarDto);
-                send(avatarSetDTO);
+        try {
+            if (user.getCurrentAvatarID() != null) {
+                AvatarDto avatarDto = server.getUserDataServerProxy().getAvatar(user.getCurrentAvatarID());
+                if (avatarDto != null) {
+                    AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), avatarDto);
+                    send(avatarSetDTO);
+                }
             }
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".sendAvatar", e.getMessage());
+            send(errorDTO);
         }
     }
 
     private void sendVerbs(UserDto user) {
-        HashMap<Long, String> verbs = server.getUserDataServerProxy().getVerbs(user.getId());
-        UserVerbsDTO userVerbsDTO = new UserVerbsDTO(verbs);
-        send(userVerbsDTO);
+        try {
+            HashMap<Long, String> verbs = server.getUserDataServerProxy().getVerbs(user.getId());
+            UserVerbsDTO userVerbsDTO = new UserVerbsDTO(verbs);
+            send(userVerbsDTO);
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".sendVerbs", e.getMessage());
+            send(errorDTO);
+        }
     }
 
     private void thingAdded(ThingDto thing) {
@@ -227,14 +243,19 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     public void sendUserInRoom(UserDto user) {
-        Location location = gameController.getGameState().getUserLocation(user.getId());
-        UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user, location);
-        send(dto);
-        if (user.getCurrentAvatarID() != null) {
-            //Send Avatar
-            AvatarDto avatarDto = server.getUserDataServerProxy().getAvatar(user.getCurrentAvatarID());
-            AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), avatarDto);
-            send(avatarSetDTO);
+        try {
+            Location location = gameController.getGameState().getUserLocation(user.getId());
+            UserInRoomDTO dto = DTOFactory.getInstance().getUserInRoomDTO(user, location);
+            send(dto);
+            if (user.getCurrentAvatarID() != null) {
+                //Send Avatar
+                AvatarDto avatarDto = server.getUserDataServerProxy().getAvatar(user.getCurrentAvatarID());
+                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(user.getId(), avatarDto);
+                send(avatarSetDTO);
+            }
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".sendUserInRoom", e.getMessage());
+            send(errorDTO);
         }
     }
 
@@ -247,7 +268,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
     public void sendRoom(Room room) {
         RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room, server.getServerURI());
-        GetRoomResultDTO getRoomResultDTO = new GetRoomResultDTO(roomDto);
+        GetRoomResultDTO getRoomResultDTO = new GetRoomResultDTO(true, roomDto, null);
         send(getRoomResultDTO);
     }
 
@@ -265,47 +286,63 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     private void thingPlaced(ThingDto thing, UserDto user) {
-        LocationDto locationDto = getServer().getUserDataServerProxy().getLocation(thing.getId());
-        ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thing, locationDto);
-        send(thingInRoomDTO);
-        String toLocation = user.getName() + " places " + thing.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(user.getId(), MessageInRoomDTO.sType.USER, toLocation, MessageInRoomDTO.mType.MOVE);
-        send(messageInRoomDTO);
+        try {
+            LocationDto locationDto = getServer().getUserDataServerProxy().getLocation(thing.getId());
+            ThingInRoomDTO thingInRoomDTO = new ThingInRoomDTO(thing, locationDto);
+            send(thingInRoomDTO);
+            String toLocation = user.getName() + " places " + thing.getName();
+            MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(user.getId(), MessageInRoomDTO.sType.USER, toLocation, MessageInRoomDTO.mType.MOVE);
+            send(messageInRoomDTO);
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".thingPlaced", e.getMessage());
+            send(errorDTO);
+        }
     }
 
     public UserDto verifyUserToken(Long userId, String token) {
-        UserDto verifiedUser = server.getUserDataServerProxy().verifyUserToken(getId(), userId, token);
+        UserDto verifiedUser = null;
+        try {
+            verifiedUser = server.getUserDataServerProxy().verifyUserToken(getId(), userId, token);
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".verifyUserToken", e.getMessage());
+            send(errorDTO);
+        }
         return verifiedUser;
     }
 
     public void setRoom(Long roomId) {
-        currentRoom = RoomFactory.getInstance().findRoomByID(roomId);
-        if (currentRoom != null) {
-            String serverName = server.getServerName();
-            int x = currentRoom.getSpawnPointX();
-            int y = currentRoom.getSpawnPointY();
-            LocationDto lastKnownLocation = getServer().getUserDataServerProxy().getLocation(currentUser.getId());
-            if (lastKnownLocation != null && lastKnownLocation.getRoomId().equals(roomId)) {
-                x = lastKnownLocation.getX();
-                y = lastKnownLocation.getY();
-            }
+        try {
+            currentRoom = RoomFactory.getInstance().findRoomByID(roomId);
+            if (currentRoom != null) {
+                String serverName = server.getServerName();
+                int x = currentRoom.getSpawnPointX();
+                int y = currentRoom.getSpawnPointY();
+                LocationDto lastKnownLocation = getServer().getUserDataServerProxy().getLocation(currentUser.getId());
+                if (lastKnownLocation != null && lastKnownLocation.getRoomId().equals(roomId)) {
+                    x = lastKnownLocation.getX();
+                    y = lastKnownLocation.getY();
+                }
 
-            Location location = gameController.getGameState().getUserLocation(currentUser.getId());
-            if ( location != null ) {
-                location.setServerId(serverName);
-                location.setRoomId(currentRoom.getId());
-                location.setX(x);
-                location.setY(y);
-            } else {
-                location = new Location(currentUser.getId(), serverName, currentRoom.getId(), x, y);
-            }
+                Location location = gameController.getGameState().getUserLocation(currentUser.getId());
+                if (location != null) {
+                    location.setServerId(serverName);
+                    location.setRoomId(currentRoom.getId());
+                    location.setX(x);
+                    location.setY(y);
+                } else {
+                    location = new Location(currentUser.getId(), serverName, currentRoom.getId(), x, y);
+                }
 
-            gameController.getGameState().setUserLocation(currentUser, location);
-            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(currentRoom, server.getServerURI());
-            send(new SetRoomDTO(roomDto));
-            sendUsersInRoom(currentRoom);
-            sendThingsInRoom(currentRoom);
-            sendExitsInRoom(currentRoom);
+                gameController.getGameState().setUserLocation(currentUser, location);
+                RoomDto roomDto = DTOFactory.getInstance().getRoomDto(currentRoom, server.getServerURI());
+                send(new SetRoomDTO(roomDto));
+                sendUsersInRoom(currentRoom);
+                sendThingsInRoom(currentRoom);
+                sendExitsInRoom(currentRoom);
+            }
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".setRoom", e.getMessage());
+            send(errorDTO);
         }
     }
 
@@ -333,66 +370,72 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         Location location = null;
         LocationDto locationDto = null;
 
+        try {
 
-        if ( roomId != null ) {
-            // Connect to a specific room given by StorimURI
-            room = RoomFactory.getInstance().findRoomByID(roomId);
-            if (room != null) {
+            if (roomId != null) {
+                // Connect to a specific room given by StorimURI
+                room = RoomFactory.getInstance().findRoomByID(roomId);
+                if (room != null) {
+                    int x = room.getSpawnPointX();
+                    int y = room.getSpawnPointY();
+                    locationDto = new LocationDto(-1l, getServer().getServerURI(), room.getId(), x, y);
+                    location = LocationFactory.getInstance().createLocation(currentUser.getId(), locationDto);
+                }
+            } else {
+                // Check for a location stored in dataserver
+                locationDto = getServer().getUserDataServerProxy().getLocation(currentUser.getId());
+                if (locationDto != null) {
+                    room = RoomFactory.getInstance().findRoomByID(locationDto.getRoomId());
+                    if (room != null) {
+                        location = LocationFactory.getInstance().createLocation(currentUser.getId(), locationDto);
+                    }
+                }
+            }
+
+
+            if (location == null) {
+                Logger.info(this, "User '" + currentUser.getId() + "' location not found or corrupt, using default Room (1)");
+
+                room = RoomFactory.getInstance().findRoomByName(server.DEFAULT_MAINROOM_NAME);
+
                 int x = room.getSpawnPointX();
                 int y = room.getSpawnPointY();
                 locationDto = new LocationDto(-1l, getServer().getServerURI(), room.getId(), x, y);
                 location = LocationFactory.getInstance().createLocation(currentUser.getId(), locationDto);
             }
-        } else {
-            // Check for a location stored in dataserver
-            locationDto = getServer().getUserDataServerProxy().getLocation(currentUser.getId());
-            if (locationDto != null) {
-                room = RoomFactory.getInstance().findRoomByID(locationDto.getRoomId());
-                if (room != null) {
-                    location = LocationFactory.getInstance().createLocation(currentUser.getId(), locationDto);
-                }
+
+            getServer().getUserDataServerProxy().setLocation(currentUser.getId(), locationDto);
+            gameController.getGameState().setUserLocation(currentUser, location);
+
+            setRoom(room.getId());
+            // Send current User info
+            SetCurrentUserDTO setCurrentUserDTO = new SetCurrentUserDTO(currentUser, locationDto);
+            send(setCurrentUserDTO);
+            if (currentUser.getCurrentAvatarID() != null) {
+                //Send Avatar
+                AvatarDto avatarDto = getServer().getUserDataServerProxy().getAvatar(currentUser.getCurrentAvatarID());
+                AvatarSetDTO avatarSetDTO = new AvatarSetDTO(currentUser.getId(), avatarDto);
+                send(avatarSetDTO);
             }
+            // Add this user as online user
+            gameController.getGameState().getOnlineUsers().add(currentUser);
+            // RegisterListener for the current Room
+            gameController.addRoomListener(location.getRoomId(), this);
+            // Notify the listeners
+            gameController.fireServerEvent(this, new ServerEvent(ServerEvent.Type.USERCONNECTED, currentUser));
+
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".currentUserConnected", e.getMessage());
+            send(errorDTO);
         }
 
-
-
-        if (location == null) {
-            Logger.info(this, "User '" + currentUser.getId() + "' location not found or corrupt, using default Room (1)");
-
-            room = RoomFactory.getInstance().findRoomByName(server.DEFAULT_MAINROOM_NAME);
-
-            int x = room.getSpawnPointX();
-            int y = room.getSpawnPointY();
-            locationDto = new LocationDto(-1l, getServer().getServerURI(), room.getId(), x, y);
-            location = LocationFactory.getInstance().createLocation(currentUser.getId(), locationDto);
-        }
-
-        getServer().getUserDataServerProxy().setLocation(currentUser.getId(), locationDto);
-        gameController.getGameState().setUserLocation(currentUser, location);
-
-        setRoom(room.getId());
-        // Send current User info
-        SetCurrentUserDTO setCurrentUserDTO = new SetCurrentUserDTO(currentUser, locationDto);
-        send(setCurrentUserDTO);
-        if (currentUser.getCurrentAvatarID() != null) {
-            //Send Avatar
-            AvatarDto avatarDto = getServer().getUserDataServerProxy().getAvatar(currentUser.getCurrentAvatarID());
-            AvatarSetDTO avatarSetDTO = new AvatarSetDTO(currentUser.getId(), avatarDto);
-            send(avatarSetDTO);
-        }
-        // Add this user as online user
-        gameController.getGameState().getOnlineUsers().add(currentUser);
-        // RegisterListener for the current Room
-        gameController.addRoomListener(location.getRoomId(), this);
-        // Notify the listeners
-        gameController.fireServerEvent(this, new ServerEvent(ServerEvent.Type.USERCONNECTED, currentUser));
 
     }
 
     @Override
     public void disconnected() {
         gameController.removeServerListener(this);
-        if ( currentUser != null ) {
+        if (currentUser != null) {
             Location location = gameController.getGameState().getUserLocation(currentUser.getId());
             gameController.removeRoomListener(location.getRoomId(), this);
             LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
@@ -473,12 +516,17 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     private void thingLocationUpdate(LocationDto locationDto, UserDto user) {
-        LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.THING, locationDto.getObjectId(), locationDto);
-        ThingDto thingDto = getServer().getUserDataServerProxy().getThing(locationDto.getObjectId());
-        send(locationUpdateDTO);
-        String txt = user.getName() + " moves " + thingDto.getName();
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(locationDto.getObjectId(), MessageInRoomDTO.sType.USER, txt, MessageInRoomDTO.mType.MOVE);
-        send(messageInRoomDTO);
+        try {
+            LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.THING, locationDto.getObjectId(), locationDto);
+            ThingDto thingDto = getServer().getUserDataServerProxy().getThing(locationDto.getObjectId());
+            send(locationUpdateDTO);
+            String txt = user.getName() + " moves " + thingDto.getName();
+            MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(locationDto.getObjectId(), MessageInRoomDTO.sType.USER, txt, MessageInRoomDTO.mType.MOVE);
+            send(messageInRoomDTO);
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".thingLocationUpdate", e.getMessage());
+            send(errorDTO);
+        }
     }
 
     private void exitLocationUpdate(ExitDto exitDto, UserDto user) {

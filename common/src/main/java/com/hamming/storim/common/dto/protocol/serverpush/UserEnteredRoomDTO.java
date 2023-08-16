@@ -13,6 +13,7 @@ public class UserEnteredRoomDTO extends ResponseDTO {
     private String oldRoomName;
 
     public UserEnteredRoomDTO(UserDto user, LocationDto location, Long oldRoomId, String oldRoomName) {
+        super(true, null);
         this.user = user;
         this.location = location;
         this.oldRoomId = oldRoomId;

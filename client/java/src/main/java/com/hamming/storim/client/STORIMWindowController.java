@@ -9,6 +9,7 @@ import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.client.view.RoomTileMapEditorView;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
@@ -78,6 +79,12 @@ public class STORIMWindowController implements ConnectionListener {
 
     private void registerReceivers() {
         connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto.getUser()));
+        connectionController.registerReceiver(ErrorDTO.class, (ProtocolReceiver<ErrorDTO>) dto -> serverError(dto));
+    }
+
+    private void serverError(ErrorDTO dto) {
+        String text = "Function: " + dto.getFunction() + "\nMessage:" + dto.getErrorMessage();
+        JOptionPane.showMessageDialog(window,text, "Server Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public void setCurrentUser(UserDto currentUser) {

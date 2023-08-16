@@ -1,10 +1,8 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomsDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomsResultDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetUsersRequestDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetUsersResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.server.STORIMClientConnection;
+import com.hamming.storim.server.STORIMException;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.model.Room;
@@ -28,12 +26,18 @@ public class GetUsersAction extends Action<GetUsersRequestDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         String errorMessage = null;
         HashMap<Long, String> users = null;
-        if (client.isAdmin()) {
-            users = client.getServer().getUserDataServerProxy().getAllUsers();
-        } else {
-            errorMessage = "No ADMIN privileges for current user";
+        boolean success = false;
+        try {
+            if (client.isAdmin()) {
+                users = client.getServer().getUserDataServerProxy().getAllUsers();
+                success = true;
+            } else {
+                errorMessage = "No ADMIN privileges for current user";
+            }
+        } catch (STORIMException e) {
+            errorMessage = e.getMessage();
         }
-        GetUsersResultDTO resultDTO = new GetUsersResultDTO(users, errorMessage);
+        GetUsersResultDTO resultDTO = new GetUsersResultDTO(success, users, errorMessage);
         client.send(resultDTO);
     }
 

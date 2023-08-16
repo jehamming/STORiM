@@ -9,6 +9,7 @@ public class TileAddedDTO extends ResponseDTO {
     private TileDto tile;
 
     public TileAddedDTO(TileDto tile) {
+        super(true, null);
         this.tile = tile;
     }
 

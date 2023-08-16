@@ -5,22 +5,11 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class GetTileResponseDTO extends ResponseDTO {
 
-    private boolean success = false;
-    private String errorMessage;
     private TileDto tile;
 
     public GetTileResponseDTO(boolean success, String errorMessage, TileDto tile) {
-        this.success = success;
-        this.errorMessage = errorMessage;
+        super(success, errorMessage);
         this.tile = tile;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public TileDto getTile() {
@@ -30,8 +19,8 @@ public class GetTileResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetTileResponseDTO{" +
-                "success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 ", tile=" + tile +
                 '}';
     }

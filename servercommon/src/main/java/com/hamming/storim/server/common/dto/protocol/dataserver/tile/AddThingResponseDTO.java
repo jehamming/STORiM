@@ -6,33 +6,23 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class AddThingResponseDTO extends ResponseDTO {
 
-    private boolean success;
-    private String errorMessage;
     private ThingDto thing;
 
     public AddThingResponseDTO(boolean success, String errorMessage, ThingDto thing) {
-        this.success = success;
-        this.errorMessage = errorMessage;
+        super(success, errorMessage);
         this.thing = thing;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
 
     public ThingDto getThing() {
         return thing;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
     @Override
     public String toString() {
         return "AddThingResponseDTO{" +
-                "success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 ", thing=" + thing +
                 '}';
     }

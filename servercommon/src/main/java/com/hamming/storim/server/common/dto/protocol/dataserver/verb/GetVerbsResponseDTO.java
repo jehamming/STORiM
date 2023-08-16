@@ -9,6 +9,7 @@ public class GetVerbsResponseDTO extends ResponseDTO {
     private HashMap<Long, String> verbs;
 
     public GetVerbsResponseDTO(HashMap<Long, String> verbs) {
+        super(true, null);
         this.verbs = verbs;
     }
 

@@ -6,22 +6,11 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class GetAvatarResponseDTO extends ResponseDTO {
 
-    private boolean success = false;
-    private String errorMessage;
     private AvatarDto avatar;
 
     public GetAvatarResponseDTO(boolean success, String errorMessage, AvatarDto avatar) {
-        this.success = success;
-        this.errorMessage = errorMessage;
+        super(success, errorMessage);
         this.avatar = avatar;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public AvatarDto getAvatar() {
@@ -32,8 +21,8 @@ public class GetAvatarResponseDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetAvatarResponseDTO{" +
-                "success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 ", avatar=" + avatar +
                 '}';
     }

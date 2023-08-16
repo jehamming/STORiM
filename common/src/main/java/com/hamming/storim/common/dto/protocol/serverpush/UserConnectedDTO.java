@@ -10,6 +10,7 @@ public class UserConnectedDTO extends ResponseDTO {
     private String name;
 
     public UserConnectedDTO(Long userId, String name) {
+        super(true, null);
         this.userId = userId;
         this.name = name;
     }

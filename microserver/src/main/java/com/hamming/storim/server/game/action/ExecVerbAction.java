@@ -2,10 +2,12 @@ package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.VerbDetailsDTO;
+import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.request.ExecVerbDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.MessageInRoomDTO;
 import com.hamming.storim.common.util.StringUtils;
 import com.hamming.storim.server.STORIMClientConnection;
+import com.hamming.storim.server.STORIMException;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.RoomFactory;
@@ -31,10 +33,15 @@ public class ExecVerbAction extends Action<ExecVerbDTO> {
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserDto u = client.getCurrentUser();
-        VerbDetailsDTO verbDetailsDTO = client.getServer().getUserDataServerProxy().getVerb(getDto().getVerbId());
-        if (verbDetailsDTO != null ) {
-            MessageInRoomDTO messageInRoomDTO = executeVeb(getClient(), u, verbDetailsDTO, getDto().getInput());
-            getClient().send(messageInRoomDTO);
+        try {
+            VerbDetailsDTO verbDetailsDTO = client.getServer().getUserDataServerProxy().getVerb(getDto().getVerbId());
+            if (verbDetailsDTO != null) {
+                MessageInRoomDTO messageInRoomDTO = executeVeb(getClient(), u, verbDetailsDTO, getDto().getInput());
+                getClient().send(messageInRoomDTO);
+            }
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), e.getMessage());
+            client.send(errorDTO);
         }
     }
 
@@ -48,7 +55,7 @@ public class ExecVerbAction extends Action<ExecVerbDTO> {
 
         String toCaller = StringUtils.replace(verb.getToCaller(), replacements);
         String toLocation = StringUtils.replace(verb.getToLocation(), replacements);
-        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(u.getId(), MessageInRoomDTO.sType.USER, toCaller, MessageInRoomDTO.mType.VERB );
+        MessageInRoomDTO messageInRoomDTO = new MessageInRoomDTO(u.getId(), MessageInRoomDTO.sType.USER, toCaller, MessageInRoomDTO.mType.VERB);
         controller.fireRoomEvent(source, location.getRoomId(), new RoomEvent(RoomEvent.Type.MESSAGEINROOM, messageInRoomDTO, toLocation));
         return messageInRoomDTO;
     }

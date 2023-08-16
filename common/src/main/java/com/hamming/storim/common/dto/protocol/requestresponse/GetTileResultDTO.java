@@ -9,7 +9,8 @@ public class GetTileResultDTO extends ResponseDTO {
 
     private TileDto tile;
 
-    public GetTileResultDTO(TileDto tile) {
+    public GetTileResultDTO(boolean success, TileDto tile, String errorMessage) {
+        super(success, errorMessage);
         this.tile = tile;
     }
 
@@ -20,7 +21,9 @@ public class GetTileResultDTO extends ResponseDTO {
     @Override
     public String toString() {
         return "GetTileResultDTO{" +
-                "tile=" + tile +
+                "success=" + isSuccess() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
+                ", tile=" + tile +
                 '}';
     }
 }

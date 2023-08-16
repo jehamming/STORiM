@@ -7,6 +7,7 @@ public class ExitDeletedDTO extends ResponseDTO {
     private Long exitID;
 
     public ExitDeletedDTO(Long exitID) {
+        super(true, null);
         this.exitID = exitID;
     }
 
