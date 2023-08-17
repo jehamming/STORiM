@@ -11,7 +11,6 @@ public class TileSetEditorPanel extends JPanel {
     public TileSetEditorPanel() {
         initComponents();
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -38,6 +37,7 @@ public class TileSetEditorPanel extends JPanel {
         cmbTiles = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         lblImagePreview = new javax.swing.JLabel();
+        btnRecalculate = new javax.swing.JButton();
 
         scrollPaneTileSets.setViewportView(listTileSets);
 
@@ -69,12 +69,14 @@ public class TileSetEditorPanel extends JPanel {
 
         lblImagePreview.setText("jLabel4");
 
+        btnRecalculate.setText("Re-calculate Tiles");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addComponent(scrollPaneTileSets, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(scrollPaneTileSets, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
@@ -90,9 +92,13 @@ public class TileSetEditorPanel extends JPanel {
                                                                 .addGap(0, 0, Short.MAX_VALUE))
                                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                                        .addComponent(txtTileSetName, javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(txtTileWidth, javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(txtTileHeight))
+                                                                        .addComponent(txtTileSetName)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                                                        .addComponent(txtTileHeight, javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                        .addComponent(txtTileWidth, javax.swing.GroupLayout.Alignment.LEADING))
+                                                                                .addGap(67, 67, 67)
+                                                                                .addComponent(btnRecalculate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                                                 .addContainerGap())))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -100,7 +106,7 @@ public class TileSetEditorPanel extends JPanel {
                                                                 .addComponent(btnCreate)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                                 .addComponent(btnDelete)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 161, Short.MAX_VALUE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 269, Short.MAX_VALUE)
                                                                 .addComponent(btnSave))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addComponent(btnLoadTileSetImage)
@@ -130,7 +136,9 @@ public class TileSetEditorPanel extends JPanel {
                                                         .addComponent(txtTileWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(txtTileHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addComponent(txtTileHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(btnRecalculate))
                                                         .addComponent(jLabel7))
                                                 .addGap(18, 18, 18)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,9 +146,9 @@ public class TileSetEditorPanel extends JPanel {
                                                                 .addComponent(btnLoadTileSetImage)
                                                                 .addComponent(jLabel1))
                                                         .addComponent(cmbTiles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(lblImagePreview, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGap(27, 27, 27)
+                                                .addComponent(lblImagePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(btnCreate)
                                                         .addComponent(btnDelete)
@@ -156,6 +164,7 @@ public class TileSetEditorPanel extends JPanel {
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnLoadTileSetImage;
+    private javax.swing.JButton btnRecalculate;
     private javax.swing.JButton btnSave;
     private javax.swing.JComboBox<ImageIcon> cmbTiles;
     private javax.swing.JLabel jLabel1;
@@ -171,6 +180,7 @@ public class TileSetEditorPanel extends JPanel {
     private javax.swing.JTextField txtTileSetName;
     private javax.swing.JTextField txtTileWidth;
     // End of variables declaration
+
 
     public JButton getBtnCreate() {
         return btnCreate;
@@ -214,5 +224,9 @@ public class TileSetEditorPanel extends JPanel {
 
     public JLabel getLblImagePreview() {
         return lblImagePreview;
+    }
+
+    public JButton getBtnRecalculate() {
+        return btnRecalculate;
     }
 }

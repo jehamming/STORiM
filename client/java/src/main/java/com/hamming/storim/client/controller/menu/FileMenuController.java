@@ -72,6 +72,7 @@ public class FileMenuController implements ConnectionListener {
         connectFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         connectFrame.getContentPane().add(loginPanel);
         connectFrame.pack();
+        connectFrame.setLocationRelativeTo(window);
 
         window.getMenuDisconnect().addActionListener(e -> disconnect());
 

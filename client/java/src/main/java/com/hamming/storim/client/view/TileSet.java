@@ -2,6 +2,7 @@ package com.hamming.storim.client.view;
 
 import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.common.dto.TileSetDto;
+import com.hamming.storim.common.util.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ public class TileSet {
     private BufferedImage bufferedImage;
     private List<Image> tiles;
 
-    public TileSet( TileSetDto tileSetDto ) {
+    public TileSet(TileSetDto tileSetDto) {
         this.tileSetDto = tileSetDto;
         createTileList();
     }
@@ -34,10 +35,15 @@ public class TileSet {
             for (int r = 0; r < nbrTileSetRows; r++) {
                 int y = c * tileWidth;
                 int x = r * tileHeight;
-                BufferedImage tileImage = bufferedImage.getSubimage(x, y, tileWidth, tileHeight);
-                tiles.add(tileImage);
+                try {
+                    BufferedImage tileImage = bufferedImage.getSubimage(x, y, tileWidth, tileHeight);
+                    tiles.add(tileImage);
+                } catch (Exception e) {
+                    Logger.error("Exception: " + e.getMessage());
+                }
             }
         }
+
     }
 
     public List<Image> getTiles() {
@@ -46,7 +52,7 @@ public class TileSet {
 
     public Image getTile(int index) {
         Image retval = null;
-        if ( index >= 0 && index < tiles.size() ) {
+        if (index >= 0 && index < tiles.size()) {
             retval = tiles.get(index);
         }
         return retval;

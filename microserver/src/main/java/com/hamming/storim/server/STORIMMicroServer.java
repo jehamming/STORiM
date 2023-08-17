@@ -1,5 +1,7 @@
 package com.hamming.storim.server;
 
+import com.hamming.storim.common.dto.TileSetDto;
+import com.hamming.storim.common.dto.protocol.request.DeleteTileSetDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.common.util.Logger;
@@ -107,15 +109,15 @@ public class STORIMMicroServer extends Server {
         if ( TileSetFactory.getInstance().getAllTileSets().size() == 0 ) {
             Long creatorId = 1L; //TODO Replace 1L with ROOT user..
             Image defaultTileSetImage = ImageIO.read(new File("DEFAULT_TILESET.png"));
-            TileSet defaultTileSet = TileSetFactory.getInstance().createTileSet(TileSetFactory.DEFAULT_TILESET_NAME, creatorId, defaultTileSetImage, 32, 32);
+            TileSet defaultTileSet = TileSetFactory.getInstance().createTileSet(creatorId, TileSetFactory.DEFAULT_TILESET_NAME, defaultTileSetImage, 32, 32);
             serverConfiguration.setDefaultTileSet(defaultTileSet);
             serverConfiguration.setDefaultTile(0);
             // Default set 1
             Image image = ImageIO.read(new File("Interiors_free_48x48.png"));
-            TileSetFactory.getInstance().createTileSet("Default_Set1", creatorId, image, 48, 48);
+            TileSetFactory.getInstance().createTileSet(creatorId, "Default_Set1", image, 48, 48);
             // Default set 2
             Image image2 = ImageIO.read(new File("default_tileset2.png"));
-            TileSetFactory.getInstance().createTileSet("Default_Set2", creatorId, image2, 16, 16);
+            TileSetFactory.getInstance().createTileSet(creatorId, "Default_Set2", image2, 16, 16);
             Logger.info(this, "No TileSets found, created 3 tilesets");
         }
     }
@@ -189,5 +191,9 @@ public class STORIMMicroServer extends Server {
             }
         }
         return newTileMap;
+    }
+
+    public TileSet getDefaultTileSet() {
+        return serverConfiguration.getDefaultTileSet();
     }
 }

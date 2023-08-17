@@ -90,6 +90,7 @@ public class EditMenuController implements ConnectionListener {
         tileSetEditorFrame.getContentPane().add(tileSetEditorPanel);
         tileSetEditorFrame.pack();
         window.getMenuEditTileSets().addActionListener(e -> tileSetEditorFrame.setVisible(true));
+        tileSetEditorFrame.setLocationRelativeTo(window);
     }
 
     private void setupRoomTileEditor() {
@@ -114,6 +115,7 @@ public class EditMenuController implements ConnectionListener {
                 roomTileEditorFrame.setVisible(true);
                 });
         tileMapEditorView.start();
+        roomEditorFrame.setLocationRelativeTo(window);
     }
 
     private void setupExitEditor() {
@@ -124,6 +126,7 @@ public class EditMenuController implements ConnectionListener {
         exitsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         exitsFrame.getContentPane().add(exitPanel);
         exitsFrame.pack();
+        exitsFrame.setLocationRelativeTo(window);
         window.getMenuExits().addActionListener(e -> exitsFrame.setVisible(true));
     }
 
@@ -135,6 +138,7 @@ public class EditMenuController implements ConnectionListener {
         thingFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         thingFrame.getContentPane().add(thingPanel);
         thingFrame.pack();
+        thingFrame.setLocationRelativeTo(window);
         window.getMenuItems().addActionListener(e -> thingFrame.setVisible(true));
     }
 
@@ -146,6 +150,7 @@ public class EditMenuController implements ConnectionListener {
         roomEditorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         roomEditorFrame.getContentPane().add(roomEditorPanel);
         roomEditorFrame.pack();
+        roomEditorFrame.setLocationRelativeTo(window);
         window.getMenuRooms().addActionListener(e -> roomEditorFrame.setVisible(true));
     }
 
@@ -157,6 +162,7 @@ public class EditMenuController implements ConnectionListener {
         avatarsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         avatarsFrame.getContentPane().add(avatarPanel);
         avatarsFrame.pack();
+        avatarsFrame.setLocationRelativeTo(window);
         window.getMenuAvatars().addActionListener(e -> avatarsFrame.setVisible(true));
     }
 
@@ -168,6 +174,7 @@ public class EditMenuController implements ConnectionListener {
         usersInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         usersInfoFrame.getContentPane().add(userInfoPanel);
         usersInfoFrame.pack();
+        usersInfoFrame.setLocationRelativeTo(window);
         //TODO Add UserINfoMenu
         //window.getMenu().addActionListener(e -> usersInfoFrame.setVisible(true));
     }
@@ -180,6 +187,7 @@ public class EditMenuController implements ConnectionListener {
         verbsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         verbsFrame.getContentPane().add(verbEditorPanel);
         verbsFrame.pack();
+        verbsFrame.setLocationRelativeTo(window);
         window.getMenuVerbs().addActionListener(e -> verbsFrame.setVisible(true));
     }
 

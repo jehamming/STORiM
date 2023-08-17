@@ -214,6 +214,8 @@ public class GameViewController implements ConnectionListener {
             if ( tileSetDto != null ) {
                 TileSet tileSet = new TileSet(tileSetDto);
                 gameView.scheduleAction(() -> gameView.setBackground(tileSet, room.getBackTileMap()));
+            } else {
+                JOptionPane.showMessageDialog(gameView, "Foreground TileSet " + tileSetId +" not found on server");
             }
         }
     }
@@ -227,6 +229,8 @@ public class GameViewController implements ConnectionListener {
             if ( tileSetDto != null ) {
                 TileSet tileSet = new TileSet(tileSetDto);
                 gameView.scheduleAction(() -> gameView.setForeground(tileSet, room.getFrontTileMap()));
+            } else {
+                JOptionPane.showMessageDialog(gameView, "Foreground TileSet " + tileSetId +" not found on server");
             }
         }
     }

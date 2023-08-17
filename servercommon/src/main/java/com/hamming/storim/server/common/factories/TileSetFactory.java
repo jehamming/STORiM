@@ -59,7 +59,7 @@ public class TileSetFactory {
         return tileSetIds;
     }
 
-    private void deleteTileSet(TileSet tileSet) {
+    public void deleteTileSet(TileSet tileSet) {
         ImageStore.deleteImageFile(TileSet.class, tileSet.getId(), dataDir);
         Database.getInstance().removeBasicObject(TileSet.class, tileSet);
     }
@@ -88,7 +88,7 @@ public class TileSetFactory {
     }
 
 
-    public TileSet createTileSet(String name, Long creatorId, Image image, int tileWidth, int tileHeight) {
+    public TileSet createTileSet(Long creatorId, String name, Image image, int tileWidth, int tileHeight) {
         Long id = Database.getInstance().getNextID();
         return createTileSet(id, name, creatorId, image, tileWidth, tileHeight);
     }
@@ -110,14 +110,14 @@ public class TileSetFactory {
 
 
 
-
-    public List<TileSet> geTileSets(UserDto user) {
+    public List<TileSet> geTileSetsForUser(Long userId) {
         List<TileSet> list = new ArrayList<>();
         for (TileSet t : getAllTileSets()) {
-            if (t.getOwnerId().equals( user.getId())) {
+            if (t.getOwnerId().equals( userId)) {
                 list.add(t);
             }
         }
         return list;
     }
+
 }
