@@ -1,11 +1,8 @@
 package com.hamming.storim.server.game.action;
 
 import com.hamming.storim.common.dto.TileSetDto;
-import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ErrorDTO;
-import com.hamming.storim.common.dto.protocol.request.AddTileSetDto;
 import com.hamming.storim.common.dto.protocol.request.UpdateTileSetDto;
-import com.hamming.storim.common.dto.protocol.serverpush.TileSetAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.TileSetUpdatedDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
@@ -24,7 +21,6 @@ public class UpdateTileSetAction extends Action<UpdateTileSetDto> {
 
     @Override
     public void execute() {
-        STORIMClientConnection client = (STORIMClientConnection) getClient();
         UpdateTileSetDto dto = getDto();
         Long tileSetId = dto.getId();
         TileSet tileSet = TileSetFactory.getInstance().findTileSetById(tileSetId);
@@ -37,10 +33,20 @@ public class UpdateTileSetAction extends Action<UpdateTileSetDto> {
             TileSetDto tileSetDto = DTOFactory.getInstance().getTileSetDTO(tileSet);
             TileSetUpdatedDTO tileSetUpdatedDTO = new TileSetUpdatedDTO(tileSetDto);
             getClient().send(tileSetUpdatedDTO);
+            if ( dto.getEditors() != null ) {
+                authorisationChanged(tileSet);
+            }
         } else {
             ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "TileSet " + tileSetId + " not found!");
             getClient().send(errorDTO);
         }
+    }
+
+    private void authorisationChanged(TileSet tileSet) {
+        java.util.List<Long> oldEditors = tileSet.getEditors();
+        tileSet.setEditors(getDto().getEditors());
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
+        client.getServer().getAuthorisationController().fireAuthorisationChanged(tileSet, oldEditors);
     }
 
 }

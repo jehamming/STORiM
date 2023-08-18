@@ -5,6 +5,7 @@ import com.hamming.storim.common.util.StringUtils;
 import com.hamming.storim.server.Database;
 import com.hamming.userdataserver.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserFactory {
@@ -85,6 +86,17 @@ public class UserFactory {
             }
         }
         return returnValue;
+    }
+
+    public List<User> findUsers(String nameMatch) {
+        List<User> users = Database.getInstance().getAll(User.class);
+        List<User> matchingUsers = new ArrayList<>();
+        for (User u : users ) {
+            if (u.getName().indexOf(nameMatch) != -1) {
+                matchingUsers.add(u);
+            }
+        }
+        return matchingUsers;
     }
 
     public User findUserById( Long id ) {

@@ -7,23 +7,18 @@ import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
-import com.hamming.storim.server.common.dto.protocol.dataserver.SessionDto;
 import com.hamming.storim.server.common.factories.ExitFactory;
 import com.hamming.storim.server.common.factories.LocationFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
-import com.hamming.storim.server.common.factories.TileSetFactory;
-import com.hamming.storim.server.common.model.Exit;
-import com.hamming.storim.server.common.model.Location;
-import com.hamming.storim.server.common.model.Room;
-import com.hamming.storim.server.common.model.TileSet;
+import com.hamming.storim.server.common.model.*;
 import com.hamming.storim.server.game.*;
 import com.hamming.storim.server.game.action.*;
 
-import java.awt.image.DataBuffer;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 
-public class STORIMClientConnection extends ClientConnection implements RoomListener, ServerListener {
+public class STORIMClientConnection extends ClientConnection implements RoomListener, ServerListener, AuthorisationListener<TileSet> {
 
     private UserDto currentUser;
     private Room currentRoom;
@@ -35,6 +30,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         super(id, s, controller);
         this.server = server;
         controller.addServerListener(this);
+        server.getAuthorisationController().addAuthorisationListener(TileSet.class,this);
         admin = false;
     }
 
@@ -91,6 +87,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(new UpdateTileSetAction(this));
         getProtocolHandler().addAction(new DeleteTileSetAction(gameController, this));
         getProtocolHandler().addAction(new GetTilesSetsForUserAction(this));
+        getProtocolHandler().addAction(new SearchUsersAction(gameController, this));
     }
 
 
@@ -439,6 +436,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     @Override
     public void disconnected() {
         gameController.removeServerListener(this);
+        server.getAuthorisationController().removeAuthorisationListener(TileSet.class,this);
         if (currentUser != null) {
             Location location = gameController.getGameState().getUserLocation(currentUser.getId());
             gameController.removeRoomListener(location.getRoomId(), this);
@@ -561,5 +559,22 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
     public boolean isAdmin() {
         return admin;
+    }
+
+
+    @Override
+    public void authorisationChanged(TileSet ts, List<Long> old) {
+        AuthorisationDelta delta = server.getAuthorisationController().getAuthorisationDelta(old, ts.getEditors());
+        if ( delta.getAdded().contains(currentUser.getId())) {
+            // Send TileSet!
+            TileSetDto tileSetDto = DTOFactory.getInstance().getTileSetDTO(ts);
+            TileSetAddedDTO tileSetAddedDTO = new TileSetAddedDTO(tileSetDto);
+            send(tileSetAddedDTO);
+        }
+        if ( delta.getRemoved().contains(currentUser.getId())) {
+            // Remove TileSet!
+            TileSetDeletedDTO tileSetDeletedDTO = new TileSetDeletedDTO(ts.getId());
+            send(tileSetDeletedDTO);
+        }
     }
 }

@@ -30,6 +30,7 @@ public class RoomEditorPanelController implements ConnectionListener {
     private DefaultListModel<TileDto> tilesModel = new DefaultListModel<>();
     boolean newRoom = false;
     private UserDto currentUser;
+    private List<Long> editors;
 
 
     public RoomEditorPanelController(STORIMWindowController windowController, RoomEditorPanel panel, ConnectionController connectionController) {
@@ -231,13 +232,12 @@ public class RoomEditorPanelController implements ConnectionListener {
         int cols = Integer.valueOf(panel.getTxtCols().getText());
 
         if (newRoom) {
-            AddRoomDto addRoomDto = new AddRoomDto(roomName, rows, cols);
+            AddRoomDto addRoomDto = new AddRoomDto(roomName, rows, cols, editors);
             connectionController.send(addRoomDto);
         } else {
             // Update room!
             Long roomId = Long.valueOf(panel.getLblId().getText());
-
-            UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, rows, cols, null, null, null, null);
+            UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, rows, cols, null, null, null, null, editors);
             connectionController.send(updateRoomDto);
 
         }

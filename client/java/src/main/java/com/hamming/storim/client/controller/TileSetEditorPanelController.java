@@ -2,6 +2,7 @@ package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindowController;
+import com.hamming.storim.client.SetAuthorisationInterface;
 import com.hamming.storim.client.listitem.TileSetEditorListItem;
 import com.hamming.storim.client.panels.TileSetEditorPanel;
 import com.hamming.storim.client.view.TileSet;
@@ -11,7 +12,10 @@ import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.AddTileSetDto;
 import com.hamming.storim.common.dto.protocol.request.DeleteTileSetDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateTileSetDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.*;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetsForUserDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetsForUserResponseDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.TileSetAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.TileSetDeletedDTO;
@@ -24,8 +28,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-public class TileSetEditorPanelController implements ConnectionListener {
+public class TileSetEditorPanelController implements ConnectionListener, SetAuthorisationInterface {
 
     private ConnectionController connectionController;
     private TileSetEditorPanel panel;
@@ -35,13 +40,15 @@ public class TileSetEditorPanelController implements ConnectionListener {
     private Image tileSetImage;
     private UserDto currentUser;
     private JFileChooser fileChooser;
-
+    private List<Long> editors;
+    private TileSetDto selectedTileSetDto;
 
     public TileSetEditorPanelController(STORIMWindowController windowController, TileSetEditorPanel panel, ConnectionController connectionController) {
         this.panel = panel;
         this.windowController = windowController;
         this.connectionController = connectionController;
         this.fileChooser = new JFileChooser();
+        editors = null;
         connectionController.addConnectionListener(this);
         registerReceivers();
         setup();
@@ -74,6 +81,9 @@ public class TileSetEditorPanelController implements ConnectionListener {
         panel.getBtnLoadTileSetImage().addActionListener(e -> {
             chooseFile();
         });
+        panel.getBtnEditAuthorisation().addActionListener(e -> {
+            openAuthorisationWindow();
+        });
 
         panel.getBtnDelete().addActionListener(e -> deleteTileSet());
         panel.getBtnSave().addActionListener(e -> saveTileSet());
@@ -82,7 +92,13 @@ public class TileSetEditorPanelController implements ConnectionListener {
         panel.getBtnSave().setEnabled(false);
         panel.getBtnDelete().setEnabled(false);
         panel.getBtnCreate().setEnabled(false);
+        panel.getBtnEditAuthorisation().setEnabled(false);
         panel.getLblImagePreview().setText("");
+        panel.getLblEditors().setText("");
+    }
+
+    private void openAuthorisationWindow() {
+        AuthorisationPanelController.showAuthorisationPanel(windowController.getWindow(), selectedTileSetDto.getId(), selectedTileSetDto.getName(), selectedTileSetDto.getOwnerID(), editors, this, connectionController);
     }
 
     private void widthHeightChanged() {
@@ -130,6 +146,8 @@ public class TileSetEditorPanelController implements ConnectionListener {
 
     private void empty(boolean thorough) {
         newTileSet = false;
+        selectedTileSetDto = null;
+        tileSetImage = null;
         SwingUtilities.invokeLater(() -> {
             panel.getLblId().setText("");
             panel.getTxtTileSetName().setText("");
@@ -139,6 +157,7 @@ public class TileSetEditorPanelController implements ConnectionListener {
             panel.getCmbTiles().removeAllItems();
             panel.getBtnSave().setEnabled(false);
             panel.getBtnDelete().setEnabled(false);
+            panel.getBtnEditAuthorisation().setEnabled(false);
             if (thorough) {
                tileSetModel.removeAllElements();
             }
@@ -221,7 +240,9 @@ public class TileSetEditorPanelController implements ConnectionListener {
             panel.getTxtTileHeight().setEnabled(true);
             panel.getTxtTileWidth().setEnabled(true);
             panel.getLblImagePreview().setIcon(null);
+            panel.getLblEditors().setText("");
             panel.getCmbTiles().removeAllItems();
+            panel.getBtnEditAuthorisation().setEnabled(true);
         });
     }
 
@@ -232,13 +253,12 @@ public class TileSetEditorPanelController implements ConnectionListener {
         byte[] tileSetImageData = ImageUtils.encode(tileSetImage);
 
         if (newTileSet) {
-            AddTileSetDto addTileSetDto = new AddTileSetDto(roomName, tileWidth, tileHeight, tileSetImageData);
+            AddTileSetDto addTileSetDto = new AddTileSetDto(roomName, tileWidth, tileHeight, tileSetImageData, editors);
             connectionController.send(addTileSetDto);
         } else {
             // Update tileSet!
             Long id = Long.valueOf(panel.getLblId().getText());
-
-            UpdateTileSetDto updateTileSetDto = new UpdateTileSetDto(id, roomName, tileWidth, tileHeight, tileSetImageData);
+            UpdateTileSetDto updateTileSetDto = new UpdateTileSetDto(id, roomName, tileWidth, tileHeight, tileSetImageData, editors);
             connectionController.send(updateTileSetDto);
         }
 
@@ -250,22 +270,24 @@ public class TileSetEditorPanelController implements ConnectionListener {
 
     private void tileSetSelected(Long tileId) {
         // Get TileSet details
-        TileSetDto tileSetDto = getTileSet(tileId);
-        tileSetImage = ImageUtils.decode(tileSetDto.getImageData());
+        selectedTileSetDto = getTileSet(tileId);
+        editors = selectedTileSetDto.getEditors();
+        tileSetImage = ImageUtils.decode(selectedTileSetDto.getImageData());
         Image iconImage = tileSetImage.getScaledInstance(panel.getLblImagePreview().getWidth(), panel.getLblImagePreview().getHeight(), Image.SCALE_SMOOTH);
         //Then update
         SwingUtilities.invokeLater(() -> {
-            panel.getLblId().setText(tileSetDto.getId().toString());
-            panel.getTxtTileSetName().setText(tileSetDto.getName());
-            panel.getTxtTileWidth().setText("" + tileSetDto.getTileWidth());
-            panel.getTxtTileHeight().setText("" + tileSetDto.getTileHeight());
+            panel.getLblId().setText(selectedTileSetDto.getId().toString());
+            panel.getTxtTileSetName().setText(selectedTileSetDto.getName());
+            panel.getTxtTileWidth().setText("" + selectedTileSetDto.getTileWidth());
+            panel.getTxtTileHeight().setText("" + selectedTileSetDto.getTileHeight());
             panel.getLblImagePreview().setIcon(new ImageIcon(iconImage));
             panel.getBtnSave().setEnabled(true);
             panel.getBtnDelete().setEnabled(true);
+            panel.getLblEditors().setText(selectedTileSetDto.getEditors().toString());
+            panel.getBtnEditAuthorisation().setEnabled(true);
             setEditable(true);
         });
-
-        updateTilesInCombobox(tileSetDto);
+        updateTilesInCombobox(selectedTileSetDto);
     }
 
     private void updateTilesInCombobox(TileSetDto tileSetDto) {
@@ -297,4 +319,11 @@ public class TileSetEditorPanelController implements ConnectionListener {
         }
     }
 
+    @Override
+    public void setEditors(List<Long> ids) {
+        editors = ids;
+        SwingUtilities.invokeLater(() -> {
+            panel.getLblEditors().setText(ids.toString());
+        });
+    }
 }

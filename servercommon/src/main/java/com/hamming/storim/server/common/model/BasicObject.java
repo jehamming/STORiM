@@ -1,6 +1,8 @@
 package com.hamming.storim.server.common.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 // Everything extends a BasicObject
 public class BasicObject implements Serializable {
@@ -8,7 +10,9 @@ public class BasicObject implements Serializable {
     private Long id;
     private Long creatorId;
     private Long ownerId;
+    private List<Long> editors = new ArrayList<>();
     private String name;
+
 
     public String getName() {
         return name;
@@ -16,12 +20,6 @@ public class BasicObject implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getBasicValues() {
-        return  ", creator=" + creatorId +
-                ", owner=" + ownerId +
-                ", name='" + name ;
     }
 
     public Long getId() {
@@ -46,5 +44,13 @@ public class BasicObject implements Serializable {
 
     public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public List<Long> getEditors() {
+        return editors;
+    }
+
+    public void setEditors(List<Long> editors) {
+        this.editors = editors;
     }
 }

@@ -113,7 +113,7 @@ public class TileSetFactory {
     public List<TileSet> geTileSetsForUser(Long userId) {
         List<TileSet> list = new ArrayList<>();
         for (TileSet t : getAllTileSets()) {
-            if (t.getOwnerId().equals( userId)) {
+            if (t.getOwnerId().equals( userId) || t.getEditors().contains(userId)) {
                 list.add(t);
             }
         }

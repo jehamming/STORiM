@@ -28,6 +28,7 @@ public class DTOFactory {
         dto.setCreatorID(basicObject.getCreatorId());
         dto.setName(basicObject.getName());
         dto.setOwnerID(basicObject.getOwnerId());
+        dto.setEditors(basicObject.getEditors());
         return dto;
     }
 
@@ -68,6 +69,7 @@ public class DTOFactory {
     public TileSetDto getTileSetDTO(TileSet s) {
         byte[] imagedata = ImageUtils.encode(s.getImage());
         TileSetDto dto = new TileSetDto(s.getId(), s.getName(), imagedata, s.getTileWidth(), s.getTileHeight() );
+        fillBasicObjectInfo(dto, s);
         return dto;
     }
 }

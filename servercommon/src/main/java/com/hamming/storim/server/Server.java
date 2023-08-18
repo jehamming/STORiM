@@ -1,6 +1,8 @@
 package com.hamming.storim.common.net;
 
 
+import com.hamming.storim.server.AuthorisationController;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,9 +14,11 @@ public abstract class Server implements Runnable {
     private boolean running = true;
     private String name;
     private ServerSocket ss;
+    private AuthorisationController authorisationController;
 
     public Server(String name) {
         this.name = name;
+        authorisationController = new AuthorisationController();
     }
 
     public void startServer(int port) {
@@ -56,4 +60,7 @@ public abstract class Server implements Runnable {
 
     protected abstract void clientConnected(Socket s);
 
+    public AuthorisationController getAuthorisationController() {
+        return authorisationController;
+    }
 }

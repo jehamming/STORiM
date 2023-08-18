@@ -1,6 +1,7 @@
 package com.hamming.storim.common.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class BasicObjectDTO extends DTO {
 
@@ -8,6 +9,7 @@ public class BasicObjectDTO extends DTO {
     private Long creatorID;
     private Long ownerID;
     private String name;
+    private List<Long> editors;
 
     public Long getId() {
         return id;
@@ -41,6 +43,14 @@ public class BasicObjectDTO extends DTO {
         this.name = name;
     }
 
+    public List<Long> getEditors() {
+        return editors;
+    }
+
+    public void setEditors(List<Long> editors) {
+        this.editors = editors;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() +"{" +
@@ -48,6 +58,7 @@ public class BasicObjectDTO extends DTO {
                 ", creatorID=" + creatorID +
                 ", ownerID=" + ownerID +
                 ", name='" + name + '\'' +
+                ", editors=" + editors +
                 '}';
     }
 }

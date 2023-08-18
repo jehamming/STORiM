@@ -2,6 +2,9 @@ package com.hamming.storim.common.dto.protocol.request;
 
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class UpdateTileSetDto extends ProtocolDTO {
 
     private Long id;
@@ -9,14 +12,16 @@ public class UpdateTileSetDto extends ProtocolDTO {
     private int tileWidth;
     private int tileHeight;
     private byte[] imageData;
+    private List<Long> editors;
 
 
-    public UpdateTileSetDto(Long id, String name, int tileWidth, int tileHeight, byte[] imageData){
+    public UpdateTileSetDto(Long id, String name, int tileWidth, int tileHeight, byte[] imageData, List<Long> editors){
         this.id = id;
         this.name = name;
         this.imageData = imageData;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
+        this.editors = editors;
     }
 
     public String getName() {
@@ -39,6 +44,10 @@ public class UpdateTileSetDto extends ProtocolDTO {
         return imageData;
     }
 
+    public List<Long> getEditors() {
+        return editors;
+    }
+
     @Override
     public String toString() {
         return "UpdateTileSetDto{" +
@@ -46,6 +55,7 @@ public class UpdateTileSetDto extends ProtocolDTO {
                 ", name='" + name + '\'' +
                 ", tileWidth=" + tileWidth +
                 ", tileHeight=" + tileHeight +
+                ", editors=" + editors +
                 '}';
     }
 }

@@ -29,15 +29,6 @@ public class UserDataServerProxy {
         this.connection = connection;
     }
 
-    public TileDto addTile(Long userId, byte[] imageData) throws STORIMException {
-        AddTileRequestDto addTileRequestDto = new AddTileRequestDto(userId, imageData);
-        AddTileResponseDTO response = connection.sendReceive(addTileRequestDto, AddTileResponseDTO.class );
-        if (!response.isSuccess()) {
-            throw new STORIMException(response.getErrorMessage());
-        }
-        return response.getTile();
-    }
-
     public TileDto getTile(Long tileId) throws STORIMException {
         GetTileRequestDTO getTileRequestDto = new GetTileRequestDTO(tileId);
         GetTileResponseDTO response = connection.sendReceive(getTileRequestDto, GetTileResponseDTO.class );
@@ -263,6 +254,15 @@ public class UserDataServerProxy {
         return resultDTO.getUsers();
     }
 
+    public HashMap<Long, String> searchUsers(String searchQuery) throws STORIMException {
+        SearchUsersRequestDTO requestDTO = new SearchUsersRequestDTO(searchQuery);
+        SearchUsersResultDTO resultDTO = connection.sendReceive(requestDTO, SearchUsersResultDTO.class);
+        if (!resultDTO.isSuccess()) {
+            throw new STORIMException(resultDTO.getErrorMessage());
+        }
+        return resultDTO.getUsers();
+    }
+
     public UserDto getUser(Long userID) throws STORIMException {
         UserDto userDto = null;
         GetUserDTO getUserDTO = new GetUserDTO(userID);
@@ -309,4 +309,6 @@ public class UserDataServerProxy {
         }
         return resultDTO.getUserDto();
     }
+
+
 }

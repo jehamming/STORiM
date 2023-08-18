@@ -1,17 +1,15 @@
 package com.hamming.storim.client.listitem;
 
-import com.hamming.storim.common.dto.UserDto;
-
 public class ShortUserListItem {
     private Long userId;
-    private String userName;
-    public ShortUserListItem(Long userId, String username) {
+    private String name;
+    public ShortUserListItem(Long userId, String name) {
         this.userId = userId;
-        this.userName = username;
+        this.name = name;
     }
     @Override
     public String toString() {
-        return userName;
+        return name;
     }
 
     public Long getUserId() {

@@ -71,8 +71,6 @@ public class STORIMMicroServer extends Server {
         checkTileSets();
         checkRooms();
 
-
-
         // Start GameController
         controller = new GameController();
         Thread controllerThread = new Thread(controller);
@@ -112,13 +110,6 @@ public class STORIMMicroServer extends Server {
             TileSet defaultTileSet = TileSetFactory.getInstance().createTileSet(creatorId, TileSetFactory.DEFAULT_TILESET_NAME, defaultTileSetImage, 32, 32);
             serverConfiguration.setDefaultTileSet(defaultTileSet);
             serverConfiguration.setDefaultTile(0);
-            // Default set 1
-            Image image = ImageIO.read(new File("Interiors_free_48x48.png"));
-            TileSetFactory.getInstance().createTileSet(creatorId, "Default_Set1", image, 48, 48);
-            // Default set 2
-            Image image2 = ImageIO.read(new File("default_tileset2.png"));
-            TileSetFactory.getInstance().createTileSet(creatorId, "Default_Set2", image2, 16, 16);
-            Logger.info(this, "No TileSets found, created 3 tilesets");
         }
     }
 
@@ -196,4 +187,5 @@ public class STORIMMicroServer extends Server {
     public TileSet getDefaultTileSet() {
         return serverConfiguration.getDefaultTileSet();
     }
+
 }

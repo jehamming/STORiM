@@ -49,6 +49,7 @@ public class UserDataClientConnection extends ClientConnection {
         getProtocolHandler().addAction(new AddUserAction(getServerWorker(), this));
         getProtocolHandler().addAction(new UpdateUserAction(getServerWorker(), this));
         getProtocolHandler().addAction(new DeleteUserAction(getServerWorker(), this));
+        getProtocolHandler().addAction(new SearchUsersAction(getServerWorker(), this));
     }
 
 
