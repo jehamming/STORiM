@@ -209,7 +209,7 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
         if ( bgTileSet != null ) bgTileSetId =  bgTileSet.getId();
         if ( fgTileSet != null )fgTileSetId = fgTileSet.getId();
 
-        UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomID, null, -1, -1, bgTileSetId, newBackgroundTilemap, fgTileSetId, newForegroundTilemap, null);
+        UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomID, null, -1, -1, bgTileSetId, newBackgroundTilemap, fgTileSetId, newForegroundTilemap);
         connectionController.send(updateRoomDto);
     }
 

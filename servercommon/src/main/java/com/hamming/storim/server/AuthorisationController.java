@@ -14,7 +14,8 @@ public class AuthorisationController {
         authorisationListeners = new HashMap<>();
     }
 
-    public void addAuthorisationListener(Class clazz, AuthorisationListener listener) {
+    public void addAuthorisationListener(AuthorisationListener listener) {
+        Class clazz  = listener.getListenForObjectClass();
         List<AuthorisationListener> classListeners = authorisationListeners.get(clazz);
         if ( classListeners == null ) {
             classListeners = new ArrayList<>();
@@ -23,7 +24,8 @@ public class AuthorisationController {
         classListeners.add(listener);
     }
 
-    public void removeAuthorisationListener(Class clazz, AuthorisationListener listener) {
+    public void removeAuthorisationListener(AuthorisationListener listener) {
+        Class clazz = listener.getClass();
         List<AuthorisationListener> classListeners = authorisationListeners.get(clazz);
         if ( classListeners != null ) {
             classListeners.remove(listener);

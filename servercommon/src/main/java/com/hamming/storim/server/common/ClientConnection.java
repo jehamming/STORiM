@@ -20,10 +20,13 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
     private ServerWorker serverWorker;
     private NetClient netClient;
 
+    private boolean admin;
+
     private String sessionToken;
 
     public ClientConnection(String id, Socket s, ServerWorker serverWorker) {
         this.id = id;
+        admin = false;
         netClient = new NetClient(this,this);
         protocolHandler = new ProtocolHandler();
         this.serverWorker = serverWorker;
@@ -73,5 +76,13 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
 
     public void setSessionToken(String sessionToken) {
         this.sessionToken = sessionToken;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 }

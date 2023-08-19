@@ -19,7 +19,8 @@ public class GetRoomsForUserAction extends Action<GetRoomsForUserDTO> {
     public void execute() {
         HashMap<Long, String> rooms = new HashMap<>();
         for (Room room : RoomFactory.getInstance().getRooms()) {
-            if ( room.getOwnerId().equals( getDto().getUserId())) {
+            Long userId = getDto().getUserId();
+            if ( room.getOwnerId().equals( userId) || room.getEditors().contains(userId)) {
                 rooms.put(room.getId(), room.getName());
             }
         }

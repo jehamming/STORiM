@@ -33,20 +33,10 @@ public class UpdateTileSetAction extends Action<UpdateTileSetDto> {
             TileSetDto tileSetDto = DTOFactory.getInstance().getTileSetDTO(tileSet);
             TileSetUpdatedDTO tileSetUpdatedDTO = new TileSetUpdatedDTO(tileSetDto);
             getClient().send(tileSetUpdatedDTO);
-            if ( dto.getEditors() != null ) {
-                authorisationChanged(tileSet);
-            }
         } else {
             ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "TileSet " + tileSetId + " not found!");
             getClient().send(errorDTO);
         }
-    }
-
-    private void authorisationChanged(TileSet tileSet) {
-        java.util.List<Long> oldEditors = tileSet.getEditors();
-        tileSet.setEditors(getDto().getEditors());
-        STORIMClientConnection client = (STORIMClientConnection) getClient();
-        client.getServer().getAuthorisationController().fireAuthorisationChanged(tileSet, oldEditors);
     }
 
 }

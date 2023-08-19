@@ -2,7 +2,6 @@ package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindowController;
-import com.hamming.storim.client.SetAuthorisationInterface;
 import com.hamming.storim.client.listitem.TileSetEditorListItem;
 import com.hamming.storim.client.panels.TileSetEditorPanel;
 import com.hamming.storim.client.view.TileSet;
@@ -30,7 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class TileSetEditorPanelController implements ConnectionListener, SetAuthorisationInterface {
+public class TileSetEditorPanelController implements ConnectionListener {
 
     private ConnectionController connectionController;
     private TileSetEditorPanel panel;
@@ -94,11 +93,10 @@ public class TileSetEditorPanelController implements ConnectionListener, SetAuth
         panel.getBtnCreate().setEnabled(false);
         panel.getBtnEditAuthorisation().setEnabled(false);
         panel.getLblImagePreview().setText("");
-        panel.getLblEditors().setText("");
     }
 
     private void openAuthorisationWindow() {
-        AuthorisationPanelController.showAuthorisationPanel(windowController.getWindow(), selectedTileSetDto.getId(), selectedTileSetDto.getName(), selectedTileSetDto.getOwnerID(), editors, this, connectionController);
+        AuthorisationPanelController.showAuthorisationPanel(panel, selectedTileSetDto, connectionController);
     }
 
     private void widthHeightChanged() {
@@ -240,7 +238,6 @@ public class TileSetEditorPanelController implements ConnectionListener, SetAuth
             panel.getTxtTileHeight().setEnabled(true);
             panel.getTxtTileWidth().setEnabled(true);
             panel.getLblImagePreview().setIcon(null);
-            panel.getLblEditors().setText("");
             panel.getCmbTiles().removeAllItems();
             panel.getBtnEditAuthorisation().setEnabled(true);
         });
@@ -253,12 +250,12 @@ public class TileSetEditorPanelController implements ConnectionListener, SetAuth
         byte[] tileSetImageData = ImageUtils.encode(tileSetImage);
 
         if (newTileSet) {
-            AddTileSetDto addTileSetDto = new AddTileSetDto(roomName, tileWidth, tileHeight, tileSetImageData, editors);
+            AddTileSetDto addTileSetDto = new AddTileSetDto(roomName, tileWidth, tileHeight, tileSetImageData);
             connectionController.send(addTileSetDto);
         } else {
             // Update tileSet!
             Long id = Long.valueOf(panel.getLblId().getText());
-            UpdateTileSetDto updateTileSetDto = new UpdateTileSetDto(id, roomName, tileWidth, tileHeight, tileSetImageData, editors);
+            UpdateTileSetDto updateTileSetDto = new UpdateTileSetDto(id, roomName, tileWidth, tileHeight, tileSetImageData);
             connectionController.send(updateTileSetDto);
         }
 
@@ -283,7 +280,6 @@ public class TileSetEditorPanelController implements ConnectionListener, SetAuth
             panel.getLblImagePreview().setIcon(new ImageIcon(iconImage));
             panel.getBtnSave().setEnabled(true);
             panel.getBtnDelete().setEnabled(true);
-            panel.getLblEditors().setText(selectedTileSetDto.getEditors().toString());
             panel.getBtnEditAuthorisation().setEnabled(true);
             setEditable(true);
         });
@@ -317,13 +313,5 @@ public class TileSetEditorPanelController implements ConnectionListener, SetAuth
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void setEditors(List<Long> ids) {
-        editors = ids;
-        SwingUtilities.invokeLater(() -> {
-            panel.getLblEditors().setText(ids.toString());
-        });
     }
 }

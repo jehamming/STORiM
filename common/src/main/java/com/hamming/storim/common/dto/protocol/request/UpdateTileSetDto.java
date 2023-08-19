@@ -12,16 +12,14 @@ public class UpdateTileSetDto extends ProtocolDTO {
     private int tileWidth;
     private int tileHeight;
     private byte[] imageData;
-    private List<Long> editors;
 
 
-    public UpdateTileSetDto(Long id, String name, int tileWidth, int tileHeight, byte[] imageData, List<Long> editors){
+    public UpdateTileSetDto(Long id, String name, int tileWidth, int tileHeight, byte[] imageData){
         this.id = id;
         this.name = name;
         this.imageData = imageData;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
-        this.editors = editors;
     }
 
     public String getName() {
@@ -44,9 +42,6 @@ public class UpdateTileSetDto extends ProtocolDTO {
         return imageData;
     }
 
-    public List<Long> getEditors() {
-        return editors;
-    }
 
     @Override
     public String toString() {
@@ -55,7 +50,6 @@ public class UpdateTileSetDto extends ProtocolDTO {
                 ", name='" + name + '\'' +
                 ", tileWidth=" + tileWidth +
                 ", tileHeight=" + tileHeight +
-                ", editors=" + editors +
                 '}';
     }
 }

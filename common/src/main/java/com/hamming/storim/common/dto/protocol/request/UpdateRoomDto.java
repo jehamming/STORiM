@@ -16,9 +16,8 @@ public class   UpdateRoomDto extends ProtocolDTO {
     private Long frontTileSetId;
     private int[][] backTileMap;
     private int[][] frontTileMap;
-    private List<Long> editors;
 
-    public UpdateRoomDto(Long id, String name, int rows, int cols, Long backTileSetId, int[][] backTileMap, Long frontTileSetId, int[][] frontTileMap, List<Long> editors){
+    public UpdateRoomDto(Long id, String name, int rows, int cols, Long backTileSetId, int[][] backTileMap, Long frontTileSetId, int[][] frontTileMap){
         this.name = name;
         this.rows = rows;
         this.cols = cols;
@@ -27,7 +26,6 @@ public class   UpdateRoomDto extends ProtocolDTO {
         this.backTileSetId = backTileSetId;
         this.frontTileMap = frontTileMap;
         this.frontTileSetId = frontTileSetId;
-        this.editors = editors;
     }
 
 
@@ -64,10 +62,6 @@ public class   UpdateRoomDto extends ProtocolDTO {
         return frontTileMap;
     }
 
-    public List<Long> getEditors() {
-        return editors;
-    }
-
     @Override
     public String toString() {
         return "UpdateRoomDto{" +
@@ -79,7 +73,6 @@ public class   UpdateRoomDto extends ProtocolDTO {
                 ", frontTileSetId=" + frontTileSetId +
                 ", backTileMap=" + Arrays.toString(backTileMap) +
                 ", frontTileMap=" + Arrays.toString(frontTileMap) +
-                ", editors=" + editors +
                 '}';
     }
 }

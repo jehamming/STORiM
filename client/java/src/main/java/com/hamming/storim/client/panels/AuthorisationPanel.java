@@ -60,14 +60,13 @@ public class AuthorisationPanel extends javax.swing.JPanel {
 
         btnSearch.setText("Search");
 
-
         jScrollPane2.setViewportView(listSearchResults);
 
         btnAddToEditors.setText("->");
 
         btnRemoveFromEditors.setText("<-");
 
-        btnSave.setText("Save & Go back");
+        btnSave.setText("Save to Server");
 
         btnCancel.setText("Cancel");
 

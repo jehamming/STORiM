@@ -1,9 +1,10 @@
 package com.hamming.storim.client.controller;
 
-import com.hamming.storim.client.SetAuthorisationInterface;
 import com.hamming.storim.client.listitem.ShortUserListItem;
 import com.hamming.storim.client.panels.AuthorisationPanel;
 import com.hamming.storim.common.controllers.ConnectionController;
+import com.hamming.storim.common.dto.BasicObjectDTO;
+import com.hamming.storim.common.dto.protocol.request.UpdateAuthorisationDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetUserDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetUserResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.SearchUsersRequestDTO;
@@ -11,10 +12,11 @@ import com.hamming.storim.common.dto.protocol.requestresponse.SearchUsersResultD
 import com.hamming.storim.common.interfaces.ConnectionListener;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,23 +27,16 @@ public class AuthorisationPanelController implements ConnectionListener {
     private AuthorisationPanel panel;
     private DefaultComboBoxModel<ShortUserListItem> editorsModel = new DefaultComboBoxModel<>();
     private DefaultComboBoxModel<ShortUserListItem> searchResultsModel = new DefaultComboBoxModel<>();
-    private SetAuthorisationInterface callback;
-    private Long objectId, ownerId;
-    private String objectName;
     private String objectTitle;
     private JFrame frame;
-    List<Long> originalEditors;
     private Component parent;
+    private BasicObjectDTO dto;
 
-    private AuthorisationPanelController(Component parent, Long objectId, String objectName, Long ownerId, List<Long> editors, AuthorisationPanel panel, SetAuthorisationInterface callback, ConnectionController connectionController) {
+    private AuthorisationPanelController(Component parent, BasicObjectDTO dto, AuthorisationPanel panel, ConnectionController connectionController) {
         this.panel = panel;
-        this.callback = callback;
+        this.dto = dto;
         this.connectionController = connectionController;
-        this.objectId = objectId;
-        this.objectName = objectName;
-        this.ownerId = ownerId;
-        this.objectTitle = objectName + "(" + objectId + ")";
-        this.originalEditors = editors;
+        this.objectTitle =  "(" + dto.getId() + ")"+ dto.getName();
         this.parent = parent;
         connectionController.addConnectionListener(this);
         setup();
@@ -57,16 +52,17 @@ public class AuthorisationPanelController implements ConnectionListener {
         frame.setLocationRelativeTo(parent);
     }
 
-    public static void showAuthorisationPanel(Component parent, Long objectId, String objectName, Long ownerId, List<Long> editors, SetAuthorisationInterface callback, ConnectionController connectionController) {
+    public static void showAuthorisationPanel(Component parent, BasicObjectDTO dto, ConnectionController connectionController) {
         AuthorisationPanel panel = new AuthorisationPanel();
-        AuthorisationPanelController authorisationPanelController = new AuthorisationPanelController(parent, objectId, objectName, ownerId, editors, panel, callback, connectionController);
+        AuthorisationPanelController authorisationPanelController = new AuthorisationPanelController(parent, dto, panel, connectionController);
         authorisationPanelController.show();
     }
 
 
     private void setup() {
         panel.getLblName().setText(objectTitle);
-        panel.getLblOwner().setText(getName(ownerId) + "(" + ownerId + ")");
+        String owner =  "(" + dto.getOwnerID() + ")" + getName(dto.getOwnerID());
+        panel.getLblOwner().setText(owner);
         panel.getTxtSearchUserName().setText("");
         panel.getListEditors().setModel(editorsModel);
         panel.getListSearchResults().setModel(searchResultsModel);
@@ -104,7 +100,7 @@ public class AuthorisationPanelController implements ConnectionListener {
                 }
             }
         });
-        fillEditorList(originalEditors);
+        fillEditorList(dto.getEditors());
     }
 
     private void fillEditorList(List<Long> list) {
@@ -116,9 +112,12 @@ public class AuthorisationPanelController implements ConnectionListener {
     }
 
     private void save() {
-        List<Long> editorIds = getEditorIds();
-        callback.setEditors(editorIds);
+        List<Long> newEditorIds = getEditorIds();
+        // Send update to Server
+        UpdateAuthorisationDto uaDto = new UpdateAuthorisationDto(dto.getId(), dto.getClass().getSimpleName(), newEditorIds);
+        connectionController.send(uaDto);
         frame.dispose();
+
     }
 
     private List<Long> getEditorIds() {
@@ -214,7 +213,11 @@ public class AuthorisationPanelController implements ConnectionListener {
 
     private void empty() {
         SwingUtilities.invokeLater(() -> {
-
+            panel.getLblName().setText("");
+            panel.getLblOwner().setText("");
+            panel.getTxtSearchUserName().setText("");
+            editorsModel.removeAllElements();
+            searchResultsModel.removeAllElements();
         });
     }
 

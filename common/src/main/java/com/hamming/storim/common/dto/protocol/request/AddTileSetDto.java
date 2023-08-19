@@ -10,23 +10,17 @@ public class AddTileSetDto extends ProtocolDTO {
     private int tileWidth;
     private int tileHeight;
     private byte[] imageData;
-    private List<Long> editors;
 
-    public AddTileSetDto(String name, int tileWidth, int tileHeight, byte[] imageData, List<Long> editors){
+    public AddTileSetDto(String name, int tileWidth, int tileHeight, byte[] imageData){
         this.name = name;
         this.imageData = imageData;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
-        this.editors = editors;
     }
 
     public String getName() {
         return name;
 
-    }
-
-    public List<Long> getEditors() {
-        return editors;
     }
 
     public byte[] getImageData() {
@@ -47,7 +41,6 @@ public class AddTileSetDto extends ProtocolDTO {
                 "name='" + name + '\'' +
                 ", tileWidth=" + tileWidth +
                 ", tileHeight=" + tileHeight +
-                ", editors=" + editors +
                 '}';
     }
 }

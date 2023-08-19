@@ -38,6 +38,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
         jLabel7 = new javax.swing.JLabel();
         txtRows = new javax.swing.JTextField();
         txtCols = new javax.swing.JTextField();
+        btnEditAuthorisation = new javax.swing.JButton();
 
         jLabel1.setText("Rooms");
 
@@ -75,6 +76,8 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
 
         txtCols.setText("10");
 
+        btnEditAuthorisation.setText("Change Authorisation");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -93,7 +96,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
                                                 .addComponent(btnCreate)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addComponent(btnDelete)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(btnSave)
                                                 .addContainerGap())
                                         .addGroup(layout.createSequentialGroup()
@@ -104,38 +107,37 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
                                                         .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(lblId)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(btnEditAuthorisation, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addComponent(jLabel7)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                .addComponent(txtCols)
-                                                                .addContainerGap())
-                                                        .addComponent(tfRoomName)
+                                                                .addComponent(txtCols))
                                                         .addGroup(layout.createSequentialGroup()
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                .addComponent(jLabel6)
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(txtRows))
-                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                .addComponent(lblId)
-                                                                                .addGap(0, 0, Short.MAX_VALUE)))
-                                                                .addGap(6, 6, 6))))))
+                                                                .addComponent(jLabel6)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(txtRows))
+                                                        .addComponent(jScrollPane1)
+                                                        .addComponent(tfRoomName)))))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addComponent(jLabel1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(scrollPaneRooms)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                                         .addGroup(layout.createSequentialGroup()
+                                                .addGap(26, 26, 26)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel2)
-                                                        .addComponent(lblId))
+                                                        .addComponent(lblId)
+                                                        .addComponent(btnEditAuthorisation))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel3)
@@ -153,7 +155,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel7)
                                                         .addComponent(txtCols, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGap(15, 36, Short.MAX_VALUE)))
+                                                .addGap(15, 43, Short.MAX_VALUE)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(btnTeleport)
                                         .addComponent(btnCreate)
@@ -166,6 +168,7 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
     // Variables declaration - do not modify
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnEditAuthorisation;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnTeleport;
     private javax.swing.JLabel jLabel1;
@@ -184,7 +187,6 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
     private javax.swing.JTextField txtCols;
     private javax.swing.JTextField txtRows;
     // End of variables declaration
-
 
 
     public JButton getBtnCreate() {
@@ -225,5 +227,9 @@ public class RoomEditorPanel extends javax.swing.JPanel  {
 
     public JLabel getLblId() {
         return lblId;
+    }
+
+    public JButton getBtnEditAuthorisation() {
+        return btnEditAuthorisation;
     }
 }

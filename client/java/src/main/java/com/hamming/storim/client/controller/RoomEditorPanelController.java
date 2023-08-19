@@ -30,7 +30,7 @@ public class RoomEditorPanelController implements ConnectionListener {
     private DefaultListModel<TileDto> tilesModel = new DefaultListModel<>();
     boolean newRoom = false;
     private UserDto currentUser;
-    private List<Long> editors;
+    private RoomDto selectedRoom;
 
 
     public RoomEditorPanelController(STORIMWindowController windowController, RoomEditorPanel panel, ConnectionController connectionController) {
@@ -58,6 +58,7 @@ public class RoomEditorPanelController implements ConnectionListener {
     }
 
     private void setup() {
+        selectedRoom = null;
         panel.getListRooms().setModel(roomsModel);
         panel.getListRooms().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) { //Else this is called twice!
@@ -75,6 +76,10 @@ public class RoomEditorPanelController implements ConnectionListener {
         panel.getBtnSave().setEnabled(false);
         panel.getBtnDelete().setEnabled(false);
         panel.getBtnCreate().setEnabled(false);
+        panel.getBtnEditAuthorisation().addActionListener(e -> {
+            AuthorisationPanelController.showAuthorisationPanel(panel, selectedRoom, connectionController);
+        });
+        panel.getBtnEditAuthorisation().setEnabled(false);
     }
 
 
@@ -130,6 +135,7 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     private void empty(boolean thorough) {
         newRoom = false;
+        selectedRoom = null;
         SwingUtilities.invokeLater(() -> {
             panel.getLblId().setText("");
             panel.getTfRoomName().setText("");
@@ -137,6 +143,7 @@ public class RoomEditorPanelController implements ConnectionListener {
             panel.getTxtCols().setText("10");
             panel.getBtnSave().setEnabled(false);
             panel.getBtnDelete().setEnabled(false);
+            panel.getBtnEditAuthorisation().setEnabled(false);
             if (thorough) {
                 roomsModel.removeAllElements();
                 panel.getBtnTeleport().setEnabled(false);
@@ -188,6 +195,15 @@ public class RoomEditorPanelController implements ConnectionListener {
 
     public void roomDeleted(Long roomId) {
         removeRoom(roomId);
+        // check if not currently selected
+        try {
+            Long selectedRoomId = Long.valueOf(panel.getLblId().getText());
+            if (roomId == selectedRoomId) {
+                empty(false);
+            }
+        } catch ( NumberFormatException e ) {
+            // do nothing,
+        }
     }
 
     public void roomUpdated(RoomDto room) {
@@ -208,7 +224,6 @@ public class RoomEditorPanelController implements ConnectionListener {
         Long roomId = Long.valueOf(panel.getLblId().getText());
         DeleteRoomDTO deleteRoomDTO = new DeleteRoomDTO(roomId);
         connectionController.send(deleteRoomDTO);
-        //FIXME Delete Room
         empty(false);
     }
 
@@ -223,6 +238,7 @@ public class RoomEditorPanelController implements ConnectionListener {
             panel.getTfRoomName().setEnabled(true);
             panel.getTxtRows().setEnabled(true);
             panel.getTxtCols().setEnabled(true);
+            panel.getBtnEditAuthorisation().setEnabled(false);
         });
     }
 
@@ -232,16 +248,14 @@ public class RoomEditorPanelController implements ConnectionListener {
         int cols = Integer.valueOf(panel.getTxtCols().getText());
 
         if (newRoom) {
-            AddRoomDto addRoomDto = new AddRoomDto(roomName, rows, cols, editors);
+            AddRoomDto addRoomDto = new AddRoomDto(roomName, rows, cols);
             connectionController.send(addRoomDto);
         } else {
             // Update room!
             Long roomId = Long.valueOf(panel.getLblId().getText());
-            UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, rows, cols, null, null, null, null, editors);
+            UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, rows, cols, null, null, null, null);
             connectionController.send(updateRoomDto);
-
         }
-
 
         setEditable(false);
         empty(false);
@@ -251,6 +265,8 @@ public class RoomEditorPanelController implements ConnectionListener {
     }
 
     private void roomSelected(RoomDto room) {
+        selectedRoom = room;
+
         SwingUtilities.invokeLater(() -> {
             panel.getLblId().setText(room.getId().toString());
             panel.getTfRoomName().setText(room.getName());
@@ -259,6 +275,7 @@ public class RoomEditorPanelController implements ConnectionListener {
             panel.getBtnSave().setEnabled(true);
             panel.getBtnDelete().setEnabled(true);
             panel.getBtnTeleport().setEnabled(true);
+            panel.getBtnEditAuthorisation().setEnabled(true);
             setEditable(true);
         });
     }

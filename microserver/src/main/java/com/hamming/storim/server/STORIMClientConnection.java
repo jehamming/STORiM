@@ -18,20 +18,27 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 
-public class STORIMClientConnection extends ClientConnection implements RoomListener, ServerListener, AuthorisationListener<TileSet> {
+public class STORIMClientConnection extends ClientConnection implements RoomListener, ServerListener {
 
     private UserDto currentUser;
     private Room currentRoom;
     private STORIMMicroServer server;
     private GameController gameController;
-    private boolean admin;
+    private RoomAuthorisationListener roomAuthorisationListener;
+    private TileSetAuthorisationListener tileSetAuthorisationListener;
 
     public STORIMClientConnection(STORIMMicroServer server, String id, Socket s, GameController controller) {
         super(id, s, controller);
         this.server = server;
         controller.addServerListener(this);
-        server.getAuthorisationController().addAuthorisationListener(TileSet.class,this);
-        admin = false;
+        setupAuthorisationListeners();
+    }
+
+    private void setupAuthorisationListeners() {
+        roomAuthorisationListener = new RoomAuthorisationListener(server, this);
+        tileSetAuthorisationListener = new TileSetAuthorisationListener(server, this);
+        server.getAuthorisationController().addAuthorisationListener(roomAuthorisationListener);
+        server.getAuthorisationController().addAuthorisationListener(tileSetAuthorisationListener);
     }
 
     @Override
@@ -88,6 +95,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(new DeleteTileSetAction(gameController, this));
         getProtocolHandler().addAction(new GetTilesSetsForUserAction(this));
         getProtocolHandler().addAction(new SearchUsersAction(gameController, this));
+        getProtocolHandler().addAction(new UpdateAuthorisationAction(this));
     }
 
 
@@ -436,7 +444,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     @Override
     public void disconnected() {
         gameController.removeServerListener(this);
-        server.getAuthorisationController().removeAuthorisationListener(TileSet.class,this);
+        server.getAuthorisationController().removeAuthorisationListener(roomAuthorisationListener);
+        server.getAuthorisationController().removeAuthorisationListener(tileSetAuthorisationListener);
         if (currentUser != null) {
             Location location = gameController.getGameState().getUserLocation(currentUser.getId());
             gameController.removeRoomListener(location.getRoomId(), this);
@@ -550,31 +559,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
             case USERDISCONNECTED:
                 userDisconnected((UserDto) event.getData());
                 break;
-        }
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-
-    public boolean isAdmin() {
-        return admin;
-    }
-
-
-    @Override
-    public void authorisationChanged(TileSet ts, List<Long> old) {
-        AuthorisationDelta delta = server.getAuthorisationController().getAuthorisationDelta(old, ts.getEditors());
-        if ( delta.getAdded().contains(currentUser.getId())) {
-            // Send TileSet!
-            TileSetDto tileSetDto = DTOFactory.getInstance().getTileSetDTO(ts);
-            TileSetAddedDTO tileSetAddedDTO = new TileSetAddedDTO(tileSetDto);
-            send(tileSetAddedDTO);
-        }
-        if ( delta.getRemoved().contains(currentUser.getId())) {
-            // Remove TileSet!
-            TileSetDeletedDTO tileSetDeletedDTO = new TileSetDeletedDTO(ts.getId());
-            send(tileSetDeletedDTO);
         }
     }
 }
