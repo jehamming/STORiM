@@ -36,7 +36,6 @@ public class STORIMWindow extends javax.swing.JFrame {
         menuExits = new javax.swing.JMenuItem();
         menuEditTileSets = new javax.swing.JMenuItem();
         menuAdmin = new javax.swing.JMenu();
-        menuAdminPassword = new javax.swing.JMenuItem();
         menuAdminEditUsers = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -107,8 +106,6 @@ public class STORIMWindow extends javax.swing.JFrame {
 
         menuAdmin.setText("Admin");
 
-        menuAdminPassword.setText("Admin Password");
-        menuAdmin.add(menuAdminPassword);
 
         menuAdminEditUsers.setText("Edit Users");
         menuAdmin.add(menuAdminEditUsers);
@@ -181,7 +178,6 @@ public class STORIMWindow extends javax.swing.JFrame {
     private javax.swing.JLabel lblRoomName;
     private javax.swing.JMenu menuAdmin;
     private javax.swing.JMenuItem menuAdminEditUsers;
-    private javax.swing.JMenuItem menuAdminPassword;
     private javax.swing.JMenuItem menuAvatars;
     private javax.swing.JMenuItem menuConnect;
     private javax.swing.JMenuItem menuDisconnect;
@@ -212,10 +208,6 @@ public class STORIMWindow extends javax.swing.JFrame {
 
     public JMenuItem getMenuAdminEditUsers() {
         return menuAdminEditUsers;
-    }
-
-    public JMenuItem getMenuAdminPassword() {
-        return menuAdminPassword;
     }
 
     public JMenuItem getMenuAvatars() {

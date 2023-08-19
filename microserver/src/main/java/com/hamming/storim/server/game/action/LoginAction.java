@@ -11,6 +11,7 @@ import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.STORIMException;
+import com.hamming.storim.server.ServerConfiguration;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.dto.protocol.dataserver.SessionDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserResponseDTO;
@@ -34,6 +35,7 @@ public class LoginAction extends Action<LoginDTO> {
         String username = getDto().getUsername();
         String password = getDto().getPassword();
         Long roomId = getDto().getRoomID();
+        boolean admin = false;
 
         try {
             // Verify User with UserDataServer
@@ -42,7 +44,12 @@ public class LoginAction extends Action<LoginDTO> {
             if (responseDTO.isSuccess()) {
                 client.setSessionToken(responseDTO.getSessionToken());
                 userDto = responseDTO.getUser();
-                LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null);
+                ServerConfiguration serverConfiguration = client.getServer().getServerConfiguration();
+                if ( serverConfiguration.getSuperAdmin() == userDto.getId() || serverConfiguration.getServerAdmins().contains(userDto.getId())) {
+                    admin = true;
+                    client.setAdmin(admin);
+                }
+                LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null, admin);
                 getClient().send(loginResultDTO);
                 // Send the details
                 String token = responseDTO.getSessionToken();
@@ -50,15 +57,13 @@ public class LoginAction extends Action<LoginDTO> {
 
                 client.currentUserConnected(userDto, roomId);
             } else {
-                LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null);
+                LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null, admin);
                 getClient().send(loginResultDTO);
             }
-
         } catch (STORIMException e) {
             ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), e.getMessage());
             client.send(errorDTO);
         }
-
 
     }
 

@@ -33,12 +33,12 @@ public class AdminMenuController implements ConnectionListener {
     }
 
     private void registerReceivers() {
-       connectionController.registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
+       connectionController.registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginResult(dto));
      }
 
 
+
     private void setup() {
-        window.getMenuAdminPassword().setEnabled(false);
         window.getMenuAdminEditUsers().setEnabled(false);
 
         adminPanel = new AdminPanel();
@@ -52,8 +52,6 @@ public class AdminMenuController implements ConnectionListener {
         adminFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         adminFrame.getContentPane().add(adminPanel);
         adminFrame.pack();
-
-
     }
 
     @Override
@@ -64,12 +62,14 @@ public class AdminMenuController implements ConnectionListener {
     @Override
     public void disconnected() {
         SwingUtilities.invokeLater(() -> {
-            window.getMenuAdminPassword().setEnabled(false);
             window.getMenuAdminEditUsers().setEnabled(false);
         });
     }
 
-    private void loginSuccess(boolean success) {
-        window.getMenuAdminEditUsers().setEnabled(true);
+    private void loginResult(LoginResultDTO dto) {
+        if ( dto.isSuccess() && dto.isAdmin() ) {
+            window.getMenuAdminEditUsers().setEnabled(true);
+        }
     }
+
 }

@@ -280,6 +280,23 @@ public class UserDataServerProxy {
         return userDto;
     }
 
+    public UserDto getUserByUsername(String userName) throws STORIMException {
+        UserDto userDto = null;
+        GetUserByUserNameDTO getUserDTO = new GetUserByUserNameDTO(userName);
+        GetUserByUsernameResultDTO resultDTO = connection.sendReceive(getUserDTO, GetUserByUsernameResultDTO.class);
+        if ( resultDTO.isSuccess() && resultDTO.getUser() != null ) {
+            userDto = resultDTO.getUser();
+        } else {
+            if (!resultDTO.isSuccess()) {
+                throw new STORIMException(resultDTO.getErrorMessage());
+            }
+            if ( resultDTO.getUser() == null ) {
+                throw new STORIMException("No User found");
+            }
+        }
+        return userDto;
+    }
+
     public UserDto updateUser(Long id, String username, String password, String name, String email, Long avatarId) throws STORIMException {
         UpdateUserDto request = new UpdateUserDto(id, username, password, name, email, avatarId);
         UpdateUserResultDTO resultDTO = connection.sendReceive(request, UpdateUserResultDTO.class);

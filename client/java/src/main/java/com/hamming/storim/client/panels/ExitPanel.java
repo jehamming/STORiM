@@ -2,8 +2,6 @@ package com.hamming.storim.client.panels;
 
 import com.hamming.storim.client.listitem.ExitListItem;
 import com.hamming.storim.client.listitem.RoomListItem;
-import com.hamming.storim.client.listitem.ServerListItem;
-import com.hamming.storim.client.listitem.ThingListItem;
 
 import javax.swing.*;
 

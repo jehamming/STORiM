@@ -1,6 +1,7 @@
 package com.hamming.storim.server;
 
 import com.hamming.storim.common.dto.TileSetDto;
+import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.DeleteTileSetDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
@@ -14,6 +15,7 @@ import com.hamming.storim.server.common.model.TileSet;
 import com.hamming.storim.server.game.GameController;
 
 import javax.imageio.ImageIO;
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +73,10 @@ public class STORIMMicroServer extends Server {
         checkTileSets();
         checkRooms();
 
+        connectToDataServer();
+        setSuperAdmin();
+
+
         // Start GameController
         controller = new GameController();
         Thread controllerThread = new Thread(controller);
@@ -81,6 +87,18 @@ public class STORIMMicroServer extends Server {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Database.getInstance().store()));
     }
 
+    private void setSuperAdmin() {
+        String serverAdmin = config.getPropertyAsString("admin");
+        if ( serverAdmin != null ) {
+            try {
+               UserDto adminUser = userDataServerProxy.getUserByUsername(serverAdmin);
+               serverConfiguration.setSuperAdmin(adminUser.getId());
+            } catch (STORIMException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     private void getServerConfigFromDatabase() {
         serverConfiguration = Database.getInstance().findByName(ServerConfiguration.class, DEFAULT_SERVERCONFIG_NAME );
         if ( serverConfiguration == null ) {
@@ -89,6 +107,7 @@ public class STORIMMicroServer extends Server {
             serverConfiguration = new ServerConfiguration();
             serverConfiguration.setId(id);
             serverConfiguration.setName(DEFAULT_SERVERCONFIG_NAME);
+            serverConfiguration.setServerName(serverName);
             Database.getInstance().addBasicObject(serverConfiguration);
         }
     }
@@ -135,7 +154,7 @@ public class STORIMMicroServer extends Server {
 
     public void startServer() {
         startServer(port);
-        connectToDataServer();
+
         try {
             //serverURI = ServerConfig.PROTOCOL+"://" + Inet4Address..getLocalHost().getHostAddress() + ":" + port;
             serverURI = ServerConfig.PROTOCOL+":/" + NetUtils.getLocalHostLANAddress() + ":" + port;
@@ -188,4 +207,7 @@ public class STORIMMicroServer extends Server {
         return serverConfiguration.getDefaultTileSet();
     }
 
+    public ServerConfiguration getServerConfiguration() {
+        return serverConfiguration;
+    }
 }

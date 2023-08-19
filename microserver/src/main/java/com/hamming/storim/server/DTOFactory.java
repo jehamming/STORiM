@@ -72,6 +72,11 @@ public class DTOFactory {
         fillBasicObjectInfo(dto, s);
         return dto;
     }
+
+    public ServerConfigurationDTO getServerConfigurationDTO(ServerConfiguration c) {
+        ServerConfigurationDTO dto = new ServerConfigurationDTO(c.getServerName(), c.getDefaultTileSet().getId(), c.getDefaultTile(), c.getDefaultRoom().getId(), c.getServerAdmins());
+        return dto;
+    }
 }
 
 

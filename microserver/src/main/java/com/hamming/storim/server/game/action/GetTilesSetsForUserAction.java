@@ -24,11 +24,13 @@ public class GetTilesSetsForUserAction extends Action<GetTileSetsForUserDTO> {
     @Override
     public void execute() {
         List<Long> tileSetIds = new ArrayList<>();
-        List<TileSet> tileSets = TileSetFactory.getInstance().geTileSetsForUser(getDto().getUserId());
+        Long userId = getDto().getUserId();
+        List<TileSet> tileSets = TileSetFactory.getInstance().getAllTileSets();
         for (TileSet ts : tileSets) {
-            tileSetIds.add(ts.getId());
+            if (ts.getOwnerId().equals( userId) || ts.getEditors().contains(userId) || getClient().isAdmin()) {
+                tileSetIds.add(ts.getId());
+            }
         }
         getClient().send(new GetTileSetsForUserResponseDTO(true, tileSetIds, null));
     }
-
 }
