@@ -94,7 +94,7 @@ public class STORIMMicroServer extends Server {
                UserDto adminUser = userDataServerProxy.getUserByUsername(serverAdmin);
                serverConfiguration.setSuperAdmin(adminUser.getId());
             } catch (STORIMException e) {
-                throw new RuntimeException(e);
+                Logger.info(this,"setSuperAdmin:"+e.getMessage());
             }
         }
     }
@@ -106,6 +106,8 @@ public class STORIMMicroServer extends Server {
             Long id = Database.getInstance().getNextID();
             serverConfiguration = new ServerConfiguration();
             serverConfiguration.setId(id);
+            Long creatorId = 1L; //TODO Replace 1L with ROOT user..
+            serverConfiguration.setOwnerId(creatorId);
             serverConfiguration.setName(DEFAULT_SERVERCONFIG_NAME);
             serverConfiguration.setServerName(serverName);
             Database.getInstance().addBasicObject(serverConfiguration);

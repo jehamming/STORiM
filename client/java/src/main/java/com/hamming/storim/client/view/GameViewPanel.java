@@ -814,6 +814,7 @@ public class GameViewPanel extends JPanel implements Runnable {
         unitX = (float) getWidth() / (float) roomWidth;
         unitY = (float) getHeight() / (float) roomHeight;
         updateAllLocations();
+        repaint();
     }
 
     private void updateAllLocations() {

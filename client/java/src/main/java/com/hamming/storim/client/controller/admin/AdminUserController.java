@@ -4,10 +4,7 @@ import com.hamming.storim.client.listitem.ShortUserListItem;
 import com.hamming.storim.client.panels.AdminUsersPanel;
 import com.hamming.storim.common.MicroServerException;
 import com.hamming.storim.common.MicroServerProxy;
-import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.request.DeleteUserDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.util.StringUtils;
 
 import javax.swing.*;
@@ -22,6 +19,7 @@ public class AdminUserController {
     public AdminUserController(AdminUsersPanel panel, MicroServerProxy microServerProxy) {
         this.microServerProxy = microServerProxy;
         this.panel = panel;
+        setup();
     }
 
 

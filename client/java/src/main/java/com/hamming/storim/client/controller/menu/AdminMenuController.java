@@ -7,7 +7,6 @@ import com.hamming.storim.client.controller.admin.ServerConfigurationController;
 import com.hamming.storim.client.panels.AdminUsersPanel;
 import com.hamming.storim.client.panels.ServerConfigurationPanel;
 import com.hamming.storim.common.MicroServerProxy;
-import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
@@ -60,7 +59,7 @@ public class AdminMenuController implements ConnectionListener {
             adminEditServerConfigurationFrame.setVisible(true);
         });
         //Prepare Frame
-        adminEditServerConfigurationFrame = new JFrame("Admin");
+        adminEditServerConfigurationFrame = new JFrame("Edit Server Configuration");
         adminEditServerConfigurationFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         adminEditServerConfigurationFrame.getContentPane().add(serverConfigurationPanel);
         adminEditServerConfigurationFrame.pack();
@@ -77,7 +76,7 @@ public class AdminMenuController implements ConnectionListener {
             adminEditUsersFrame.setVisible(true);
         });
         //Prepare Frame
-        adminEditUsersFrame = new JFrame("Admin");
+        adminEditUsersFrame = new JFrame("Edit Users");
         adminEditUsersFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         adminEditUsersFrame.getContentPane().add(adminUsersPanel);
         adminEditUsersFrame.pack();
@@ -93,14 +92,16 @@ public class AdminMenuController implements ConnectionListener {
     public void disconnected() {
         SwingUtilities.invokeLater(() -> {
             window.getMenuAdminEditUsers().setEnabled(false);
-            editServerConfigurationMenu.setEnabled(true);
+            editServerConfigurationMenu.setEnabled(false);
         });
     }
 
     private void loginResult(LoginResultDTO dto) {
-        if ( dto.isSuccess() && dto.isAdmin() ) {
-            window.getMenuAdminEditUsers().setEnabled(true);
+        if ( dto.isSuccess() && dto.isServerAdmin() ) {
             editServerConfigurationMenu.setEnabled(true);
+        }
+        if ( dto.isSuccess() && dto.isUserdataServerAdmin() ) {
+            window.getMenuAdminEditUsers().setEnabled(true);
         }
     }
 

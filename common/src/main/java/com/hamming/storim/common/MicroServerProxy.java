@@ -363,4 +363,9 @@ public class MicroServerProxy {
         DeleteVerbDTO deleteVerbDTO = new DeleteVerbDTO(verbId);
         connectionController.send(deleteVerbDTO);
     }
+
+    public void updateServerConfiguration(Long defaultTileSetId, int defaultTile, Long defaultRoomId, List<Long> serverAdmins) {
+        UpdateServerConfigurationDTO dto = new UpdateServerConfigurationDTO(defaultTileSetId, defaultTile, defaultRoomId, serverAdmins);
+        connectionController.send(dto);
+    }
 }

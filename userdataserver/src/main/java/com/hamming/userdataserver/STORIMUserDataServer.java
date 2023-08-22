@@ -1,9 +1,11 @@
 package com.hamming.userdataserver;
 
+import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
+import com.hamming.storim.server.STORIMException;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.NetUtils;
@@ -11,10 +13,13 @@ import com.hamming.userdataserver.factories.AvatarFactory;
 import com.hamming.userdataserver.factories.ThingFactory;
 import com.hamming.userdataserver.factories.TileFactory;
 import com.hamming.userdataserver.factories.UserFactory;
+import com.hamming.userdataserver.model.User;
 
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 // This is the UserData Server for storim.
 // MicroServers & LoginServer connect to retrieve data
@@ -29,11 +34,12 @@ public class STORIMUserDataServer extends Server {
     private final static String PROPFILE = "userdataserver.properties";
     private final static String PROP_DATADIR= "datadir";
     private final static String PROP_SERVERPORT= "serverport";
-    private final static String PROP_ADMINPASSWORD= "adminpassword";
+    private final static String PROP_ADMINS= "admins";
     public final static String DBFILE = "userdata.db";
     public static String DATADIR = "data";
 
-    private String adminPassword = null;
+    private ServerConfig config;
+    private List<User> admins;
 
     public STORIMUserDataServer() {
         super("STORIM User Data Server");
@@ -41,14 +47,9 @@ public class STORIMUserDataServer extends Server {
 
     public void initialize() {
         // Load Config
-        ServerConfig config = ServerConfig.getInstance(PROPFILE);
+        config = ServerConfig.getInstance(PROPFILE);
         // Set datadir var
         DATADIR = config.getPropertyAsString(PROP_DATADIR);
-        // Admin password
-        adminPassword = config.getPropertyAsString(PROP_ADMINPASSWORD);
-        if ( adminPassword == null ) {
-            Logger.info(this, "No ADMIN PASSWORD found in property file. No ADMIN available");
-        }
         // Load Data
         Database.getInstance(DBFILE);
         checkDatabase();
@@ -58,6 +59,7 @@ public class STORIMUserDataServer extends Server {
         ThingFactory.getInstance(DATADIR);
         //Force Tile loading
         TileFactory.getInstance(DATADIR);
+        setServerAdmins();
 
         port = config.getPropertyAsInt(PROP_SERVERPORT);
 
@@ -71,6 +73,19 @@ public class STORIMUserDataServer extends Server {
         controllerThread.start();
         Logger.info(this, "UserData Server Worker started");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Database.getInstance().store()) {});
+    }
+
+    private void setServerAdmins() {
+        admins = new ArrayList<>();
+        String adminsString = config.getPropertyAsString(PROP_ADMINS);
+        if ( adminsString != null && !adminsString.equals("") ) {
+            String[] adminUsernames = adminsString.split(",");
+            for (int i = 0; i < adminUsernames.length ; i++) {
+                String username = adminUsernames[i];
+                User adminUser = UserFactory.getInstance().findUserByUsername(username);
+                admins.add(adminUser);
+            }
+        }
     }
 
     private void checkDatabase() {
@@ -115,8 +130,8 @@ public class STORIMUserDataServer extends Server {
         }
     }
 
-    public String getAdminPassword() {
-        return adminPassword;
+    public List<User> getAdmins() {
+        return admins;
     }
 
     public static void main(String[] args) {

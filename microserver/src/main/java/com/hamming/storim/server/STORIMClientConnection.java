@@ -29,6 +29,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     private GameController gameController;
     private RoomAuthorisationListener roomAuthorisationListener;
     private TileSetAuthorisationListener tileSetAuthorisationListener;
+    private boolean userAdmin = false;
 
     public STORIMClientConnection(STORIMMicroServer server, String id, Socket s, GameController controller) {
         super(id, s, controller);
@@ -99,6 +100,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         getProtocolHandler().addAction(new SearchUsersAction(gameController, this));
         getProtocolHandler().addAction(new UpdateAuthorisationAction(this));
         getProtocolHandler().addAction(new GetServerConfigurationAction(gameController,this));
+        getProtocolHandler().addAction(new UpdateServerConfigurationAction(gameController,this));
     }
 
 
@@ -394,8 +396,9 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 // Connect to a specific room given by StorimURI
                 room = RoomFactory.getInstance().findRoomByID(roomId);
                 if (room != null) {
-                    int x = room.getSpawnCol();
-                    int y = room.getSpawnRow();
+                    TileSet tileSet = TileSetFactory.getInstance().findTileSetById(room.getBackTileSetId());
+                    int x = room.getSpawnCol() * tileSet.getTileWidth();
+                    int y = room.getSpawnRow() * tileSet.getTileHeight();
                     locationDto = new LocationDto(-1l, getServer().getServerURI(), room.getId(), x, y);
                     location = LocationFactory.getInstance().createLocation(getCurrentUser().getId(), locationDto);
                 }
@@ -412,12 +415,12 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
 
             if (location == null) {
-                Logger.info(this, "User '" + getCurrentUser().getId() + "' location not found or corrupt, using default Room (1)");
+                Logger.info(this, "User '" + getCurrentUser().getId() + "' location not found or corrupt, using default Room from ServerConfiguration");
 
-                room = RoomFactory.getInstance().findRoomByName(server.DEFAULT_MAINROOM_NAME);
-
-                int x = room.getSpawnCol();
-                int y = room.getSpawnRow();
+                room = server.getServerConfiguration().getDefaultRoom();
+                TileSet tileSet = TileSetFactory.getInstance().findTileSetById(room.getBackTileSetId());
+                int x = room.getSpawnCol() * tileSet.getTileWidth();
+                int y = room.getSpawnRow() * tileSet.getTileHeight();
                 locationDto = new LocationDto(-1l, getServer().getServerURI(), room.getId(), x, y);
                 location = LocationFactory.getInstance().createLocation(getCurrentUser().getId(), locationDto);
             }
@@ -574,5 +577,13 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 userDisconnected((UserDto) event.getData());
                 break;
         }
+    }
+
+    public boolean isUserAdmin() {
+        return userAdmin;
+    }
+
+    public void setUserAdmin(boolean userAdmin) {
+        this.userAdmin = userAdmin;
     }
 }

@@ -8,14 +8,16 @@ public class LoginResultDTO extends ResponseDTO {
     private UserDto user;
     private String token;
     private LocationDto location;
-    private boolean admin;
+    private boolean serverAdmin;
+    private boolean userdataServerAdmin;
 
-    public LoginResultDTO(boolean success, String token, String errorMessage, UserDto user, LocationDto location, boolean admin) {
+    public LoginResultDTO(boolean success, String token, String errorMessage, UserDto user, LocationDto location, boolean serverAdmin, boolean userdataServerAdmin) {
         super(success, errorMessage);
         this.user = user;
         this.location = location;
         this.token = token;
-        this.admin = admin;
+        this.serverAdmin = serverAdmin;
+        this.userdataServerAdmin = userdataServerAdmin;
     }
 
     public UserDto getUser() {
@@ -30,10 +32,13 @@ public class LoginResultDTO extends ResponseDTO {
         return token;
     }
 
-    public boolean isAdmin() {
-        return admin;
+    public boolean isServerAdmin() {
+        return serverAdmin;
     }
 
+    public boolean isUserdataServerAdmin() {
+        return userdataServerAdmin;
+    }
 
     @Override
     public String toString() {
@@ -41,7 +46,8 @@ public class LoginResultDTO extends ResponseDTO {
                 "user=" + user +
                 ", token='" + token + '\'' +
                 ", location=" + location +
-                ", admin=" + admin +
+                ", serverAdmin=" + serverAdmin +
+                ", userdataServerAdmin=" + userdataServerAdmin +
                 '}';
     }
 }

@@ -23,13 +23,13 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
     private ServerWorker serverWorker;
     private NetClient netClient;
 
-    private boolean admin;
+    private boolean serverAdmin;
 
     private String sessionToken;
 
     public ClientConnection(String id, Socket s, ServerWorker serverWorker) {
         this.id = id;
-        admin = false;
+        serverAdmin = false;
         netClient = new NetClient(this,this);
         protocolHandler = new ProtocolHandler();
         this.serverWorker = serverWorker;
@@ -81,12 +81,12 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
         this.sessionToken = sessionToken;
     }
 
-    public boolean isAdmin() {
-        return admin;
+    public boolean isServerAdmin() {
+        return serverAdmin;
     }
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
+    public void setServerAdmin(boolean serverAdmin) {
+        this.serverAdmin = serverAdmin;
     }
 
     public UserDto getCurrentUser() {
@@ -100,7 +100,7 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
     public boolean isAuthorized(BasicObject b) {
         boolean authorized = false;
         if ( currentUser != null ) {
-            authorized = b.getOwnerId().equals(currentUser.getId()) || b.getEditors().contains( currentUser.getId() ) || isAdmin();
+            authorized = b.getOwnerId().equals(currentUser.getId()) || b.getEditors().contains( currentUser.getId() ) || isServerAdmin();
         }
         return authorized;
     }

@@ -225,6 +225,7 @@ public class RoomEditorPanelController implements ConnectionListener {
             panel.getTxtRows().setEnabled(true);
             panel.getTxtCols().setEnabled(true);
             panel.getBtnEditAuthorisation().setEnabled(false);
+            panel.getBtnCreate().setEnabled(false);
         });
     }
 
@@ -246,6 +247,7 @@ public class RoomEditorPanelController implements ConnectionListener {
         panel.getListRooms().clearSelection();
         panel.getBtnDelete().setEnabled(false);
         panel.getBtnTeleport().setEnabled(false);
+        panel.getBtnCreate().setEnabled(true);
     }
 
     private void roomSelected(RoomDto room) {

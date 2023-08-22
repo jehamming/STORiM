@@ -1,23 +1,15 @@
 package com.hamming.storim.server.game.action;
 
-import com.hamming.storim.common.dto.AvatarDto;
-import com.hamming.storim.common.dto.LocationDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.AvatarSetDTO;
-import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
-import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
 import com.hamming.storim.server.STORIMException;
 import com.hamming.storim.server.ServerConfiguration;
 import com.hamming.storim.server.common.action.Action;
-import com.hamming.storim.server.common.dto.protocol.dataserver.SessionDto;
 import com.hamming.storim.server.common.dto.protocol.dataserver.user.ValidateUserResponseDTO;
-import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.game.GameController;
-import com.hamming.storim.server.game.ServerEvent;
 
 public class LoginAction extends Action<LoginDTO> {
     private GameController controller;
@@ -35,7 +27,8 @@ public class LoginAction extends Action<LoginDTO> {
         String username = getDto().getUsername();
         String password = getDto().getPassword();
         Long roomId = getDto().getRoomID();
-        boolean admin = false;
+        boolean serverAdmin = false;
+        boolean userServerAdmin = false;
 
         try {
             // Verify User with UserDataServer
@@ -46,10 +39,14 @@ public class LoginAction extends Action<LoginDTO> {
                 userDto = responseDTO.getUser();
                 ServerConfiguration serverConfiguration = client.getServer().getServerConfiguration();
                 if ( serverConfiguration.getSuperAdmin() == userDto.getId() || serverConfiguration.getServerAdmins().contains(userDto.getId())) {
-                    admin = true;
-                    client.setAdmin(admin);
+                    serverAdmin = true;
+                    client.setServerAdmin(serverAdmin);
                 }
-                LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null, admin);
+                if ( responseDTO.isAdmin()) {
+                    userServerAdmin = true;
+                    client.setUserAdmin(userServerAdmin);
+                }
+                LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null, serverAdmin, userServerAdmin);
                 getClient().send(loginResultDTO);
                 // Send the details
                 String token = responseDTO.getSessionToken();
@@ -57,14 +54,13 @@ public class LoginAction extends Action<LoginDTO> {
 
                 client.currentUserConnected(userDto, roomId);
             } else {
-                LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null, admin);
+                LoginResultDTO loginResultDTO = new LoginResultDTO(responseDTO.isSuccess(), client.getSessionToken(), responseDTO.getErrorMessage(), userDto, null, serverAdmin, userServerAdmin);
                 getClient().send(loginResultDTO);
             }
         } catch (STORIMException e) {
             ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), e.getMessage());
             client.send(errorDTO);
         }
-
     }
 
 }
