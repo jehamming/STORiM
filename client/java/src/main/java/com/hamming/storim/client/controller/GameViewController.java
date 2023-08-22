@@ -4,6 +4,8 @@ import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.client.view.TileSet;
 import com.hamming.storim.common.CalcTools;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.*;
 import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
@@ -24,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameViewController implements ConnectionListener {
-
-    private ConnectionController connectionController;
     private GameViewPanel gameView;
     private long sequenceNumber;
     private List<MovementRequestDTO> movementRequests;
@@ -36,12 +36,13 @@ public class GameViewController implements ConnectionListener {
 
     private RoomDto currentRoom;
     private AvatarDto currentUserAvatar;
+    private MicroServerProxy microServerProxy;
 
-    public GameViewController(STORIMWindowController windowController, GameViewPanel gameView, ConnectionController connectionController) {
+    public GameViewController(STORIMWindowController windowController, GameViewPanel gameView, MicroServerProxy microServerProxy) {
         this.windowController = windowController;
-        this.connectionController = connectionController;
+        this.microServerProxy = microServerProxy;
         this.gameView = gameView;
-        connectionController.addConnectionListener(this);
+        microServerProxy.getConnectionController().addConnectionListener(this);
         sequenceNumber = 0;
         movementRequests = new ArrayList<>();
         viewListeners = new ArrayList<>();
@@ -50,23 +51,23 @@ public class GameViewController implements ConnectionListener {
 
 
     private void registerReceivers() {
-        connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
-        connectionController.registerReceiver(UserInRoomDTO.class, (ProtocolReceiver<UserInRoomDTO>) dto -> userInRoom(dto));
-        connectionController.registerReceiver(LocationUpdateDTO.class, (ProtocolReceiver<LocationUpdateDTO>) dto -> locationUpdate(dto));
-        connectionController.registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
-        connectionController.registerReceiver(UserLeftRoomDTO.class, (ProtocolReceiver<UserLeftRoomDTO>) dto -> userLeftRoom(dto));
-        connectionController.registerReceiver(UserEnteredRoomDTO.class, (ProtocolReceiver<UserEnteredRoomDTO>) dto -> userEnteredRoom(dto));
-        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
-        connectionController.registerReceiver(AvatarSetDTO.class, (ProtocolReceiver<AvatarSetDTO>) dto -> setAvatar(dto));
-        connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto));
-        connectionController.registerReceiver(ThingInRoomDTO.class, (ProtocolReceiver<ThingInRoomDTO>) dto -> addThing(dto));
-        connectionController.registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> updateThing(dto.getThing()));
-        connectionController.registerReceiver(ExitAddedDTO.class, (ProtocolReceiver<ExitAddedDTO>) dto -> addExit(dto.getExitDto()));
-        connectionController.registerReceiver(ExitInRoomDTO.class, (ProtocolReceiver<ExitInRoomDTO>) dto -> addExit(dto.getExitDto()));
-        connectionController.registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> deleteExit(dto.getExitID()));
-        connectionController.registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> updateExit(dto.getExitDto()));
-        connectionController.registerReceiver(ExitLocationUpdatedDTO.class, (ProtocolReceiver<ExitLocationUpdatedDTO>) dto -> updateExitLocation(dto.getExitId(), dto.getX(), dto.getY()));
-        connectionController.registerReceiver(MessageInRoomDTO.class, (ProtocolReceiver<MessageInRoomDTO>) dto -> messageInRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
+        microServerProxy.getConnectionController().registerReceiver(UserInRoomDTO.class, (ProtocolReceiver<UserInRoomDTO>) dto -> userInRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(LocationUpdateDTO.class, (ProtocolReceiver<LocationUpdateDTO>) dto -> locationUpdate(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserLeftRoomDTO.class, (ProtocolReceiver<UserLeftRoomDTO>) dto -> userLeftRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserEnteredRoomDTO.class, (ProtocolReceiver<UserEnteredRoomDTO>) dto -> userEnteredRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
+        microServerProxy.getConnectionController().registerReceiver(AvatarSetDTO.class, (ProtocolReceiver<AvatarSetDTO>) dto -> setAvatar(dto));
+        microServerProxy.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto));
+        microServerProxy.getConnectionController().registerReceiver(ThingInRoomDTO.class, (ProtocolReceiver<ThingInRoomDTO>) dto -> addThing(dto));
+        microServerProxy.getConnectionController().registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> updateThing(dto.getThing()));
+        microServerProxy.getConnectionController().registerReceiver(ExitAddedDTO.class, (ProtocolReceiver<ExitAddedDTO>) dto -> addExit(dto.getExitDto()));
+        microServerProxy.getConnectionController().registerReceiver(ExitInRoomDTO.class, (ProtocolReceiver<ExitInRoomDTO>) dto -> addExit(dto.getExitDto()));
+        microServerProxy.getConnectionController().registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> deleteExit(dto.getExitID()));
+        microServerProxy.getConnectionController().registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> updateExit(dto.getExitDto()));
+        microServerProxy.getConnectionController().registerReceiver(ExitLocationUpdatedDTO.class, (ProtocolReceiver<ExitLocationUpdatedDTO>) dto -> updateExitLocation(dto.getExitId(), dto.getX(), dto.getY()));
+        microServerProxy.getConnectionController().registerReceiver(MessageInRoomDTO.class, (ProtocolReceiver<MessageInRoomDTO>) dto -> messageInRoom(dto));
     }
 
     private void messageInRoom(MessageInRoomDTO dto) {
@@ -209,13 +210,16 @@ public class GameViewController implements ConnectionListener {
     private void setBackground(RoomDto room) {
         Long tileSetId = room.getBackTileSetId();
         if ( tileSetId != null ) {
-            GetTileSetResultDTO response = connectionController.sendReceive(new GetTileSetDTO(tileSetId), GetTileSetResultDTO.class);
-            TileSetDto tileSetDto = response.getTileSetDto();
-            if ( tileSetDto != null ) {
-                TileSet tileSet = new TileSet(tileSetDto);
-                gameView.scheduleAction(() -> gameView.setBackground(tileSet, room.getBackTileMap()));
-            } else {
-                JOptionPane.showMessageDialog(gameView, "Foreground TileSet " + tileSetId +" not found on server");
+            try {
+                TileSetDto tileSetDto = microServerProxy.getTileSet(tileSetId);
+                if ( tileSetDto != null ) {
+                    TileSet tileSet = new TileSet(tileSetDto);
+                    gameView.scheduleAction(() -> gameView.setBackground(tileSet, room.getBackTileMap()));
+                } else {
+                    JOptionPane.showMessageDialog(gameView, "Foreground TileSet " + tileSetId +" not found on server");
+                }
+            } catch (MicroServerException e) {
+                JOptionPane.showMessageDialog(gameView, e.getMessage());
             }
         }
     }
@@ -224,13 +228,16 @@ public class GameViewController implements ConnectionListener {
     private void setForeground(RoomDto room) {
         Long tileSetId = room.getFrontTileSetId();
         if ( tileSetId != null ) {
-            GetTileSetResultDTO response = connectionController.sendReceive(new GetTileSetDTO(tileSetId), GetTileSetResultDTO.class);
-            TileSetDto tileSetDto = response.getTileSetDto();
-            if ( tileSetDto != null ) {
-                TileSet tileSet = new TileSet(tileSetDto);
-                gameView.scheduleAction(() -> gameView.setForeground(tileSet, room.getFrontTileMap()));
-            } else {
-                JOptionPane.showMessageDialog(gameView, "Foreground TileSet " + tileSetId +" not found on server");
+            try {
+                TileSetDto tileSetDto = microServerProxy.getTileSet(tileSetId);
+                if ( tileSetDto != null ) {
+                    TileSet tileSet = new TileSet(tileSetDto);
+                    gameView.scheduleAction(() -> gameView.setForeground(tileSet, room.getFrontTileMap()));
+                } else {
+                    JOptionPane.showMessageDialog(gameView, "Foreground TileSet " + tileSetId +" not found on server");
+                }
+            } catch (MicroServerException e) {
+                JOptionPane.showMessageDialog(gameView, e.getMessage());
             }
         }
     }
@@ -314,7 +321,7 @@ public class GameViewController implements ConnectionListener {
     public void sendMoveRequest(boolean forward, boolean backward, boolean left, boolean right) {
         MovementRequestDTO requestDTO = getCurrentMoveRequest(forward, backward, left, right);
         if (requestDTO != null) {
-            connectionController.send(requestDTO);
+            microServerProxy.getConnectionController().send(requestDTO);
         }
     }
 
@@ -344,15 +351,14 @@ public class GameViewController implements ConnectionListener {
     }
 
     public void updateThingLocationRequest(Long thingId, int x, int y) {
-        UpdateThingLocationDto updateThingLocationDto = new UpdateThingLocationDto(thingId, x, y);
-        connectionController.send(updateThingLocationDto);
+        microServerProxy.updateThingLocation(thingId, x, y);
     }
 
     public void exitClicked(Long id, String name, String roomURI) {
         if ( roomURI == null ) {
             int result = JOptionPane.showConfirmDialog(windowController.getWindow(), "Use exit '" + name + "'?", "Use exit " + name, JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
-                connectionController.send(new UseExitRequestDTO(id));
+                microServerProxy.useExit(id);
             }
         } else {
             // To another server
@@ -365,7 +371,6 @@ public class GameViewController implements ConnectionListener {
     }
 
     public void updateExitLocationRequest(Long exitID, int x, int y) {
-        UpdateExitLocationDto updateExitLocationDto = new UpdateExitLocationDto(exitID,currentRoom.getId(), x, y);
-        connectionController.send(updateExitLocationDto);
+        microServerProxy.updateExitLocation(exitID,currentRoom.getId(), x, y);
     }
 }

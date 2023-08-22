@@ -8,6 +8,7 @@ import com.hamming.storim.client.controller.LoginPanelController;
 import com.hamming.storim.client.listitem.VerbListItem;
 import com.hamming.storim.client.panels.ChatPanel;
 import com.hamming.storim.client.panels.LoginPanel;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.protocol.request.ExecVerbDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
@@ -32,7 +33,6 @@ import java.util.Map;
 
 public class FileMenuController implements ConnectionListener {
 
-    private ConnectionController connectionController;
     private LoginPanel loginPanel;
     private JFrame connectFrame;
     private LoginPanelController loginPanelController;
@@ -40,19 +40,20 @@ public class FileMenuController implements ConnectionListener {
     private STORIMWindowController windowController;
     private List<STORIMConnectionDetails> recents;
     private static String RECENTS_FILENAME = "recents.dat";
+    private MicroServerProxy microServerProxy;
 
 
-    public FileMenuController(STORIMWindow storimWindow, STORIMWindowController windowController, ConnectionController connectionController) {
+    public FileMenuController(STORIMWindow storimWindow, STORIMWindowController windowController, MicroServerProxy microServerProxy) {
         this.window = storimWindow;
         this.windowController=  windowController;
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
+        this.microServerProxy = microServerProxy;
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
     }
 
     private void registerReceivers() {
-       connectionController.registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
+        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
      }
 
 
@@ -63,7 +64,7 @@ public class FileMenuController implements ConnectionListener {
         window.getMenuDisconnect().setEnabled(false);
 
         loginPanel = new LoginPanel();
-        loginPanelController = new LoginPanelController(windowController, loginPanel, connectionController);
+        loginPanelController = new LoginPanelController(windowController, loginPanel, microServerProxy);
         window.getMenuConnect().addActionListener(e -> {
             connectFrame.setVisible(true);
         });

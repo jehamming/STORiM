@@ -50,7 +50,7 @@ public class PlaceThingInRoomAction extends Action<PlaceThingInRoomDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         String serverName = client.getServer().getServerName();
 
-        Location location = new Location(thing.getId(), serverName, room.getId(), room.getSpawnPointX(), room.getSpawnPointY());
+        Location location = new Location(thing.getId(), serverName, room.getId(), room.getSpawnCol(), room.getSpawnRow());
 
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
         //Store location at dataserver

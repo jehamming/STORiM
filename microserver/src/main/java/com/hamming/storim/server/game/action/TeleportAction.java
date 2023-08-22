@@ -38,8 +38,8 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
             Location currentLocation = controller.getGameState().getUserLocation(user.getId());
             Long fromRoomId = currentLocation.getRoomId();
             currentLocation.setRoomId(newRoom.getId());
-            currentLocation.setX(newRoom.getSpawnPointX());
-            currentLocation.setY(newRoom.getSpawnPointY());
+            currentLocation.setX(newRoom.getSpawnCol());
+            currentLocation.setY(newRoom.getSpawnRow());
             controller.getGameState().setUserLocation(user, currentLocation);
             client.setRoom(newRoomId);
             // Send current User info

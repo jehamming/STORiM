@@ -5,6 +5,8 @@ import com.hamming.storim.client.listitem.TileSetListItem;
 import com.hamming.storim.client.panels.RoomTileEditorPanel;
 import com.hamming.storim.client.view.RoomTileMapEditorView;
 import com.hamming.storim.client.view.TileSet;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.TileSetDto;
@@ -25,10 +27,11 @@ import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class RoomTileMapEditorPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
+    private MicroServerProxy microServerProxy;
     private RoomTileEditorPanel panel;
     private RoomTileMapEditorView roomTileMapEditorView;
     private RoomDto roomDto;
@@ -39,9 +42,9 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
     private boolean addTileToForeground = false;
 
 
-    public RoomTileMapEditorPanelController(ConnectionController connectionController) {
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
+    public RoomTileMapEditorPanelController(MicroServerProxy microServerProxy) {
+        this.microServerProxy = microServerProxy;
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
     }
 
@@ -54,30 +57,25 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
     }
 
     private void registerReceivers() {
-        connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
-        connectionController.registerReceiver(TileSetAddedDTO.class, (ProtocolReceiver<TileSetAddedDTO>) dto -> addTileSet(dto.getTileSetDto()));
-        connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto.getRoom()));
-        connectionController.registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
+        microServerProxy.getConnectionController().registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
+        microServerProxy.getConnectionController().registerReceiver(TileSetAddedDTO.class, (ProtocolReceiver<TileSetAddedDTO>) dto -> addTileSet(dto.getTileSetDto()));
+        microServerProxy.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto.getRoom()));
+        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
     }
 
     private void loginSuccess(boolean loginSucceeded) {
         if (loginSucceeded) {
             //Get the Tilesets
-            GetTileSetsDTO getTileSetsDTO = new GetTileSetsDTO();
-            GetTileSetsResponseDTO getTileSetsResponseDTO = connectionController.sendReceive(getTileSetsDTO, GetTileSetsResponseDTO.class);
-            if (getTileSetsResponseDTO.getTileSets() != null) {
-                for (Long tileSetId : getTileSetsResponseDTO.getTileSets()) {
-                    TileSetDto tileSetDto = getTileSetFromServer(tileSetId);
+            try {
+                List<Long> tileSetIds = microServerProxy.getTileSets();
+                for (Long tileSetId : tileSetIds) {
+                    TileSetDto tileSetDto = microServerProxy.getTileSet(tileSetId);
                     addTileSet(tileSetDto);
                 }
+            } catch (MicroServerException e) {
+                throw new RuntimeException(e);
             }
         }
-    }
-
-    private TileSetDto getTileSetFromServer(Long tileSetId) {
-        GetTileSetDTO getTileSetDTO = new GetTileSetDTO(tileSetId);
-        GetTileSetResultDTO getTileSetResultDTO = connectionController.sendReceive(getTileSetDTO, GetTileSetResultDTO.class);
-        return getTileSetResultDTO.getTileSetDto();
     }
 
     private void roomUpdated(RoomDto room) {
@@ -206,11 +204,10 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
         Long roomID = roomDto.getId();
         Long bgTileSetId = null;
         Long fgTileSetId = null;
-        if ( bgTileSet != null ) bgTileSetId =  bgTileSet.getId();
-        if ( fgTileSet != null )fgTileSetId = fgTileSet.getId();
+        if (bgTileSet != null) bgTileSetId = bgTileSet.getId();
+        if (fgTileSet != null) fgTileSetId = fgTileSet.getId();
 
-        UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomID, null, -1, -1, bgTileSetId, newBackgroundTilemap, fgTileSetId, newForegroundTilemap);
-        connectionController.send(updateRoomDto);
+        microServerProxy.updateRoom(roomID, null, -1, -1, bgTileSetId, newBackgroundTilemap, fgTileSetId, newForegroundTilemap);
     }
 
     private void applyTileToAll() {
@@ -223,7 +220,7 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
 
     public void applyBackgroundTile(boolean delete, int row, int col) {
         int tileIndex;
-        if ( !delete ) {
+        if (!delete) {
             tileIndex = panel.getCmbBackgroundTiles().getSelectedIndex();
         } else {
             tileIndex = -1;
@@ -236,8 +233,8 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
 
     public void applyForegroundTile(boolean delete, int row, int col) {
         int tileIndex;
-        if ( !delete ) {
-             tileIndex = panel.getCmbForegroundTiles().getSelectedIndex();
+        if (!delete) {
+            tileIndex = panel.getCmbForegroundTiles().getSelectedIndex();
         } else {
             tileIndex = -1;
         }
@@ -293,7 +290,7 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
                 index = i;
             }
         }
-        if (index > -1 ) cmb.setSelectedIndex(index);
+        if (index > -1) cmb.setSelectedIndex(index);
     }
 
 

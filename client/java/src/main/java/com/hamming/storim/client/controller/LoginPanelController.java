@@ -2,12 +2,12 @@ package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.panels.LoginPanel;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.StorimURI;
-import com.hamming.storim.common.controllers.ConnectionController;
-import com.hamming.storim.common.dto.protocol.requestresponse.ConnectDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.ConnectResultDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.LoginDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginWithTokenDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginWithTokenResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 
@@ -19,13 +19,13 @@ public class LoginPanelController implements ConnectionListener {
 
     private LoginPanel panel;
     private STORIMWindowController windowController;
-    private ConnectionController connectionController;
+    private MicroServerProxy microServerProxy;
 
 
-    public LoginPanelController(STORIMWindowController windowController, LoginPanel panel, ConnectionController connectionController) {
+    public LoginPanelController(STORIMWindowController windowController, LoginPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
+        this.microServerProxy = microServerProxy;
+        microServerProxy.getConnectionController().addConnectionListener(this);
         this.windowController = windowController;
         setup();
     }
@@ -40,29 +40,19 @@ public class LoginPanelController implements ConnectionListener {
         connectToServer(serverURLTxt, username, password);
     }
 
-    public void connectToServer(String serverURLTxt, String username,String password ) {
+    public void connectToServer(String serverURLTxt, String username, String password) {
         try {
-
             StorimURI serverURI = new StorimURI(serverURLTxt);
-
             // Connect
-            connectionController.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
-
+            microServerProxy.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
             // Do login request
-            LoginDTO dto = ProtocolHandler.getInstance().getLoginDTO(username, password, serverURI.getRoomId());
-            LoginResultDTO loginResult = connectionController.sendReceive(dto, LoginResultDTO.class);
-
-            if (loginResult.isSuccess()) {
-                windowController.setCurrentUser(loginResult.getUser());
-                windowController.setUserToken(loginResult.getToken());
-                panel.getBtnConnect().setEnabled(false);
-            } else {
-                JOptionPane.showMessageDialog(panel, loginResult.getErrorMessage());
-                disconnect();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            LoginResultDTO loginResult = microServerProxy.login(username, password, serverURI.getRoomId());
+            windowController.setCurrentUser(loginResult.getUser());
+            windowController.setUserToken(loginResult.getToken());
+            panel.getBtnConnect().setEnabled(false);
+        } catch (MicroServerException e) {
             JOptionPane.showMessageDialog(panel, e.getMessage());
+            disconnect();
         }
     }
 
@@ -73,22 +63,17 @@ public class LoginPanelController implements ConnectionListener {
             StorimURI serverURI = new StorimURI(serverURItxt);
 
             // Connect
-            connectionController.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
+            microServerProxy.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
 
             // Do connect request
-            ConnectDTO connectDTO = ProtocolHandler.getInstance().getConnectDTO(userID, token, serverURI.getRoomId());
-            ConnectResultDTO connectResultDTO = connectionController.sendReceive(connectDTO, ConnectResultDTO.class);
+            LoginWithTokenResultDTO loginWithTokenResultDTO = microServerProxy.loginWithToken(userID, token, serverURI.getRoomId());
 
-            if (connectResultDTO.isSuccess()) {
-                SwingUtilities.invokeLater(() -> {
-                    panel.getBtnConnect().setEnabled(false);
-                });
-            } else {
-                JOptionPane.showMessageDialog(panel, connectResultDTO.getErrorMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(panel, e);
+            SwingUtilities.invokeLater(() -> {
+                panel.getBtnConnect().setEnabled(false);
+            });
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
+            disconnect();
         }
     }
 

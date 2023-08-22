@@ -8,6 +8,8 @@ public class BasicDrawableObject {
     private Long id;
     private Image image;
     private int x, y;
+    private int serverX, serverY;
+
 
     public boolean isSelected() {
         return selected;
@@ -37,16 +39,8 @@ public class BasicDrawableObject {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY() {
         return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     @Override
@@ -72,6 +66,22 @@ public class BasicDrawableObject {
         return x >= startX && x <= endX && y >= startY && y <= endY;
     }
 
+    public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
+    public void setServerLocation( int serverX, int serverY ) {
+        this.serverX = serverX;
+        this.serverY = serverY;
+    }
 
+    public int getServerX() {
+        return serverX;
+    }
+
+    public int getServerY() {
+        return serverY;
+    }
 }
+

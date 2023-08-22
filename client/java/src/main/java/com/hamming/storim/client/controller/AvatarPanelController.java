@@ -4,6 +4,8 @@ import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.listitem.AvatarListItem;
 import com.hamming.storim.client.panels.AvatarPanel;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.protocol.request.AddAvatarDto;
@@ -27,11 +29,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AvatarPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
     private AvatarPanel panel;
     private STORIMWindowController windowController;
     private DefaultListModel<AvatarListItem> avatarModel = new DefaultListModel<>();
@@ -39,23 +41,24 @@ public class AvatarPanelController implements ConnectionListener {
     private Image avatarImage;
     private AvatarDto selectedAvatar;
     private JFileChooser fileChooser;
+    private MicroServerProxy microServerProxy;
 
 
-    public AvatarPanelController(STORIMWindowController windowController, AvatarPanel panel, ConnectionController connectionController) {
+    public AvatarPanelController(STORIMWindowController windowController, AvatarPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.windowController = windowController;
-        this.connectionController = connectionController;
+        this.microServerProxy = microServerProxy;
         this.fileChooser = new JFileChooser();
-        connectionController.addConnectionListener(this);
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
     }
 
     private void registerReceivers() {
-        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
-        connectionController.registerReceiver(AvatarAddedDTO.class, (ProtocolReceiver<AvatarAddedDTO>) dto -> avatarAdded(dto.getAvatar()));
-        connectionController.registerReceiver(AvatarDeletedDTO.class, (ProtocolReceiver<AvatarDeletedDTO>) dto -> avatarDeleted(dto.getAvatarId()));
-        connectionController.registerReceiver(AvatarUpdatedDTO.class, (ProtocolReceiver<AvatarUpdatedDTO>) dto -> avatarUpdated(dto.getAvatar()));
+        microServerProxy.getConnectionController().registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
+        microServerProxy.getConnectionController().registerReceiver(AvatarAddedDTO.class, (ProtocolReceiver<AvatarAddedDTO>) dto -> avatarAdded(dto.getAvatar()));
+        microServerProxy.getConnectionController().registerReceiver(AvatarDeletedDTO.class, (ProtocolReceiver<AvatarDeletedDTO>) dto -> avatarDeleted(dto.getAvatarId()));
+        microServerProxy.getConnectionController().registerReceiver(AvatarUpdatedDTO.class, (ProtocolReceiver<AvatarUpdatedDTO>) dto -> avatarUpdated(dto.getAvatar()));
     }
 
     private void setCurrentUser(SetCurrentUserDTO dto) {
@@ -69,22 +72,22 @@ public class AvatarPanelController implements ConnectionListener {
         }
     }
 
-    private List<Long> getAvatars(Long id) {
-        List<Long> result = null;
-        GetAvatarsDTO getAvatarsRequestDTO = new GetAvatarsDTO(id);
-        GetAvatarsResponseDTO getAvatarsResponseDTO = connectionController.sendReceive(getAvatarsRequestDTO, GetAvatarsResponseDTO.class);
-        if ( getAvatarsResponseDTO.getAvatars() != null ) {
-            result = getAvatarsResponseDTO.getAvatars();
+    private List<Long> getAvatars(Long userId) {
+        List<Long> result = new ArrayList<>();
+        try {
+            result = microServerProxy.getAvatars(userId);
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
         return result;
     }
 
-    private AvatarDto getAvatar(Long id) {
+    private AvatarDto getAvatar(Long avatarId) {
         AvatarDto result = null;
-        GetAvatarDTO getAvatarRequestDTO = new GetAvatarDTO(id);
-        GetAvatarResponseDTO getAvatarResponseDTO = connectionController.sendReceive(getAvatarRequestDTO, GetAvatarResponseDTO.class);
-        if ( getAvatarResponseDTO.getAvatar() != null ) {
-            result = getAvatarResponseDTO.getAvatar();
+        try {
+            result = microServerProxy.getAvatar(avatarId);
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
         return result;
     }
@@ -124,8 +127,7 @@ public class AvatarPanelController implements ConnectionListener {
 
     private void setCurrentAvatar() {
         if (selectedAvatar != null) {
-            SetAvatarDto setAvatarDto = new SetAvatarDto(selectedAvatar.getId());
-            connectionController.send(setAvatarDto);
+            microServerProxy.setAvatar(selectedAvatar.getId());
         }
     }
 
@@ -207,13 +209,11 @@ public class AvatarPanelController implements ConnectionListener {
             return;
         }
         if (newAvatar) {
-            AddAvatarDto addAvatarDto = new AddAvatarDto(avatarName, ImageUtils.encode(avatarImage) );
-            connectionController.send(addAvatarDto);
+            microServerProxy.addAvatar(avatarName, ImageUtils.encode(avatarImage));
         } else {
             // Update !
             Long avatarID = Long.valueOf(panel.getLblAvatarID().getText());
-            UpdateAvatarDto updateAvatarDto = new UpdateAvatarDto(avatarID, avatarName, ImageUtils.encode(avatarImage));
-            connectionController.send(updateAvatarDto);
+            microServerProxy.updateAvatar(avatarID, avatarName, ImageUtils.encode(avatarImage));
         }
 
         panel.setEditable(false);
@@ -225,8 +225,7 @@ public class AvatarPanelController implements ConnectionListener {
 
     private void deleteAvatar() {
         Long avatarID = Long.valueOf(panel.getLblAvatarID().getText());
-        DeleteAvatarDTO deleteAvatarDTO = new DeleteAvatarDTO(avatarID);
-        connectionController.send(deleteAvatarDTO);
+        microServerProxy.deleteAvatar(avatarID);
         panel.empty(false);
 
     }

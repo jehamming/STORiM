@@ -7,6 +7,7 @@ import com.hamming.storim.client.controller.menu.FileMenuController;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.GameViewPanel;
 import com.hamming.storim.client.view.RoomTileMapEditorView;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ErrorDTO;
@@ -22,6 +23,7 @@ import java.awt.event.WindowListener;
 public class STORIMWindowController implements ConnectionListener {
 
     private ConnectionController connectionController;
+    private MicroServerProxy microServerProxy;
     private FileMenuController fileMenuController;
     private EditMenuController editMenuController;
     private AdminMenuController adminMenuController;
@@ -48,11 +50,12 @@ public class STORIMWindowController implements ConnectionListener {
 
     private void init() {
         connectionController = new ConnectionController("STORIM_Java_client");
+        microServerProxy = new MicroServerProxy(connectionController);
         connectionController.addConnectionListener(this);
         window.setTitle(BASIC_TITLE);
         gameView = new GameViewPanel(this);
         gameView.setPreferredSize(new Dimension(500,400));
-        GameViewController viewController = new GameViewController(this, gameView, connectionController);
+        GameViewController viewController = new GameViewController(this, gameView, microServerProxy);
         gameView.setViewController(viewController);
         initComponents();
         initControllers();
@@ -62,15 +65,15 @@ public class STORIMWindowController implements ConnectionListener {
     }
 
     private void initControllers() {
-        fileMenuController = new FileMenuController(window, this, connectionController);
-        editMenuController = new EditMenuController(window, this, connectionController);
-        adminMenuController = new AdminMenuController(window, this, connectionController);
+        fileMenuController = new FileMenuController(window, this, microServerProxy);
+        editMenuController = new EditMenuController(window, this, microServerProxy);
+        adminMenuController = new AdminMenuController(window, this, microServerProxy);
     }
 
     private void initComponents() {
 
         chatPanel = new ChatPanel();
-        chatPanelController = new ChatPanelController(this , chatPanel, connectionController);
+        chatPanelController = new ChatPanelController(this , chatPanel, microServerProxy);
 
         window.setPnlGameView(gameView);
         window.setChatPanel(chatPanel);

@@ -4,6 +4,8 @@ import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.listitem.AvatarListItem;
 import com.hamming.storim.client.listitem.RoomDetailsListItem;
 import com.hamming.storim.client.panels.RoomEditorPanel;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.TileDto;
@@ -18,11 +20,11 @@ import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
 import javax.swing.*;
+import java.util.HashMap;
 import java.util.List;
 
 public class RoomEditorPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
     private RoomEditorPanel panel;
     private STORIMWindowController windowController;
     private DefaultListModel<AvatarListItem> avatarModel = new DefaultListModel<>();
@@ -31,24 +33,25 @@ public class RoomEditorPanelController implements ConnectionListener {
     boolean newRoom = false;
     private UserDto currentUser;
     private RoomDto selectedRoom;
+    private MicroServerProxy microServerProxy;
 
 
-    public RoomEditorPanelController(STORIMWindowController windowController, RoomEditorPanel panel, ConnectionController connectionController) {
+    public RoomEditorPanelController(STORIMWindowController windowController, RoomEditorPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.windowController = windowController;
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
+        this.microServerProxy = microServerProxy;
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
     }
 
 
     private void registerReceivers() {
-        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
-        connectionController.registerReceiver(RoomAddedDTO.class, (ProtocolReceiver<RoomAddedDTO>) dto -> roomAdded(dto.getRoom()));
-        connectionController.registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto.getRoom()));
-        connectionController.registerReceiver(RoomDeletedDTO.class, (ProtocolReceiver<RoomDeletedDTO>) dto -> roomDeleted(dto.getRoomId()));
-        connectionController.registerReceiver(TileAddedDTO.class, (ProtocolReceiver<TileAddedDTO>) dto -> tileAdded(dto.getTile()));
+        microServerProxy.getConnectionController().registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
+        microServerProxy.getConnectionController().registerReceiver(RoomAddedDTO.class, (ProtocolReceiver<RoomAddedDTO>) dto -> roomAdded(dto.getRoom()));
+        microServerProxy.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto.getRoom()));
+        microServerProxy.getConnectionController().registerReceiver(RoomDeletedDTO.class, (ProtocolReceiver<RoomDeletedDTO>) dto -> roomDeleted(dto.getRoomId()));
+        microServerProxy.getConnectionController().registerReceiver(TileAddedDTO.class, (ProtocolReceiver<TileAddedDTO>) dto -> tileAdded(dto.getTile()));
     }
 
     private void tileAdded(TileDto tile) {
@@ -77,7 +80,7 @@ public class RoomEditorPanelController implements ConnectionListener {
         panel.getBtnDelete().setEnabled(false);
         panel.getBtnCreate().setEnabled(false);
         panel.getBtnEditAuthorisation().addActionListener(e -> {
-            AuthorisationPanelController.showAuthorisationPanel(panel, selectedRoom, connectionController);
+            AuthorisationPanelController.showAuthorisationPanel(panel, selectedRoom, microServerProxy);
         });
         panel.getBtnEditAuthorisation().setEnabled(false);
     }
@@ -86,38 +89,23 @@ public class RoomEditorPanelController implements ConnectionListener {
     private void setCurrentUser(SetCurrentUserDTO dto) {
         empty(true);
         currentUser = dto.getUser();
-        GetRoomsForUserResponseDTO response = connectionController.sendReceive(new GetRoomsForUserDTO(currentUser.getId()), GetRoomsForUserResponseDTO.class);
-        if (response != null) {
-            for (Long roomId : response.getRooms().keySet()) {
+        try {
+            HashMap<Long, String> rooms = microServerProxy.getRoomsForUser(currentUser.getId());
+            for (Long roomId : rooms.keySet()) {
                 RoomDto room = getRoom(roomId);
                 roomAdded(room);
             }
+            panel.getBtnCreate().setEnabled(true);
+        } catch (MicroServerException e) {
+            throw new RuntimeException(e);
         }
-        panel.getBtnCreate().setEnabled(true);
-
-        SwingUtilities.invokeLater(() -> {
-            for (Long tileId : getTilesForUser(currentUser.getId())) {
-                TileDto tile = getTile(tileId);
-                tilesModel.addElement(tile);
-            }
-        });
     }
 
 
     private RoomDto getRoom(Long roomId) {
-        GetRoomResultDTO response = connectionController.sendReceive(new GetRoomDTO(roomId), GetRoomResultDTO.class);
-        return response.getRoom();
+        return microServerProxy.getRoom(roomId);
     }
 
-    private TileDto getTile(Long tileId) {
-        GetTileResultDTO response = connectionController.sendReceive(new GetTileDTO(tileId), GetTileResultDTO.class);
-        return response.getTile();
-    }
-
-    private List<Long> getTilesForUser(Long userId) {
-        GetTilesForUserResponseDTO response = connectionController.sendReceive(new GetTilesForUserDTO(userId), GetTilesForUserResponseDTO.class);
-        return response.getTiles();
-    }
 
     @Override
     public void connected() {
@@ -216,14 +204,12 @@ public class RoomEditorPanelController implements ConnectionListener {
     private void teleport() {
         RoomDetailsListItem item = panel.getListRooms().getSelectedValue();
         Long roomId = item.getRoomDto().getId();
-        TeleportRequestDTO teleportRequestDTO = new TeleportRequestDTO(currentUser.getId(), roomId);
-        connectionController.send(teleportRequestDTO);
+        microServerProxy.teleport(currentUser.getId(), roomId);
     }
 
     private void deleteRoom() {
         Long roomId = Long.valueOf(panel.getLblId().getText());
-        DeleteRoomDTO deleteRoomDTO = new DeleteRoomDTO(roomId);
-        connectionController.send(deleteRoomDTO);
+        microServerProxy.deleteRoom(roomId);
         empty(false);
     }
 
@@ -248,13 +234,11 @@ public class RoomEditorPanelController implements ConnectionListener {
         int cols = Integer.valueOf(panel.getTxtCols().getText());
 
         if (newRoom) {
-            AddRoomDto addRoomDto = new AddRoomDto(roomName, rows, cols);
-            connectionController.send(addRoomDto);
+            microServerProxy.addRoom(roomName, rows, cols);
         } else {
             // Update room!
             Long roomId = Long.valueOf(panel.getLblId().getText());
-            UpdateRoomDto updateRoomDto = new UpdateRoomDto(roomId, roomName, rows, cols, null, null, null, null);
-            connectionController.send(updateRoomDto);
+            microServerProxy.updateRoom(roomId, roomName, rows, cols, null, null, null, null);
         }
 
         setEditable(false);

@@ -46,8 +46,6 @@ public class GameViewPanel extends JPanel implements Runnable {
     private TileSet backgroundTileSet;
     private TileSet foregroundTileSet;
     private GameViewController viewController;
-
-    private Image defaultTileImage;
     private Image defaultUserImage;
     private Image arrowForward;
     private Image arrowBack;
@@ -108,8 +106,9 @@ public class GameViewPanel extends JPanel implements Runnable {
         public void run() {
             Point p = MouseInfo.getPointerInfo().getLocation();
             SwingUtilities.convertPointFromScreen(p, GameViewPanel.this);
-            thing.setX((int) p.getX());
-            thing.setY((int) p.getY());
+            int newX = (int) p.getX();
+            int newY = (int) p.getY();
+            thing.setLocation(newX, newY);
             repaint();
         }
 
@@ -128,8 +127,9 @@ public class GameViewPanel extends JPanel implements Runnable {
         public void run() {
             Point p = MouseInfo.getPointerInfo().getLocation();
             SwingUtilities.convertPointFromScreen(p, GameViewPanel.this);
-            exit.setX((int) p.getX());
-            exit.setY((int) p.getY());
+            int newX = (int) p.getX();
+            int newY = (int) p.getY();
+            exit.setLocation(newX, newY);
             repaint();
         }
 
@@ -147,7 +147,6 @@ public class GameViewPanel extends JPanel implements Runnable {
         things = new ArrayList<>();
         exits = new ArrayList<>();
         try {
-            defaultTileImage = ImageIO.read(new File("resources/Tile.png"));
             defaultUserImage = ImageIO.read(new File("resources/User.png"));
             arrowForward = ImageIO.read(new File("resources/arrowForward.png"));
             arrowBack = ImageIO.read(new File("resources/arrowBack.png"));
@@ -171,6 +170,7 @@ public class GameViewPanel extends JPanel implements Runnable {
                     selectedObject.setSelected(!selectedObject.isSelected()); //Flip
                     if (selectedObject.isSelected()) {
                         selectObject(selectedObject);
+                        repaint();
                     }
                     if (selectedObject instanceof Exit) {
                         Exit exit = (Exit) selectedObject;
@@ -265,10 +265,6 @@ public class GameViewPanel extends JPanel implements Runnable {
 
     public void setViewController(GameViewController viewController) {
         this.viewController = viewController;
-    }
-
-    public Image getDefaultUserImage() {
-        return defaultUserImage;
     }
 
     private void selectObject(BasicDrawableObject selectedObject) {
@@ -391,7 +387,6 @@ public class GameViewPanel extends JPanel implements Runnable {
             String text = room.getRoomURI() + " (" + room.getName() + ")";
             windowController.setRoomname(text);
         }
-
     }
 
 
@@ -598,8 +593,9 @@ public class GameViewPanel extends JPanel implements Runnable {
         int middleY = p.getImage().getHeight(null) / 2;
         float speechBalloonScale = (float) middleX / speechBalloon.getWidth(null) ;
         Image scaledSpeechBalloon = ImageUtils.scaleImage(speechBalloon,speechBalloonScale );
-        Graphics2D g2 = (Graphics2D) g;
-        g.drawImage( scaledSpeechBalloon, (int) (p.getX()) - middleX, (int) (p.getY()) - middleY, null);
+        int x = p.getX() - middleX;
+        int y = p.getY() - middleY;
+        g.drawImage( scaledSpeechBalloon,x,y, null);
     }
 
     private void drawSelectionHighlight(Graphics g, BasicDrawableObject o) {
@@ -611,7 +607,9 @@ public class GameViewPanel extends JPanel implements Runnable {
         g2.setStroke(new BasicStroke(thickness));
         Color old = g.getColor();
         g.setColor(Color.red);
-        g.drawRect((int) (o.getX()) - middleX, (int) (o.getY()) - middleY, o.getImage().getWidth(null), o.getImage().getHeight(null));
+        int x = o.getX() - middleX;
+        int y = o.getY() - middleY;
+        g.drawRect(x, y, o.getImage().getWidth(null), o.getImage().getHeight(null));
         g.setColor(old);
         g2.setStroke(oldStroke);
     }
@@ -644,6 +642,14 @@ public class GameViewPanel extends JPanel implements Runnable {
                 drawSpeechBalloon(g, player);
             }
         }
+    }
+
+    private int xToScreen(int x) {
+        return (int) (unitX * x);
+    }
+
+    private int yToScreen(int y) {
+        return (int) (unitY * y);
     }
 
 
@@ -721,25 +727,32 @@ public class GameViewPanel extends JPanel implements Runnable {
         setExits(new ArrayList<>());
     }
 
-
-    private void setLocation(BasicDrawableObject o, int x, int y) {
-        o.setX((int) (x * unitX));
-        o.setY((int) (y * unitY));
-    }
-
-    public void setPlayerLocation(Long id, int x, int y) {
+    public void setPlayerLocation(Long id, int serverX, int serverY) {
         Player p = getPlayer(id);
-        if ( p != null ) setLocation(p, x, y);
+        if ( p != null ) {
+            setServerLocation(p, serverX, serverY);
+        }
     }
 
-    public void setThingLocation(Long id, int x, int y) {
+    private void setServerLocation(BasicDrawableObject o, int serverX, int serverY) {
+        int x = xToScreen(serverX);
+        int y = yToScreen(serverY);
+        o.setLocation(x, y);
+        o.setServerLocation(serverX, serverY);
+    }
+
+    public void setThingLocation(Long id, int serverX, int serverY) {
         Thing t = getThing(id);
-        if ( t != null ) setLocation(t, x, y);
+        if ( t != null ) {
+            setServerLocation(t, serverX, serverY);
+        };
     }
 
-    public void setExitLocation(Long id, int x, int y) {
+    public void setExitLocation(Long id, int serverX, int serverY) {
         Exit e = getExit(id);
-        if ( e != null ) setLocation(e, x, y);
+        if ( e != null ) {
+            setServerLocation(e, serverX, serverY);
+        }
     }
 
 
@@ -800,6 +813,19 @@ public class GameViewPanel extends JPanel implements Runnable {
         int roomHeight = room.getRows() * backgroundTileSet.getTileHeight();
         unitX = (float) getWidth() / (float) roomWidth;
         unitY = (float) getHeight() / (float) roomHeight;
+        updateAllLocations();
+    }
+
+    private void updateAllLocations() {
+        for (BasicDrawableObject o : players) {
+            setServerLocation(o, o.getServerX(), o.getServerY());
+        }
+        for (BasicDrawableObject o : things) {
+            setServerLocation(o, o.getServerX(), o.getServerY());
+        }
+        for (BasicDrawableObject o : exits) {
+            setServerLocation(o, o.getServerX(), o.getServerY());
+        }
     }
 
     public float getUnitX() {

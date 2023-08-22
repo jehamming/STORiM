@@ -5,6 +5,8 @@ import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.listitem.ExitListItem;
 import com.hamming.storim.client.listitem.RoomListItem;
 import com.hamming.storim.client.panels.ExitPanel;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.ExitDto;
 import com.hamming.storim.common.dto.RoomDto;
@@ -28,7 +30,6 @@ import java.util.HashMap;
 
 public class ExitPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
     private ExitPanel panel;
     private STORIMWindowController windowController;
 
@@ -41,13 +42,14 @@ public class ExitPanelController implements ConnectionListener {
     private UserDto currentUser;
     private RoomDto currentRoom;
     private Image defaultExitImage;
+    private MicroServerProxy microServerProxy;
 
-    public ExitPanelController(STORIMWindowController windowController, ExitPanel panel, ConnectionController connectionController) {
+    public ExitPanelController(STORIMWindowController windowController, ExitPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.windowController = windowController;
-        this.connectionController = connectionController;
+        this.microServerProxy = microServerProxy;
         this.fileChooser = new JFileChooser();
-        connectionController.addConnectionListener(this);
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
         empty(true);
@@ -56,13 +58,13 @@ public class ExitPanelController implements ConnectionListener {
 
 
     private void registerReceivers() {
-        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
-        connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
-        connectionController.registerReceiver(ExitAddedDTO.class, (ProtocolReceiver<ExitAddedDTO>) dto -> exitAdded(dto.getExitDto()));
-        connectionController.registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> exitDeleted(dto.getExitID()));
-        connectionController.registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> exitUpdated(dto.getExitDto()));
-        connectionController.registerReceiver(ExitInRoomDTO.class, (ProtocolReceiver<ExitInRoomDTO>) dto -> exitAdded(dto.getExitDto()));
-        connectionController.registerReceiver(RoomAddedDTO.class, (ProtocolReceiver<RoomAddedDTO>) dto -> roomAdded(dto.getRoom()));
+        microServerProxy.getConnectionController().registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
+        microServerProxy.getConnectionController().registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
+        microServerProxy.getConnectionController().registerReceiver(ExitAddedDTO.class, (ProtocolReceiver<ExitAddedDTO>) dto -> exitAdded(dto.getExitDto()));
+        microServerProxy.getConnectionController().registerReceiver(ExitDeletedDTO.class, (ProtocolReceiver<ExitDeletedDTO>) dto -> exitDeleted(dto.getExitID()));
+        microServerProxy.getConnectionController().registerReceiver(ExitUpdatedDTO.class, (ProtocolReceiver<ExitUpdatedDTO>) dto -> exitUpdated(dto.getExitDto()));
+        microServerProxy.getConnectionController().registerReceiver(ExitInRoomDTO.class, (ProtocolReceiver<ExitInRoomDTO>) dto -> exitAdded(dto.getExitDto()));
+        microServerProxy.getConnectionController().registerReceiver(RoomAddedDTO.class, (ProtocolReceiver<RoomAddedDTO>) dto -> roomAdded(dto.getRoom()));
     }
 
     private void roomAdded(RoomDto room) {
@@ -118,11 +120,8 @@ public class ExitPanelController implements ConnectionListener {
     }
 
     private void fillRoomsCombobox() {
-        GetRoomsDTO getRoomsDTO = new GetRoomsDTO();
-        GetRoomsResultDTO getRoomsResultDTO = connectionController.sendReceive(getRoomsDTO, GetRoomsResultDTO.class);
-        if ( getRoomsResultDTO != null && getRoomsResultDTO.getRooms() != null) {
-            HashMap<Long, String> rooms = getRoomsResultDTO.getRooms();
-
+        try {
+            HashMap<Long, String> rooms = microServerProxy.getRooms();
             for (Long roomId : rooms.keySet() ) {
                 if ( currentRoom.getId() != roomId ) {
                     String roomName = rooms.get(roomId);
@@ -132,6 +131,8 @@ public class ExitPanelController implements ConnectionListener {
                     });
                 }
             }
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
     }
 
@@ -223,8 +224,7 @@ public class ExitPanelController implements ConnectionListener {
         String toRoomURI = panel.getTfRoomURI().getText().trim();
         byte[] imageData = ImageUtils.encode(exitImage);
         if (newExit) {
-            AddExitDto addExitDto = new AddExitDto(exitName, toRoomURI ,toRoomID, exitDescription, exitScale, exitRotation, imageData);
-            connectionController.send(addExitDto);
+            microServerProxy.addExit(exitName, toRoomURI ,toRoomID, exitDescription, exitScale, exitRotation, imageData);
             setEditable(false);
             empty(false);
             panel.getListExits().clearSelection();
@@ -232,16 +232,14 @@ public class ExitPanelController implements ConnectionListener {
         } else {
             // Update !
             Long thingId = Long.valueOf(panel.getLblID().getText());
-            UpdateExitDto updateExitDto = new UpdateExitDto(thingId, exitName, toRoomID, toRoomURI, exitDescription, exitScale, exitRotation, ImageUtils.encode(exitImage));
-            connectionController.send(updateExitDto);
+            microServerProxy.updateExit(thingId, exitName, toRoomID, toRoomURI, exitDescription, exitScale, exitRotation, ImageUtils.encode(exitImage));
         }
 
     }
 
     private void deleteExit() {
-        Long thingID = Long.valueOf(panel.getLblID().getText());
-        DeleteExitDTO deleteExitDTO = new DeleteExitDTO(thingID);
-        connectionController.send(deleteExitDTO);
+        Long exitId = Long.valueOf(panel.getLblID().getText());
+        microServerProxy.deleteExit(exitId);
         empty(false);
     }
 

@@ -4,6 +4,7 @@ import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.listitem.UserListItem;
 import com.hamming.storim.client.listitem.VerbListItem;
 import com.hamming.storim.client.panels.UserInfoPanel;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.serverpush.UserDisconnectedDTO;
@@ -20,24 +21,24 @@ import java.util.Enumeration;
 
 public class UserInfoPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
+    private MicroServerProxy microServerProxy;
     private UserInfoPanel panel;
     private STORIMWindowController windowController;
     private DefaultListModel<UserListItem> onlineUsersListmodel;
     private DefaultListModel<VerbListItem> verbsListmodel;
 
-    public UserInfoPanelController(STORIMWindowController windowController, UserInfoPanel panel, ConnectionController connectionController) {
+    public UserInfoPanelController(STORIMWindowController windowController, UserInfoPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.windowController = windowController;
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
+        this.microServerProxy = microServerProxy;
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
     }
 
     private void registerReceivers() {
-        connectionController.registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
-        connectionController.registerReceiver(UserOnlineDTO.class, (ProtocolReceiver<UserOnlineDTO>) dto -> userOnline(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserOnlineDTO.class, (ProtocolReceiver<UserOnlineDTO>) dto -> userOnline(dto));
     }
 
     private void userOnline(UserOnlineDTO dto) {

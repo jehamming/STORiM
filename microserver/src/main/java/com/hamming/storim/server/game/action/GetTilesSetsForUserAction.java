@@ -27,7 +27,7 @@ public class GetTilesSetsForUserAction extends Action<GetTileSetsForUserDTO> {
         Long userId = getDto().getUserId();
         List<TileSet> tileSets = TileSetFactory.getInstance().getAllTileSets();
         for (TileSet ts : tileSets) {
-            if (ts.getOwnerId().equals( userId) || ts.getEditors().contains(userId) || getClient().isAdmin()) {
+            if (getClient().isAuthorized(ts)) {
                 tileSetIds.add(ts.getId());
             }
         }

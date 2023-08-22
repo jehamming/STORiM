@@ -1,6 +1,7 @@
 package com.hamming.storim.server.common;
 
 
+import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
@@ -9,12 +10,14 @@ import com.hamming.storim.common.net.ProtocolReceiver;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.action.Action;
+import com.hamming.storim.server.common.model.BasicObject;
 
 import java.net.Socket;
 
 //  ClientConnection, able to handle Async traffic and Sync actions
 public abstract class ClientConnection implements ProtocolReceiver, ConnectionListener {
 
+    private UserDto currentUser;
     private ProtocolHandler<Action> protocolHandler;
     private String id;
     private ServerWorker serverWorker;
@@ -85,4 +88,22 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
     public void setAdmin(boolean admin) {
         this.admin = admin;
     }
+
+    public UserDto getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(UserDto currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public boolean isAuthorized(BasicObject b) {
+        boolean authorized = false;
+        if ( currentUser != null ) {
+            authorized = b.getOwnerId().equals(currentUser.getId()) || b.getEditors().contains( currentUser.getId() ) || isAdmin();
+        }
+        return authorized;
+    }
+
+
 }

@@ -2,6 +2,8 @@ package com.hamming.storim.client.controller;
 
 import com.hamming.storim.client.listitem.ShortUserListItem;
 import com.hamming.storim.client.panels.AuthorisationPanel;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.BasicObjectDTO;
 import com.hamming.storim.common.dto.protocol.request.UpdateAuthorisationDto;
@@ -23,7 +25,6 @@ import java.util.List;
 
 public class AuthorisationPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
     private AuthorisationPanel panel;
     private DefaultComboBoxModel<ShortUserListItem> editorsModel = new DefaultComboBoxModel<>();
     private DefaultComboBoxModel<ShortUserListItem> searchResultsModel = new DefaultComboBoxModel<>();
@@ -31,14 +32,15 @@ public class AuthorisationPanelController implements ConnectionListener {
     private JFrame frame;
     private Component parent;
     private BasicObjectDTO dto;
+    private MicroServerProxy microServerProxy;
 
-    private AuthorisationPanelController(Component parent, BasicObjectDTO dto, AuthorisationPanel panel, ConnectionController connectionController) {
+    private AuthorisationPanelController(Component parent, BasicObjectDTO dto, AuthorisationPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.dto = dto;
-        this.connectionController = connectionController;
+        this.microServerProxy = microServerProxy;
         this.objectTitle =  "(" + dto.getId() + ")"+ dto.getName();
         this.parent = parent;
-        connectionController.addConnectionListener(this);
+        microServerProxy.getConnectionController().addConnectionListener(this);
         setup();
     }
 
@@ -52,9 +54,9 @@ public class AuthorisationPanelController implements ConnectionListener {
         frame.setLocationRelativeTo(parent);
     }
 
-    public static void showAuthorisationPanel(Component parent, BasicObjectDTO dto, ConnectionController connectionController) {
+    public static void showAuthorisationPanel(Component parent, BasicObjectDTO dto, MicroServerProxy microServerProxy) {
         AuthorisationPanel panel = new AuthorisationPanel();
-        AuthorisationPanelController authorisationPanelController = new AuthorisationPanelController(parent, dto, panel, connectionController);
+        AuthorisationPanelController authorisationPanelController = new AuthorisationPanelController(parent, dto, panel, microServerProxy);
         authorisationPanelController.show();
     }
 
@@ -114,8 +116,7 @@ public class AuthorisationPanelController implements ConnectionListener {
     private void save() {
         List<Long> newEditorIds = getEditorIds();
         // Send update to Server
-        UpdateAuthorisationDto uaDto = new UpdateAuthorisationDto(dto.getId(), dto.getClass().getSimpleName(), newEditorIds);
-        connectionController.send(uaDto);
+        microServerProxy.sendAuthorisationUpdate(dto.getId(), dto.getClass().getSimpleName(), newEditorIds);
         frame.dispose();
 
     }
@@ -178,22 +179,22 @@ public class AuthorisationPanelController implements ConnectionListener {
     }
 
     private HashMap<Long, String> searchUsers(String searchText) {
-        HashMap<Long, String> foundUsers = new HashMap<>();
-        SearchUsersRequestDTO request = new SearchUsersRequestDTO(searchText);
-        SearchUsersResultDTO result = connectionController.sendReceive(request, SearchUsersResultDTO.class);
-        if (result.isSuccess()) {
-            foundUsers = result.getUsers();
+        HashMap<Long, String> found = new HashMap<>();
+        try {
+            found = microServerProxy.findUsersByDisplayname(searchText);
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
-        return foundUsers;
+        return found;
     }
 
 
     private String getName(Long userID) {
         String name = "";
-        GetUserDTO getUserDTO = new GetUserDTO(userID);
-        GetUserResultDTO getUserResultDTO = connectionController.sendReceive(getUserDTO, GetUserResultDTO.class);
-        if (getUserResultDTO.isSuccess()) {
-            name = getUserResultDTO.getUser().getName();
+        try {
+            name = microServerProxy.getUser(userID).getName();
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
         return name;
     }

@@ -3,6 +3,8 @@ package com.hamming.storim.client.controller;
 import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.listitem.VerbDetailListItem;
 import com.hamming.storim.client.panels.VerbEditorPanel;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.ProtocolHandler;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.VerbDetailsDTO;
@@ -24,26 +26,26 @@ import java.awt.event.KeyListener;
 
 public class VerbEditorPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
+    private MicroServerProxy microServerProxy;
     private VerbEditorPanel panel;
     private STORIMWindowController windowController;
     private DefaultComboBoxModel<VerbDetailListItem> verbsModel = new DefaultComboBoxModel<>();
     private boolean newVerb = false;
 
-    public VerbEditorPanelController(STORIMWindowController windowController, VerbEditorPanel panel, ConnectionController connectionController) {
+    public VerbEditorPanelController(STORIMWindowController windowController, VerbEditorPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.windowController = windowController;
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
+        this.microServerProxy = microServerProxy;
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
     }
 
     private void registerReceivers() {
-       connectionController.registerReceiver(VerbAddedDTO.class, (ProtocolReceiver<VerbAddedDTO>) dto -> verbAdded(dto));
-       connectionController.registerReceiver(UserVerbsDTO.class, (ProtocolReceiver<UserVerbsDTO>) dto -> setVerbs(dto));
-       connectionController.registerReceiver(VerbDeletedDTO.class, (ProtocolReceiver<VerbDeletedDTO>) dto -> verbDeleted(dto));
-       connectionController.registerReceiver(VerbUpdatedDTO.class, (ProtocolReceiver<VerbUpdatedDTO>) dto -> verbUpdated(dto));
+       microServerProxy.getConnectionController().registerReceiver(VerbAddedDTO.class, (ProtocolReceiver<VerbAddedDTO>) dto -> verbAdded(dto));
+       microServerProxy.getConnectionController().registerReceiver(UserVerbsDTO.class, (ProtocolReceiver<UserVerbsDTO>) dto -> setVerbs(dto));
+       microServerProxy.getConnectionController().registerReceiver(VerbDeletedDTO.class, (ProtocolReceiver<VerbDeletedDTO>) dto -> verbDeleted(dto));
+       microServerProxy.getConnectionController().registerReceiver(VerbUpdatedDTO.class, (ProtocolReceiver<VerbUpdatedDTO>) dto -> verbUpdated(dto));
     }
 
     private void verbUpdated(VerbUpdatedDTO dto) {
@@ -91,13 +93,13 @@ public class VerbEditorPanelController implements ConnectionListener {
     }
 
     private VerbDetailsDTO getVerb(Long id) {
-        VerbDetailsDTO result = null;
-        GetVerbDTO getVerbDTO = new GetVerbDTO(id);
-        GetVerbResponseDTO getVerbResponseDTO = connectionController.sendReceive(getVerbDTO, GetVerbResponseDTO.class);
-        if ( getVerbResponseDTO != null && getVerbResponseDTO.getVerb() != null ) {
-            result = getVerbResponseDTO.getVerb();
+        VerbDetailsDTO verbDetailsDTO = null;
+        try {
+            verbDetailsDTO = microServerProxy.getVerb(id);
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
-        return result;
+        return verbDetailsDTO;
     }
 
     private void setVerbs(UserVerbsDTO dto) {
@@ -167,13 +169,11 @@ public class VerbEditorPanelController implements ConnectionListener {
             String toCaller = panel.getTxtToCaller().getText().trim();
             String toLocation = panel.getTxtToLocation().getText().trim();
             if (newVerb) {
-                AddVerbDto addVerbDto = ProtocolHandler.getInstance().getAddVerbDTO(name,toCaller, toLocation);
-                connectionController.send(addVerbDto);
+                microServerProxy.addVerb(name,toCaller, toLocation);
             } else {
                 //Update verb
                 VerbDetailListItem item = (VerbDetailListItem) panel.getCmbVerbs().getSelectedItem();
-                UpdateVerbDto updateVerbDto = ProtocolHandler.getInstance().getUpdateVerbDTO(item.getVerb().getId(), name, toCaller, toLocation);
-                connectionController.send(updateVerbDto);
+                microServerProxy.updateVerb(item.getVerb().getId(), name, toCaller, toLocation);
             }
         }
     }
@@ -187,8 +187,7 @@ public class VerbEditorPanelController implements ConnectionListener {
 
     private void deleteVerb() {
         VerbDetailListItem item = (VerbDetailListItem) panel.getCmbVerbs().getSelectedItem();
-        DeleteVerbDTO deleteVerbDTO =  ProtocolHandler.getInstance().getDeleteVerbDTO(item.getVerb().getId());
-        connectionController.send(deleteVerbDTO);
+        microServerProxy.deleteVerb(item.getVerb().getId());
     }
 
     private void newVerb() {

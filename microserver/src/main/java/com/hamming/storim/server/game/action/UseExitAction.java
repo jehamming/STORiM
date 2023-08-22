@@ -6,7 +6,6 @@ import com.hamming.storim.common.dto.protocol.request.UseExitRequestDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.LocationUpdateDTO;
 import com.hamming.storim.server.DTOFactory;
 import com.hamming.storim.server.STORIMClientConnection;
-import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.common.factories.ExitFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
@@ -55,8 +54,8 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
         controller.removeRoomListener(fromRoomId, client);
         Room toRoom = RoomFactory.getInstance().findRoomByID(exit.getToRoomID());
         location.setRoomId(toRoom.getId());
-        location.setX(toRoom.getSpawnPointX());
-        location.setY(toRoom.getSpawnPointY());
+        location.setX(toRoom.getSpawnCol());
+        location.setY(toRoom.getSpawnRow());
 
         Long newRoomId = location.getRoomId();
         controller.getGameState().setUserLocation(currentUser, location);

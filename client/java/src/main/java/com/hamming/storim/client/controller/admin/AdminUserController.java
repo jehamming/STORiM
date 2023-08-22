@@ -1,26 +1,26 @@
 package com.hamming.storim.client.controller.admin;
 
-import com.hamming.storim.client.controller.AdminPanelController;
 import com.hamming.storim.client.listitem.ShortUserListItem;
-import com.hamming.storim.client.panels.AdminPanel;
+import com.hamming.storim.client.panels.AdminUsersPanel;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.dto.protocol.request.DeleteUserDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.util.StringUtils;
 
 import javax.swing.*;
+import java.util.HashMap;
 
 public class AdminUserController {
-    private AdminPanelController adminPanelController;
-    private ConnectionController connectionController;
-    private AdminPanel panel;
+    private AdminUsersPanel panel;
     private DefaultListModel<ShortUserListItem> usersModel = new DefaultListModel<>();
     private boolean newUser;
+    private MicroServerProxy microServerProxy;
 
-    public AdminUserController(AdminPanelController adminPanelController, AdminPanel panel) {
-        this.adminPanelController = adminPanelController;
-        this.connectionController = adminPanelController.getConnectionController();
+    public AdminUserController(AdminUsersPanel panel, MicroServerProxy microServerProxy) {
+        this.microServerProxy = microServerProxy;
         this.panel = panel;
     }
 
@@ -47,13 +47,15 @@ public class AdminUserController {
     private void getUsers() {
         SwingUtilities.invokeLater(() -> {
             usersModel.removeAllElements();
-            GetUsersResultDTO response = connectionController.sendReceive(new GetUsersRequestDTO(), GetUsersResultDTO.class);
-            if (response != null) {
-                for (Long userId : response.getUsers().keySet()) {
-                    String userName = response.getUsers().get(userId);
+            try {
+                HashMap<Long, String> users = microServerProxy.getUsers();
+                for (Long userId : users.keySet()) {
+                    String userName = users.get(userId);
                     ShortUserListItem item = new ShortUserListItem(userId, userName);
                     usersModel.addElement(item);
                 }
+            } catch (MicroServerException e) {
+                JOptionPane.showMessageDialog(panel, e.getMessage());
             }
         });
     }
@@ -65,14 +67,12 @@ public class AdminUserController {
             String email = panel.getTxtEmail().getText().trim();
             String passwordRaw = panel.getTxtPassword().getText().trim();
             String password = StringUtils.hashPassword(passwordRaw);
-
-            AddUserDto addUserDto = new AddUserDto(username, password, name, email);
-            AddUserResultDTO addUserResultDTO = connectionController.sendReceive(addUserDto, AddUserResultDTO.class);
-            if ( !addUserResultDTO.isSuccess() ) {
-                JOptionPane.showMessageDialog(panel, addUserResultDTO.getErrorMessage());
-            } else {
+            try {
+                microServerProxy.addUser(username, password, name, email);
                 newUser = false;
                 empty(false);
+            } catch (MicroServerException e) {
+                JOptionPane.showMessageDialog(panel, e.getMessage());
             }
         } else {
             // Update user
@@ -85,8 +85,7 @@ public class AdminUserController {
             if ( ! passwordRaw.equals("") ) {
                 password = StringUtils.hashPassword(passwordRaw);
             }
-            UpdateUserDto updateUserDto = new UpdateUserDto(id, username, password, name, email, null);
-            connectionController.send(updateUserDto);
+            microServerProxy.updateUser(id, username, password, name, email);
         }
         getUsers();
     }
@@ -106,26 +105,27 @@ public class AdminUserController {
     private void deleteUser() {
         Long id = Long.parseLong(panel.getLblUserID().getText());
         if ( id != null && id != 0 ) {
-            DeleteUserDto dto = new DeleteUserDto(id);
-            connectionController.send(dto);
+            microServerProxy.deleteUser(id);
         }
         empty(false);
         getUsers();
     }
 
     private void userSelected(Long userId) {
-        GetUserDTO request = new GetUserDTO(userId);
-        GetUserResultDTO resultDTO = connectionController.sendReceive(request, GetUserResultDTO.class);
-        if (resultDTO.getUser() != null) {
-            SwingUtilities.invokeLater(() -> {
-                UserDto user = resultDTO.getUser();
-                panel.getLblUserID().setText("" + user.getId());
-                panel.getTxtUserDisplayname().setText(user.getName());
-                panel.getTxtEmail().setText(user.getEmail());
-                panel.getTxtUsername().setText(user.getUsername());
-                panel.getBtnSaveUser().setEnabled(true);
-                panel.getBtnDeleteUser().setEnabled(true);
-            });
+        try {
+            UserDto userDto = microServerProxy.getUser(userId);
+            if (userDto != null) {
+                SwingUtilities.invokeLater(() -> {
+                    panel.getLblUserID().setText("" + userDto.getId());
+                    panel.getTxtUserDisplayname().setText(userDto.getName());
+                    panel.getTxtEmail().setText(userDto.getEmail());
+                    panel.getTxtUsername().setText(userDto.getUsername());
+                    panel.getBtnSaveUser().setEnabled(true);
+                    panel.getBtnDeleteUser().setEnabled(true);
+                });
+            }
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
     }
 

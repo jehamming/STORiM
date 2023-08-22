@@ -5,16 +5,10 @@ import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.listitem.TileSetEditorListItem;
 import com.hamming.storim.client.panels.TileSetEditorPanel;
 import com.hamming.storim.client.view.TileSet;
-import com.hamming.storim.common.controllers.ConnectionController;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.dto.TileSetDto;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.request.AddTileSetDto;
-import com.hamming.storim.common.dto.protocol.request.DeleteTileSetDTO;
-import com.hamming.storim.common.dto.protocol.request.UpdateTileSetDto;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetResultDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetsForUserDTO;
-import com.hamming.storim.common.dto.protocol.requestresponse.GetTileSetsForUserResponseDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.TileSetAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.TileSetDeletedDTO;
@@ -31,7 +25,7 @@ import java.util.List;
 
 public class TileSetEditorPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
+    private MicroServerProxy microServerProxy;
     private TileSetEditorPanel panel;
     private STORIMWindowController windowController;
     private DefaultListModel<TileSetEditorListItem> tileSetModel = new DefaultListModel<>();
@@ -42,23 +36,23 @@ public class TileSetEditorPanelController implements ConnectionListener {
     private List<Long> editors;
     private TileSetDto selectedTileSetDto;
 
-    public TileSetEditorPanelController(STORIMWindowController windowController, TileSetEditorPanel panel, ConnectionController connectionController) {
+    public TileSetEditorPanelController(STORIMWindowController windowController, TileSetEditorPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.windowController = windowController;
-        this.connectionController = connectionController;
+        this.microServerProxy = microServerProxy;
         this.fileChooser = new JFileChooser();
         editors = null;
-        connectionController.addConnectionListener(this);
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
     }
 
 
     private void registerReceivers() {
-        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
-        connectionController.registerReceiver(TileSetAddedDTO.class, (ProtocolReceiver<TileSetAddedDTO>) dto -> addTileSet(dto.getTileSetDto()));
-        connectionController.registerReceiver(TileSetUpdatedDTO.class, (ProtocolReceiver<TileSetUpdatedDTO>) dto -> addTileSet(dto.getTileSetDto()));
-        connectionController.registerReceiver(TileSetDeletedDTO.class, (ProtocolReceiver<TileSetDeletedDTO>) dto -> tileSetDeleted(dto.getId()));
+        microServerProxy.getConnectionController().registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
+        microServerProxy.getConnectionController().registerReceiver(TileSetAddedDTO.class, (ProtocolReceiver<TileSetAddedDTO>) dto -> addTileSet(dto.getTileSetDto()));
+        microServerProxy.getConnectionController().registerReceiver(TileSetUpdatedDTO.class, (ProtocolReceiver<TileSetUpdatedDTO>) dto -> addTileSet(dto.getTileSetDto()));
+        microServerProxy.getConnectionController().registerReceiver(TileSetDeletedDTO.class, (ProtocolReceiver<TileSetDeletedDTO>) dto -> tileSetDeleted(dto.getId()));
     }
 
 
@@ -96,7 +90,7 @@ public class TileSetEditorPanelController implements ConnectionListener {
     }
 
     private void openAuthorisationWindow() {
-        AuthorisationPanelController.showAuthorisationPanel(panel, selectedTileSetDto, connectionController);
+        AuthorisationPanelController.showAuthorisationPanel(panel, selectedTileSetDto, microServerProxy);
     }
 
     private void widthHeightChanged() {
@@ -113,20 +107,25 @@ public class TileSetEditorPanelController implements ConnectionListener {
         panel.getBtnCreate().setEnabled(true);
 
         //Get the Tilesets for the user
-        GetTileSetsForUserDTO getTileSetsForUserDTO = new GetTileSetsForUserDTO(currentUser.getId());
-        GetTileSetsForUserResponseDTO getTileSetsForUserResponseDTO = connectionController.sendReceive(getTileSetsForUserDTO, GetTileSetsForUserResponseDTO.class);
-        if (getTileSetsForUserResponseDTO.getTileSets() != null) {
-            for (Long tileSetId : getTileSetsForUserResponseDTO.getTileSets()) {
+        try {
+            List<Long> tileSetIds = microServerProxy.getTileSetsForUser(currentUser.getId());
+            for (Long tileSetId : tileSetIds) {
                 TileSetDto tileSetDto = getTileSet(tileSetId);
                 addTileSet(tileSetDto);
             }
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
         }
     }
 
     private TileSetDto getTileSet(Long tileSetId) {
-        GetTileSetDTO getTileSetDTO = new GetTileSetDTO(tileSetId);
-        GetTileSetResultDTO getTileSetResultDTO = connectionController.sendReceive(getTileSetDTO, GetTileSetResultDTO.class);
-        return getTileSetResultDTO.getTileSetDto();
+        TileSetDto tileSetDto = null;
+        try {
+            tileSetDto =  microServerProxy.getTileSet(tileSetId);
+        } catch (MicroServerException e) {
+            JOptionPane.showMessageDialog(panel, e.getMessage());
+        }
+        return tileSetDto;
     }
 
     @Override
@@ -219,8 +218,7 @@ public class TileSetEditorPanelController implements ConnectionListener {
 
     private void deleteTileSet() {
         Long id = Long.valueOf(panel.getLblId().getText());
-        DeleteTileSetDTO deleteTileSetDTO = new DeleteTileSetDTO(id);
-        connectionController.send(deleteTileSetDTO);
+        microServerProxy.deleteTileSet(id);
         empty(false);
     }
 
@@ -250,13 +248,11 @@ public class TileSetEditorPanelController implements ConnectionListener {
         byte[] tileSetImageData = ImageUtils.encode(tileSetImage);
 
         if (newTileSet) {
-            AddTileSetDto addTileSetDto = new AddTileSetDto(roomName, tileWidth, tileHeight, tileSetImageData);
-            connectionController.send(addTileSetDto);
+            microServerProxy.addTileSet(roomName, tileWidth, tileHeight, tileSetImageData);
         } else {
             // Update tileSet!
             Long id = Long.valueOf(panel.getLblId().getText());
-            UpdateTileSetDto updateTileSetDto = new UpdateTileSetDto(id, roomName, tileWidth, tileHeight, tileSetImageData);
-            connectionController.send(updateTileSetDto);
+            microServerProxy.updateTileSet(id, roomName, tileWidth, tileHeight, tileSetImageData);
         }
 
         setEditable(false);

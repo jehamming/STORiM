@@ -1,7 +1,5 @@
 package com.hamming.storim.server.common.model;
 
-import com.hamming.storim.common.dto.ThingDto;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,19 +11,19 @@ public class Room extends BasicObject   {
     private Long frontTileSetId;
     private int[][] backTileMap;
     private int[][] frontTileMap;
-    private int spawnPointX;
-    private int spawnPointY;
+    private int spawnCol;
+    private int spawnRow;
     private List<Exit> exits;
     private List<Long> objectsInRoom;
 
     public Room() {
-        spawnPointX = 100;
-        spawnPointY = 100;
         backTileSetId = null;
         frontTileSetId = null;
         setName("A basic room");
         rows = 10;
         cols = 10;
+        spawnCol = 5;
+        spawnRow = 5;
         createTileMaps();
         exits = new ArrayList<>();
         objectsInRoom = new ArrayList<>();
@@ -46,20 +44,20 @@ public class Room extends BasicObject   {
         return tileMap;
     }
 
-    public int getSpawnPointX() {
-        return spawnPointX;
+    public int getSpawnCol() {
+        return spawnCol;
     }
 
-    public void setSpawnPointX(int spawnPointX) {
-        this.spawnPointX = spawnPointX;
+    public void setSpawnCol(int spawnCol) {
+        this.spawnCol = spawnCol;
     }
 
-    public int getSpawnPointY() {
-        return spawnPointY;
+    public int getSpawnRow() {
+        return spawnRow;
     }
 
-    public void setSpawnPointY(int spawnPointY) {
-        this.spawnPointY = spawnPointY;
+    public void setSpawnRow(int spawnRow) {
+        this.spawnRow = spawnRow;
     }
 
 
@@ -125,8 +123,8 @@ public class Room extends BasicObject   {
                 ", frontTileSetId=" + frontTileSetId +
                 ", backTileMap=" + Arrays.toString(backTileMap) +
                 ", fronTileMap=" + Arrays.toString(frontTileMap) +
-                ", spawnPointX=" + spawnPointX +
-                ", spawnPointY=" + spawnPointY +
+                ", spawnPointX=" + spawnCol +
+                ", spawnPointY=" + spawnRow +
                 ", exits=" + exits +
                 ", objectsInRoom=" + objectsInRoom +
                 '}';
@@ -157,6 +155,10 @@ public class Room extends BasicObject   {
     public void setSize(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
+        if ( spawnCol > cols || spawnRow > rows) {
+            spawnCol = cols / 2 ;
+            spawnRow = rows / 2;
+        }
         createTileMaps();
     }
 

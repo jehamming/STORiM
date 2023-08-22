@@ -3,6 +3,7 @@ package com.hamming.storim.client.controller;
 import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.listitem.VerbListItem;
 import com.hamming.storim.client.panels.ChatPanel;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.protocol.request.ExecVerbDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
@@ -19,32 +20,32 @@ import java.awt.event.KeyListener;
 
 public class ChatPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
     private ChatPanel panel;
     private STORIMWindowController windowController;
     private DefaultComboBoxModel<VerbListItem> verbsModel = new DefaultComboBoxModel<>();
     private SimpleAttributeSet attributeSet;
+    private MicroServerProxy microServerProxy;
 
-    public ChatPanelController(STORIMWindowController windowController, ChatPanel panel, ConnectionController connectionController) {
+    public ChatPanelController(STORIMWindowController windowController, ChatPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.windowController = windowController;
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
+        this.microServerProxy = microServerProxy;
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
     }
 
     private void registerReceivers() {
-        connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto));
-        connectionController.registerReceiver(UserInRoomDTO.class, (ProtocolReceiver<UserInRoomDTO>) dto -> userInRoom(dto));
-        connectionController.registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
-        connectionController.registerReceiver(UserConnectedDTO.class, (ProtocolReceiver<UserConnectedDTO>) dto -> userConnected(dto));
-        connectionController.registerReceiver(UserLeftRoomDTO.class, (ProtocolReceiver<UserLeftRoomDTO>) dto -> userLeftRoom(dto));
-        connectionController.registerReceiver(UserEnteredRoomDTO.class, (ProtocolReceiver<UserEnteredRoomDTO>) dto -> userEnteredRoom(dto));
-        connectionController.registerReceiver(UserVerbsDTO.class, (ProtocolReceiver<UserVerbsDTO>) dto -> setVerbs(dto));
-        connectionController.registerReceiver(MessageInRoomDTO.class, (ProtocolReceiver<MessageInRoomDTO>) dto -> messageInRoom(dto));
-        connectionController.registerReceiver(VerbAddedDTO.class, (ProtocolReceiver<VerbAddedDTO>) dto -> verbAdded(dto));
-        connectionController.registerReceiver(VerbDeletedDTO.class, (ProtocolReceiver<VerbDeletedDTO>) dto -> verbDeleted(dto));
+        microServerProxy.getConnectionController().registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserInRoomDTO.class, (ProtocolReceiver<UserInRoomDTO>) dto -> userInRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserDisconnectedDTO.class, (ProtocolReceiver<UserDisconnectedDTO>) dto -> userDisconnected(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserConnectedDTO.class, (ProtocolReceiver<UserConnectedDTO>) dto -> userConnected(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserLeftRoomDTO.class, (ProtocolReceiver<UserLeftRoomDTO>) dto -> userLeftRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserEnteredRoomDTO.class, (ProtocolReceiver<UserEnteredRoomDTO>) dto -> userEnteredRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(UserVerbsDTO.class, (ProtocolReceiver<UserVerbsDTO>) dto -> setVerbs(dto));
+        microServerProxy.getConnectionController().registerReceiver(MessageInRoomDTO.class, (ProtocolReceiver<MessageInRoomDTO>) dto -> messageInRoom(dto));
+        microServerProxy.getConnectionController().registerReceiver(VerbAddedDTO.class, (ProtocolReceiver<VerbAddedDTO>) dto -> verbAdded(dto));
+        microServerProxy.getConnectionController().registerReceiver(VerbDeletedDTO.class, (ProtocolReceiver<VerbDeletedDTO>) dto -> verbDeleted(dto));
     }
 
 
@@ -108,10 +109,12 @@ public class ChatPanelController implements ConnectionListener {
     }
 
     private void send() {
-        if (connectionController.isConnected()) {
+        if (microServerProxy.getConnectionController().isConnected()) {
             String txt = panel.getTfInput().getText().trim();
             VerbListItem item = (VerbListItem) panel.getCmbVerbs().getSelectedItem();
-            connectionController.send(new ExecVerbDTO(item.getId(), txt));
+
+            microServerProxy.executeVerb(item.getId(), txt);
+
             SwingUtilities.invokeLater(() -> {
                 panel.getTfInput().setSelectionStart(0);
                 int end = panel.getTfInput().getText().length();

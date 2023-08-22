@@ -5,6 +5,7 @@ import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.controller.*;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.RoomTileMapEditorView;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
@@ -17,7 +18,6 @@ import java.awt.event.ActionListener;
 
 public class EditMenuController implements ConnectionListener {
 
-    private ConnectionController connectionController;
     private STORIMWindow window;
     private STORIMWindowController windowController;
     private VerbEditorPanel verbEditorPanel;
@@ -47,18 +47,19 @@ public class EditMenuController implements ConnectionListener {
     private JFrame thingFrame;
     private JFrame roomTileEditorFrame;
     private JFrame tileSetEditorFrame;
+    private MicroServerProxy microServerProxy;
 
-    public EditMenuController(STORIMWindow storimWindow, STORIMWindowController windowController, ConnectionController connectionController) {
+    public EditMenuController(STORIMWindow storimWindow, STORIMWindowController windowController, MicroServerProxy microServerProxy) {
         this.window = storimWindow;
         this.windowController = windowController;
-        this.connectionController = connectionController;
-        connectionController.addConnectionListener(this);
+        this.microServerProxy = microServerProxy;
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
     }
 
     private void registerReceivers() {
-        connectionController.registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
+        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
     }
 
 
@@ -83,7 +84,7 @@ public class EditMenuController implements ConnectionListener {
 
     private void setupTileSetEditor() {
         tileSetEditorPanel = new TileSetEditorPanel();
-        tileSetEditorPanelController = new TileSetEditorPanelController(windowController, tileSetEditorPanel, connectionController);
+        tileSetEditorPanelController = new TileSetEditorPanelController(windowController, tileSetEditorPanel, microServerProxy);
         //Prepare Frame
         tileSetEditorFrame = new JFrame("TileSets Editor");
         tileSetEditorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -96,7 +97,7 @@ public class EditMenuController implements ConnectionListener {
     private void setupRoomTileEditor() {
         //RoomTileMapEditor
         // Controller
-        roomTileMapEditorPanelController = new RoomTileMapEditorPanelController(connectionController);
+        roomTileMapEditorPanelController = new RoomTileMapEditorPanelController(microServerProxy);
         // View
         tileMapEditorView = new RoomTileMapEditorView(roomTileMapEditorPanelController);
         roomTileMapEditorPanelController.setRoomTileMapEditorView(tileMapEditorView);
@@ -120,7 +121,7 @@ public class EditMenuController implements ConnectionListener {
 
     private void setupExitEditor() {
         exitPanel = new ExitPanel();
-        exitPanelController = new ExitPanelController(windowController, exitPanel, connectionController);
+        exitPanelController = new ExitPanelController(windowController, exitPanel, microServerProxy);
         //Prepare Frame
         exitsFrame = new JFrame("Exit Editor");
         exitsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -132,7 +133,7 @@ public class EditMenuController implements ConnectionListener {
 
     private void setupThingEditor() {
         thingPanel = new ThingPanel();
-        thingPanelController = new ThingPanelController(windowController, thingPanel, connectionController);
+        thingPanelController = new ThingPanelController(windowController, thingPanel, microServerProxy);
         //Prepare Frame
         thingFrame = new JFrame("Thing Editor");
         thingFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -144,7 +145,7 @@ public class EditMenuController implements ConnectionListener {
 
     private void setupRoomEditor() {
         roomEditorPanel = new RoomEditorPanel();
-        roomEditorPanelController = new RoomEditorPanelController(windowController, roomEditorPanel, connectionController);
+        roomEditorPanelController = new RoomEditorPanelController(windowController, roomEditorPanel, microServerProxy);
         //Prepare Frame
         roomEditorFrame = new JFrame("Rooms Editor");
         roomEditorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -156,7 +157,7 @@ public class EditMenuController implements ConnectionListener {
 
     private void setupAvatarEditor() {
         avatarPanel = new AvatarPanel();
-        avatarPanelController = new AvatarPanelController(windowController, avatarPanel, connectionController);
+        avatarPanelController = new AvatarPanelController(windowController, avatarPanel, microServerProxy);
         //Prepare Frame
         avatarsFrame = new JFrame("Avatar Editor");
         avatarsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -168,7 +169,7 @@ public class EditMenuController implements ConnectionListener {
 
     private void setupUserInfo() {
         userInfoPanel = new UserInfoPanel();
-        userInfoPanelController = new UserInfoPanelController(windowController, userInfoPanel, connectionController);
+        userInfoPanelController = new UserInfoPanelController(windowController, userInfoPanel, microServerProxy);
         //Prepare Frame
         usersInfoFrame = new JFrame("User Info");
         usersInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -181,7 +182,7 @@ public class EditMenuController implements ConnectionListener {
 
     private void setUpVerbEditor() {
         verbEditorPanel = new VerbEditorPanel();
-        verbEditorPanelController = new VerbEditorPanelController(windowController, verbEditorPanel, connectionController);
+        verbEditorPanelController = new VerbEditorPanelController(windowController, verbEditorPanel, microServerProxy);
         //Prepare Frame
         verbsFrame = new JFrame("Verb Editor");
         verbsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -192,7 +193,7 @@ public class EditMenuController implements ConnectionListener {
     }
 
     public void disconnect() {
-        connectionController.disconnect();
+        microServerProxy.getConnectionController().disconnect();
         SwingUtilities.invokeLater(() -> {
             window.getMenuConnect().setEnabled(true);
             ;

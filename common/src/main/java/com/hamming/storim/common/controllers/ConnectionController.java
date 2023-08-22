@@ -1,5 +1,6 @@
 package com.hamming.storim.common.controllers;
 
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ClientIdentificationDTO;
 import com.hamming.storim.common.dto.protocol.Protocol;
@@ -24,7 +25,6 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
     private static int CONNECTION_TIMEOUT = 4000;
 
     private Map<Class, List<ProtocolReceiver>> commandReceivers;
-
 
     public ConnectionController(String clientID) {
         this.clientID = clientID;
@@ -150,4 +150,5 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
         // Disconnected from server
         fireDisconnectedEvent();
     }
+
 }

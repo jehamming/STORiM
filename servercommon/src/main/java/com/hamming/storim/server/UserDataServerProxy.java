@@ -236,14 +236,6 @@ public class UserDataServerProxy {
             return verifiedUser;
     }
 
-    public boolean verifyAdmin(String adminPassword) throws STORIMException {
-        VerifyAdminRequestDTO dto = new VerifyAdminRequestDTO(adminPassword);
-        VerifyAdminResponseDTO response = connection.sendReceive(dto, VerifyAdminResponseDTO.class);
-        if ( !response.isSuccess() ) {
-            throw new STORIMException(response.getErrorMessage());
-        }
-        return response.isSuccess();
-    }
 
     public HashMap<Long, String> getAllUsers() throws STORIMException {
         GetUsersRequestDTO requestDTO = new GetUsersRequestDTO();

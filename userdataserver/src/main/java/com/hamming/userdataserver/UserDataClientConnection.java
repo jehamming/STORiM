@@ -10,12 +10,10 @@ import java.net.Socket;
 public class UserDataClientConnection extends ClientConnection {
 
     private STORIMUserDataServer storimUserDataServer;
-    private boolean isAdmin;
 
     public UserDataClientConnection(STORIMUserDataServer srv, String id, Socket s, ServerWorker serverWorker) {
         super(id, s, serverWorker);
         this.storimUserDataServer = srv;
-        this.isAdmin = false;
     }
 
     @Override
@@ -44,7 +42,6 @@ public class UserDataClientConnection extends ClientConnection {
         getProtocolHandler().addAction(new SetLocationAction(getServerWorker(), this));
         getProtocolHandler().addAction(new GetLocationAction(getServerWorker(), this));
         getProtocolHandler().addAction(new VerifyUserTokenAction(getServerWorker(), this));
-        getProtocolHandler().addAction(new VerifyAdminPasswordAction(getServerWorker(), this));
         getProtocolHandler().addAction(new GetUsersAction(getServerWorker(), this));
         getProtocolHandler().addAction(new AddUserAction(getServerWorker(), this));
         getProtocolHandler().addAction(new UpdateUserAction(getServerWorker(), this));
@@ -55,25 +52,14 @@ public class UserDataClientConnection extends ClientConnection {
 
 
     @Override
-    public void connected() {
-        isAdmin = false;
-    }
+    public void connected() {}
 
     public STORIMUserDataServer getStorimUserDataServer() {
         return storimUserDataServer;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
     @Override
     public void disconnected() {
         Logger.info(this, "disconnected");
-        isAdmin = false;
     }
 }

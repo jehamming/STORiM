@@ -4,6 +4,8 @@ import com.hamming.storim.client.ImageUtils;
 import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.listitem.ThingListItem;
 import com.hamming.storim.client.panels.ThingPanel;
+import com.hamming.storim.common.MicroServerException;
+import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.ThingDto;
@@ -26,10 +28,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class ThingPanelController implements ConnectionListener {
 
-    private ConnectionController connectionController;
+    private MicroServerProxy microServerProxy;
     private ThingPanel panel;
     private STORIMWindowController windowController;
 
@@ -43,12 +46,12 @@ public class ThingPanelController implements ConnectionListener {
     private RoomDto currentRoom;
 
 
-    public ThingPanelController(STORIMWindowController windowController, ThingPanel panel, ConnectionController connectionController) {
+    public ThingPanelController(STORIMWindowController windowController, ThingPanel panel, MicroServerProxy microServerProxy) {
         this.panel = panel;
         this.windowController = windowController;
-        this.connectionController = connectionController;
+        this.microServerProxy = microServerProxy;
         this.fileChooser = new JFileChooser();
-        connectionController.addConnectionListener(this);
+        microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
         setup();
         empty(true);
@@ -56,11 +59,11 @@ public class ThingPanelController implements ConnectionListener {
 
 
     private void registerReceivers() {
-        connectionController.registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
-        connectionController.registerReceiver(ThingAddedDTO.class, (ProtocolReceiver<ThingAddedDTO>) dto -> thingAdded(dto.getThing()));
-        connectionController.registerReceiver(ThingDeletedDTO.class, (ProtocolReceiver<ThingDeletedDTO>) dto -> thingDeleted(dto.getThingId()));
-        connectionController.registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> thingUpdated(dto.getThing()));
-        connectionController.registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
+        microServerProxy.getConnectionController().registerReceiver(SetCurrentUserDTO.class, (ProtocolReceiver<SetCurrentUserDTO>) dto -> setCurrentUser(dto));
+        microServerProxy.getConnectionController().registerReceiver(ThingAddedDTO.class, (ProtocolReceiver<ThingAddedDTO>) dto -> thingAdded(dto.getThing()));
+        microServerProxy.getConnectionController().registerReceiver(ThingDeletedDTO.class, (ProtocolReceiver<ThingDeletedDTO>) dto -> thingDeleted(dto.getThingId()));
+        microServerProxy.getConnectionController().registerReceiver(ThingUpdatedDTO.class, (ProtocolReceiver<ThingUpdatedDTO>) dto -> thingUpdated(dto.getThing()));
+        microServerProxy.getConnectionController().registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
     }
 
     private void setRoom(RoomDto room) {
@@ -69,18 +72,15 @@ public class ThingPanelController implements ConnectionListener {
 
     private void setCurrentUser(SetCurrentUserDTO dto) {
         currentUser = dto.getUser();
-        GetThingsForUserResponseDTO response = connectionController.sendReceive(new GetThingsForUserDTO(currentUser.getId()), GetThingsForUserResponseDTO.class);
-        if (response != null) {
-            for (Long thingId : response.getThings()) {
-                ThingDto thing = getThing(thingId);
+        try {
+            List<Long> thingIds = microServerProxy.getThingsForUser(currentUser.getId());
+            for (Long thingId : thingIds) {
+                ThingDto thing = microServerProxy.getThing(thingId);
                 thingAdded(thing);
             }
+        } catch (MicroServerException e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    private ThingDto getThing(Long thingId) {
-        GetThingResultDTO response = connectionController.sendReceive(new GetThingDTO(thingId), GetThingResultDTO.class);
-        return response.getThing();
     }
 
     private void setup() {
@@ -105,8 +105,7 @@ public class ThingPanelController implements ConnectionListener {
 
     private void placeThingInRoom() {
         Long thingID = Long.valueOf(panel.getLblID().getText().trim());
-        PlaceThingInRoomDTO placeThingInRoomDTO = new PlaceThingInRoomDTO(thingID, currentRoom.getId());
-        connectionController.send(placeThingInRoomDTO);
+        microServerProxy.placeThingInRoom(thingID, currentRoom.getId());
     }
 
     private void thingSelected(ThingDto thing) {
@@ -174,8 +173,7 @@ public class ThingPanelController implements ConnectionListener {
         }
         if (newThing) {
             byte[] imageData = ImageUtils.encode(thingImage);
-            AddThingDto addThingDto = new AddThingDto(thingName, thingDescription, thingScale, thingRotation, imageData);
-            connectionController.send(addThingDto);
+            microServerProxy.addThing(thingName, thingDescription, thingScale, thingRotation, imageData);
             setEditable(false);
             empty(false);
             panel.getListThings().clearSelection();
@@ -184,16 +182,14 @@ public class ThingPanelController implements ConnectionListener {
         } else {
             // Update !
             Long thingId = Long.valueOf(panel.getLblID().getText());
-            UpdateThingDto updateThingDto = new UpdateThingDto(thingId, thingName, thingDescription, thingScale, thingRotation, ImageUtils.encode(thingImage));
-            connectionController.send(updateThingDto);
+            microServerProxy.updateThing(thingId, thingName, thingDescription, thingScale, thingRotation, ImageUtils.encode(thingImage));
         }
 
     }
 
     private void deleteThing() {
         Long thingID = Long.valueOf(panel.getLblID().getText());
-        DeleteThingDTO deleteThingDTO = new DeleteThingDTO(thingID);
-        connectionController.send(deleteThingDTO);
+        microServerProxy.deleteThing(thingID);
         empty(false);
     }
 
