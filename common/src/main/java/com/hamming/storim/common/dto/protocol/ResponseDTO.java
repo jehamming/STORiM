@@ -2,11 +2,12 @@ package com.hamming.storim.common.dto.protocol;
 
 public class ResponseDTO extends ProtocolDTO {
 
-    private boolean success = false;
+    private boolean success;
     private String errorMessage = "";
     public ResponseDTO(boolean success) {
         this.success = success;
     }
+
     public ResponseDTO(boolean success, String errorMessage) {
         this.success = success;
         this.errorMessage = errorMessage;

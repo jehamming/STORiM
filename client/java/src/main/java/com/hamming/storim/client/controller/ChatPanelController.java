@@ -11,10 +11,7 @@ import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import javax.swing.text.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -106,6 +103,9 @@ public class ChatPanelController implements ConnectionListener {
 
         // Set the attributes before adding text
         panel.getTextPaneChatOutput().setCharacterAttributes(attributeSet, true);
+
+        DefaultCaret caret = (DefaultCaret) panel.getTextPaneChatOutput().getCaret();
+        caret.setUpdatePolicy(DefaultCaret.OUT_BOTTOM);
     }
 
     private void send() {

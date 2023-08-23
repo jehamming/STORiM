@@ -151,7 +151,6 @@ public class RoomTileMapEditorView extends JPanel implements Runnable {
 
     @Override
     public void paint(Graphics g) {
-        Logger.info("Painting");
         backBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics bbg = backBuffer.getGraphics();
 
