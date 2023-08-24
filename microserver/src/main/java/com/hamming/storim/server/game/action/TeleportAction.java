@@ -33,8 +33,11 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UserDto user = controller.getGameState().findUserById(userId);
         Room newRoom = RoomFactory.getInstance().findRoomByID(newRoomId);
-        Location loc;
         if (user != null && newRoom != null ) {
+            if ( client.getCurrentRoom() != null ) {
+                // Remove old RoomListener
+                controller.removeRoomListener(client.getCurrentRoom().getId(), client);
+            }
             Location currentLocation = controller.getGameState().getUserLocation(user.getId());
             Long fromRoomId = currentLocation.getRoomId();
             currentLocation.setRoomId(newRoom.getId());
