@@ -61,7 +61,6 @@ public class LoginPanelController implements ConnectionListener {
         disconnect();
         try {
             StorimURI serverURI = new StorimURI(serverURItxt);
-
             // Connect
             microServerProxy.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
 
@@ -72,7 +71,7 @@ public class LoginPanelController implements ConnectionListener {
                 panel.getBtnConnect().setEnabled(false);
             });
         } catch (MicroServerException e) {
-            JOptionPane.showMessageDialog(panel, e.getMessage());
+            JOptionPane.showMessageDialog(windowController.getWindow(), e.getMessage());
             disconnect();
         }
     }

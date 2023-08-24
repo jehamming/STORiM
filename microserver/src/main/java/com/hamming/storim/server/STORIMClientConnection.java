@@ -294,19 +294,11 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         }
     }
 
-    public UserDto verifyUserToken(Long userId, String token) {
-        UserDto verifiedUser = null;
-        try {
-            verifiedUser = server.getUserDataServerProxy().verifyUserToken(getId(), userId, token);
-        } catch (STORIMException e) {
-            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".verifyUserToken", e.getMessage());
-            send(errorDTO);
-        }
-        return verifiedUser;
-    }
-
     public void setRoom(Long roomId) {
         try {
+            if ( currentRoom != null ) {
+                gameController.removeRoomListener(currentRoom.getId(), this);
+            }
             currentRoom = RoomFactory.getInstance().findRoomByID(roomId);
             if (currentRoom != null) {
                 String serverName = server.getServerName();
@@ -337,6 +329,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 sendUsersInRoom(currentRoom);
                 sendThingsInRoom(currentRoom);
                 sendExitsInRoom(currentRoom);
+                gameController.addRoomListener(currentRoom.getId(), this);
             }
         } catch (STORIMException e) {
             ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName() + ".setRoom", e.getMessage());
@@ -389,9 +382,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
         Room room = null;
         Location location = null;
         LocationDto locationDto = null;
-
         try {
-
             if (roomId != null) {
                 // Connect to a specific room given by StorimURI
                 room = RoomFactory.getInstance().findRoomByID(roomId);
@@ -412,11 +403,8 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                     }
                 }
             }
-
-
             if (location == null) {
                 Logger.info(this, "User '" + getCurrentUser().getId() + "' location not found or corrupt, using default Room from ServerConfiguration");
-
                 room = server.getServerConfiguration().getDefaultRoom();
                 TileSet tileSet = TileSetFactory.getInstance().findTileSetById(room.getBackTileSetId());
                 int x = room.getSpawnCol() * tileSet.getTileWidth();
@@ -440,8 +428,6 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
             }
             // Add this user as online user
             gameController.getGameState().getOnlineUsers().add(getCurrentUser());
-            // RegisterListener for the current Room
-            gameController.addRoomListener(location.getRoomId(), this);
             // Notify the listeners
             gameController.fireServerEvent(this, new ServerEvent(ServerEvent.Type.USERCONNECTED, getCurrentUser()));
 

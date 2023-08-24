@@ -42,7 +42,7 @@ public class MicroServerProxy {
     public HashMap<Long, String> getUsers() throws MicroServerException {
         HashMap<Long, String> returnVal;
         GetUsersResultDTO response = connectionController.sendReceive(new GetUsersRequestDTO(), GetUsersResultDTO.class);
-        if (response.isSuccess() ) {
+        if (response.isSuccess()) {
             returnVal = response.getUsers();
         } else {
             throw new MicroServerException(response.getErrorMessage());
@@ -53,7 +53,7 @@ public class MicroServerProxy {
     public void addUser(String username, String password, String name, String email) throws MicroServerException {
         AddUserDto addUserDto = new AddUserDto(username, password, name, email);
         AddUserResultDTO response = connectionController.sendReceive(addUserDto, AddUserResultDTO.class);
-        if ( !response.isSuccess() ) {
+        if (!response.isSuccess()) {
             throw new MicroServerException(response.getErrorMessage());
         }
     }
@@ -72,23 +72,22 @@ public class MicroServerProxy {
         UserDto userDto;
         GetUserDTO request = new GetUserDTO(userId);
         GetUserResultDTO response = connectionController.sendReceive(request, GetUserResultDTO.class);
-        if ( response.isSuccess()) {
+        if (response.isSuccess()) {
             userDto = response.getUser();
-        }else {
+        } else {
             throw new MicroServerException(response.getErrorMessage());
         }
-        return  userDto;
+        return userDto;
     }
 
     public ServerConfigurationDTO getServerConfiguration() throws MicroServerException {
         GetServerConfigDTO request = new GetServerConfigDTO();
         GetServerConfigResultDTO response = connectionController.sendReceive(request, GetServerConfigResultDTO.class);
-        if ( response.isSuccess()) {
+        if (response.isSuccess()) {
             return response.getServerConfigurationDTO();
         } else {
             throw new MicroServerException(response.getErrorMessage());
         }
-
     }
 
     public void sendAuthorisationUpdate(Long id, String simpleName, List<Long> newEditorIds) {
@@ -123,7 +122,7 @@ public class MicroServerProxy {
         AvatarDto result = null;
         GetAvatarDTO getAvatarRequestDTO = new GetAvatarDTO(avatarId);
         GetAvatarResponseDTO response = connectionController.sendReceive(getAvatarRequestDTO, GetAvatarResponseDTO.class);
-        if ( response.isSuccess() ) {
+        if (response.isSuccess()) {
             result = response.getAvatar();
         } else {
             throw new MicroServerException(response.getErrorMessage());
@@ -137,7 +136,7 @@ public class MicroServerProxy {
     }
 
     public void addAvatar(String avatarName, byte[] imgdata) {
-        AddAvatarDto addAvatarDto = new AddAvatarDto(avatarName, imgdata );
+        AddAvatarDto addAvatarDto = new AddAvatarDto(avatarName, imgdata);
         connectionController.send(addAvatarDto);
     }
 
@@ -156,7 +155,7 @@ public class MicroServerProxy {
     }
 
     public void addExit(String exitName, String toRoomURI, Long toRoomID, String exitDescription, Float exitScale, Integer exitRotation, byte[] imageData) {
-        AddExitDto addExitDto = new AddExitDto(exitName, toRoomURI ,toRoomID, exitDescription, exitScale, exitRotation, imageData);
+        AddExitDto addExitDto = new AddExitDto(exitName, toRoomURI, toRoomID, exitDescription, exitScale, exitRotation, imageData);
         connectionController.send(addExitDto);
     }
 
@@ -191,23 +190,29 @@ public class MicroServerProxy {
     }
 
     public void updateExitLocation(Long exitID, Long roomId, int x, int y) {
-        UpdateExitLocationDto updateExitLocationDto = new UpdateExitLocationDto(exitID,roomId, x, y);
+        UpdateExitLocationDto updateExitLocationDto = new UpdateExitLocationDto(exitID, roomId, x, y);
         connectionController.send(updateExitLocationDto);
     }
 
     public void connect(String clientName, String serverip, int port) throws MicroServerException {
         try {
+            if ( connectionController.isConnected()) {
+                connectionController.disconnect();
+            }
             connectionController.connect(clientName, serverip, port);
         } catch (Exception e) {
             throw new MicroServerException(e.getMessage());
         }
+    }
 
+    public void disconnect() {
+        connectionController.disconnect();
     }
 
     public LoginResultDTO login(String username, String password, Long roomId) throws MicroServerException {
         LoginDTO loginDTO = ProtocolHandler.getInstance().getLoginDTO(username, password, roomId);
         LoginResultDTO response = connectionController.sendReceive(loginDTO, LoginResultDTO.class);
-        if ( !response.isSuccess() ) {
+        if (!response.isSuccess()) {
             throw new MicroServerException(response.getErrorMessage());
         }
         return response;
@@ -217,7 +222,7 @@ public class MicroServerProxy {
     public LoginWithTokenResultDTO loginWithToken(Long userID, String token, Long roomId) throws MicroServerException {
         LoginWithTokenDTO loginWithTokenDTO = ProtocolHandler.getInstance().getConnectDTO(userID, token, roomId);
         LoginWithTokenResultDTO response = connectionController.sendReceive(loginWithTokenDTO, LoginWithTokenResultDTO.class);
-        if ( !response.isSuccess() ) {
+        if (!response.isSuccess()) {
             throw new MicroServerException(response.getErrorMessage());
         }
         return response;
@@ -350,7 +355,7 @@ public class MicroServerProxy {
     }
 
     public void addVerb(String name, String toCaller, String toLocation) {
-        AddVerbDto addVerbDto = ProtocolHandler.getInstance().getAddVerbDTO(name,toCaller, toLocation);
+        AddVerbDto addVerbDto = ProtocolHandler.getInstance().getAddVerbDTO(name, toCaller, toLocation);
         connectionController.send(addVerbDto);
     }
 

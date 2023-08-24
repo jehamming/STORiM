@@ -64,8 +64,6 @@ public class UseExitAction extends Action<UseExitRequestDTO> {
         LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(location);
         LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.USER, currentUser.getId(), locationDto);
         client.send(locationUpdateDTO);
-        // Start listening to the new Room!
-        controller.addRoomListener(newRoomId, client);
         // Send other clients an update
         controller.fireRoomEvent(client, fromRoomId, new RoomEvent(RoomEvent.Type.USERLEFTROOM, currentUser, newRoomId));
         controller.fireRoomEvent(client, newRoomId, new RoomEvent(RoomEvent.Type.USERENTEREDROOM, currentUser, fromRoomId));

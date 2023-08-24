@@ -26,6 +26,7 @@ public class VerifyUserTokenAction extends Action<VerifyUserTokenRequestDTO> {
         UserDataClientConnection client = (UserDataClientConnection) getClient();
         UserDto userDto = null;
         boolean success = false;
+        boolean admin = false;
         String errorMessage = null;
         Long userId = getDto().getUserId();
         String token = getDto().getToken();
@@ -38,13 +39,16 @@ public class VerifyUserTokenAction extends Action<VerifyUserTokenRequestDTO> {
             if (session != null && session.getToken().equals(token)) {
                 success = true;
                 userDto = DTOFactory.getInstance().getUserDTO(user);
+                if ( client.getStorimUserDataServer().getAdmins().contains(user) ) {
+                    admin = true;
+                }
             } else {
                 errorMessage = "No valid session found for UserId '" + userId + "' token '" +  session.getToken() + "'";
             }
 
         }
 
-        VerifyUserTokenResponseDTO responseDTO = new VerifyUserTokenResponseDTO(success, errorMessage, userDto);
+        VerifyUserTokenResponseDTO responseDTO = new VerifyUserTokenResponseDTO(success, errorMessage, userDto, admin);
         getClient().send(responseDTO);
 
     }

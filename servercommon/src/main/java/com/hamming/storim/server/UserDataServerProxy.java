@@ -224,16 +224,11 @@ public class UserDataServerProxy {
         return validateUserResponseDTO;
     }
 
-    public UserDto verifyUserToken(String source, Long userId, String token) throws STORIMException {
+    public VerifyUserTokenResponseDTO verifyUserToken(String source, Long userId, String token) {
             UserDto verifiedUser = null;
             VerifyUserTokenRequestDTO dto = new VerifyUserTokenRequestDTO(source, userId, token);
             VerifyUserTokenResponseDTO response = connection.sendReceive(dto, VerifyUserTokenResponseDTO.class);
-            if (response.isSuccess() ) {
-                verifiedUser = response.getUser();
-            } else {
-                throw new STORIMException(response.getErrorMessage());
-            }
-            return verifiedUser;
+            return  response;
     }
 
 

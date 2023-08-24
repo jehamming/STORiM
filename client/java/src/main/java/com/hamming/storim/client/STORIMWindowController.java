@@ -116,7 +116,7 @@ public class STORIMWindowController implements ConnectionListener {
 
             }
         });
-
+        window.getLblRoomName().setEditable(false);
     }
 
     private void registerReceivers() {

@@ -20,7 +20,7 @@ public class STORIMWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     public void initComponents() {
 
-        lblRoomName = new javax.swing.JLabel();
+        lblRoomName = new javax.swing.JTextField();
         jSplitPane2 = new javax.swing.JSplitPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
@@ -175,7 +175,7 @@ public class STORIMWindow extends javax.swing.JFrame {
     private ChatPanel chatPanel;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JSplitPane jSplitPane2;
-    private javax.swing.JLabel lblRoomName;
+    private javax.swing.JTextField lblRoomName;
     private javax.swing.JMenu menuAdmin;
     private javax.swing.JMenuItem menuAdminEditUsers;
     private javax.swing.JMenuItem menuAvatars;
@@ -198,7 +198,7 @@ public class STORIMWindow extends javax.swing.JFrame {
         return chatPanel;
     }
 
-    public JLabel getLblRoomName() {
+    public JTextField getLblRoomName() {
         return lblRoomName;
     }
 

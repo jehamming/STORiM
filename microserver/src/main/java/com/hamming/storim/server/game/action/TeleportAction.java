@@ -49,8 +49,6 @@ public class TeleportAction extends Action<TeleportRequestDTO> {
             LocationDto locationDto = DTOFactory.getInstance().getLocationDTO(currentLocation);
             LocationUpdateDTO locationUpdateDTO = new LocationUpdateDTO(LocationUpdateDTO.Type.USER, user.getId(), locationDto);
             client.send(locationUpdateDTO);
-            // Start listening to the new Room!
-            controller.addRoomListener(newRoomId, client);
             // Send other clients an update
             userLeftRoom(getClient(), user, fromRoomId, newRoomId, false);
             //Update userdataserver

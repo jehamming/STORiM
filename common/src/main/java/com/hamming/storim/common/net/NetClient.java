@@ -162,30 +162,22 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
 
     public void dispose() {
         try {
+            protocolObjectSender.stopSending();
+            protocolObjectSender = null;
             if (running) {
                 running = false;
                 closeConnection();
             }
             socket = null;
             in = null;
-            protocolObjectSender.stopSending();
-            protocolObjectSender = null;
         } catch (Exception exception) {
             exception.printStackTrace();
         }
     }
 
     public void closeConnection() throws IOException {
-        try {
-            protocolObjectSender.stopSending();;
-        } finally {
-            try {
-                in.close();
-            } finally {
-                socket.close();
-            }
-        }
-
+        in.close();
+        socket.close();
     }
 
     public boolean isConnected() {

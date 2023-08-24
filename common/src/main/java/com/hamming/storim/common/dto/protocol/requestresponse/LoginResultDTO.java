@@ -44,6 +44,8 @@ public class LoginResultDTO extends ResponseDTO {
     public String toString() {
         return "LoginResultDTO{" +
                 "user=" + user +
+                ", success='" + isSuccess() + '\'' +
+                ", error='" + getErrorMessage() + '\'' +
                 ", token='" + token + '\'' +
                 ", location=" + location +
                 ", serverAdmin=" + serverAdmin +

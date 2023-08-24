@@ -9,7 +9,10 @@ import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.util.Logger;
 
 import java.io.IOException;
+import java.io.InvalidClassException;
+import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
+import java.net.SocketException;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -48,17 +51,21 @@ public class ProtocolObjectSender implements Runnable {
                     //To JSON!
                     String json = toJson(dto);
 
-                    Logger.info(this,id, "Send DTO as JSON:" + dto );
-
+                    Logger.info(this, id, "Send DTO as JSON:" + dto);
                     out.writeObject(json);
                     out.flush();
+                } catch (InvalidClassException e) {
+                    Logger.error(e.getClass().getSimpleName() + "-" + e.getMessage());
+                } catch (NotSerializableException e) {
+                    Logger.error(e.getClass().getSimpleName() + "-" + e.getMessage());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Logger.error(e.getClass().getSimpleName() + "-" + e.getMessage());
+                    running = false;
                 }
             }
             long stop = System.currentTimeMillis();
             long timeSpent = start - stop;
-            if (timeSpent < INTERVAL ) {
+            if (timeSpent < INTERVAL) {
                 try {
                     Thread.sleep(INTERVAL - timeSpent);
                 } catch (InterruptedException e) {
@@ -113,7 +120,7 @@ public class ProtocolObjectSender implements Runnable {
             }
         }
         if (responseContainer.getResponse() == null) {
-            Logger.info(this, " ERROR, SYNC Message (" + dto + ") did not have a result! ("+reason+") ");
+            Logger.info(this, " ERROR, SYNC Message (" + dto + ") did not have a result! (" + reason + ") ");
         }
         return responseContainer.getResponse();
     }

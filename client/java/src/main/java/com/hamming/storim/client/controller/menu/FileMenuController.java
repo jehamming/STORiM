@@ -12,6 +12,7 @@ import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.protocol.request.ExecVerbDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginWithTokenResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
@@ -53,7 +54,8 @@ public class FileMenuController implements ConnectionListener {
     }
 
     private void registerReceivers() {
-        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
+        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess(), true));
+        microServerProxy.getConnectionController().registerReceiver(LoginWithTokenResultDTO.class, (ProtocolReceiver<LoginWithTokenResultDTO>) dto -> loginSuccess(dto.isSuccess(), false));
      }
 
 
@@ -80,6 +82,7 @@ public class FileMenuController implements ConnectionListener {
     }
 
     public void disconnect() {
+        microServerProxy.disconnect();
         SwingUtilities.invokeLater(() -> {
             window.getMenuConnect().setEnabled(true);;
             window.getMenuDisconnect().setEnabled(false);;
@@ -105,8 +108,8 @@ public class FileMenuController implements ConnectionListener {
         return loginPanelController;
     }
 
-    private void loginSuccess(boolean success) {
-        if ( success ) {
+    private void loginSuccess(boolean success, boolean store) {
+        if ( success && store ) {
             storeConnectionDetails();
         }
         connectFrame.setVisible(!success);

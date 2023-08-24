@@ -8,6 +8,7 @@ import com.hamming.storim.client.panels.AdminUsersPanel;
 import com.hamming.storim.client.panels.ServerConfigurationPanel;
 import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginWithTokenResultDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
@@ -38,8 +39,8 @@ public class AdminMenuController implements ConnectionListener {
 
     private void registerReceivers() {
        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginResult(dto));
+       microServerProxy.getConnectionController().registerReceiver(LoginWithTokenResultDTO.class, (ProtocolReceiver<LoginWithTokenResultDTO>) dto -> loginWithTokenResult(dto));
      }
-
 
 
     private void setup() {
@@ -97,6 +98,15 @@ public class AdminMenuController implements ConnectionListener {
     }
 
     private void loginResult(LoginResultDTO dto) {
+        if ( dto.isSuccess() && dto.isServerAdmin() ) {
+            editServerConfigurationMenu.setEnabled(true);
+        }
+        if ( dto.isSuccess() && dto.isUserdataServerAdmin() ) {
+            window.getMenuAdminEditUsers().setEnabled(true);
+        }
+    }
+
+    private void loginWithTokenResult(LoginWithTokenResultDTO dto) {
         if ( dto.isSuccess() && dto.isServerAdmin() ) {
             editServerConfigurationMenu.setEnabled(true);
         }
