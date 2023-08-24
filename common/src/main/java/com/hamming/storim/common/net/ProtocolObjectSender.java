@@ -55,11 +55,14 @@ public class ProtocolObjectSender implements Runnable {
                     out.writeObject(json);
                     out.flush();
                 } catch (InvalidClassException e) {
-                    Logger.error(e.getClass().getSimpleName() + "-" + e.getMessage());
+                    Logger.error(this, "run():"+ e.getClass().getSimpleName() + "-" + e.getMessage());
+                    e.printStackTrace();
                 } catch (NotSerializableException e) {
-                    Logger.error(e.getClass().getSimpleName() + "-" + e.getMessage());
+                    Logger.error(this,"run():"+ e.getClass().getSimpleName() + "-" + e.getMessage());
+                    e.printStackTrace();
                 } catch (IOException e) {
-                    Logger.error(e.getClass().getSimpleName() + "-" + e.getMessage());
+                    Logger.error(this,"run():"+ e.getClass().getSimpleName() + "-" + e.getMessage());
+                    e.printStackTrace();
                     running = false;
                 }
             }

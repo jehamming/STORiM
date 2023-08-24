@@ -23,7 +23,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private Dispatcher dispatcher;
     private boolean running = false;
     private String id = "UNKNOWN";
-    private Map<Class,ResponseContainer> responseContainers;
+    private Map<Class, ResponseContainer> responseContainers;
     private ConnectionListener connectionListener;
     private ProtocolReceiver protocolReceiver;
     private Gson gson;
@@ -53,6 +53,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         registerStreams();
         connectionListener.connected();
     }
+
     public String connect(String ip, int port) {
         String retval = null;
         try {
@@ -69,12 +70,10 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     }
 
 
-
-
-
     private void addResponseContainer(ResponseContainer responseContainer) {
         responseContainers.put(responseContainer.getResponseClass(), responseContainer);
     }
+
     private void removeResponseContainer(ResponseContainer responseContainer) {
         responseContainers.remove(responseContainer.getResponseClass());
     }
@@ -87,7 +86,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         try {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             String idText = id;
-            if ( id == null ) {
+            if (id == null) {
                 idText = connectionListener.getClass().getSimpleName();
             }
             protocolObjectSender = new ProtocolObjectSender(idText, out);
@@ -108,38 +107,38 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         while (running) {
             try {
                 Object read = in.readObject();
-
                 //READ JSON
-                String json = (String)read;
+                String json = (String) read;
                 //Logger.info(this, "Received JSON:" + json);
-
                 ProtocolDTO dto = gson.fromJson(json, ProtocolDTO.class);
 
                 Logger.info(this, "Received DTO:" + dto.toString());
                 if (dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
                     ResponseContainer responseContainer = getResponseContainer(response.getClass());
-                    if (responseContainer != null ) {
+                    if (responseContainer != null) {
                         removeResponseContainer(responseContainer);
                         responseContainer.setResponse(response);
                         synchronized (responseContainer) {
                             responseContainer.notify();
                         }
-                   }
+                    }
                 }
                 dispatcher.dispatch(dto);
             } catch (IOException e) {
                 running = false;
             } catch (ClassNotFoundException e) {
-                Logger.info(this, "Error:" + e.getMessage());
+                Logger.error(this, "Error:" + e.getMessage());
                 e.printStackTrace();
             }
         }
-
         if (socket != null) {
             try {
+                in.close();
                 socket.close();
             } catch (IOException e) {
+                Logger.error(this, "Error:" + e.getMessage());
+                e.printStackTrace();
             }
         }
         connectionListener.disconnected();
@@ -161,23 +160,11 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     }
 
     public void dispose() {
-        try {
-            protocolObjectSender.stopSending();
-            protocolObjectSender = null;
-            if (running) {
-                running = false;
-                closeConnection();
-            }
-            socket = null;
-            in = null;
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    public void closeConnection() throws IOException {
-        in.close();
-        socket.close();
+        protocolObjectSender.stopSending();
+        protocolObjectSender = null;
+        running = false;
+        socket = null;
+        in = null;
     }
 
     public boolean isConnected() {

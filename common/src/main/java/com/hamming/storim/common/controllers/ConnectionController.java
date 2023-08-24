@@ -35,7 +35,6 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
     public void disconnect() {
         if (client != null ) {
             client.dispose();
-            fireDisconnectedEvent();
         }
     }
 

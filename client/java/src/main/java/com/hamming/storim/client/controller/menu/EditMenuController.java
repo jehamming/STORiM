@@ -202,12 +202,9 @@ public class EditMenuController implements ConnectionListener {
     }
 
     public void disconnect() {
-        microServerProxy.getConnectionController().disconnect();
         SwingUtilities.invokeLater(() -> {
             window.getMenuConnect().setEnabled(true);
-            ;
             window.getMenuDisconnect().setEnabled(false);
-            ;
         });
         windowController.setCurrentServerId(null);
     }
