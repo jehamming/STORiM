@@ -45,13 +45,13 @@ public class DTOFactory {
     }
 
 
-    public RoomDto getRoomDto(Room b, String serverURI) {
+    public RoomDto getRoomDto(Room b, String serverURI, boolean editable) {
         List<Long> exits = new ArrayList<>();
         for ( Exit e : b.getExits()) {
             exits.add(e.getId());
         }
         String roomURI = serverURI +"/"+ b.getId();
-        RoomDto dto = new RoomDto(b.getId(), roomURI, b.getName(), b.getRows(), b.getCols(), b.getBackTileSetId(), b.getBackTileMap(), b.getFrontTileSetId(), b.getFrontTileMap(), exits);
+        RoomDto dto = new RoomDto(b.getId(), roomURI, b.getName(), b.getRows(), b.getCols(), b.getBackTileSetId(), b.getBackTileMap(), b.getFrontTileSetId(), b.getFrontTileMap(), exits, editable);
         fillBasicObjectInfo(dto, b);
         return dto;
     }

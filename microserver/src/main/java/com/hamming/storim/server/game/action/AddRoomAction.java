@@ -28,7 +28,7 @@ public class AddRoomAction extends Action<AddRoomDto> {
         Long creator = client.getCurrentUser().getId();
 
         Room newRoom = client.getServer().addRoom(creator, dto.getName());
-        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(newRoom, client.getServer().getServerURI());
+        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(newRoom, client.getServer().getServerURI(), client.isAuthorized(newRoom));
         RoomAddedDTO roomAddedDTO = new RoomAddedDTO(roomDto);
         client.send(roomAddedDTO);
     }

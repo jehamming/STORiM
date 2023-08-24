@@ -22,7 +22,7 @@ public class RoomAuthorisationListener extends AuthorisationListener<Room> {
         AuthorisationDelta delta = server.getAuthorisationController().getAuthorisationDelta(old, r.getEditors());
         if ( delta.getAdded().contains(client.getCurrentUser().getId())) {
             // Send TileSet!
-            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(r, client.getServer().getServerURI());
+            RoomDto roomDto = DTOFactory.getInstance().getRoomDto(r, client.getServer().getServerURI(), client.isAuthorized(r));
             RoomAddedDTO roomAddedDTO = new RoomAddedDTO(roomDto);
             client.send(roomAddedDTO);
         }

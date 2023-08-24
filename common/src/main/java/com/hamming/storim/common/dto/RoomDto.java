@@ -12,9 +12,9 @@ public class RoomDto extends BasicObjectDTO {
     private Long frontTileSetId;
     private int[][] backTileMap;
     private int[][] frontTileMap;
+    private boolean editable;
 
-
-    public RoomDto(Long id, String roomURI, String name, int rows, int cols, Long backTileSetId, int[][] backTileMap, Long frontTileSetId, int[][] frontTileMap, List<Long> exits){
+    public RoomDto(Long id, String roomURI, String name, int rows, int cols, Long backTileSetId, int[][] backTileMap, Long frontTileSetId, int[][] frontTileMap, List<Long> exits, boolean editable){
         setId(id);
         setName(name);
         this.rows = rows;
@@ -25,6 +25,7 @@ public class RoomDto extends BasicObjectDTO {
         this.frontTileSetId = frontTileSetId;
         this.backTileMap = backTileMap;
         this.backTileSetId = backTileSetId;
+        this.editable = editable;
     }
 
     public int getRows() {
@@ -59,10 +60,15 @@ public class RoomDto extends BasicObjectDTO {
         return frontTileMap;
     }
 
+    public boolean isEditable() {
+        return editable;
+    }
+
     @Override
     public String toString() {
         return "RoomDto{" +
                 "roomURI='" + roomURI + '\'' +
+                ", id=" + getId() +
                 ", rows=" + rows +
                 ", cols=" + cols +
                 ", exits=" + exits +
@@ -70,6 +76,7 @@ public class RoomDto extends BasicObjectDTO {
                 ", frontTileSetId=" + frontTileSetId +
                 ", backTileMap=" + Arrays.toString(backTileMap) +
                 ", frontTileMap=" + Arrays.toString(frontTileMap) +
+                ", editable=" + editable +
                 '}';
     }
 }

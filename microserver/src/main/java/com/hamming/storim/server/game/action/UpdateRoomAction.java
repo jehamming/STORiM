@@ -43,7 +43,7 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
         }
 
 
-        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(updatedRoom, client.getServer().getServerURI());
+        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(updatedRoom, client.getServer().getServerURI(), client.isAuthorized(updatedRoom));
         RoomUpdatedDTO roomUpdatedDTO = new RoomUpdatedDTO(roomDto);
         getClient().send(roomUpdatedDTO);
         controller.fireRoomEvent(getClient(), updatedRoom.getId(), new RoomEvent(RoomEvent.Type.ROOMUPDATED, roomDto));

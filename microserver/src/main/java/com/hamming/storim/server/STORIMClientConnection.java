@@ -221,7 +221,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
 
 
     private void handleRoomAdded(Room room) {
-        RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room, server.getServerURI());
+        RoomDto roomDTO = DTOFactory.getInstance().getRoomDto(room, server.getServerURI(), isAuthorized(room));
         RoomAddedDTO roomAddedDTO = new RoomAddedDTO(roomDTO);
         send(roomAddedDTO);
     }
@@ -262,7 +262,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     }
 
     public void sendRoom(Room room) {
-        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room, server.getServerURI());
+        RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room, server.getServerURI(), isAuthorized(room));
         GetRoomResultDTO getRoomResultDTO = new GetRoomResultDTO(true, roomDto, null);
         send(getRoomResultDTO);
     }
@@ -332,7 +332,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 }
 
                 gameController.getGameState().setUserLocation(getCurrentUser(), location);
-                RoomDto roomDto = DTOFactory.getInstance().getRoomDto(currentRoom, server.getServerURI());
+                RoomDto roomDto = DTOFactory.getInstance().getRoomDto(currentRoom, server.getServerURI(), isAuthorized(currentRoom));
                 send(new SetRoomDTO(roomDto));
                 sendUsersInRoom(currentRoom);
                 sendThingsInRoom(currentRoom);

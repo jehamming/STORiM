@@ -7,7 +7,9 @@ import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.RoomTileMapEditorView;
 import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
+import com.hamming.storim.common.dto.RoomDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.SetRoomDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
@@ -60,6 +62,11 @@ public class EditMenuController implements ConnectionListener {
 
     private void registerReceivers() {
         microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
+        microServerProxy.getConnectionController().registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
+    }
+
+    private void setRoom(RoomDto room) {
+        window.getMenuRoomTiles().setEnabled(room.isEditable());
     }
 
 
