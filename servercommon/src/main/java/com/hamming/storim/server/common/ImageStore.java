@@ -17,6 +17,7 @@ public class ImageStore {
     public static Map<Long, Image> readAllImages(Class clazz, String dataDir) {
         Map<Long, Image> images = new HashMap<>();
         String objectDirectoryPath = dataDir.concat(File.separator).concat(clazz.getSimpleName().toLowerCase(Locale.ROOT));
+        FileUtils.checkDirectory(objectDirectoryPath);
         File imageDir = new File(objectDirectoryPath);
         if ( imageDir.isDirectory() ) {
             for (File imageFile : imageDir.listFiles()) {

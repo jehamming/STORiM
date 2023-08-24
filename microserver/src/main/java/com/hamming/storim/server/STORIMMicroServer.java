@@ -6,6 +6,7 @@ import com.hamming.storim.common.dto.protocol.request.DeleteTileSetDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.common.util.Logger;
+import com.hamming.storim.server.common.FileUtils;
 import com.hamming.storim.server.common.NetUtils;
 import com.hamming.storim.server.common.factories.ExitFactory;
 import com.hamming.storim.server.common.factories.RoomFactory;
@@ -62,6 +63,7 @@ public class STORIMMicroServer extends Server {
         config = ServerConfig.getInstance(PROPFILE);
         // Set data variables
         DATADIR = config.getPropertyAsString("datadir");
+        FileUtils.checkDirectory(DATADIR);
         serverName = config.getPropertyAsString("name");
         port = config.getPropertyAsInt("serverport");
 

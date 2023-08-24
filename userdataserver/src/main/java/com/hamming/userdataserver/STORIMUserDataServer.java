@@ -8,6 +8,7 @@ import com.hamming.storim.server.Database;
 import com.hamming.storim.server.STORIMException;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
+import com.hamming.storim.server.common.FileUtils;
 import com.hamming.storim.server.common.NetUtils;
 import com.hamming.userdataserver.factories.AvatarFactory;
 import com.hamming.userdataserver.factories.ThingFactory;
@@ -15,6 +16,7 @@ import com.hamming.userdataserver.factories.TileFactory;
 import com.hamming.userdataserver.factories.UserFactory;
 import com.hamming.userdataserver.model.User;
 
+import java.io.File;
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -50,6 +52,7 @@ public class STORIMUserDataServer extends Server {
         config = ServerConfig.getInstance(PROPFILE);
         // Set datadir var
         DATADIR = config.getPropertyAsString(PROP_DATADIR);
+        FileUtils.checkDirectory(DATADIR);
         // Load Data
         Database.getInstance(DBFILE);
         checkDatabase();

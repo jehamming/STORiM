@@ -3,11 +3,13 @@ package com.hamming.userdataserver.factories;
 
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.Database;
+import com.hamming.storim.server.common.FileUtils;
 import com.hamming.storim.server.common.ImageStore;
 import com.hamming.userdataserver.model.Avatar;
 import com.hamming.userdataserver.model.User;
 
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
