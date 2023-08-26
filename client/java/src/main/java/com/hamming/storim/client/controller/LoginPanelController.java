@@ -70,7 +70,6 @@ public class LoginPanelController implements ConnectionListener {
             });
         } catch (MicroServerException e) {
             JOptionPane.showMessageDialog(windowController.getWindow(), e.getMessage());
-            login
         }
     }
     private void setup() {
