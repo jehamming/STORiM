@@ -46,7 +46,7 @@ public class FileMenuController implements ConnectionListener {
 
     public FileMenuController(STORIMWindow storimWindow, STORIMWindowController windowController, MicroServerProxy microServerProxy) {
         this.window = storimWindow;
-        this.windowController=  windowController;
+        this.windowController = windowController;
         this.microServerProxy = microServerProxy;
         microServerProxy.getConnectionController().addConnectionListener(this);
         registerReceivers();
@@ -54,9 +54,9 @@ public class FileMenuController implements ConnectionListener {
     }
 
     private void registerReceivers() {
-        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess(), true));
-        microServerProxy.getConnectionController().registerReceiver(LoginWithTokenResultDTO.class, (ProtocolReceiver<LoginWithTokenResultDTO>) dto -> loginSuccess(dto.isSuccess(), false));
-     }
+        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
+        microServerProxy.getConnectionController().registerReceiver(LoginWithTokenResultDTO.class, (ProtocolReceiver<LoginWithTokenResultDTO>) dto -> loginTokenSuccess(dto.isSuccess()));
+    }
 
 
     private void setup() {
@@ -81,11 +81,13 @@ public class FileMenuController implements ConnectionListener {
 
     }
 
-    public void disconnect() {
+    private void disconnect() {
         microServerProxy.disconnect();
         SwingUtilities.invokeLater(() -> {
-            window.getMenuConnect().setEnabled(true);;
-            window.getMenuDisconnect().setEnabled(false);;
+            window.getMenuConnect().setEnabled(true);
+            ;
+            window.getMenuDisconnect().setEnabled(false);
+            ;
         });
         windowController.setCurrentServerId(null);
     }
@@ -108,27 +110,39 @@ public class FileMenuController implements ConnectionListener {
         return loginPanelController;
     }
 
-    private void loginSuccess(boolean success, boolean store) {
-        if ( success && store ) {
+    private void loginSuccess(boolean success) {
+        if (success) {
             storeConnectionDetails();
         }
-        connectFrame.setVisible(!success);
-        window.getMenuConnect().setEnabled(false);
-        window.getMenuDisconnect().setEnabled(true);
-        window.getMenuRecent().setEnabled(false);
+        showHideStuff(success);
     }
+
+    private void showHideStuff(boolean loginSuccess) {
+        connectFrame.setVisible(!loginSuccess);
+        window.getMenuConnect().setEnabled(!loginSuccess);
+        window.getMenuRecent().setEnabled(!loginSuccess);
+        window.getMenuDisconnect().setEnabled(loginSuccess);
+    }
+
+    private void loginTokenSuccess(boolean success) {
+        if (!success) {
+            JOptionPane.showMessageDialog(window, "Server change was unsuccessful! Please connect");
+        }
+        showHideStuff(success);
+    }
+
 
     private void storeConnectionDetails() {
         String url = loginPanel.getTxtServerURL().getText().trim();
         String username = loginPanel.getTxtUsername().getText().trim();
-        String password = new String (loginPanel.getTxtPassword().getPassword());
-        STORIMConnectionDetails details = findRecent(url +"-" + username);
-        if ( details == null ) {
+        String password = new String(loginPanel.getTxtPassword().getPassword());
+        STORIMConnectionDetails details = findRecent(url + "-" + username);
+        if (details == null) {
             details = new STORIMConnectionDetails(url, username, password);
             recents.add(details);
             STORIMRecentMenuItem newItem = new STORIMRecentMenuItem(details);
             newItem.addActionListener(e -> {
-                loginPanelController.connectToServer(url, username,password );
+                loginPanelController.connectToServer(url, username, password);
             });
             window.getMenuRecent().add(newItem);
         } else {
@@ -140,7 +154,7 @@ public class FileMenuController implements ConnectionListener {
     private STORIMConnectionDetails findRecent(String name) {
         STORIMConnectionDetails found = null;
         for (STORIMConnectionDetails d : recents) {
-            if ( d.toString().equals(name)) {
+            if (d.toString().equals(name)) {
                 found = d;
                 break;
             }
@@ -155,7 +169,7 @@ public class FileMenuController implements ConnectionListener {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(recents);
             oos.close();
-            Logger.info(this, getClass().getSimpleName() + ": stored "+ recents.size() + " recents in "+ file.getAbsolutePath());
+            Logger.info(this, getClass().getSimpleName() + ": stored " + recents.size() + " recents in " + file.getAbsolutePath());
         } catch (IOException e) {
             Logger.info(this, ":" + "ERROR:" + e.getMessage());
             e.printStackTrace();
@@ -165,7 +179,7 @@ public class FileMenuController implements ConnectionListener {
     public void loadRecents() {
         File file = new File(RECENTS_FILENAME);
         try {
-            if ( file.exists() ) {
+            if (file.exists()) {
                 FileInputStream fis = new FileInputStream(file);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 recents = (List<STORIMConnectionDetails>) ois.readObject();
@@ -179,7 +193,7 @@ public class FileMenuController implements ConnectionListener {
         for (STORIMConnectionDetails d : recents) {
             STORIMRecentMenuItem newItem = new STORIMRecentMenuItem(d);
             newItem.addActionListener(e -> {
-                loginPanelController.connectToServer(d.getConnectURL(), d.getUsername(),d.getPassword() );
+                loginPanelController.connectToServer(d.getConnectURL(), d.getUsername(), d.getPassword());
             });
             window.getMenuRecent().add(newItem);
         }

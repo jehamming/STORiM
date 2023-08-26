@@ -22,6 +22,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private ProtocolObjectSender protocolObjectSender;
     private Dispatcher dispatcher;
     private boolean running = false;
+    private boolean silent = false;
     private String id = "UNKNOWN";
     private Map<Class, ResponseContainer> responseContainers;
     private ConnectionListener connectionListener;
@@ -141,7 +142,9 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
                 e.printStackTrace();
             }
         }
-        connectionListener.disconnected();
+        if ( !silent ) {
+            connectionListener.disconnected();
+        }
     }
 
     public void send(ProtocolDTO pDTO) {
@@ -159,7 +162,8 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         return protocolObjectSender.sendReceive(requestResponseDTO, responseContainer);
     }
 
-    public void dispose() {
+    public void disconnect(boolean silent) {
+        this.silent = silent;
         protocolObjectSender.stopSending();
         protocolObjectSender = null;
         running = false;

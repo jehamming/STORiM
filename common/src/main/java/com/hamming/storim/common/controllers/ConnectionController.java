@@ -20,7 +20,6 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
 
     private NetClient client;
     private String clientID;
-    private UserDto user;
     private List<ConnectionListener> connectionListeners;
     private static int CONNECTION_TIMEOUT = 4000;
 
@@ -28,27 +27,27 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
 
     public ConnectionController(String clientID) {
         this.clientID = clientID;
-        connectionListeners = new ArrayList<ConnectionListener>();
-        commandReceivers = new HashMap<Class, List<ProtocolReceiver>>();
+        connectionListeners = new ArrayList<>();
+        commandReceivers = new HashMap<>();
     }
 
-    public void disconnect() {
+    /**
+     *  CLose connection
+     * @param silent : Do not inform listeners (connectionListeners will be reset)
+     */
+    public void disconnect(boolean silent) {
         if (client != null ) {
-            client.dispose();
+            client.disconnect(silent);
         }
     }
 
     public void connect(String clientName, String serverip, int port) throws Exception {
         int millisecs = 0;
         boolean timeout = false;
-        if (client != null && client.isConnected()) {
-            client.dispose();
-        }
         client = new NetClient(this, this);
         client.setId(clientName);
         String errorMessage = client.connect(serverip, port);
         if ( errorMessage == null ) {
-            user = null;
             while (!client.isConnected() && !timeout) {
                 try {
                     Thread.sleep(100);

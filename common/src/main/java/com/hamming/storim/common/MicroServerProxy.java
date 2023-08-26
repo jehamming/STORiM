@@ -197,7 +197,10 @@ public class MicroServerProxy {
     public void connect(String clientName, String serverip, int port) throws MicroServerException {
         try {
             if ( connectionController.isConnected()) {
-                connectionController.disconnect();
+                // Do a silent disconnect.
+                // Reason : connection code is async, so disconnect events can arrive later than connect events
+                // For now I am uninterested in the previous connection.
+                connectionController.disconnect(true);
             }
             connectionController.connect(clientName, serverip, port);
         } catch (Exception e) {
@@ -206,8 +209,9 @@ public class MicroServerProxy {
     }
 
     public void disconnect() {
-        connectionController.disconnect();
+        connectionController.disconnect(false);
     }
+
 
     public LoginResultDTO login(String username, String password, Long roomId) throws MicroServerException {
         LoginDTO loginDTO = ProtocolHandler.getInstance().getLoginDTO(username, password, roomId);

@@ -52,13 +52,11 @@ public class LoginPanelController implements ConnectionListener {
             panel.getBtnConnect().setEnabled(false);
         } catch (MicroServerException e) {
             JOptionPane.showMessageDialog(panel, e.getMessage());
-            disconnect();
         }
     }
 
 
     public void connectToServer(Long userID, String token, String serverURItxt) {
-        disconnect();
         try {
             StorimURI serverURI = new StorimURI(serverURItxt);
             // Connect
@@ -72,14 +70,9 @@ public class LoginPanelController implements ConnectionListener {
             });
         } catch (MicroServerException e) {
             JOptionPane.showMessageDialog(windowController.getWindow(), e.getMessage());
-            disconnect();
+            login
         }
     }
-
-    private void disconnect() {
-        windowController.getFileMenuController().disconnect();
-    }
-
     private void setup() {
         panel.getTxtServerURL().setText("storim://127.0.0.1:3334");
         panel.getTxtUsername().setText(windowController.getUsername());

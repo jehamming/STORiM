@@ -5,6 +5,7 @@ import com.hamming.storim.client.STORIMWindowController;
 import com.hamming.storim.client.controller.*;
 import com.hamming.storim.client.panels.*;
 import com.hamming.storim.client.view.RoomTileMapEditorView;
+import com.hamming.storim.common.MicroServerException;
 import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.RoomDto;
