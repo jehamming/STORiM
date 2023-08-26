@@ -464,6 +464,9 @@ public class GameViewPanel extends JPanel implements Runnable {
         for (BasicDrawableObject player : players) {
             player.setSelected(false);
         }
+        for (BasicDrawableObject exit : exits) {
+            exit.setSelected(false);
+        }
         selectedObject = null;
     }
 
@@ -601,10 +604,12 @@ public class GameViewPanel extends JPanel implements Runnable {
     private void drawSelectionHighlight(Graphics g, BasicDrawableObject o) {
         int middleX = o.getImage().getWidth(null) / 2;
         int middleY = o.getImage().getHeight(null) / 2;
-        float thickness = 4f;
+        float thickness = 2f;
         Graphics2D g2 = (Graphics2D) g;
         Stroke oldStroke = g2.getStroke();
-        g2.setStroke(new BasicStroke(thickness));
+        Stroke dashed = new BasicStroke(thickness, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                0, new float[]{3,2}, 0);
+        g2.setStroke(dashed);
         Color old = g.getColor();
         g.setColor(Color.red);
         int x = o.getX() - middleX;

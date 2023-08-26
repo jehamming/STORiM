@@ -36,14 +36,19 @@ public class UpdateAuthorisationAction extends Action<UpdateAuthorisationDto> {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         UpdateAuthorisationDto dto = getDto();
         Class basicObjectClass = registeredBasicObjects.get(dto.getDtoClassName());
-        if ( basicObjectClass != null ) {
+        if (basicObjectClass != null) {
             BasicObject basicObject = Database.getInstance().findById(basicObjectClass, dto.getId());
-            if ( basicObject != null ) {
-                List<Long> oldEditors = basicObject.getEditors();
-                basicObject.setEditors(dto.getNewEditors());
-                client.getServer().getAuthorisationController().fireAuthorisationChanged(basicObject, oldEditors);
+            if (basicObject != null) {
+                if (client.isAuthorized(basicObject)) {
+                    List<Long> oldEditors = basicObject.getEditors();
+                    basicObject.setEditors(dto.getNewEditors());
+                    client.getServer().getAuthorisationController().fireAuthorisationChanged(basicObject, oldEditors);
+                } else {
+                    ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "UnAuthorized");
+                    client.send(errorDTO);
+                }
             } else {
-                ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "Cannot find a "+dto.getDtoClassName()+" with id :" + getDto().getId());
+                ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "Cannot find a " + dto.getDtoClassName() + " with id :" + getDto().getId());
                 client.send(errorDTO);
             }
         } else {

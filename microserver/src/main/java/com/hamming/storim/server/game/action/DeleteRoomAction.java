@@ -23,15 +23,26 @@ public class DeleteRoomAction extends Action<DeleteRoomDTO> {
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         Room defaultRoom = client.getServer().getServerConfiguration().getDefaultRoom();
-        if ( defaultRoom != null && getDto().getRoomId().equals(defaultRoom.getId())) {
-            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "Room " + getDto().getRoomId() + " is the default Server Room and cannot be deleted");
-            client.send(errorDTO);
-        } else {
-            boolean success = RoomFactory.getInstance().deleteRoom(getDto().getRoomId());
-            if (success) {
-                RoomDeletedDTO roomDeletedDTO = new RoomDeletedDTO(getDto().getRoomId());
-                getClient().send(roomDeletedDTO);
+        Room room = RoomFactory.getInstance().findRoomByID(getDto().getRoomId());
+        if ( room != null ) {
+            if (client.isAuthorized(room)) {
+                if (defaultRoom != null && room.getId().equals(defaultRoom.getId())) {
+                    ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "Room " + getDto().getRoomId() + " is the default Server Room and cannot be deleted");
+                    client.send(errorDTO);
+                } else {
+                    boolean success = RoomFactory.getInstance().deleteRoom(room.getId());
+                    if (success) {
+                        RoomDeletedDTO roomDeletedDTO = new RoomDeletedDTO(room.getId());
+                        getClient().send(roomDeletedDTO);
+                    }
+                }
+            } else {
+                ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "UnAuthorized");
+                client.send(errorDTO);
             }
+        } else {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "Room " + getDto().getRoomId() + " not found");
+            client.send(errorDTO);
         }
     }
 

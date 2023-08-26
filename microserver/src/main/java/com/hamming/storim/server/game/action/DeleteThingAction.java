@@ -9,13 +9,9 @@ import com.hamming.storim.server.common.action.Action;
 import com.hamming.storim.server.game.GameController;
 
 public class DeleteThingAction extends Action<DeleteThingDTO> {
-    private GameController controller;
 
-
-    public DeleteThingAction(GameController controller, STORIMClientConnection client) {
+    public DeleteThingAction(STORIMClientConnection client) {
         super(client);
-        this.controller = controller;
-
     }
 
     @Override

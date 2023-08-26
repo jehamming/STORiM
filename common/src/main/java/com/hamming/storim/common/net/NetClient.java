@@ -110,7 +110,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
                 //Logger.info(this, "Received JSON:" + json);
                 ProtocolDTO dto = gson.fromJson(json, ProtocolDTO.class);
 
-                Logger.info(this, "Received DTO:" + dto.toString());
+                Logger.info(this, client.getId() +"-Received:" + dto.toString());
                 if (dto instanceof ResponseDTO) {
                     ResponseDTO response = (ResponseDTO) dto;
                     ResponseContainer responseContainer = getResponseContainer(response.getClass());
@@ -154,7 +154,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             responseContainer.setResponse(null);
             responseContainer.setResponseClass(responseClass);
             addResponseContainer(responseContainer);
-            Logger.info(this, "SendReceive:" + requestResponseDTO + ", waiting for: " + responseClass.getSimpleName());
+            //Logger.info(this, "SendReceive:" + requestResponseDTO + ", waiting for: " + responseClass.getSimpleName());
         }
         return protocolObjectSender.sendReceive(requestResponseDTO, responseContainer);
     }

@@ -1,6 +1,7 @@
 package com.hamming.userdataserver.action;
 
 import com.hamming.storim.common.dto.VerbDto;
+import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.action.Action;
@@ -28,11 +29,11 @@ public class UpdateVerbAction extends Action<UpdateVerbRequestDto> {
 
         Verb verb = VerbFactory.getInstance().findVerbByID(dto.getVerbId());
         if ( verb != null ) {
-            verb.setName(dto.getName());
-            verb.setToCaller(dto.getToCaller());
-            verb.setToLocation(dto.getToLocation());
-            verbDto = DTOFactory.getInstance().getVerbDto(verb);
-            success = true;
+                verb.setName(dto.getName());
+                verb.setToCaller(dto.getToCaller());
+                verb.setToLocation(dto.getToLocation());
+                verbDto = DTOFactory.getInstance().getVerbDto(verb);
+                success = true;
         } else {
             errorMessage = "Verb " + dto.getVerbId() + " not found!";
         }

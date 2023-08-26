@@ -61,9 +61,12 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
         microServerProxy.getConnectionController().registerReceiver(TileSetAddedDTO.class, (ProtocolReceiver<TileSetAddedDTO>) dto -> addTileSet(dto.getTileSetDto()));
         microServerProxy.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto.getRoom()));
         microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
+        microServerProxy.getConnectionController().registerReceiver(LoginWithTokenResultDTO.class, (ProtocolReceiver<LoginWithTokenResultDTO>) dto -> loginSuccess(dto.isSuccess()));
     }
 
     private void loginSuccess(boolean loginSucceeded) {
+        panel.getCmbBackgroundTileset().removeAllItems();
+        panel.getCmbForegroundTileset().removeAllItems();
         if (loginSucceeded) {
             //Get the Tilesets
             try {
@@ -199,15 +202,16 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
     }
 
     private void saveToServer() {
-        int[][] newBackgroundTilemap = roomTileMapEditorView.getBackgroundTileMap();
-        int[][] newForegroundTilemap = roomTileMapEditorView.getForegroundTileMap();
-        Long roomID = roomDto.getId();
-        Long bgTileSetId = null;
-        Long fgTileSetId = null;
-        if (bgTileSet != null) bgTileSetId = bgTileSet.getId();
-        if (fgTileSet != null) fgTileSetId = fgTileSet.getId();
-
-        microServerProxy.updateRoom(roomID, null, -1, -1, bgTileSetId, newBackgroundTilemap, fgTileSetId, newForegroundTilemap);
+        if ( roomDto != null ) {
+            int[][] newBackgroundTilemap = roomTileMapEditorView.getBackgroundTileMap();
+            int[][] newForegroundTilemap = roomTileMapEditorView.getForegroundTileMap();
+            Long roomID = roomDto.getId();
+            Long bgTileSetId = null;
+            Long fgTileSetId = null;
+            if (bgTileSet != null) bgTileSetId = bgTileSet.getId();
+            if (fgTileSet != null) fgTileSetId = fgTileSet.getId();
+            microServerProxy.updateRoom(roomID, null, -1, -1, bgTileSetId, newBackgroundTilemap, fgTileSetId, newForegroundTilemap);
+        }
     }
 
     private void applyTileToAll() {

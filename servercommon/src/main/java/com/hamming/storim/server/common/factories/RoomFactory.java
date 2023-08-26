@@ -48,32 +48,6 @@ public class RoomFactory {
         return room;
     }
 
-    public Room updateRoomName(Long roomId, String name) {
-        Room room = findRoomByID(roomId);
-        room.setName(name);
-        return room;
-    }
-
-    public Room updateRoomSize(Long roomId, int rows, int cols) {
-        Room room = findRoomByID(roomId);
-        room.setSize(rows, cols);
-        return room;
-    }
-
-    public Room updateRoomFrontTileSet(Long roomId, Long frontTileSetId, int[][] frontTileMap) {
-        Room room = findRoomByID(roomId);
-        room.setFrontTileSetId(frontTileSetId);
-        room.setFrontTileMap(frontTileMap);
-        return room;
-    }
-
-    public Room updateRoomBackTileSet(Long roomId, Long backTileSetId, int[][] backTileMap) {
-        Room room = findRoomByID(roomId);
-        room.setBackTileSetId(backTileSetId);
-        room.setBackTileMap(backTileMap);
-        return room;
-    }
-
 
     public boolean deleteRoom(Long roomId) {
         boolean success = false;

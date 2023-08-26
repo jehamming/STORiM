@@ -17,7 +17,6 @@ public class DeleteUserAction extends Action<DeleteUserDto> {
 
     @Override
     public void execute() {
-        Long userId = getDto().getId();
         STORIMClientConnection client = (STORIMClientConnection) getClient();
         client.getServer().getUserDataServerProxy().deleteUser(getDto());
     }

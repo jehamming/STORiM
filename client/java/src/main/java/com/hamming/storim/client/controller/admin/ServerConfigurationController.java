@@ -12,6 +12,7 @@ import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.dto.ServerConfigurationDTO;
 import com.hamming.storim.common.dto.TileSetDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginWithTokenResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.RoomAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.RoomDeletedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.TileSetAddedDTO;
@@ -45,11 +46,14 @@ public class ServerConfigurationController implements ConnectionListener {
 
     private void registerReceivers() {
         microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginResult(dto));
+        microServerProxy.getConnectionController().registerReceiver(LoginWithTokenResultDTO.class, (ProtocolReceiver<LoginWithTokenResultDTO>) dto -> loginWithTokenResult(dto));
         microServerProxy.getConnectionController().registerReceiver(TileSetAddedDTO.class, (ProtocolReceiver<TileSetAddedDTO>) dto -> addTileSet(dto));
         microServerProxy.getConnectionController().registerReceiver(TileSetDeletedDTO.class, (ProtocolReceiver<TileSetDeletedDTO>) dto -> removeTileSet(dto));
         microServerProxy.getConnectionController().registerReceiver(RoomAddedDTO.class, (ProtocolReceiver<RoomAddedDTO>) dto -> addRoom(dto));
         microServerProxy.getConnectionController().registerReceiver(RoomDeletedDTO.class, (ProtocolReceiver<RoomDeletedDTO>) dto -> removeRoom(dto));
     }
+
+
 
     private void removeRoom(RoomDeletedDTO dto) {
         SwingUtilities.invokeLater(() -> {
@@ -87,11 +91,22 @@ public class ServerConfigurationController implements ConnectionListener {
     }
 
     private void loginResult(LoginResultDTO dto) {
+        boolean enable = false;
         if (dto.isSuccess() && dto.isServerAdmin()) {
             fillServerConfigurationDetails();
-            enable(true);
+            enable = true;
         }
+        enable(enable);
     }
+    private void loginWithTokenResult(LoginWithTokenResultDTO dto) {
+        boolean enable = false;
+        if (dto.isSuccess() && dto.isServerAdmin()) {
+            fillServerConfigurationDetails();
+            enable = true;
+        }
+        enable(enable);
+    }
+
 
     private void fillServerConfigurationDetails() {
         try {

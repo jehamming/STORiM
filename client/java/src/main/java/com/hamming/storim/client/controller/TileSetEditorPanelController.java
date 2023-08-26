@@ -9,6 +9,7 @@ import com.hamming.storim.common.MicroServerException;
 import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.dto.TileSetDto;
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginWithTokenResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.SetCurrentUserDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.TileSetAddedDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.TileSetDeletedDTO;
@@ -54,7 +55,6 @@ public class TileSetEditorPanelController implements ConnectionListener {
         microServerProxy.getConnectionController().registerReceiver(TileSetUpdatedDTO.class, (ProtocolReceiver<TileSetUpdatedDTO>) dto -> addTileSet(dto.getTileSetDto()));
         microServerProxy.getConnectionController().registerReceiver(TileSetDeletedDTO.class, (ProtocolReceiver<TileSetDeletedDTO>) dto -> tileSetDeleted(dto.getId()));
     }
-
 
     private void setup() {
         tileSetModel = new DefaultListModel<>();
@@ -105,6 +105,7 @@ public class TileSetEditorPanelController implements ConnectionListener {
     private void setCurrentUser(SetCurrentUserDTO dto) {
         currentUser = dto.getUser();
         panel.getBtnCreate().setEnabled(true);
+        tileSetModel.removeAllElements();
 
         //Get the Tilesets for the user
         try {

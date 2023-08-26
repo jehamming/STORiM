@@ -27,15 +27,20 @@ public class DeleteTileSetAction extends Action<DeleteTileSetDTO> {
         DeleteTileSetDTO dto = getDto();
         STORIMClientConnection client = (STORIMClientConnection) getClient();
 
-        TileSet found = TileSetFactory.getInstance().findTileSetById(dto.getId());
-        if (found != null) {
-            if ( client.getServer().getDefaultTileSet().getId().equals(dto.getId())) {
-                ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "TileSet " + dto.getId() + " is the default Server tileset and cannot be deleted");
-                client.send(errorDTO);
+        TileSet tileSet = TileSetFactory.getInstance().findTileSetById(dto.getId());
+        if (tileSet != null) {
+            if (client.isAuthorized(tileSet)) {
+                if (client.getServer().getDefaultTileSet().getId().equals(dto.getId())) {
+                    ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "TileSet " + dto.getId() + " is the default Server tileset and cannot be deleted");
+                    client.send(errorDTO);
+                } else {
+                    TileSetFactory.getInstance().deleteTileSet(tileSet);
+                    TileSetDeletedDTO tileSetDeletedDTO = new TileSetDeletedDTO(tileSet.getId());
+                    client.send(tileSetDeletedDTO);
+                }
             } else {
-                TileSetFactory.getInstance().deleteTileSet(found);
-                TileSetDeletedDTO tileSetDeletedDTO = new TileSetDeletedDTO(found.getId());
-                client.send(tileSetDeletedDTO);
+                ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "UnAuthorized");
+                client.send(errorDTO);
             }
         } else {
             ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "TileSet " + dto.getId() + " not found");

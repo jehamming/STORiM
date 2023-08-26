@@ -1,5 +1,6 @@
 package com.hamming.storim.server.game.action;
 
+import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.request.DeleteExitDTO;
 import com.hamming.storim.common.dto.protocol.request.DeleteThingDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.ExitDeletedDTO;
@@ -30,14 +31,22 @@ public class DeleteExitAction extends Action<DeleteExitDTO> {
 
         Exit exit = ExitFactory.getInstance().findExitById(dto.getExitID());
         if ( exit != null ) {
-            Room room = client.getCurrentRoom();
-            room.removeExit(exit);
+            if (client.isAuthorized(exit)) {
+                Room room = client.getCurrentRoom();
+                room.removeExit(exit);
 
-            LocationFactory.getInstance().removeLocation(exit.getId());
-            ExitFactory.getInstance().deleteExit(exit);
+                LocationFactory.getInstance().removeLocation(exit.getId());
+                ExitFactory.getInstance().deleteExit(exit);
 
-            ExitDeletedDTO exitDeletedDTO = new ExitDeletedDTO(exit.getId());
-            client.send(exitDeletedDTO);
+                ExitDeletedDTO exitDeletedDTO = new ExitDeletedDTO(exit.getId());
+                client.send(exitDeletedDTO);
+            } else {
+                ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "UnAuthorized");
+                client.send(errorDTO);
+            }
+        } else {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), "Exit " + dto.getExitID() + " not found");
+            client.send(errorDTO);
         }
     }
 

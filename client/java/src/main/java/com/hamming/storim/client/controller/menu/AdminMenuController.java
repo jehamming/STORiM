@@ -107,12 +107,18 @@ public class AdminMenuController implements ConnectionListener {
     }
 
     private void loginWithTokenResult(LoginWithTokenResultDTO dto) {
-        if ( dto.isSuccess() && dto.isServerAdmin() ) {
-            editServerConfigurationMenu.setEnabled(true);
+        boolean admin = false;
+        boolean userAdmin = false;
+        if ( dto.isSuccess() ) {
+            admin = dto.isServerAdmin();;
+            userAdmin = dto.isUserdataServerAdmin();
         }
-        if ( dto.isSuccess() && dto.isUserdataServerAdmin() ) {
-            window.getMenuAdminEditUsers().setEnabled(true);
-        }
+        enableMenus(admin, userAdmin);
+    }
+
+    private void enableMenus( boolean admin, boolean userAdmin) {
+        editServerConfigurationMenu.setEnabled(admin);
+        window.getMenuAdminEditUsers().setEnabled(userAdmin);
     }
 
 }
