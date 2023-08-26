@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.hamming.storim.common.dto.protocol.ClientIdentificationDTO;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
+import com.hamming.storim.common.interfaces.Client;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.util.Logger;
 
@@ -23,15 +24,16 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private Dispatcher dispatcher;
     private boolean running = false;
     private boolean silent = false;
-    private String id = "UNKNOWN";
+    private Client client;
     private Map<Class, ResponseContainer> responseContainers;
     private ConnectionListener connectionListener;
     private ProtocolReceiver protocolReceiver;
     private Gson gson;
 
-    public NetClient(ConnectionListener connectionListener, ProtocolReceiver protocolReceiver) {
+    public NetClient(Client client, ConnectionListener connectionListener, ProtocolReceiver protocolReceiver) {
         this.connectionListener = connectionListener;
         this.protocolReceiver = protocolReceiver;
+        this.client = client;
         initialize();
     }
 
@@ -63,9 +65,8 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
             registerStreams();
             connectionListener.connected();
         } catch (IOException e) {
-            Logger.error(this, "(" + id + ") ERROR:" + e.getMessage());
+            Logger.error(this, client.getId()+":" + e.getMessage());
             retval = e.getMessage();
-            //e.printStackTrace();
         }
         return retval;
     }
@@ -86,18 +87,14 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private void registerStreams() {
         try {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            String idText = id;
-            if (id == null) {
-                idText = connectionListener.getClass().getSimpleName();
-            }
-            protocolObjectSender = new ProtocolObjectSender(idText, out);
+            protocolObjectSender = new ProtocolObjectSender(client, out);
             in = new ObjectInputStream(socket.getInputStream());
             Thread clientThread = new Thread(this);
             clientThread.setName("Client Connection");
             clientThread.setDaemon(true);
             clientThread.start();
         } catch (IOException e) {
-            Logger.error(this, "(" + id + ") ERROR:" + e.getMessage());
+            Logger.error(this, client.getId()+ ":" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -173,13 +170,5 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
 
     public boolean isConnected() {
         return running;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

@@ -6,6 +6,7 @@ import com.hamming.storim.common.dto.protocol.ClientIdentificationDTO;
 import com.hamming.storim.common.dto.protocol.Protocol;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
+import com.hamming.storim.common.interfaces.Client;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.NetClient;
 import com.hamming.storim.common.net.ProtocolReceiver;
@@ -41,11 +42,10 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
         }
     }
 
-    public void connect(String clientName, String serverip, int port) throws Exception {
+    public void connect(Client source, String serverip, int port) throws Exception {
         int millisecs = 0;
         boolean timeout = false;
-        client = new NetClient(this, this);
-        client.setId(clientName);
+        client = new NetClient(source, this, this);
         String errorMessage = client.connect(serverip, port);
         if ( errorMessage == null ) {
             while (!client.isConnected() && !timeout) {

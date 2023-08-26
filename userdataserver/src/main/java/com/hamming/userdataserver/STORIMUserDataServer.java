@@ -126,8 +126,8 @@ public class STORIMUserDataServer extends Server {
         try {
             clients++;
             //FIXME Keep a record of all the clients?
-            ClientConnection client = new UserDataClientConnection(this,UserDataClientConnection.class.getSimpleName(), s, serverWorker);
-            Logger.info(this, "new connection, ClientThread started for "+ client.getId());
+            ClientConnection client = new UserDataClientConnection(this,"" + clients, s, serverWorker);
+            Logger.info(this, "new connection, ClientThread started for client #:  "+ client.getId());
         } catch (Exception exception) {
             exception.printStackTrace();
         }

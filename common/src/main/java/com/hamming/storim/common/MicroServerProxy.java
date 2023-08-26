@@ -2,20 +2,20 @@ package com.hamming.storim.common;
 
 import com.hamming.storim.common.controllers.ConnectionController;
 import com.hamming.storim.common.dto.*;
-import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.request.*;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
-import com.hamming.storim.common.interfaces.ConnectionListener;
+import com.hamming.storim.common.interfaces.Client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MicroServerProxy {
+public class MicroServerProxy implements Client {
     private ConnectionController connectionController;
+    private String id;
 
     public MicroServerProxy(ConnectionController connectionController) {
         this.connectionController = connectionController;
+        this.id = getClass().getSimpleName();
     }
 
     public ConnectionController getConnectionController() {
@@ -194,7 +194,7 @@ public class MicroServerProxy {
         connectionController.send(updateExitLocationDto);
     }
 
-    public void connect(String clientName, String serverip, int port) throws MicroServerException {
+    public void connect(String serverip, int port) throws MicroServerException {
         try {
             if ( connectionController.isConnected()) {
                 // Do a silent disconnect.
@@ -202,7 +202,7 @@ public class MicroServerProxy {
                 // For now I am uninterested in the previous connection.
                 connectionController.disconnect(true);
             }
-            connectionController.connect(clientName, serverip, port);
+            connectionController.connect(this, serverip, port);
         } catch (Exception e) {
             throw new MicroServerException(e.getMessage());
         }
@@ -376,5 +376,14 @@ public class MicroServerProxy {
     public void updateServerConfiguration(Long defaultTileSetId, int defaultTile, Long defaultRoomId, List<Long> serverAdmins) {
         UpdateServerConfigurationDTO dto = new UpdateServerConfigurationDTO(defaultTileSetId, defaultTile, defaultRoomId, serverAdmins);
         connectionController.send(dto);
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

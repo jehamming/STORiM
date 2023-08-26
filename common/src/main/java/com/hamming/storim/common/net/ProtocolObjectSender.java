@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.hamming.storim.common.dto.protocol.Protocol;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
+import com.hamming.storim.common.interfaces.Client;
 import com.hamming.storim.common.util.Logger;
 
 import java.io.IOException;
@@ -22,13 +23,13 @@ public class ProtocolObjectSender implements Runnable {
     private ObjectOutputStream out;
     private boolean running = false;
     private Queue<ProtocolDTO> itemsToSend;
-    private String id;
+    private Client client;
     private static int INTERVAL = 50; // Milliseconds, 20Hz
     private Gson gson;
 
-    public ProtocolObjectSender(String id, ObjectOutputStream out) {
+    public ProtocolObjectSender(Client client, ObjectOutputStream out) {
         this.out = out;
-        this.id = id;
+        this.client = client;
 
         // Java to JSON
         gson = new Gson();
@@ -51,7 +52,7 @@ public class ProtocolObjectSender implements Runnable {
                     //To JSON!
                     String json = toJson(dto);
 
-                    Logger.info(this, id, "Send DTO as JSON:" + dto);
+                    Logger.info(this, client.getId(), "Send DTO as JSON:" + dto);
                     out.writeObject(json);
                     out.flush();
                 } catch (InvalidClassException e) {

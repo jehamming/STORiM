@@ -142,8 +142,9 @@ public class STORIMMicroServer extends Server {
         int dataserverport = config.getPropertyAsInt("userdataserverport");
         try {
             Socket socket = new Socket(dataservername, dataserverport);
-            dataServerConnection = new UserDataServerConnection(getClass().getSimpleName(), socket,  controller);
+            dataServerConnection = new UserDataServerConnection(serverConfiguration.getServerName(), socket,  controller);
             userDataServerProxy = new UserDataServerProxy(dataServerConnection);
+            userDataServerProxy.setServerDetails(serverConfiguration.getServerName());
             Logger.info(this, "Connected to DataServer");
         } catch (IOException e) {
             e.printStackTrace();

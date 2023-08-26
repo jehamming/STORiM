@@ -44,7 +44,7 @@ public class LoginPanelController implements ConnectionListener {
         try {
             StorimURI serverURI = new StorimURI(serverURLTxt);
             // Connect
-            microServerProxy.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
+            microServerProxy.connect(serverURI.getServerip(), serverURI.getPort());
             // Do login request
             LoginResultDTO loginResult = microServerProxy.login(username, password, serverURI.getRoomId());
             windowController.setCurrentUser(loginResult.getUser());
@@ -60,7 +60,7 @@ public class LoginPanelController implements ConnectionListener {
         try {
             StorimURI serverURI = new StorimURI(serverURItxt);
             // Connect
-            microServerProxy.connect("STORIM_Java_Client", serverURI.getServerip(), serverURI.getPort());
+            microServerProxy.connect(serverURI.getServerip(), serverURI.getPort());
 
             // Do connect request
             LoginWithTokenResultDTO loginWithTokenResultDTO = microServerProxy.loginWithToken(userID, token, serverURI.getRoomId());

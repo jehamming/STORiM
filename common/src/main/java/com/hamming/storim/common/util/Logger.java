@@ -11,11 +11,11 @@ public class Logger {
         if (id != null) {
             idText = id + "-" ;
         }
-        info( idText + o.getClass().getSimpleName()+ " - "+ txt);
+        info( idText + o.getClass().getSimpleName()+ ":"+ txt);
     }
 
     public static void error(Object o, String txt) {
-        error( o.getClass().getSimpleName() + " - " + txt);
+        error( o.getClass().getSimpleName() + ":" + txt);
     }
 
     public static void error(Object o, String id, String txt) {
@@ -23,7 +23,7 @@ public class Logger {
         if (id != null) {
             idText = id + "-" ;
         }
-        error( idText + o.getClass().getSimpleName()+ " - "+ txt);
+        error( idText + o.getClass().getSimpleName()+ ":"+ txt);
     }
 
 

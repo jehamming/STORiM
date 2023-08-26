@@ -7,6 +7,7 @@ import com.hamming.storim.common.dto.protocol.request.DeleteUserDto;
 import com.hamming.storim.common.dto.protocol.requestresponse.*;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
+import com.hamming.storim.server.common.dto.protocol.dataserver.ServerDetailsDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenRequestDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.VerifyUserTokenResponseDTO;
 import com.hamming.storim.server.common.dto.protocol.dataserver.avatar.GetAvatarResponseDTO;
@@ -27,6 +28,11 @@ public class UserDataServerProxy {
 
     public UserDataServerProxy(ClientConnection connection) {
         this.connection = connection;
+    }
+
+    public void setServerDetails(String serverId) {
+        ServerDetailsDTO serverDetailsDTO = new ServerDetailsDTO(serverId);
+        connection.send(serverDetailsDTO);
     }
 
     public TileDto getTile(Long tileId) throws STORIMException {

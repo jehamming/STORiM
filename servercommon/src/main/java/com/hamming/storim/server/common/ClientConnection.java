@@ -4,6 +4,7 @@ package com.hamming.storim.server.common;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
+import com.hamming.storim.common.interfaces.Client;
 import com.hamming.storim.common.interfaces.ConnectionListener;
 import com.hamming.storim.common.net.NetClient;
 import com.hamming.storim.common.net.ProtocolReceiver;
@@ -15,7 +16,7 @@ import com.hamming.storim.server.common.model.BasicObject;
 import java.net.Socket;
 
 //  ClientConnection, able to handle Async traffic and Sync actions
-public abstract class ClientConnection implements ProtocolReceiver, ConnectionListener {
+public abstract class ClientConnection implements Client, ProtocolReceiver, ConnectionListener {
 
     private UserDto currentUser;
     private ProtocolHandler<Action> protocolHandler;
@@ -30,11 +31,19 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
     public ClientConnection(String id, Socket s, ServerWorker serverWorker) {
         this.id = id;
         serverAdmin = false;
-        netClient = new NetClient(this,this);
+        netClient = new NetClient(this, this,this);
         protocolHandler = new ProtocolHandler();
         this.serverWorker = serverWorker;
         addActions();
         netClient.connect(s);
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -67,10 +76,6 @@ public abstract class ClientConnection implements ProtocolReceiver, ConnectionLi
 
     public ServerWorker getServerWorker() {
         return serverWorker;
-    }
-
-    public String getId() {
-        return id + "(" + netClient.getId() + ")";
     }
 
     public String getSessionToken() {
