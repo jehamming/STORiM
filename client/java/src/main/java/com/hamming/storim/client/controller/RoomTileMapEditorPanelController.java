@@ -59,10 +59,14 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
     private void registerReceivers() {
         microServerProxy.getConnectionController().registerReceiver(SetRoomDTO.class, (ProtocolReceiver<SetRoomDTO>) dto -> setRoom(dto.getRoom()));
         microServerProxy.getConnectionController().registerReceiver(TileSetAddedDTO.class, (ProtocolReceiver<TileSetAddedDTO>) dto -> addTileSet(dto.getTileSetDto()));
+        microServerProxy.getConnectionController().registerReceiver(TileSetUpdatedDTO.class, (ProtocolReceiver<TileSetUpdatedDTO>) dto -> updateTileSet(dto.getTileSetDto()));
+        microServerProxy.getConnectionController().registerReceiver(TileSetDeletedDTO.class, (ProtocolReceiver<TileSetDeletedDTO>) dto -> removeTileSet(dto.getId()));
         microServerProxy.getConnectionController().registerReceiver(RoomUpdatedDTO.class, (ProtocolReceiver<RoomUpdatedDTO>) dto -> roomUpdated(dto.getRoom()));
         microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginSuccess(dto.isSuccess()));
         microServerProxy.getConnectionController().registerReceiver(LoginWithTokenResultDTO.class, (ProtocolReceiver<LoginWithTokenResultDTO>) dto -> loginSuccess(dto.isSuccess()));
     }
+
+
 
     private void loginSuccess(boolean loginSucceeded) {
         panel.getCmbBackgroundTileset().removeAllItems();
@@ -90,6 +94,31 @@ public class RoomTileMapEditorPanelController implements ConnectionListener {
         TileSetListItem tileSetListItem = new TileSetListItem(tileSet);
         panel.getCmbBackgroundTileset().addItem(tileSetListItem);
         panel.getCmbForegroundTileset().addItem(tileSetListItem);
+    }
+
+    private void updateTileSet(TileSetDto tileSetDto) {
+        removeTileSet(tileSetDto.getId());
+        addTileSet(tileSetDto);
+    }
+
+    private void removeTileSet(Long tileSetId) {
+        removeTileSet(panel.getCmbBackgroundTileset(), tileSetId);
+        removeTileSet(panel.getCmbForegroundTileset(), tileSetId);
+    }
+
+
+        private void removeTileSet(JComboBox cmb, Long tileSetId) {
+        int foundIndex = -1;
+        for (int i = 0; i < cmb.getItemCount() ; i++) {
+            TileSetListItem item = (TileSetListItem) cmb.getItemAt(i);
+            if ( item.getTileSet().getId() == tileSetId) {
+                foundIndex = i;
+                break;
+            }
+        }
+        if ( foundIndex !=-1 ) {
+            cmb.remove(foundIndex);
+        }
     }
 
 

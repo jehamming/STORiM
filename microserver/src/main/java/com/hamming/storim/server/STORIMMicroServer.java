@@ -39,6 +39,8 @@ public class STORIMMicroServer extends Server {
     private final static String PROPFILE = "microserver.properties";
     public final static String DBFILE = "microserver.db";
     public static String DATADIR = "serverdata";
+    private static String ROOT_USERNAME = "root";
+    private Long rootUserId = -1L;
     private String serverName = "servername";
     private StorimURI serverURI;
     public static String DEFAULT_MAINROOM_NAME = "Main Square";
@@ -80,14 +82,16 @@ public class STORIMMicroServer extends Server {
 
         ExitFactory.getInstance(DATADIR);
         TileSetFactory.getInstance(DATADIR);
-        // Load the ServeConfig
+
+        // Load the ServerConfig
         getServerConfigFromDatabase();
+        connectToDataServer();
+        setSuperAdmin();
+        getRootUser();
 
         checkTileSets();
         checkRooms();
 
-        connectToDataServer();
-        setSuperAdmin();
 
 
         // Start GameController
@@ -98,6 +102,22 @@ public class STORIMMicroServer extends Server {
         controllerThread.start();
         Logger.info(this, "GameController started");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Database.getInstance().store()));
+    }
+
+    private void getRootUser() {
+        try {
+            UserDto rootUser = userDataServerProxy.getUserByUsername(ROOT_USERNAME);
+            rootUserId = rootUser.getId();
+            serverConfiguration.setOwnerId(rootUserId);
+
+        } catch (STORIMException e) {
+            Logger.error(this,"FATAL: getRootUser:"+e.getMessage());
+            System.exit(2);
+        }
+    }
+
+    public Long getRootUserId() {
+        return rootUserId;
     }
 
     private void setSuperAdmin() {
@@ -119,7 +139,7 @@ public class STORIMMicroServer extends Server {
             Long id = Database.getInstance().getNextID();
             serverConfiguration = new ServerConfiguration();
             serverConfiguration.setId(id);
-            Long creatorId = 1L; //TODO Replace 1L with ROOT user..
+            Long creatorId = rootUserId;
             serverConfiguration.setOwnerId(creatorId);
             serverConfiguration.setName(DEFAULT_SERVERCONFIG_NAME);
             serverConfiguration.setServerName(serverName);
@@ -130,7 +150,7 @@ public class STORIMMicroServer extends Server {
     private void checkRooms() {
         if ( RoomFactory.getInstance().getRooms().size() == 0 ) {
             //No rooms ? Create a default room!
-            Room mainRoom = addRoom(1L, DEFAULT_MAINROOM_NAME);
+            Room mainRoom = addRoom(rootUserId, DEFAULT_MAINROOM_NAME);
             serverConfiguration.setDefaultRoom(mainRoom);
             Database.getInstance().store();
             Logger.info(this, "No Rooms found, created default room:" + mainRoom.getName()+ "("+ mainRoom.getId() +")");
@@ -139,7 +159,7 @@ public class STORIMMicroServer extends Server {
 
     private void checkTileSets() throws IOException {
         if ( TileSetFactory.getInstance().getAllTileSets().size() == 0 ) {
-            Long creatorId = 1L; //TODO Replace 1L with ROOT user..
+            Long creatorId = rootUserId;
             Image defaultTileSetImage = ImageIO.read(new File("DEFAULT_TILESET.png"));
             TileSet defaultTileSet = TileSetFactory.getInstance().createTileSet(creatorId, TileSetFactory.DEFAULT_TILESET_NAME, defaultTileSetImage, 32, 32);
             serverConfiguration.setDefaultTileSet(defaultTileSet);

@@ -181,6 +181,7 @@ public class GameViewController implements ConnectionListener {
         currentUser = dto.getUser();
         LocationDto location = dto.getLocation();
         lastReceivedLocation = location;
+        gameView.scheduleAction(() -> gameView.setCurrentUserId(currentUser.getId()));
         if (currentUser.getCurrentAvatarID() != null) {
             gameView.scheduleAction(() -> gameView.addPlayer(currentUser.getId(), currentUser.getName(), null));
         } else {

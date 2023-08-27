@@ -390,7 +390,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                     TileSet tileSet = TileSetFactory.getInstance().findTileSetById(room.getBackTileSetId());
                     int x = room.getSpawnCol() * tileSet.getTileWidth();
                     int y = room.getSpawnRow() * tileSet.getTileHeight();
-                    locationDto = new LocationDto(-1l, getServer().getServerURI().getServerURL(), room.getId(), x, y);
+                    locationDto = new LocationDto(getServer().getRootUserId(), getServer().getServerURI().getServerURL(), room.getId(), x, y);
                     location = LocationFactory.getInstance().createLocation(getCurrentUser().getId(), locationDto);
                 }
             } else {
@@ -409,7 +409,7 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
                 TileSet tileSet = TileSetFactory.getInstance().findTileSetById(room.getBackTileSetId());
                 int x = room.getSpawnCol() * tileSet.getTileWidth();
                 int y = room.getSpawnRow() * tileSet.getTileHeight();
-                locationDto = new LocationDto(-1l, getServer().getServerURI().getServerURL(), room.getId(), x, y);
+                locationDto = new LocationDto(getServer().getRootUserId(), getServer().getServerURI().getServerURL(), room.getId(), x, y);
                 location = LocationFactory.getInstance().createLocation(getCurrentUser().getId(), locationDto);
             }
 

@@ -62,6 +62,7 @@ public class GameViewPanel extends JPanel implements Runnable {
     private float unitX = 1f;
     private float unitY = 1f;
     private STORIMWindowController windowController;
+    private Long currentUserId;
 
     public void updateExit(ExitDto exitDto) {
         Exit exit = getExit(exitDto.getId());
@@ -87,6 +88,10 @@ public class GameViewPanel extends JPanel implements Runnable {
             }
         }, SPEECH_BALLOON_TIME);
         repaint();
+    }
+
+    public void setCurrentUserId(Long id) {
+        currentUserId = id;
     }
 
 
@@ -621,18 +626,22 @@ public class GameViewPanel extends JPanel implements Runnable {
 
     private void drawPlayers(Graphics g) {
         for (Player player : players) {
-            int middleX = player.getImage().getWidth(null) / 2;
-            int middleY = player.getImage().getHeight(null) / 2;
+            Image playerAvatar = player.getImage();
+            int middleX = playerAvatar.getWidth(null) / 2;
+            int middleY = playerAvatar.getHeight(null) / 2;
             int x = player.getX() - middleX;
             int y = player.getY() - middleY;
-            Image playerAvatar = player.getImage();
             g.drawImage(playerAvatar, x, y, this);
             Font font = new Font("Arial", Font.BOLD, 12);
             g.setFont(font);
             FontMetrics metrics = g.getFontMetrics(font);
-            int middle = x + (player.getImage().getWidth(null) / 2);
-            y = y + player.getImage().getHeight(null) + 10;
-            for (String line : player.getDisplayName().split(" ")) {
+            int middle = x + (playerAvatar.getWidth(null) / 2);
+            y = y + playerAvatar.getHeight(null) + 10;
+            String displayName = player.getDisplayName();
+            if ( currentUserId != null && currentUserId == player.getId()) {
+                displayName = "You";
+            }
+            for (String line : displayName.split(" ")) {
                 x = middle - (metrics.stringWidth(line) / 2);
                 g.setColor(Color.white);
                 g.fillRect(x - 5, y - 10, metrics.stringWidth(line) + 5, metrics.getAscent() + 2);

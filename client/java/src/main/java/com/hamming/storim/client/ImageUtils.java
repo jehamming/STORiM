@@ -18,7 +18,7 @@ public class ImageUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return  image;
+        return image;
     }
 
 
@@ -28,7 +28,7 @@ public class ImageUtils {
             BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = bufferedImage.createGraphics();
             g2.drawImage(image, null, null);
-            ByteArrayOutputStream baos= new ByteArrayOutputStream(1000);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1000);
             ImageIO.write(bufferedImage, "png", baos);
             imageData = baos.toByteArray();
         } catch (IOException e) {
@@ -56,11 +56,11 @@ public class ImageUtils {
         g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
         g2d.dispose();
 
-       return outputImage;
+        return outputImage;
     }
 
     public static BufferedImage rotateImage(BufferedImage original, int degrees) {
-        double theta = Math.toRadians (degrees);
+        double theta = Math.toRadians(degrees);
         double cos = Math.abs(Math.cos(theta));
         double sin = Math.abs(Math.sin(theta));
         double width = original.getWidth();
@@ -84,13 +84,16 @@ public class ImageUtils {
     }
 
     public static BufferedImage scaleImage(BufferedImage image, float scale) {
-        int width  = new Float( image.getWidth(null) * scale ).intValue();
-        int height = new Float( image.getHeight(null) * scale ).intValue();
+        return scaleImage(image, scale, scale);
+    }
+
+    public static BufferedImage scaleImage(BufferedImage image, float scaleWidth, float scaleHeight) {
+        int width = Float.valueOf(image.getWidth(null) * scaleWidth).intValue();
+        int height = Float.valueOf(image.getHeight(null) * scaleHeight).intValue();
         BufferedImage out = new BufferedImage(width, height, image.getType());
         Graphics2D g2 = out.createGraphics();
         g2.drawImage(image, 0, 0, width, height, null);
         g2.dispose();
-
         return out;
     }
 }
