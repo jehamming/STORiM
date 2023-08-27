@@ -20,14 +20,17 @@ public class AddUserAction extends Action<AddUserDto> {
     @Override
     public void execute() {
         STORIMClientConnection client = (STORIMClientConnection) getClient();
+        boolean success = false;
+        String error = "";
+        UserDto newUSer = null;
         try {
-        UserDto newUSer = client.getServer().getUserDataServerProxy().addUser(getDto());
-        AddUserResultDTO resultDTO = new AddUserResultDTO(true, null, newUSer);
-        client.send(resultDTO);
-        } catch (STORIMException e) {
-            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), e.getMessage());
-            client.send(errorDTO);
-        }
-    }
+            newUSer = client.getServer().getUserDataServerProxy().addUser(getDto());
+            success = true;
 
+        } catch (STORIMException e) {
+            error = e.getMessage();
+        }
+        AddUserResultDTO resultDTO = new AddUserResultDTO(success, error, newUSer);
+        client.send(resultDTO);
+    }
 }
