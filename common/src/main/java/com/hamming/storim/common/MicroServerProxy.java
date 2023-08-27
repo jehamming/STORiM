@@ -194,7 +194,7 @@ public class MicroServerProxy implements Client {
         connectionController.send(updateExitLocationDto);
     }
 
-    public void connect(String serverip, int port) throws MicroServerException {
+    public void connect(StorimURI serverURI) throws MicroServerException {
         try {
             if ( connectionController.isConnected()) {
                 // Do a silent disconnect.
@@ -202,10 +202,14 @@ public class MicroServerProxy implements Client {
                 // For now I am uninterested in the previous connection.
                 connectionController.disconnect(true);
             }
-            connectionController.connect(this, serverip, port);
+            connectionController.connect(this, serverURI.getServerip(), serverURI.getPort());
         } catch (Exception e) {
             throw new MicroServerException(e.getMessage());
         }
+    }
+
+    public boolean isConnected() {
+        return connectionController.isConnected();
     }
 
     public void disconnect() {

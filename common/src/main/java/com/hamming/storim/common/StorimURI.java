@@ -9,9 +9,11 @@ public class StorimURI {
     private String serverip;
     private int port;
     private Long roomId;
+    private String serverURL;
 
     public StorimURI(String serverURLTxt) {
         try {
+            serverURL = serverURLTxt;
             serverURI= new URI(serverURLTxt);
             serverip = serverURI.getHost();
             port = serverURI.getPort();
@@ -28,8 +30,8 @@ public class StorimURI {
         }
     }
 
-    public URI getServerURI() {
-        return serverURI;
+    public String getServerURL() {
+        return serverURL;
     }
 
     public String getServerip() {
@@ -42,5 +44,14 @@ public class StorimURI {
 
     public Long getRoomId() {
         return roomId;
+    }
+
+    @Override
+    public String toString() {
+        return "StorimURI{" +
+                ", serverip='" + serverip + '\'' +
+                ", port=" + port +
+                ", roomId=" + roomId +
+                '}';
     }
 }

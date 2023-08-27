@@ -1,5 +1,6 @@
 package com.hamming.storim.server;
 
+import com.hamming.storim.common.StorimURI;
 import com.hamming.storim.common.dto.TileSetDto;
 import com.hamming.storim.common.dto.UserDto;
 import com.hamming.storim.common.dto.protocol.request.DeleteTileSetDTO;
@@ -39,9 +40,14 @@ public class STORIMMicroServer extends Server {
     public final static String DBFILE = "microserver.db";
     public static String DATADIR = "serverdata";
     private String serverName = "servername";
-    private String serverURI;
+    private StorimURI serverURI;
     public static String DEFAULT_MAINROOM_NAME = "Main Square";
     public static String DEFAULT_SERVERCONFIG_NAME = "ServerConfig";
+    private static String PROP_SERVER_URL = "storim.url";
+    private static String PROP_DATA_DIR = "datadir";
+    private static String PROP_SERVER_NAME = "name";
+    private static String PROP_SERVER_PORT = "serverport";
+
     private ServerConfiguration serverConfiguration;
 
     public STORIMMicroServer() {
@@ -52,7 +58,7 @@ public class STORIMMicroServer extends Server {
         return serverName;
     }
 
-    public String getServerURI() {
+    public StorimURI getServerURI() {
         return serverURI;
     }
 
@@ -62,10 +68,15 @@ public class STORIMMicroServer extends Server {
         // Load Config
         config = ServerConfig.getInstance(PROPFILE);
         // Set data variables
-        DATADIR = config.getPropertyAsString("datadir");
+        DATADIR = config.getPropertyAsString(PROP_DATA_DIR);
         FileUtils.checkDirectory(DATADIR);
-        serverName = config.getPropertyAsString("name");
-        port = config.getPropertyAsInt("serverport");
+        serverName = config.getPropertyAsString(PROP_SERVER_NAME);
+        port = config.getPropertyAsInt(PROP_SERVER_PORT);
+        // Check for Server URL overrule
+        String serverUrlOverRule = config.getPropertyAsString(PROP_SERVER_URL);
+        if ( serverUrlOverRule != null && !serverUrlOverRule.equals("")) {
+            serverURI = new StorimURI(serverUrlOverRule);
+        }
 
         ExitFactory.getInstance(DATADIR);
         TileSetFactory.getInstance(DATADIR);
@@ -161,14 +172,15 @@ public class STORIMMicroServer extends Server {
         startServer(port);
 
         try {
-            //serverURI = ServerConfig.PROTOCOL+"://" + Inet4Address..getLocalHost().getHostAddress() + ":" + port;
-            serverURI = ServerConfig.PROTOCOL+":/" + NetUtils.getLocalHostLANAddress() + ":" + port;
-            Logger.info(this, "Started STORIM Micro Server on: "+serverURI);
+            if ( serverURI == null ) {
+                String serverURITxt = ServerConfig.PROTOCOL + ":/" + NetUtils.getLocalHostLANAddress() + ":" + port;
+                serverURI = new StorimURI(serverURITxt);
+            }
+            Logger.info(this, "Started STORIM Micro Server, listening for connections on: "+serverURI.getServerURL());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
-
 
     @Override
     protected void clientConnected(Socket s) {

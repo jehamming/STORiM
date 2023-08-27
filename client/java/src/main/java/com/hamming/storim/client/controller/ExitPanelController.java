@@ -154,6 +154,7 @@ public class ExitPanelController implements ConnectionListener {
             panel.getTaDescription().setText(exit.getDescription());
             panel.getSlScale().setValue((int) (exit.getScale() * 100));
             panel.getSlRotation().setValue(exit.getRotation());
+            panel.getTfRoomURI().setText(exit.getToRoomURI());
             panel.getBtnSave().setEnabled(true);
             panel.getBtnDelete().setEnabled(true);
             setEditable(true);

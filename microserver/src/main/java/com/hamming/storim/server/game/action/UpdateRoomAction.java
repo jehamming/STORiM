@@ -47,7 +47,7 @@ public class UpdateRoomAction extends Action<UpdateRoomDto> {
                     room.setBackTileMap(dto.getBackTileMap());
                 }
                 boolean editable = getClient().isAuthorized(room);
-                RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room, client.getServer().getServerURI(), editable);
+                RoomDto roomDto = DTOFactory.getInstance().getRoomDto(room, client.getServer().getServerURI().getServerURL(), editable);
                 RoomUpdatedDTO roomUpdatedDTO = new RoomUpdatedDTO(roomDto);
                 getClient().send(roomUpdatedDTO);
                 controller.fireRoomEvent(getClient(), room.getId(), new RoomEvent(RoomEvent.Type.ROOMUPDATED, roomDto));

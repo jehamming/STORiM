@@ -10,6 +10,7 @@ import com.hamming.storim.common.dto.protocol.requestresponse.LoginWithTokenDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginWithTokenResultDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.common.interfaces.ConnectionListener;
+import com.hamming.storim.common.util.Logger;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -20,6 +21,7 @@ public class LoginPanelController implements ConnectionListener {
     private LoginPanel panel;
     private STORIMWindowController windowController;
     private MicroServerProxy microServerProxy;
+    private StorimURI currentServerURI;
 
 
     public LoginPanelController(STORIMWindowController windowController, LoginPanel panel, MicroServerProxy microServerProxy) {
@@ -37,39 +39,54 @@ public class LoginPanelController implements ConnectionListener {
         String username = panel.getTxtUsername().getText().trim();
         String password = String.valueOf(panel.getTxtPassword().getPassword());
         String serverURLTxt = panel.getTxtServerURL().getText().trim();
+        currentServerURI = new StorimURI(serverURLTxt);
         connectToServer(serverURLTxt, username, password);
     }
 
     public void connectToServer(String serverURLTxt, String username, String password) {
         try {
-            StorimURI serverURI = new StorimURI(serverURLTxt);
+            currentServerURI = new StorimURI(serverURLTxt);
             // Connect
-            microServerProxy.connect(serverURI.getServerip(), serverURI.getPort());
+            microServerProxy.connect(currentServerURI);
             // Do login request
-            LoginResultDTO loginResult = microServerProxy.login(username, password, serverURI.getRoomId());
+            LoginResultDTO loginResult = microServerProxy.login(username, password, currentServerURI.getRoomId());
             windowController.setCurrentUser(loginResult.getUser());
             windowController.setUserToken(loginResult.getToken());
             panel.getBtnConnect().setEnabled(false);
         } catch (MicroServerException e) {
             JOptionPane.showMessageDialog(panel, e.getMessage());
+            currentServerURI = null;
         }
     }
 
 
     public void connectToServer(Long userID, String token, String serverURItxt) {
+        boolean revert = false;
+        StorimURI old = null;
         try {
+            // Check if already connected
+            if ( microServerProxy.isConnected()) {
+                revert = true;
+                old = currentServerURI;
+            }
             StorimURI serverURI = new StorimURI(serverURItxt);
             // Connect
-            microServerProxy.connect(serverURI.getServerip(), serverURI.getPort());
-
-            // Do connect request
-            LoginWithTokenResultDTO loginWithTokenResultDTO = microServerProxy.loginWithToken(userID, token, serverURI.getRoomId());
-
+            microServerProxy.connect(serverURI);
+            // Store URI
+            currentServerURI = serverURI;
+            // Do connect using Token request
+            microServerProxy.loginWithToken(userID, token, serverURI.getRoomId());
             SwingUtilities.invokeLater(() -> {
                 panel.getBtnConnect().setEnabled(false);
             });
         } catch (MicroServerException e) {
-            JOptionPane.showMessageDialog(windowController.getWindow(), e.getMessage());
+            JOptionPane.showMessageDialog(windowController.getWindow(), "Error Connecting to '"+ serverURItxt+"', redirecting to previous server");
+            Logger.error(this, e.getMessage());
+            e.printStackTrace();
+            if ( revert && old != null ) {
+                Logger.info(this, "connection to server failed, reverting to " + old);
+                connectToServer(userID, token, old.getServerURL());
+            }
         }
     }
     private void setup() {
