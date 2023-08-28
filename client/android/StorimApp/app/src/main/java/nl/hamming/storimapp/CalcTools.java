@@ -1,7 +1,7 @@
 package nl.hamming.storimapp;
 
-import com.hamming.storim.model.dto.MovementDto;
-import com.hamming.storim.model.dto.UserLocationDto;
+import com.hamming.storim.common.dto.LocationDto;
+import com.hamming.storim.common.dto.protocol.request.MovementRequestDTO;
 
 public class CalcTools {
 
@@ -9,7 +9,7 @@ public class CalcTools {
     private static final float TURN_SPEED = 7;
 
 
-    public static UserLocationDto calculateNewPosition(MovementDto request, UserLocationDto location) {
+    public static LocationDto calculateNewPosition(MovementRequestDTO request, LocationDto location) {
         float currentSpeed = 0;
         if (request.isForward()) {
             currentSpeed = RUN_SPEED;
@@ -28,11 +28,11 @@ public class CalcTools {
         return location;
     }
 
-    public static UserLocationDto calculateNewPosition(UserLocationDto location, float currentSpeed) {
+    public static LocationDto calculateNewPosition(LocationDto location, float currentSpeed) {
         // Calculate new position
 
-        location.setX(location.getX() + currentSpeed );
-        location.setY(location.getY() + currentSpeed );
+        location.setX((int) (location.getX() + currentSpeed ));
+        location.setY((int) (location.getY() + currentSpeed ));
 
         return location;
     }

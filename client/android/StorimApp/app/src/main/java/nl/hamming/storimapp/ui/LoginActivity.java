@@ -1,30 +1,22 @@
 package nl.hamming.storimapp.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.hamming.storim.model.dto.UserDto;
+import com.hamming.storim.common.MicroServerProxy;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
+import com.hamming.storim.common.net.ProtocolReceiver;
 
 import nl.hamming.storimapp.R;
 import nl.hamming.storimapp.STORIMClientApplication;
-import nl.hamming.storimapp.interfaces.ConnectionListener;
-import nl.hamming.storimapp.interfaces.UserListener;
-import nl.hamming.storimapp.view.GameView;
 
-public class LoginActivity extends AppCompatActivity implements UserListener {
+public class LoginActivity extends AppCompatActivity {
 
     public static String LOGIN_SUCCESS = "LoginSuccess" ;
 
@@ -33,16 +25,12 @@ public class LoginActivity extends AppCompatActivity implements UserListener {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
+        MicroServerProxy microServerProxy =  STORIMClientApplication.getInstance().getStorimClientController().getMicroServerProxy();
 
-        STORIMClientApplication.getInstance(getApplicationContext()).getControllers().getUserController().addUserListener(this);
+        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginResult(dto));
 
         final Button button = (Button) findViewById(R.id.btnLogin);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                login();
-            }
-        });
-
+        button.setOnClickListener(v -> login());
     }
 
 
@@ -72,31 +60,14 @@ public class LoginActivity extends AppCompatActivity implements UserListener {
         t.start();
     }
 
-    @Override
-    public void loginResult(boolean success, String message) {
-        if (success) {
+    public void loginResult(LoginResultDTO dto) {
+        if (dto.isSuccess()) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra(LOGIN_SUCCESS, true);
             startActivity(intent);
         } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-                }
-            });
-
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), dto.getErrorMessage(), Toast.LENGTH_LONG).show());
         }
-    }
-
-    @Override
-    public void userConnected(UserDto user) {
-        //TODO not used
-    }
-
-    @Override
-    public void userDisconnected(UserDto user) {
-        //TODO Not used
     }
 
 

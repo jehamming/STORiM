@@ -109,20 +109,23 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
                 String json = (String) read;
                 //Logger.info(this, "Received JSON:" + json);
                 ProtocolDTO dto = gson.fromJson(json, ProtocolDTO.class);
-
-                Logger.info(this, client.getId() +"-Received:" + dto.toString());
-                if (dto instanceof ResponseDTO) {
-                    ResponseDTO response = (ResponseDTO) dto;
-                    ResponseContainer responseContainer = getResponseContainer(response.getClass());
-                    if (responseContainer != null) {
-                        removeResponseContainer(responseContainer);
-                        responseContainer.setResponse(response);
-                        synchronized (responseContainer) {
-                            responseContainer.notify();
+                if ( dto != null ) {
+                    Logger.info(this, client.getId() + "-Received:" + dto.toString());
+                    if (dto instanceof ResponseDTO) {
+                        ResponseDTO response = (ResponseDTO) dto;
+                        ResponseContainer responseContainer = getResponseContainer(response.getClass());
+                        if (responseContainer != null) {
+                            removeResponseContainer(responseContainer);
+                            responseContainer.setResponse(response);
+                            synchronized (responseContainer) {
+                                responseContainer.notify();
+                            }
                         }
                     }
+                    dispatcher.dispatch(dto);
+                } else {
+                    Logger.error(this, "Could not deserialize JSON:" + json);
                 }
-                dispatcher.dispatch(dto);
             } catch (IOException e) {
                 running = false;
             } catch (ClassNotFoundException e) {

@@ -1,22 +1,12 @@
 package nl.hamming.storimapp.view;
 
-public class Player {
+public class Player extends BasicDrawableObject {
 
-    private String userId;
     private String displayName;
-    private float x, y;
+    private boolean talking = false;
 
-    public Player(String userId) {
-        this.userId = userId;
-    }
-
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public Player(Long userId) {
+        setId(userId);
     }
 
     public String getDisplayName() {
@@ -27,19 +17,11 @@ public class Player {
         this.displayName = displayName;
     }
 
-    public float getX() {
-        return x;
+    public boolean isTalking() {
+        return talking;
     }
 
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
+    public void setTalking(boolean talking) {
+        this.talking = talking;
     }
 }

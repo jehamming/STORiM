@@ -29,11 +29,13 @@ public class LoginAction extends Action<LoginDTO> {
         Long roomId = getDto().getRoomID();
         boolean serverAdmin = false;
         boolean userServerAdmin = false;
+        boolean success = false;
+        String error = "";
 
         try {
             // Verify User with UserDataServer
             ValidateUserResponseDTO responseDTO = client.getServer().getUserDataServerProxy().validateUser(client, username, password);
-
+            success = responseDTO.isSuccess();
             if (responseDTO.isSuccess()) {
                 client.setSessionToken(responseDTO.getSessionToken());
                 userDto = responseDTO.getUser();
@@ -58,8 +60,8 @@ public class LoginAction extends Action<LoginDTO> {
                 getClient().send(loginResultDTO);
             }
         } catch (STORIMException e) {
-            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), e.getMessage());
-            client.send(errorDTO);
+            LoginResultDTO loginResultDTO = new LoginResultDTO(success, null, e.getMessage(), null, null, serverAdmin, userServerAdmin);
+            getClient().send(loginResultDTO);
         }
     }
 

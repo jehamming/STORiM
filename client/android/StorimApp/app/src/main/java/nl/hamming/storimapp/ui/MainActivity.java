@@ -14,14 +14,20 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.hamming.storim.common.MicroServerProxy;
+
 import nl.hamming.storimapp.R;
+import nl.hamming.storimapp.STORIMClientApplication;
+import nl.hamming.storimapp.STORIMClientController;
+import nl.hamming.storimapp.controllers.ChatController;
 import nl.hamming.storimapp.view.GameView;
 
 public class MainActivity extends AppCompatActivity {
     private GameView mGameView = null;
     private DisplayMetrics mMetrics = new DisplayMetrics();
     private float mScreenDensity;
-    private Boolean loggedIn;
+    private ChatController chatController;
+    private MicroServerProxy microServerProxy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,18 +36,15 @@ public class MainActivity extends AppCompatActivity {
         mScreenDensity = mMetrics.density;
         setContentView(R.layout.activity_main);
 
+        microServerProxy = STORIMClientApplication.getInstance().getStorimClientController().getMicroServerProxy();
+        chatController = new ChatController(this, microServerProxy);
+
         final Button button = (Button) findViewById(R.id.btnSend);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                sendText();
             }
         });
-
-        loggedIn = getIntent().getBooleanExtra(LoginActivity.LOGIN_SUCCESS, false);
-        if (loggedIn != null ) {
-            addText("You logged into the STORIM Server!");
-        }
-
     }
 
     @Override
@@ -62,15 +65,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void addText(String txt) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final TextView textView = (TextView) findViewById(R.id.txtViewHistory);
-                ScrollView scrollView = (ScrollView)  findViewById(R.id.scrollView2);
-                textView.setText(txt + " \n");
-                scrollView.fullScroll(View.FOCUS_DOWN);
-            }
+    public void addText(String txt) {
+        runOnUiThread(() -> {
+            final TextView textView = (TextView) findViewById(R.id.txtViewHistory);
+            ScrollView scrollView = (ScrollView)  findViewById(R.id.scrollView2);
+            textView.setText(txt + " \n");
+            scrollView.fullScroll(View.FOCUS_DOWN);
         });
 
     }
@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
             String textViewText = textView.getText().toString();
             textViewText = textViewText.concat("Je zegt '" + txt + "'");
             addText(textViewText);
-
         }
     }
 }

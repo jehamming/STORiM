@@ -43,7 +43,7 @@ public class VerbEditorPanelController implements ConnectionListener {
 
     private void registerReceivers() {
        microServerProxy.getConnectionController().registerReceiver(VerbAddedDTO.class, (ProtocolReceiver<VerbAddedDTO>) dto -> verbAdded(dto));
-       microServerProxy.getConnectionController().registerReceiver(UserVerbsDTO.class, (ProtocolReceiver<UserVerbsDTO>) dto -> setVerbs(dto));
+       //microServerProxy.getConnectionController().registerReceiver(UserVerbsDTO.class, (ProtocolReceiver<UserVerbsDTO>) dto -> setVerbs(dto));
        microServerProxy.getConnectionController().registerReceiver(VerbDeletedDTO.class, (ProtocolReceiver<VerbDeletedDTO>) dto -> verbDeleted(dto));
        microServerProxy.getConnectionController().registerReceiver(VerbUpdatedDTO.class, (ProtocolReceiver<VerbUpdatedDTO>) dto -> verbUpdated(dto));
     }

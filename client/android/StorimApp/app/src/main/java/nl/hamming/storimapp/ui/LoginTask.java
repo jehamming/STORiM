@@ -3,15 +3,19 @@ package nl.hamming.storimapp.ui;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.hamming.storim.common.MicroServerProxy;
+import com.hamming.storim.common.StorimURI;
+import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
+
 import nl.hamming.storimapp.STORIMClientApplication;
 
 public class LoginTask implements Runnable{
 
     private Context context;
-    private String ip, username, password;
+    private String storimURI, username, password;
 
-    public LoginTask(Context context, String ip, String username, String password) {
-        this.ip = ip;
+    public LoginTask(Context context, String storimURI, String username, String password) {
+        this.storimURI = storimURI;
         this.username = username;
         this.password = password;
         this.context = context;
@@ -20,8 +24,12 @@ public class LoginTask implements Runnable{
     @Override
     public void run() {
         try {
-            STORIMClientApplication.getInstance(context).getControllers().getConnectionController().connect(ip,3333);
-            STORIMClientApplication.getInstance(context).getControllers().getUserController().sendLogin(username, password);
+            MicroServerProxy microServerProxy =  STORIMClientApplication.getInstance().getStorimClientController().getMicroServerProxy();
+            StorimURI uri = new StorimURI(storimURI);
+            // Connect to server
+            microServerProxy.connect(uri);
+            // Do login request
+            microServerProxy.login(username, password, uri.getRoomId());
         } catch (Exception e) {
            System.err.println("Error:" + e.getMessage());
             e.printStackTrace();
