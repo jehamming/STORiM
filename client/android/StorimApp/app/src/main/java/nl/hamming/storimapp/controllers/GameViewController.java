@@ -59,6 +59,8 @@ public class GameViewController implements ConnectionListener {
         sequenceNumber = 0;
         movementRequests = new ArrayList<>();
         registerReceivers();
+        gameView.setgameViewController(this);
+        gameView.start();
     }
 
     private void registerReceivers() {

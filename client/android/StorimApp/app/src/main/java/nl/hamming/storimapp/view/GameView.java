@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.fonts.Font;
 import android.util.AttributeSet;
 import android.view.SurfaceView;
+import android.view.View;
 
 import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.ExitDto;
@@ -73,7 +74,7 @@ public class GameView extends SurfaceView implements Runnable {
     private Long currentUserId;
 
     public GameView(Context context, AttributeSet attributeSet) {
-        super(context);
+        super(context, attributeSet);
         actions = Collections.synchronizedList(new LinkedList<>());
         players = new ArrayList<>();
         things = new ArrayList<>();
@@ -114,7 +115,7 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void repaint() {
-        //TODO Redraw! 
+        invalidate();
     }
 
     public void setCurrentUserId(Long id) {
@@ -150,8 +151,6 @@ public class GameView extends SurfaceView implements Runnable {
 
     @Override
     public void run() {
-        int scaledSize = getWidth() / maxUsersX;
-        defaultUserImage = ImageUtils.resize(defaultUserImage, scaledSize, scaledSize);
         while (playing) {
             time = System.currentTimeMillis();
             handleActions();

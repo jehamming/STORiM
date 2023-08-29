@@ -9,35 +9,22 @@
 
     <TextView
         android:id="@+id/txtRoomName"
-        android:layout_width="296dp"
-        android:layout_height="37dp"
+        android:layout_width="408dp"
+        android:layout_height="31dp"
         android:gravity="bottom"
         android:text="My Room"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <nl.hamming.storimapp.view.GameView
-        android:id="@+id/gameView"
-        android:layout_width="375dp"
-        android:layout_height="268dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtRoomName" />
-
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="368dp"
-        android:layout_height="322dp"
+        android:layout_width="400dp"
+        android:layout_height="372dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         app:layout_constraintBottom_toTopOf="@+id/txtInput"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gameView"
-        app:layout_constraintVertical_bias="0.120000005">
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,24 +50,21 @@
         android:id="@+id/txtInput"
         android:layout_width="228dp"
         android:layout_height="46dp"
-        android:layout_marginStart="6dp"
-        android:layout_marginLeft="6dp"
         android:layout_marginEnd="3dp"
-        android:layout_marginRight="3dp"
         android:layout_marginBottom="4dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnSend"
-        app:layout_constraintStart_toEndOf="@+id/button2" />
+        app:layout_constraintEnd_toStartOf="@+id/btnSend" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="77dp"
-        android:layout_height="47dp"
-        android:text="CMD"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    <nl.hamming.storimapp.view.GameView
+        android:id="@+id/roomView"
+        android:layout_width="354dp"
+        android:layout_height="223dp"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtRoomName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

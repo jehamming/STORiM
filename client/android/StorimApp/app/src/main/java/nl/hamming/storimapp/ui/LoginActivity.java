@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
 
         microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginResult(dto));
 
-        final Button button = (Button) findViewById(R.id.btnLogin);
+            final Button button = (Button) findViewById(R.id.btnLogin);
         button.setOnClickListener(v -> login());
     }
 
@@ -62,9 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loginResult(LoginResultDTO dto) {
         if (dto.isSuccess()) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra(LOGIN_SUCCESS, true);
-            startActivity(intent);
+            finish();
         } else {
             runOnUiThread(() -> Toast.makeText(getApplicationContext(), dto.getErrorMessage(), Toast.LENGTH_LONG).show());
         }

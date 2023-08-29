@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,15 +17,15 @@ import com.hamming.storim.common.MicroServerProxy;
 
 import nl.hamming.storimapp.R;
 import nl.hamming.storimapp.STORIMClientApplication;
-import nl.hamming.storimapp.STORIMClientController;
 import nl.hamming.storimapp.controllers.ChatController;
+import nl.hamming.storimapp.controllers.GameViewController;
 import nl.hamming.storimapp.view.GameView;
 
 public class MainActivity extends AppCompatActivity {
-    private GameView mGameView = null;
     private DisplayMetrics mMetrics = new DisplayMetrics();
     private float mScreenDensity;
     private ChatController chatController;
+    private GameViewController gameViewController;
     private MicroServerProxy microServerProxy;
 
     @Override
@@ -38,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
         microServerProxy = STORIMClientApplication.getInstance().getStorimClientController().getMicroServerProxy();
         chatController = new ChatController(this, microServerProxy);
+
+        GameView roomView = findViewById(R.id.roomView);
+        gameViewController = new GameViewController(roomView, microServerProxy);
 
         final Button button = (Button) findViewById(R.id.btnSend);
         button.setOnClickListener(new View.OnClickListener() {

@@ -13,7 +13,6 @@ import nl.hamming.storimapp.ImageUtils;
 public class TileSet {
 
     private TileSetDto tileSetDto;
-    private Bitmap bufferedImage;
     private List<Bitmap> tiles;
 
     public TileSet(TileSetDto tileSetDto) {
@@ -24,8 +23,8 @@ public class TileSet {
     private void createTileList() {
         Bitmap tileSetImage = ImageUtils.decode(tileSetDto.getImageData());
         tiles = new ArrayList<>();
-        int tileSetWidth = bufferedImage.getWidth();
-        int tileSetHeight = bufferedImage.getHeight();
+        int tileSetWidth = tileSetImage.getWidth();
+        int tileSetHeight = tileSetImage.getHeight();
         int tileHeight = tileSetDto.getTileHeight();
         int tileWidth = tileSetDto.getTileWidth();
         int nbrTileSetRows = tileSetWidth / tileWidth;
