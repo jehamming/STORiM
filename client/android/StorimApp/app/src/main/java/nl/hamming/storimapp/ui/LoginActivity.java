@@ -34,19 +34,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
-        switch (item.getItemId()) {
-             case R.id.menuMain:
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     private void login() {
         final EditText txtIp = (EditText) findViewById(R.id.txtIP);
         final EditText txtUsername = (EditText) findViewById(R.id.txtUsername);

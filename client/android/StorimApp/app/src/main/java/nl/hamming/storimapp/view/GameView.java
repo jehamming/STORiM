@@ -8,8 +8,11 @@ import android.graphics.Color;
 import android.graphics.ColorSpace;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.fonts.Font;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 
@@ -37,8 +40,7 @@ public class GameView extends SurfaceView implements Runnable {
     //boolean variable to track if the game is playing or not
     volatile boolean playing;
     private int fps = 30;
-    private int arrowSize = 50;
-    private int maxUsersX = 10;
+    private int arrowSize = 120;
     private long time;
     private Bitmap backBuffer;
 
@@ -64,14 +66,26 @@ public class GameView extends SurfaceView implements Runnable {
     private Bitmap arrowRight;
     private Bitmap speechBalloon;
     private static int SPEECH_BALLOON_TIME = 2000;
-    Timer timer;
-    TimerTask task;
+    private Timer timer;
 
     private BasicDrawableObject selectedObject;
-    private boolean forward, back, left, right;
     private float unitX = 1f;
     private float unitY = 1f;
     private Long currentUserId;
+    private OnSwipeTouchListener onSwipeTouchListener;
+    private TimerTask moveRequestTimerTask;
+
+    private class MoveRequestTask extends TimerTask {
+        public void run() {
+            boolean forward = onSwipeTouchListener.isForward();
+            boolean back = onSwipeTouchListener.isBack();
+            boolean left = onSwipeTouchListener.isLeft();
+            boolean right = onSwipeTouchListener.isRight();
+            if (forward || back || right || left) {
+                gameViewController.sendMoveRequest(forward, back, left, right);
+            }
+        }
+    }
 
     public GameView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -79,6 +93,7 @@ public class GameView extends SurfaceView implements Runnable {
         players = new ArrayList<>();
         things = new ArrayList<>();
         exits = new ArrayList<>();
+        timer = new Timer();
 
         defaultUserImage = BitmapFactory.decodeResource(getResources(), R.drawable.user);
         arrowForward = BitmapFactory.decodeResource(getResources(), R.drawable.arrowforward);
@@ -86,6 +101,10 @@ public class GameView extends SurfaceView implements Runnable {
         arrowLeft = BitmapFactory.decodeResource(getResources(), R.drawable.arrowleft);
         arrowRight = BitmapFactory.decodeResource(getResources(), R.drawable.arrowright);
         speechBalloon = BitmapFactory.decodeResource(getResources(), R.drawable.speechballoon);
+        setWillNotDraw(false);
+
+        onSwipeTouchListener = new OnSwipeTouchListener(context, this);
+
     }
 
     public void updateExit(ExitDto exitDto) {
@@ -123,13 +142,6 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
 
-    private class MyTimerTask extends TimerTask {
-        public void run() {
-            gameViewController.sendMoveRequest(forward, back, left, right);
-        }
-    }
-
-
     public void setgameViewController(GameViewController gameViewController) {
         this.gameViewController = gameViewController;
     }
@@ -151,6 +163,8 @@ public class GameView extends SurfaceView implements Runnable {
 
     @Override
     public void run() {
+        moveRequestTimerTask = new MoveRequestTask();
+        timer.scheduleAtFixedRate(moveRequestTimerTask, 0, 50);
         while (playing) {
             time = System.currentTimeMillis();
             handleActions();
@@ -167,6 +181,7 @@ public class GameView extends SurfaceView implements Runnable {
             }
             actions.removeAll(actions);
         }
+        repaint();
     }
 
     private void addThing(Thing thing) {
@@ -238,10 +253,6 @@ public class GameView extends SurfaceView implements Runnable {
 
     public void setRoom(RoomDto room) {
         this.room = room;
-        if (room != null) {
-            String text = room.getRoomURI() + " (" + room.getName() + ")";
-            gameViewController.setTitle(text);
-        }
     }
 
 
@@ -382,7 +393,7 @@ public class GameView extends SurfaceView implements Runnable {
         drawThings(canvas);
         drawExits(canvas);
         drawPlayers(canvas);
-        drawControls(canvas);
+        //drawControls(canvas);
     }
 
     void drawRoom(Canvas c) {
@@ -500,9 +511,10 @@ public class GameView extends SurfaceView implements Runnable {
                 paint.getTextBounds(line, 0, line.length(), textBounds);
                 x = middle - ((int) (paint.measureText(line) / 2));
                 paint.setColor(Color.WHITE);
-                Rect textBGRect = new Rect(x - 5, y - 10, textBounds.width() + 5, textBounds.height() + 2);
+                Rect textBGRect = new Rect(x - 5, y - 10, x+textBounds.width() + 5, y+ textBounds.height() + 2);
                 canvas.drawRect(textBGRect, paint);
                 paint.setColor(Color.BLACK);
+                paint.setTypeface(Typeface.create("Arial",Typeface.BOLD));
                 canvas.drawText(line, x, y, paint);
                 y += textBounds.height();
             }

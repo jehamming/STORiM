@@ -180,7 +180,7 @@ public class GameViewController implements ConnectionListener {
     private void userInRoom(UserInRoomDTO dto) {
         UserDto user = dto.getUser();
         LocationDto location = dto.getLocation();
-        if (user.getId().equals(currentUser.getId())) {
+        if (currentUser != null && user.getId().equals(currentUser.getId())) {
             lastReceivedLocation = location;
         }
         if (user.getCurrentAvatarID() != null) {

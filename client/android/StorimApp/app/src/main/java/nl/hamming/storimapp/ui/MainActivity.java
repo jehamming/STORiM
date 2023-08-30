@@ -40,13 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
         GameView roomView = findViewById(R.id.roomView);
         gameViewController = new GameViewController(roomView, microServerProxy);
-
-        final Button button = (Button) findViewById(R.id.btnSend);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-               sendText();
-            }
-        });
     }
 
     @Override
@@ -62,29 +55,16 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.menuDisconnect:
+                if ( microServerProxy.isConnected()) {
+                    microServerProxy.disconnect();
+                }
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void addText(String txt) {
-        runOnUiThread(() -> {
-            final TextView textView = (TextView) findViewById(R.id.txtViewHistory);
-            ScrollView scrollView = (ScrollView)  findViewById(R.id.scrollView2);
-            textView.setText(txt + " \n");
-            scrollView.fullScroll(View.FOCUS_DOWN);
-        });
 
-    }
 
-    private void sendText() {
-        final EditText txtInput = (EditText) findViewById(R.id.txtInput);
-        final TextView textView = (TextView) findViewById(R.id.txtViewHistory);
-        String txt = txtInput.getText().toString().trim();
-        if (! "".equals(txt)) {
-            String textViewText = textView.getText().toString();
-            textViewText = textViewText.concat("Je zegt '" + txt + "'");
-            addText(textViewText);
-        }
-    }
 }

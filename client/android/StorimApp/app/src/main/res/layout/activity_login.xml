@@ -21,7 +21,7 @@
         android:hint="@string/prompt_ip"
         android:inputType="text"
         android:selectAllOnFocus="true"
-        android:text="storim://192.168.2.153:3334"
+        android:text="storim://192.168.2.32:3334"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.125"
         app:layout_constraintStart_toStartOf="parent"
