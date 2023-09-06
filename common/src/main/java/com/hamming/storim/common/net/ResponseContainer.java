@@ -4,7 +4,7 @@ import com.hamming.storim.common.dto.protocol.Protocol;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 
 public class ResponseContainer<T extends ResponseDTO> {
-    public static final long RESPONSE_TIMEOUT = 4000; // 4 Seconds
+    public static final long RESPONSE_TIMEOUT = 10000; // 10 Seconds
     private T response;
     private Class<T> responseClass;
 

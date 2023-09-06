@@ -125,7 +125,7 @@ public class ChatController implements ConnectionListener {
         currentRoom = room;
         if (room != null) {
             String text = room.getRoomURI() + " (" + room.getName() + ")";
-            txtRoomName.setText(text);
+            mainActivity.runOnUiThread(() ->txtRoomName.setText(text));
             addText("You are now in " + room.getName() );
         }
     }
@@ -136,6 +136,7 @@ public class ChatController implements ConnectionListener {
         Long id = getCurrentVerb();
         if (! "".equals(txt) && id != null ) {
             microServerProxy.executeVerb(id, txt);
+            mainActivity.runOnUiThread(() -> txtInput.setText(""));
         }
     }
 

@@ -1,5 +1,8 @@
 package nl.hamming.storimapp.controllers;
 
+import android.content.Context;
+import android.view.GestureDetector;
+
 import com.hamming.storim.common.CalcTools;
 import com.hamming.storim.common.MicroServerException;
 import com.hamming.storim.common.MicroServerProxy;
@@ -36,6 +39,7 @@ import com.hamming.storim.common.view.ViewListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.hamming.storimapp.view.BasicDrawableObject;
 import nl.hamming.storimapp.view.GameView;
 import nl.hamming.storimapp.view.TileSet;
 
@@ -51,13 +55,17 @@ public class GameViewController implements ConnectionListener {
     private RoomDto currentRoom;
     private AvatarDto currentUserAvatar;
     private MicroServerProxy microServerProxy;
+    private Context context;
+    private GestureDetector gestureDetector;
 
-    public GameViewController(GameView gameView, MicroServerProxy microServerProxy) {
+    public GameViewController(Context context, GameView gameView, MicroServerProxy microServerProxy) {
         this.gameView = gameView;
         this.microServerProxy = microServerProxy;
+        this.context = context;
         microServerProxy.getConnectionController().addConnectionListener(this);
         sequenceNumber = 0;
         movementRequests = new ArrayList<>();
+
         registerReceivers();
         gameView.setgameViewController(this);
         gameView.start();
@@ -386,7 +394,5 @@ public class GameViewController implements ConnectionListener {
         microServerProxy.updateExitLocation(exitID,currentRoom.getId(), x, y);
     }
 
-    public void setTitle(String text) {
-        //TODO setTitle
-    }
+
 }

@@ -5,16 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorSpace;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.fonts.Font;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.SurfaceView;
-import android.view.View;
 
 import com.hamming.storim.common.dto.AvatarDto;
 import com.hamming.storim.common.dto.ExitDto;
@@ -72,20 +67,8 @@ public class GameView extends SurfaceView implements Runnable {
     private float unitX = 1f;
     private float unitY = 1f;
     private Long currentUserId;
-    private OnSwipeTouchListener onSwipeTouchListener;
+    private GameViewTouchListener gameViewTouchListener;
     private TimerTask moveRequestTimerTask;
-
-    private class MoveRequestTask extends TimerTask {
-        public void run() {
-            boolean forward = onSwipeTouchListener.isForward();
-            boolean back = onSwipeTouchListener.isBack();
-            boolean left = onSwipeTouchListener.isLeft();
-            boolean right = onSwipeTouchListener.isRight();
-            if (forward || back || right || left) {
-                gameViewController.sendMoveRequest(forward, back, left, right);
-            }
-        }
-    }
 
     public GameView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -103,9 +86,34 @@ public class GameView extends SurfaceView implements Runnable {
         speechBalloon = BitmapFactory.decodeResource(getResources(), R.drawable.speechballoon);
         setWillNotDraw(false);
 
-        onSwipeTouchListener = new OnSwipeTouchListener(context, this);
-
+        gameViewTouchListener = new GameViewTouchListener(context, this);;
     }
+
+
+
+    public void viewTapped(float x, float y) {
+        selectedObject = getSelectedObject((int) x, (int) y);
+        if ( selectedObject != null ) {
+            if (selectedObject instanceof Exit) {
+                Exit exit = (Exit) selectedObject;
+                gameViewController.exitClicked(exit.getId(), exit.getName(), exit.getToRoomURI());
+            }
+        }
+    }
+
+    private class MoveRequestTask extends TimerTask {
+        public void run() {
+            boolean forward = gameViewTouchListener.isForward();
+            boolean back = gameViewTouchListener.isBack();
+            boolean left = gameViewTouchListener.isLeft();
+            boolean right = gameViewTouchListener.isRight();
+            if (forward || back || right || left) {
+                gameViewController.sendMoveRequest(forward, back, left, right);
+            }
+        }
+    }
+
+
 
     public void updateExit(ExitDto exitDto) {
         Exit exit = getExit(exitDto.getId());
@@ -296,7 +304,7 @@ public class GameView extends SurfaceView implements Runnable {
         gameThread.start();
     }
 
-    private BasicDrawableObject getSelectedObject(int x, int y) {
+    public BasicDrawableObject getSelectedObject(int x, int y) {
         BasicDrawableObject object = null;
         for (BasicDrawableObject player : players) {
             if (player.withinBounds(x, y)) {
@@ -711,6 +719,7 @@ public class GameView extends SurfaceView implements Runnable {
             setServerLocation(o, o.getServerX(), o.getServerY());
         }
     }
+
 
     public float getUnitX() {
         return unitX;

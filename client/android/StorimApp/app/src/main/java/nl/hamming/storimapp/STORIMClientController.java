@@ -11,7 +11,6 @@ public class STORIMClientController {
 
     private MicroServerProxy microServerProxy;
     private ConnectionController connectionController;
-    private GameViewController gameViewController;
 
 
     public STORIMClientController() {

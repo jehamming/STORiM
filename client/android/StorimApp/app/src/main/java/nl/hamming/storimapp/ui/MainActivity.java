@@ -19,6 +19,7 @@ import nl.hamming.storimapp.R;
 import nl.hamming.storimapp.STORIMClientApplication;
 import nl.hamming.storimapp.controllers.ChatController;
 import nl.hamming.storimapp.controllers.GameViewController;
+import nl.hamming.storimapp.controllers.LoginController;
 import nl.hamming.storimapp.view.GameView;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatController chatController;
     private GameViewController gameViewController;
     private MicroServerProxy microServerProxy;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         chatController = new ChatController(this, microServerProxy);
 
         GameView roomView = findViewById(R.id.roomView);
-        gameViewController = new GameViewController(roomView, microServerProxy);
+        gameViewController = new GameViewController(getApplicationContext(),roomView, microServerProxy);
+
     }
 
     @Override

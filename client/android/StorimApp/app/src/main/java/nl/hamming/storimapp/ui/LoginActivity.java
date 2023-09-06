@@ -13,12 +13,24 @@ import com.hamming.storim.common.MicroServerProxy;
 import com.hamming.storim.common.dto.protocol.requestresponse.LoginResultDTO;
 import com.hamming.storim.common.net.ProtocolReceiver;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.List;
+
 import nl.hamming.storimapp.R;
 import nl.hamming.storimapp.STORIMClientApplication;
+import nl.hamming.storimapp.STORIMConnectionDetails;
+import nl.hamming.storimapp.controllers.LoginController;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static String LOGIN_SUCCESS = "LoginSuccess" ;
+
+
+    private LoginController loginController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,33 +39,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         MicroServerProxy microServerProxy =  STORIMClientApplication.getInstance().getStorimClientController().getMicroServerProxy();
 
-        microServerProxy.getConnectionController().registerReceiver(LoginResultDTO.class, (ProtocolReceiver<LoginResultDTO>) dto -> loginResult(dto));
+        loginController = new LoginController(this, microServerProxy);
 
-            final Button button = (Button) findViewById(R.id.btnLogin);
-        button.setOnClickListener(v -> login());
     }
 
 
-    private void login() {
-        final EditText txtIp = (EditText) findViewById(R.id.txtIP);
-        final EditText txtUsername = (EditText) findViewById(R.id.txtUsername);
-        final EditText txtPassword = (EditText) findViewById(R.id.txtPassword);
-        String strIP = txtIp.getText().toString().trim();
-        String strUsername = txtUsername.getText().toString().trim();
-        String strPassword = txtPassword.getText().toString().trim();
-
-        LoginTask task = new LoginTask(getApplicationContext(), strIP, strUsername, strPassword);
-        Thread t = new Thread(task);
-        t.start();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        loginController.storeRecents();;
     }
-
-    public void loginResult(LoginResultDTO dto) {
-        if (dto.isSuccess()) {
-            finish();
-        } else {
-            runOnUiThread(() -> Toast.makeText(getApplicationContext(), dto.getErrorMessage(), Toast.LENGTH_LONG).show());
-        }
-    }
-
-
 }
