@@ -1,0 +1,30 @@
+package com.hamming.storim.server.engine.action;
+
+import com.hamming.storim.common.dto.protocol.ErrorDTO;
+import com.hamming.storim.common.dto.protocol.request.DeleteThingDTO;
+import com.hamming.storim.common.dto.protocol.serverpush.ThingDeletedDTO;
+import com.hamming.storim.server.STORIMClientConnection;
+import com.hamming.storim.server.STORIMException;
+import com.hamming.storim.server.common.action.Action;
+
+public class DeleteThingAction extends Action<DeleteThingDTO> {
+
+    public DeleteThingAction(STORIMClientConnection client) {
+        super(client);
+    }
+
+    @Override
+    public void execute() {
+        DeleteThingDTO dto = getDto();
+        STORIMClientConnection client = (STORIMClientConnection) getClient();
+        try {
+            client.getServer().getUserDataServerProxy().deleteThing(dto.getThingId());
+            ThingDeletedDTO thingDeletedDTO = new ThingDeletedDTO(dto.getThingId());
+            getClient().send(thingDeletedDTO);
+        } catch (STORIMException e) {
+            ErrorDTO errorDTO = new ErrorDTO(getClass().getSimpleName(), e.getMessage());
+            getClient().send(errorDTO);
+        }
+    }
+
+}

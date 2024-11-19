@@ -16,8 +16,8 @@ import com.hamming.storim.server.common.model.Exit;
 import com.hamming.storim.server.common.model.Location;
 import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.common.model.TileSet;
-import com.hamming.storim.server.game.*;
-import com.hamming.storim.server.game.action.*;
+import com.hamming.storim.server.engine.*;
+import com.hamming.storim.server.engine.action.*;
 
 import java.net.Socket;
 import java.util.HashMap;

@@ -1,9 +1,7 @@
 package com.hamming.storim.server;
 
 import com.hamming.storim.common.StorimURI;
-import com.hamming.storim.common.dto.TileSetDto;
 import com.hamming.storim.common.dto.UserDto;
-import com.hamming.storim.common.dto.protocol.request.DeleteTileSetDTO;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.common.util.Logger;
@@ -14,10 +12,9 @@ import com.hamming.storim.server.common.factories.RoomFactory;
 import com.hamming.storim.server.common.factories.TileSetFactory;
 import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.common.model.TileSet;
-import com.hamming.storim.server.game.GameController;
+import com.hamming.storim.server.engine.GameController;
 
 import javax.imageio.ImageIO;
-import javax.xml.crypto.Data;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
