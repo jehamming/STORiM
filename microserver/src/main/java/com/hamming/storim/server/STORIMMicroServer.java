@@ -13,6 +13,7 @@ import com.hamming.storim.server.common.factories.TileSetFactory;
 import com.hamming.storim.server.common.model.Room;
 import com.hamming.storim.server.common.model.TileSet;
 import com.hamming.storim.server.engine.GameController;
+import com.hamming.storim.server.web.STORIMWebSocketServer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -40,14 +41,16 @@ public class STORIMMicroServer extends Server {
     private Long rootUserId = -1L;
     private String serverName = "servername";
     private StorimURI serverURI;
-    public static String DEFAULT_MAINROOM_NAME = "Main Square";
-    public static String DEFAULT_SERVERCONFIG_NAME = "ServerConfig";
-    private static String PROP_SERVER_URL = "storim.url";
-    private static String PROP_DATA_DIR = "datadir";
-    private static String PROP_SERVER_NAME = "name";
-    private static String PROP_SERVER_PORT = "serverport";
-
+    public final static String DEFAULT_MAINROOM_NAME = "Main Square";
+    public final static String DEFAULT_SERVERCONFIG_NAME = "ServerConfig";
+    private final static String PROP_SERVER_URL = "storim.url";
+    private final static String PROP_DATA_DIR = "datadir";
+    private final static String PROP_SERVER_NAME = "name";
+    private final static String PROP_SERVER_PORT = "serverport";
+    private final static String PROP_WEBSOCKETSERVER_PORT = "websocketport";
     private ServerConfiguration serverConfiguration;
+    private STORIMWebSocketServer webSocketServer;
+    private int websocketserverport = 8888;
 
     public STORIMMicroServer() {
         super("STORIM Micro Server");
@@ -76,6 +79,9 @@ public class STORIMMicroServer extends Server {
         if ( serverUrlOverRule != null && !serverUrlOverRule.equals("")) {
             serverURI = new StorimURI(serverUrlOverRule);
         }
+
+        //Webserver
+        websocketserverport = config.getPropertyAsInt(PROP_WEBSOCKETSERVER_PORT);
 
         ExitFactory.getInstance(DATADIR);
         TileSetFactory.getInstance(DATADIR);
@@ -186,15 +192,20 @@ public class STORIMMicroServer extends Server {
     }
 
     public void startServer() {
-        startServer(port);
-
         try {
+            startServer(port);
             if ( serverURI == null ) {
                 String serverURITxt = ServerConfig.PROTOCOL + ":/" + NetUtils.getLocalHostLANAddress() + ":" + port;
                 serverURI = new StorimURI(serverURITxt);
             }
+
+            // Start also the websocket server for WebApp connections
+            webSocketServer = new STORIMWebSocketServer(websocketserverport);
+            webSocketServer.start();
+
             Logger.info(this, "Started STORIM Micro Server, listening for connections on: "+serverURI.getServerURL());
         } catch (UnknownHostException e) {
+            Logger.error(e.getMessage());
             e.printStackTrace();
         }
     }
