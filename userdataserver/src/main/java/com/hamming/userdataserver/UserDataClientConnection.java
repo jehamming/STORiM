@@ -1,5 +1,6 @@
 package com.hamming.userdataserver;
 
+import com.hamming.storim.common.net.JavaNetClient;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.ServerWorker;
 import com.hamming.storim.server.common.ClientConnection;
@@ -12,8 +13,11 @@ public class UserDataClientConnection extends ClientConnection {
     private STORIMUserDataServer storimUserDataServer;
 
     public UserDataClientConnection(STORIMUserDataServer srv, String id, Socket s, ServerWorker serverWorker) {
-        super(id, s, serverWorker);
+        super(id, serverWorker);
         this.storimUserDataServer = srv;
+        JavaNetClient javaNetClient = new JavaNetClient(this, this,this) ;
+        setNetClient(javaNetClient);
+        javaNetClient.connect(s);
     }
 
     @Override

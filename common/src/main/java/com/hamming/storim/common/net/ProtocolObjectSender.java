@@ -18,22 +18,20 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 public class ProtocolObjectSender implements Runnable {
-
-
-    private ObjectOutputStream out;
     private boolean running = false;
     private Queue<ProtocolDTO> itemsToSend;
     private Client client;
+    private NetClient netClient;
+
     private static int INTERVAL = 50; // Milliseconds, 20Hz
-    private Gson gson;
 
-    public ProtocolObjectSender(Client client, ObjectOutputStream out) {
-        this.out = out;
+
+    public ProtocolObjectSender(Client client, NetClient netClient) {
+        this.netClient = netClient;
         this.client = client;
+    }
 
-        // Java to JSON
-        gson = new Gson();
-
+    public void start() {
         Thread t = new Thread(this);
         t.start();
     }
@@ -46,26 +44,8 @@ public class ProtocolObjectSender implements Runnable {
             long start = System.currentTimeMillis();
             while (!itemsToSend.isEmpty()) {
                 ProtocolDTO dto = itemsToSend.remove();
-                try {
-                    //Logger.info(this,id, "Send:" + dto );
-
-                    //To JSON!
-                    String json = toJson(dto);
-
-                    Logger.info(this, client.getId(), "Send DTO as JSON:" + dto);
-                    out.writeObject(json);
-                    out.flush();
-                } catch (InvalidClassException e) {
-                    Logger.error(this, "run():"+ e.getClass().getSimpleName() + "-" + e.getMessage());
-                    e.printStackTrace();
-                } catch (NotSerializableException e) {
-                    Logger.error(this,"run():"+ e.getClass().getSimpleName() + "-" + e.getMessage());
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    Logger.error(this,"run():"+ e.getClass().getSimpleName() + "-" + e.getMessage());
-                    e.printStackTrace();
-                    running = false;
-                }
+                boolean success = netClient._send(dto);
+                if (!success) running = false;
             }
             long stop = System.currentTimeMillis();
             long timeSpent = start - stop;
@@ -79,22 +59,10 @@ public class ProtocolObjectSender implements Runnable {
         }
     }
 
-    private String toJson(ProtocolDTO dto) {
-        JsonElement element = gson.toJsonTree(dto);
-        if (element.isJsonObject()) {
-            element.getAsJsonObject().addProperty(ProtocolObjectSerializer.CLASS_PROPERTY_NAME, dto.getClass().getSimpleName());
-        }
-        String json = gson.toJson(element);
-        return json;
-    }
 
-    public void stopSending() {
-        try {
-            out.close();
-            running = false;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+    public void stop() {
+        running = false;
     }
 
     public boolean isRunning() {

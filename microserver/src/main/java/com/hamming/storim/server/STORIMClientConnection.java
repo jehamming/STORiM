@@ -6,6 +6,7 @@ import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarResponseDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
+import com.hamming.storim.common.net.JavaNetClient;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.common.ClientConnection;
 import com.hamming.storim.server.common.factories.ExitFactory;
@@ -32,8 +33,11 @@ public class STORIMClientConnection extends ClientConnection implements RoomList
     private boolean userAdmin = false;
 
     public STORIMClientConnection(STORIMMicroServer server, String id, Socket s, GameController controller) {
-        super(id, s, controller);
+        super(id, controller);
         this.server = server;
+        JavaNetClient javaNetClient = new JavaNetClient(this, this,this) ;
+        setNetClient(javaNetClient);
+        javaNetClient.connect(s);
         controller.addServerListener(this);
         setupAuthorisationListeners();
     }

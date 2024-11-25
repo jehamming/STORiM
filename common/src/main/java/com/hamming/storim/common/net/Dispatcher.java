@@ -8,8 +8,7 @@ import java.util.Deque;
 
 public class Dispatcher implements Runnable {
     private Deque<ProtocolDTO> dispatchQueue;
-    private boolean running = true;
-    private ProtocolReceiver receiver;
+    private final ProtocolReceiver receiver;
 
     public Dispatcher(ProtocolReceiver receiver) {
         this.receiver = receiver;
@@ -17,6 +16,7 @@ public class Dispatcher implements Runnable {
 
     @Override
     public void run() {
+        boolean running = true;
         dispatchQueue = new ArrayDeque<>();
         while (running) {
             if (dispatchQueue.isEmpty()) {
@@ -25,7 +25,8 @@ public class Dispatcher implements Runnable {
                         this.wait();
                     }
                 } catch (InterruptedException e) {
-                    Logger.info(this, ":" + "Exception : method wait was interrupted!");
+                    Logger.info(this, ":" + "interrupted!");
+                    running = false;
                 }
             }
             while (!dispatchQueue.isEmpty()) {

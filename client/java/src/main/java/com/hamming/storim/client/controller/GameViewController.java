@@ -289,7 +289,7 @@ public class GameViewController implements ConnectionListener {
         LocationDto newLocation = CalcTools.calculateNewPosition(dto, loc);
         checkBoundaries( newLocation );
         gameView.scheduleAction(() -> gameView.setPlayerLocation(windowController.getCurrentUser().getId(), newLocation.getX(), newLocation.getY()));
-        Logger.info(this, "ScheduledMove-Sequence:" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
+        //Logger.info(this, "ScheduledMove-Sequence:" + dto.getSequence() + "-" + newLocation.getX() + "," + newLocation.getY() + ",");
         return newLocation;
     }
 

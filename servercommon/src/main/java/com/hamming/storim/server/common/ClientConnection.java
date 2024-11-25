@@ -28,14 +28,16 @@ public abstract class ClientConnection implements Client, ProtocolReceiver, Conn
 
     private String sessionToken;
 
-    public ClientConnection(String id, Socket s, ServerWorker serverWorker) {
+    public ClientConnection(String id, ServerWorker serverWorker) {
         this.id = id;
         serverAdmin = false;
-        netClient = new NetClient(this, this,this);
         protocolHandler = new ProtocolHandler();
         this.serverWorker = serverWorker;
         addActions();
-        netClient.connect(s);
+    }
+
+    public void setNetClient(NetClient netClient) {
+        this.netClient = netClient;
     }
 
     public void setId(String id) {

@@ -6,6 +6,8 @@ import com.hamming.storim.common.dto.protocol.ErrorDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetAvatarResponseDTO;
 import com.hamming.storim.common.dto.protocol.requestresponse.GetRoomResultDTO;
 import com.hamming.storim.common.dto.protocol.serverpush.*;
+import com.hamming.storim.common.net.JavaNetClient;
+import com.hamming.storim.common.net.WebsocketNetClient;
 import com.hamming.storim.common.util.Logger;
 import com.hamming.storim.server.*;
 import com.hamming.storim.server.common.ClientConnection;
@@ -32,9 +34,12 @@ public class STORIMWSClientConnection extends ClientConnection implements RoomLi
     private TileSetAuthorisationListener tileSetAuthorisationListener;
     private boolean userAdmin = false;
 
-    public STORIMWSClientConnection(STORIMMicroServer server, String id, Socket s, GameController controller) {
-        super(id, s, controller);
+    public STORIMWSClientConnection(STORIMMicroServer server, String id, GameController controller) {
+        super(id, controller);
         this.server = server;
+        WebsocketNetClient websocketNetClient = new WebsocketNetClient(this,this,this);
+        setNetClient(websocketNetClient);
+
         controller.addServerListener(this);
         setupAuthorisationListeners();
     }

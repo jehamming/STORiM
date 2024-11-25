@@ -8,6 +8,7 @@ import com.hamming.storim.common.dto.protocol.ProtocolDTO;
 import com.hamming.storim.common.dto.protocol.ResponseDTO;
 import com.hamming.storim.common.interfaces.Client;
 import com.hamming.storim.common.interfaces.ConnectionListener;
+import com.hamming.storim.common.net.JavaNetClient;
 import com.hamming.storim.common.net.NetClient;
 import com.hamming.storim.common.net.ProtocolReceiver;
 import com.hamming.storim.common.util.Logger;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 public class ConnectionController implements ProtocolReceiver, ConnectionListener {
 
-    private NetClient client;
+    private JavaNetClient client;
     private String clientID;
     private List<ConnectionListener> connectionListeners;
     private static int CONNECTION_TIMEOUT = 4000;
@@ -38,14 +39,14 @@ public class ConnectionController implements ProtocolReceiver, ConnectionListene
      */
     public void disconnect(boolean silent) {
         if (client != null ) {
-            client.disconnect(silent);
+            client.disconnect();
         }
     }
 
     public void connect(Client source, String serverip, int port) throws Exception {
         int millisecs = 0;
         boolean timeout = false;
-        client = new NetClient(source, this, this);
+        client = new JavaNetClient(source, this, this);
         String errorMessage = client.connect(serverip, port);
         if ( errorMessage == null ) {
             while (!client.isConnected() && !timeout) {

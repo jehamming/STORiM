@@ -17,9 +17,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NetClient<T extends ResponseDTO> implements Runnable {
-    private Socket socket;
-    private ObjectInputStream in;
+public abstract class NetClient<T extends ResponseDTO> implements Runnable {
     private ProtocolObjectSender protocolObjectSender;
     private Dispatcher dispatcher;
     private boolean running = false;
@@ -28,7 +26,7 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
     private Map<Class, ResponseContainer> responseContainers;
     private ConnectionListener connectionListener;
     private ProtocolReceiver protocolReceiver;
-    private Gson gson;
+    private Thread dispatcherThread;
 
     public NetClient(Client client, ConnectionListener connectionListener, ProtocolReceiver protocolReceiver) {
         this.connectionListener = connectionListener;
@@ -39,38 +37,22 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
 
     private void initialize() {
         this.responseContainers = new HashMap<>();
-
-        // JSON
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(ProtocolDTO.class, new ProtocolObjectSerializer<ProtocolDTO>());
-        builder.registerTypeAdapter(ResponseDTO.class, new ProtocolObjectSerializer<ResponseDTO>());
-        gson = builder.create();
-
         this.dispatcher = new Dispatcher(protocolReceiver);
-        Thread t = new Thread(dispatcher);
-        t.start();
+        this.protocolObjectSender = new ProtocolObjectSender(client, this);
     }
 
-    public void connect(Socket s) {
-        this.socket = s;
-        registerStreams();
-        connectionListener.connected();
+
+    private void start() {
+        dispatcherThread = new Thread(dispatcher);
+        dispatcherThread.start();
+        protocolObjectSender.start();
     }
 
-    public String connect(String ip, int port) {
-        String retval = null;
-        try {
-            socket = new Socket();
-            socket.connect(new InetSocketAddress(ip, port), 1000);
-            registerStreams();
-            connectionListener.connected();
-        } catch (IOException e) {
-            Logger.error(this, client.getId()+":" + e.getMessage());
-            retval = e.getMessage();
-        }
-        return retval;
+    private void stop() {
+        protocolObjectSender.stop();
+        dispatcherThread.interrupt();
+        running = false;
     }
-
 
     private void addResponseContainer(ResponseContainer responseContainer) {
         responseContainers.put(responseContainer.getResponseClass(), responseContainer);
@@ -84,31 +66,15 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         return responseContainers.get(clazz);
     }
 
-    private void registerStreams() {
-        try {
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            protocolObjectSender = new ProtocolObjectSender(client, out);
-            in = new ObjectInputStream(socket.getInputStream());
-            Thread clientThread = new Thread(this);
-            clientThread.setName("Client Connection");
-            clientThread.setDaemon(true);
-            clientThread.start();
-        } catch (IOException e) {
-            Logger.error(this, client.getId()+ ":" + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+
+    public abstract ProtocolDTO _getDTOFromConnection();
 
     @Override
     public void run() {
         running = true;
         while (running) {
             try {
-                Object read = in.readObject();
-                //READ JSON
-                String json = (String) read;
-                //Logger.info(this, "Received JSON:" + json);
-                ProtocolDTO dto = gson.fromJson(json, ProtocolDTO.class);
+                ProtocolDTO dto = _getDTOFromConnection();
                 if ( dto != null ) {
                     Logger.info(this, client.getId() + "-Received:" + dto.toString());
                     if (dto instanceof ResponseDTO) {
@@ -123,22 +89,10 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
                         }
                     }
                     dispatcher.dispatch(dto);
-                } else {
-                    Logger.error(this, "Could not deserialize JSON:" + json);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
+                Logger.error(this, "Error:" + e.getMessage());
                 running = false;
-            } catch (ClassNotFoundException e) {
-                Logger.error(this, "Error:" + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-        if (socket != null) {
-            try {
-                in.close();
-                socket.close();
-            } catch (IOException e) {
-                Logger.error(this, "Error:" + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -151,6 +105,9 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         protocolObjectSender.send(pDTO);
     }
 
+    public abstract boolean _send(ProtocolDTO pDTO);
+
+
     public ResponseDTO sendReceive(ProtocolDTO requestResponseDTO, Class responseClass) {
         ResponseContainer responseContainer = new ResponseContainer();
         synchronized (responseContainer) {
@@ -162,16 +119,22 @@ public class NetClient<T extends ResponseDTO> implements Runnable {
         return protocolObjectSender.sendReceive(requestResponseDTO, responseContainer);
     }
 
-    public void disconnect(boolean silent) {
-        this.silent = silent;
-        protocolObjectSender.stopSending();
-        protocolObjectSender = null;
-        running = false;
-        socket = null;
-        in = null;
+
+    public void connected(){
+        start();
+        connectionListener.connected();
+    }
+
+    public void disconnected(){
+        stop();
+        connectionListener.disconnected();
     }
 
     public boolean isConnected() {
         return running;
+    }
+
+    public Client getClient() {
+        return client;
     }
 }
