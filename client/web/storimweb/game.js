@@ -196,6 +196,57 @@ function gameOver() {
   ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
 }
 
+// Connection stuff
+var conn;
+var log = document.getElementById("log");
+var msg = document.getElementById("msg");
+
+function connect(serverURI) {
+    conn = new WebSocket(serverURI);
+}
+
+function sendToserver(message) {
+    const connectMessage = {
+        type: "connect",
+        username: 'jehamming',
+        password: 'jehamming'
+     };
+
+    sendMessage(conn, JSON.stringify(connectMessage));
+}
+
+const waitForOpenConnection = (socket) => {
+    return new Promise((resolve, reject) => {
+        const maxNumberOfAttempts = 10
+        const intervalTime = 200 //ms
+
+        let currentAttempt = 0
+        const interval = setInterval(() => {
+            if (currentAttempt > maxNumberOfAttempts - 1) {
+                clearInterval(interval)
+                reject(new Error('Maximum number of attempts exceeded'))
+            } else if (socket.readyState === socket.OPEN) {
+                clearInterval(interval)
+                resolve()
+            }
+            currentAttempt++
+        }, intervalTime)
+    })
+}
+
+const sendMessage = async (socket, msg) => {
+    if (socket.readyState !== socket.OPEN) {
+        try {
+            await waitForOpenConnection(socket)
+            socket.send(msg)
+        } catch (err) { console.error(err) }
+    } else {
+        socket.send(msg)
+    }
+}
+
+//
+
 function gameLoop() {
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -231,8 +282,12 @@ function gameLoop() {
   animationId = requestAnimationFrame(gameLoop);
 }
 
+// Connect
+connect("ws://127.0.0.1:8887/");
+sendToserver("whatever");
+
 // Start the game loop
-let animationId = requestAnimationFrame(gameLoop);
+//let animationId = requestAnimationFrame(gameLoop);
 
 ctx.clearRect(0, 0, canvas.width, canvas.height);
 ctx.font = "50px Arial";
