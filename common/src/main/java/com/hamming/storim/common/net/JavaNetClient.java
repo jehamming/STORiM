@@ -38,7 +38,15 @@ public class JavaNetClient<T extends ResponseDTO> extends NetClient {
 
     public void connect(Socket s) {
         this.socket = s;
+        registerStreamsAndStart();
+    }
+
+    private void registerStreamsAndStart() {
         registerStreams();
+        Thread clientThread = new Thread(this);
+        clientThread.setName("Client Connection");
+        clientThread.setDaemon(true);
+        clientThread.start();
         connected();
     }
 
@@ -47,8 +55,7 @@ public class JavaNetClient<T extends ResponseDTO> extends NetClient {
         try {
             socket = new Socket();
             socket.connect(new InetSocketAddress(ip, port), 1000);
-            registerStreams();
-            connected();
+            registerStreamsAndStart();
         } catch (IOException e) {
             Logger.error(this, getClient().getId()+":" + e.getMessage());
             retval = e.getMessage();
@@ -61,10 +68,6 @@ public class JavaNetClient<T extends ResponseDTO> extends NetClient {
         try {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
-            Thread clientThread = new Thread(this);
-            clientThread.setName("Client Connection");
-            clientThread.setDaemon(true);
-            clientThread.start();
         } catch (IOException e) {
             Logger.error(this, getClient().getId()+ ":" + e.getMessage());
             e.printStackTrace();
@@ -75,7 +78,7 @@ public class JavaNetClient<T extends ResponseDTO> extends NetClient {
     public ProtocolDTO _getDTOFromConnection() {
         ProtocolDTO received = null;
         try {
-            if ( in != null ) { // Netclient could be in the prcoess of disconnecting..
+            if ( in != null ) { // Netclient could be in the process of disconnecting..
                 Object read = in.readObject();
 
                 // Check for DTO type and if so,

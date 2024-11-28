@@ -1,3 +1,5 @@
+
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -203,13 +205,21 @@ var msg = document.getElementById("msg");
 
 function connect(serverURI) {
     conn = new WebSocket(serverURI);
+    conn.onmessage = function(msgevent) {
+       var msg = JSON.parse(msgevent.data);
+       receivedMessage(msg);
+    };
+}
+
+function receivedMessage(msg){
+       console.log('Received:', msg);
 }
 
 function sendToserver(message) {
     const connectMessage = {
-        type: "connect",
+        command: "LOGIN",
         username: 'jehamming',
-        password: 'jehamming'
+        password: hex_md5('jehamming')
      };
 
     sendMessage(conn, JSON.stringify(connectMessage));

@@ -2,6 +2,7 @@ package com.hamming.storim.server;
 
 import com.hamming.storim.common.StorimURI;
 import com.hamming.storim.common.dto.UserDto;
+import com.hamming.storim.common.net.JavaNetClient;
 import com.hamming.storim.common.net.Server;
 import com.hamming.storim.common.net.ServerConfig;
 import com.hamming.storim.common.util.Logger;
@@ -200,7 +201,7 @@ public class STORIMMicroServer extends Server {
             }
 
             // Start also the websocket server for WebApp connections
-            webSocketServer = new STORIMWebSocketServer(websocketserverport);
+            webSocketServer = new STORIMWebSocketServer(this, controller, websocketserverport);
             webSocketServer.start();
 
             Logger.info(this, "Started STORIM Micro Server, listening for connections on: "+serverURI.getServerURL());
@@ -215,7 +216,10 @@ public class STORIMMicroServer extends Server {
         try {
             clients++;
             String id = "client-"+clients;
-            STORIMClientConnection client = new STORIMClientConnection(this, id, s,controller);
+            STORIMClientConnection client = new STORIMClientConnection(this, id, controller);
+            JavaNetClient javaNetClient = new JavaNetClient(client,client,client);
+            client.setNetClient(javaNetClient);
+            javaNetClient.connect(s);
             Logger.info(this, "Client " + s.getInetAddress().toString() + ", ClientThread started");
         } catch (Exception exception) {
             exception.printStackTrace();
